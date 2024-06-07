@@ -6,15 +6,15 @@ const Home = () => {
   const navigate = useNavigate();
   const [cookies] = useCookies(['token']);
 
-  useEffect(() => {
-    console.log("Cookies:", cookies);
-    if (!cookies.token) {
-      console.log("No token found, navigating to signin page.");
-      navigate("/signin");
-    } else {
-      console.log("Token found, staying on home page.");
-    }
-  }, [cookies.token, navigate]);
+  // useEffect(() => {
+  //   console.log("Cookies:", cookies);
+  //   if (!cookies.token) {
+  //     console.log("No token found, navigating to signin page.");
+  //     navigate("/signin");
+  //   } else {
+  //     console.log("Token found, staying on home page.");
+  //   }
+  // }, [cookies.token, navigate]);
 
   return (
     <div className="">

@@ -7,8 +7,8 @@ const cookieParser = require("cookie-parser");
 const authRoute = require("./Routes/AuthRoute");
 const { MONGO_URL, PORT } = process.env;
 const bodyParser = require("body-parser");
-const { GoogleDB } = require("googlesheets-raghbir");
-
+// const { GoogleDB } = require("googlesheets-raghbir");
+const { authenticateToken } = require("./Middlewares/AuthenticateToken")
 
 
 
@@ -21,9 +21,6 @@ mongoose
   .then(() => console.log("MongoDB is  connected successfully"))
   .catch((err) => console.error(err));
 
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
 
 app.use(
   cors({
@@ -39,3 +36,14 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/", authRoute);
+
+app.use(authenticateToken);
+
+app.get("/getUserData", (req, res) => {
+  res.send(req.user)
+})
+
+
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
+});

@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   name: String,
   email: String,
   profileUrl: String,
+  googleRefreshToken: { type: String, required: true }
 });
 
 

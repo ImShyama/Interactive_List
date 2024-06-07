@@ -1,6 +1,6 @@
 // src/App.js
-import React, { useState, useEffect } from 'react';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { Route, Routes, BrowserRouter, Navigate, useNavigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from "@react-oauth/google"
 import ReactDOM from 'react-dom/client';
 import GoogleSignin from './components/GoogleSignin'
@@ -9,58 +9,89 @@ import Navbar from './components/Navbar'
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
 import { CLIENT_ID } from './utils/constants';
-import { UserProvider } from './context/UserContext';
-
+import { UserContext, UserProvider } from './context/UserContext';
+import Cookies from "js-cookie"
 
 function App() {
   const [cookies, removeCookie] = useCookies([]);
   const [auth, setAuth] = useState(false);
-
-  useEffect(() => {
-    const verifyCookie = async () => {
-      if (cookies.token) {
-        const { data } = await axios.post(
-          "http://localhost:4000",
-          {},
-          { withCredentials: true }
-        );
-        const { status } = data;
-        setAuth(status);
-      }
-    };
-    verifyCookie();
-  }, [cookies]);
+  const { token, setToken, setProfile, profile } = useContext(UserContext);
+  const nav = useNavigate();
 
   const handleLogout = () => {
     removeCookie("token");
     setAuth(false);
   };
 
-  
+  useEffect(() => {
+    if (!token) return;
+    try {
+      axios
+        .get("http://localhost:4000/getUserData", {
+          headers: {
+            authorization: "Bearer " + token
+          }
+        })
+        .then(({ data: res }) => {
+          if (res.error) {
+            alert(res.error)
+            nav("/signin")
+            return
+          }
+          setProfile(res)
+        });
+    } catch (err) {
+      console.log(err.message);
+    }
+  }, []);
+  useEffect(() => {
+    try {
+      const searchParams = new URLSearchParams(location.search);
+      const code = searchParams.get("code");
+      if (code == null) return;
+      axios
+        .get("http://localhost:4000/auth/google/callback?code=" + code)
+        .then(({ data: res }) => {
+          if (res.error) {
+            nav("/signin")
+            alert(res.error)
+            return
+          }
+          console.log(res)
+          if (!token && !profile) {
+            setToken(res.token);
+            setProfile(res.body);
+          }
+          Cookies.set("token", res.token)
+          // nav("/signin")
+        });
+    } catch (err) {
+      console.log(err.message);
+    }
+  }, []);
+
+  // if token exists then render the original component else navigate to signin
+
+  //   !token ? <Navigate to={"/"}/> :
 
   return (
     <div className="App">
-       <Navbar auth={auth} />
+      <Navbar auth={auth} />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={!token ? <Navigate to={"/signin"} /> : <Home />} />
         {/* <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} /> */}
-        <Route path="/signin" element={<GoogleSignin />} />
+        <Route path="/signin" element={token ? <Navigate to={"/"} /> : <GoogleSignin />} />
       </Routes>
-      
     </div>
   );
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <GoogleOAuthProvider clientId={CLIENT_ID}>
-      <BrowserRouter>
-      <UserProvider>
+  <BrowserRouter>
+    <UserProvider>
       <App />
-      </UserProvider>
-      </BrowserRouter>
-    </GoogleOAuthProvider>
-  </React.StrictMode>
+    </UserProvider>
+  </BrowserRouter>
 );
