@@ -43,6 +43,31 @@ app.get("/getUserData", (req, res) => {
   res.send(req.user)
 })
 
+const { GoogleDB } = require("./utils/GoogleSheetsClass.js")
+
+app.post("/getSheetData", (req, res) => {
+
+  const sheets = new GoogleDB({
+    auth: {
+      clientId: process.env.CLIENT_ID,
+      clientSecret: process.env.CLIENT_SECRET,
+      redirectUri: process.env.REDIRECT_URI,
+      refreshToken: req.user.googleRefreshToken || ""
+    },
+    spreadSheetLink: req.body.spreadSheetLink,
+    spreadSheetName: req.body.spreadSheetName,
+    schema: {
+      name: { type: String },
+      class: { type: String },
+      school: { type: String },
+    }
+  })
+
+  sheets.find({}).then(res => console.log(res))
+})
+
+
+
 
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);

@@ -63,22 +63,58 @@ function App() {
             setProfile(res.body);
           }
           Cookies.set("token", res.token)
-          // nav("/signin")
+          nav("/home")
         });
     } catch (err) {
       console.log(err.message);
     }
   }, []);
 
+
+
+  useEffect(() => {
+    try {
+      axios
+        .post("http://localhost:4000/getSheetData", {
+          spreadSheetLink: "https://docs.google.com/spreadsheets/d/1Z5FFXPsi_1wrq-DiuDtK-qfZz_pC6za0ZJXR4JHyIbs/edit?pli=1#gid=1009149727",
+          spreadSheetName: "Sheet10"
+        }, {
+          headers: {
+            authorization: "Bearer " + token
+          }
+        })
+        .then(({ data: res }) => {
+          if (res.error) {
+            alert(res.error)
+            nav("/signin")
+            return
+          }
+          setProfile(res)
+        });
+    } catch (err) {
+      console.log(err.message);
+    }
+  }, [])
+
+
+
+
+
+
   // if token exists then render the original component else navigate to signin
 
+
   //   !token ? <Navigate to={"/"}/> :
+
+
+
 
   return (
     <div className="App">
       <Navbar auth={auth} />
       <Routes>
-        <Route path="/" element={!token ? <Navigate to={"/signin"} /> : <Home />} />
+        <Route path="/" element={<></> } />
+        <Route path="/home" element={!token ? <Navigate to={"/signin"} /> : <Home />} />
         {/* <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} /> */}
         <Route path="/signin" element={token ? <Navigate to={"/"} /> : <GoogleSignin />} />
