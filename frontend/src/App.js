@@ -10,6 +10,7 @@ import { useCookies } from 'react-cookie';
 import axios from 'axios';
 import { CLIENT_ID } from './utils/constants';
 import { UserProvider } from './context/UserContext';
+import Header from './components/Header';
 
 
 function App() {
@@ -40,12 +41,13 @@ function App() {
 
   return (
     <div className="App">
-       <Navbar auth={auth} />
+       {/* <Navbar auth={auth} /> */}
       <Routes>
         <Route path="/" element={<Home />} />
         {/* <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} /> */}
         <Route path="/signin" element={<GoogleSignin />} />
+        <Route path="/header" element={<Header />} />
       </Routes>
       
     </div>
