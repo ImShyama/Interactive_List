@@ -1,0 +1,140 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+.table-container {
+  padding: 20px 50px;
+}
+
+.intractive-table {
+  width: 100%;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--white, #fff);
+  border-collapse: collapse;
+}
+
+.intractive-table > thead {
+  border-radius: 10px 10px 0px 0px;
+  border-bottom: 1px solid #e2e9f3;
+  background: #f9fafc;
+}
+
+.tdText {
+  font-family: Poppins;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.intractive-table > thead > tr > th {
+  padding: 20px 35px;
+  text-align: left;
+  color: var(--black, #111);
+}
+
+.intractive-table > tbody > tr {
+  border-bottom: 1px solid #e2e9f3;
+}
+
+.intractive-table > tbody > tr > td {
+  padding: 4px 35px;
+  font-size: 14px;
+}
+
+.intractive-table > tbody > tr > .tdleft {
+  text-align: left !important;
+}
+
+
+
+.intractive-table > tbody > tr > .tdright {
+  text-align: right !important;
+}
+
+.tdcenter {
+  text-align: center !important;
+}
+
+.shortIcon {
+  width: 11px;
+  height: 17px;
+}
+
+.actionTD {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.edit_Icon {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  padding: 0px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: -78px;
+  border-radius: 380px;
+  background: #f6f6f6;
+}
+
+.delete_Icon {
+  display: flex;
+  width: 28px;
+  height: 28px;
+  padding: 0px 12px;
+  justify-content: center;
+  align-items: center;
+  gap: -78px;
+  border-radius: 380px;
+  background: #f6f6f6;
+}
+
+
+.column_resize_table th::before {
+  content: "";
+  display: block;
+  width: var(--column_resize_before_width);
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0px;
+}
+
+
+td {
+  padding: 0;
+  margin: 0px;
+  overflow: auto;
+}
+
+ 
+.resize {
+  resize: both;
+  overflow: auto;
+  width: auto;
+  /* height: 120px; */
+  margin: 0px;
+  padding: 0px;
+  /* border: 1px solid black; */
+  display:block;
+
+}
+
+
+td div {
+  border: 0;
+  width: auto;
+  height: auto;
+  min-height: 20px;
+  min-width: 20px;
+}
+
+th div {
+  border: 0;
+  width: auto;
+  height: auto;
+  min-height: 20px;
+  min-width: 20px;
+}

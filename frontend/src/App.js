@@ -1,68 +1,166 @@
-// src/App.js
-import React, { useState, useEffect } from 'react';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
-import { GoogleOAuthProvider } from "@react-oauth/google"
-import ReactDOM from 'react-dom/client';
-import GoogleSignin from './components/GoogleSignin'
-import Home from './components/Home'
-import Navbar from './components/Navbar'
-import { useCookies } from 'react-cookie';
-import axios from 'axios';
-import { CLIENT_ID } from './utils/constants';
-import { UserProvider } from './context/UserContext';
-import Header from './components/Header';
 
+import {
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+} from "react-router-dom";
+import ReactDOM from "react-dom/client";
+import GoogleSignin from "./components/GoogleSignin";
+import { UserProvider } from "./context/UserContext";
+import Header from "./components/Header";
+import Table from "./components/Table";
+import Setting from "./components/Setting";
+import Dashboard from "./components/Dashboard";
 
-function App() {
-  const [cookies, removeCookie] = useCookies([]);
-  const [auth, setAuth] = useState(false);
-
-  useEffect(() => {
-    const verifyCookie = async () => {
-      if (cookies.token) {
-        const { data } = await axios.post(
-          "http://localhost:4000",
-          {},
-          { withCredentials: true }
-        );
-        const { status } = data;
-        setAuth(status);
-      }
-    };
-    verifyCookie();
-  }, [cookies]);
-
-  const handleLogout = () => {
-    removeCookie("token");
-    setAuth(false);
-  };
-
-  
-
+const Layout = () => {
   return (
-    <div className="App">
-       {/* <Navbar auth={auth} /> */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        {/* <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} /> */}
-        <Route path="/signin" element={<GoogleSignin />} />
-        <Route path="/header" element={<Header />} />
-      </Routes>
-      
-    </div>
+    <>
+      <Header />
+      <Outlet />
+    </>
   );
-}
+};
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+// function App() {
+//   const [cookies, removeCookie] = useCookies([]);
+//   const [auth, setAuth] = useState(false);
+//   const { token, setToken, setProfile, profile } = useContext(UserContext);
+//   const nav = useNavigate();
+
+//   const handleLogout = () => {
+//     removeCookie("token");
+//     setAuth(false);
+//   };
+
+//   useEffect(() => {
+//     if (!token) return;
+//     try {
+//       axios
+//         .get("http://localhost:4000/getUserData", {
+//           headers: {
+//             authorization: "Bearer " + token,
+//           },
+//         })
+//         .then(({ data: res }) => {
+//           if (res.error) {
+//             alert(res.error);
+//             nav("/signin");
+//             return;
+//           }
+//           setProfile(res);
+//         });
+//     } catch (err) {
+//       console.log("catch error", err.message);
+//     }
+//   }, []);
+
+//   useEffect(() => {
+//     try {
+//       const searchParams = new URLSearchParams(location.search);
+//       const code = searchParams.get("code");
+//       if (code == null) return;
+//       axios
+//         .get("http://localhost:4000/auth/google/callback?code=" + code)
+//         .then(({ data: res }) => {
+//           if (res.error) {
+//             nav("/signin");
+//             alert(res.error);
+//             return;
+//           }
+//           console.log(res);
+//           if (!token && !profile) {
+//             setToken(res.token);
+//             setProfile(res.body);
+//           }
+//           Cookies.set("token", res.token);
+//           nav("/home");
+//         });
+//     } catch (err) {
+//       console.log(err.message);
+//     }
+//   }, []);
+
+  // useEffect(() => {
+  //   try {
+  //     axios
+  //       .post("http://localhost:4000/getSheetData", {
+  //         spreadSheetLink: "https://docs.google.com/spreadsheets/d/1WGUEwH7oDjflqFMWh1RyRP1L2W__uv0jw0Y0MsDmL4M/edit#gid=0",
+  //         spreadSheetName: "Sheet1"
+  //       }, {
+  //         headers: {
+  //           authorization: "Bearer " + token
+  //         }
+  //       })
+  //       .then(({ data: res }) => {
+  //         if (res.error) {
+  //           alert(res.error)
+  //           nav("/signin")
+  //           return
+  //         }
+  //         setProfile(res)
+  //       });
+  //   } catch (err) {
+  //     console.log(err.message);
+  //   }
+  // }, [])
+
+//   // if token exists then render the original component else navigate to signin
+
+//   // !token ? <Navigate to={"/"}/> :
+
+//   console.log("token", token);
+
+//   return (
+//     <div className="App">
+//       {/* <Navbar auth={auth} /> */}
+//       <Header />
+//       <Routes>
+//         <Route
+//           path="/"
+//           element={token ? <Navigate to={"/"} /> : <GoogleSignin />}
+//         />
+//         <Route
+//           path="/home"
+//           element={!token ? <Navigate to={"/signin"} /> : <Home />}
+//         />
+//         <Route
+//           path="/signin"
+//           element={token ? <Navigate to={"/"} /> : <GoogleSignin />}
+//         />
+//         <Route path="/table" element={<Table />} />
+//         <Route path="/setting" element={<Setting />} />
+//       </Routes>
+//     </div>
+//   );
+// }
+
+const appRouter = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        element: <GoogleSignin />,
+      },
+      {
+        path: "/table",
+        element: <Table />,
+      },
+      {
+        path: "/setting",
+        element: <Setting />,
+      },
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+    ],
+  },
+]);
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <GoogleOAuthProvider clientId={CLIENT_ID}>
-      <BrowserRouter>
-      <UserProvider>
-      <App />
-      </UserProvider>
-      </BrowserRouter>
-    </GoogleOAuthProvider>
-  </React.StrictMode>
+  <UserProvider>
+    <RouterProvider router={appRouter} />
+  </UserProvider>
 );

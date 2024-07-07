@@ -1,3 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @import url("https://fonts.googleapis.com/css?family=Josefin+Sans"); */
+
 *,
 ::before,
 ::after {
@@ -19,26 +25,26 @@ body {
 
 body {
   /* display: flex; */
-  justify-content: center;
-  align-items: center;
-  /* background: linear-gradient(
-    90deg,
-    rgba(2, 0, 36, 1) 0%,
-    rgba(143, 187, 204, 1) 35%,
-    rgba(0, 212, 255, 1) 100%
-  ); */
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  /* justify-content: center;
+  align-items: center; */
+  font-family: Poppins, Verdana, Geneva, Tahoma, sans-serif;
+  background: #f5f6f7;
+  /* color: var(--white, #fff);
+  font-family: Poppins;
+  font-size: 200px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal; */
 }
 
-.form_container_main{
+.form_container_main {
   display: flex;
   justify-content: center;
   align-items: center;
-  height:100vh;
+  height: 100vh;
 }
 
 .form_container {
-  
   background-color: #fff;
   padding: 2rem 3rem;
   border-radius: 0.5rem;
@@ -126,13 +132,60 @@ span a {
   background-color: rgba(0, 212, 255, 1);
 }
 
-
-@media only screen and (max-width: 1200px){
-  .home_page{
+@media only screen and (max-width: 1200px) {
+  .home_page {
     font-size: 1.5rem;
   }
   .home_page button {
     padding: 0.6rem 1rem;
     font-size: 1.5rem;
   }
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+
+
+/* Main container CSS */
+.main-container {
+  display: flex;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Left content CSS */
+.left-content {
+  flex-grow: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+/* When drawer is open, adjust the width of the left content */
+.drawer-open .left-content {
+  margin-right: 500px; /* width of the drawer */
+}
+
+.icon_outer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8.164px;
+}
+
+.icon_inner {
+  display: flex;
+  width: 37.19px;
+  height: 37.19px;
+  padding: 0px 10.885px;
+  justify-content: center;
+  align-items: center;
+  gap: 5.442px;
+  border-radius: 344.684px;
+  background: #f6f6f6;
+}
+
+.icon {
+  width: 19.987px;
+  height: 19.987px;
+  flex-shrink: 0;
+  cursor: pointer;
 }
