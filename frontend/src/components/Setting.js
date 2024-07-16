@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext  } from "react";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 import "./setting.css";
 import settingIcon from "../assets/settingIcon.svg";
 import cancelIcon from "../assets/cancelIcon.svg";
@@ -13,6 +15,7 @@ import downIcon from "../assets/downIcon.svg";
 import filterIcon from "../assets/filterIcon.svg";
 import sheetIcon from "../assets/sheetIcon.svg";
 import openIcon from "../assets/openIcon.svg";
+import { UserContext } from "../context/UserContext";
 
 const AddData = () => {
   return (
@@ -142,9 +145,27 @@ const SpreadsheetSettings = () => {
   );
 };
 
-const Setting = () => {
+const Setting = ({closeDrawer}) => {
+  const { setToken, setProfile } = useContext(UserContext);
+  console.log(setToken, setProfile)
   const [addData, setAddData] = useState(false);
   const [addSheet, setAddSheet] = useState(false);
+  const nav = useNavigate();
+
+  const handleLogout = () => {
+    console.log("logout clicked")
+    // Clear cookies
+    Cookies.remove("token");
+    Cookies.remove("profile");
+
+    // Clear user context
+    setToken(null);
+    setProfile(null);
+    closeDrawer();
+
+    // Redirect to login page
+    nav("/");
+  };
 
   return (
     <div>
@@ -204,7 +225,7 @@ const Setting = () => {
               </div>
               <div className="icon_outer">
                 <div className="icon_inner">
-                  <img className="icon" src={logoutIcon} />
+                  <img onClick={()=>{handleLogout()}} className="icon" src={logoutIcon} />
                 </div>
               </div>
             </div>

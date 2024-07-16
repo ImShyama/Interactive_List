@@ -14,6 +14,7 @@ const Header = () => {
 
   console.log("profile",profile)
   console.log("token",token)
+  const closeDrawer = () => setIsDrawerOpen(false);
   return (
     <div className={`main-container ${isDrawerOpen ? "drawer-open" : ""}`}>
       <div className="header_main left-content">
@@ -30,7 +31,8 @@ const Header = () => {
           <div className="right-panel-setting">
             <img
               src={settingsIcon1}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setIsDrawerOpen(!isDrawerOpen);
               }}
             />
@@ -45,7 +47,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-      {isDrawerOpen && <Setting />}
+      {isDrawerOpen && <Setting closeDrawer={closeDrawer} />}
     </div>
   );
 };

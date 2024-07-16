@@ -1,5 +1,6 @@
 import { useEffect, useContext, useState } from "react";
 import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 import "./table.css";
 import sort from "../assets/shortIcon.svg";
 import edit from "../assets/editIcon.svg";
@@ -8,20 +9,32 @@ import ColumnResizer from "react-table-column-resizer";
 import { UserContext } from "../context/UserContext";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import useSpreadSheetDetails from "../utils/useSpreadSheetDetails";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
+  const [tableHeader, setTableHeader] = useState([]);
+  const [filter, setFilter] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { token, setToken, setProfile, profile } = useContext(UserContext);
-
+  const { token } = useContext(UserContext);
+  const navigate = useNavigate();
+  const { id } = useParams();
+  const sheetdetails = useSpreadSheetDetails(id);
+  console.log("sheetDetails: ",sheetdetails);
+  // const {sheetdetails.spreadsheetUrl } = sheetdetails;
   useEffect(() => {
+
+    if (!sheetdetails || !sheetdetails.spreadsheetId || !sheetdetails.firstTabDataRange) {
+      return; // Do nothing if sheetdetails is null or undefined
+    }
+
     axios
       .post(
         "http://localhost:4000/getSheetData",
         {
-          spreadSheetLink:
-            "https://docs.google.com/spreadsheets/d/1WGUEwH7oDjflqFMWh1RyRP1L2W__uv0jw0Y0MsDmL4M/edit#gid=0",
-          spreadSheetName: "Sheet1",
+          spreadSheetID: sheetdetails.spreadsheetId,
+          range: sheetdetails.firstTabDataRange, 
         },
         {
           headers: {
@@ -32,17 +45,22 @@ const Table = () => {
       .then(({ data: res }) => {
         if (res.error) {
           alert(res.error);
-          nav("/");
+          navigate("/");
           return;
         }
+        const [header, filterRow, ...dataRows] = res;
         setSheetData(res);
+        console.log("res: ",resizeBy)
+        setTableHeader(header);
+        setFilter(filterRow);
+        setTableData(dataRows);
         setLoading(false);
       })
       .catch((err) => {
         console.log(err.message);
         setLoading(false);
       });
-  }, [token]);
+  }, [sheetdetails, token, navigate]);
 
   const renderSkeletonRows = () => {
     return (
@@ -68,18 +86,18 @@ const Table = () => {
     return (
       <thead>
         <tr>
-          {headers.map((header, index) => (
+          {tableHeader.map((header, index) => (
             <th key={index}>
-              <div className="resize flex ">
+              {/* <div className="resize flex "> */}
                 <span className="tdText">{header}</span>
                 <img className="shortIcon icon" src={sort} alt="Sort" />
-              </div>
+              {/* </div> */}
             </th>
           ))}
           <th>
-            <div className="resize flex ">
+            {/* <div className="resize flex "> */}
               <span className="tdText">Action</span>
-            </div>
+            {/* </div> */}
           </th>
         </tr>
       </thead>
@@ -144,7 +162,7 @@ const Table = () => {
         <table className="intractive-table column_resize_table">
           <TableHeader headers={headers} />
           <tbody>
-            {sheetData.map((row, index) => (
+            {tableData.map((row, index) => (
               <tr key={index}>
                 {headers.map((header, i) => (
                   <td key={i}>{row[header]}</td>

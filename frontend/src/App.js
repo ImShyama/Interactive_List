@@ -143,7 +143,7 @@ const appRouter = createBrowserRouter([
         element: <GoogleSignin />,
       },
       {
-        path: "/table",
+        path: "/interactivelist/:id",
         element: <Table />,
       },
       {
