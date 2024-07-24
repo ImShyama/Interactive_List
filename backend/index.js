@@ -275,6 +275,17 @@ app.post('/getSpreadSheets', async (req, res) => {
   }
 });
 
+// Route to get all spreadsheets for a user
+app.get('/getuser', async (req, res) => {
+  try {
+    const userDetails = req.user;
+    res.status(200).json(userDetails);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to fetch user details' });
+  }
+});
+
 // delete spreadsheet from sheet collection
 app.delete('/deleteSpreadsheet/:id', async (req, res) => {
   try {

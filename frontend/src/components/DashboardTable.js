@@ -3,11 +3,20 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { HOST } from "../utils/constants";
 import useToken from "../utils/useToken";
+import editIcon from "../assets/editIcon.svg";
+import deleteIcon from "../assets/deleteIcon.svg";
+import { XIcon } from '@heroicons/react/solid'; // or any other icon you prefer
+import DeleteAlert from "./DeleteAlert";
+
 
 const DashboardTable = () => {
   const [spreadsheet, setSpreadSheet] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [sheetToDelete, setSheetToDelete] = useState(null);
   const token = useToken();
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     axios
@@ -33,15 +42,21 @@ const DashboardTable = () => {
       });
   }, []);
 
-  console.log("tableData: ", spreadsheet);
-
   const handleEdit = (id) => {
     navigate(`/interactivelist/${id}`);
   };
 
-  const handleDelete = (id) => {
+  const handleDeleteClick = (id, sheetName) => {
+    setSheetToDelete({ id, sheetName });
+    setConfirmModalOpen(true);
+  };
+
+  const handleDelete = () => {
+
+    if (!sheetToDelete) return;
+
     axios
-      .delete(`${HOST}/deleteSpreadsheet/${id}`, {
+      .delete(`${HOST}/deleteSpreadsheet/${sheetToDelete.id}`, {
         headers: {
           authorization: "Bearer " + token,
         },
@@ -52,43 +67,71 @@ const DashboardTable = () => {
           return;
         }
         setSpreadSheet((prevSpreadsheets) =>
-          prevSpreadsheets.filter((sheet) => sheet._id !== id)
+          prevSpreadsheets.filter((sheet) => sheet._id !== sheetToDelete.id)
         );
+        setConfirmModalOpen(false);
       })
       .catch((err) => {
         console.log(err.message);
+        setConfirmModalOpen(false);
       });
   };
 
+  const handleDeleteCancel = () => {
+    setConfirmModalOpen(false);
+  };
+
   return (
-    <div className="flex flex-col m-4 rounded-[10.423px] border border-[1.303px] bg-[#FEFBF7]">
-      <div className="flex justify-between px-[31px] py-[25px]">
-        <span className="text-[24px] font-[600] leading-[23px]">
-          Previous 30 Days
-        </span>
-        {/* <div className="flex justify-around"> */}
-        <span className="text-[20px] text-[#667085] font-[600] leading-[23px]">
-          Access
-        </span>
-        <span className="text-[20px] text-[#667085] font-[600] leading-[23px]">
-          Last Update
-        </span>
-        <div></div>
+    <>
+      <div className="overflow-x-auto m-4 rounded-[10.423px] border-[1.303px] border-[#FFF7EA] bg-[#FEFBF7] overflow-hidden">
+        <table className="min-w-full rounded-[10.423px] ">
+          <thead>
+            <tr className="border-b-[1.303px] border-[#EAECF0] bg-[#FEFBF7]">
+              <th className="w-1/2  p-4 text-start text-[#101828] font-poppins text-[24px] font-semibold leading-[23.452px]">
+                Active Spreadsheet
+              </th>
+              <th className="w-1/6  p-4 text-start text-[#667085] font-poppins text-[20px] font-semibold leading-[23.452px] ">
+                Access
+              </th>
+              <th className="w-1/6  p-4 text-start text-[#667085] font-poppins text-[20px] font-semibold leading-[23.452px]">
+                Last Update
+              </th>
+              <th className="w-1/6  p-4 text-start text-[#667085] font-poppins text-[20px] font-semibold leading-[23.452px]">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {spreadsheet.map((sheet, index) => {
+              return (
+                <tr
+                  className="border-b-[1.303px] border-[#EAECF0] bg-[#FEFBF7]"
+                  key={sheet._id}
+                >
+                  <td className=" px-4 py-2">
+                    {sheet.spreadsheetName || sheet.firstSheetName}
+                  </td>
+                  <td className=" px-4 py-2">Owner</td>
+                  <td className=" px-4 py-2">06/20/2024</td>
+                  <td className=" px-4 py-2 flex gap-[15px] ">
+                    <button onClick={() => handleEdit(sheet._id)}><img src={editIcon} alt="Edit" /> </button>
+                    <button onClick={() => handleDeleteClick(sheet._id, sheet.spreadsheetName || sheet.firstSheetName)}>
+                    <img src={deleteIcon} alt="Delete" />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+            <DeleteAlert
+        isOpen={confirmModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDelete}
+        sheetName={sheetToDelete?.sheetName}
+      />
+          </tbody>
+        </table>
       </div>
-      {spreadsheet.map((sheet, index) => {
-        return (
-          <div className="flex justify-between px-4" key={sheet._id}>
-            <span>{sheet.spreadsheetName || sheet.firstSheetName}</span>
-            <span>Owner</span>
-            <span>{Date.now()}</span>
-            <span>
-              <button onClick={() => handleEdit(sheet._id)}>Edit</button>
-              <button onClick={() => handleDelete(sheet._id)}>Delete</button>
-            </span>
-          </div>
-        );
-      })}
-    </div>
+    </>
   );
 };
 
