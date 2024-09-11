@@ -125,10 +125,10 @@ const Header = () => {
       </div>
       {isProfileVisible && (
         <div ref={profileRef} className="absolute right-[45px] mt-[-10px]">
-          <Profile 
-          name={user?.name} 
-          email={user?.email} 
-          closeProfile={() => setIsProfileVisible(false)}
+          <Profile
+            name={user?.name}
+            email={user?.email}
+            closeProfile={() => setIsProfileVisible(false)}
           />
         </div>
       )}

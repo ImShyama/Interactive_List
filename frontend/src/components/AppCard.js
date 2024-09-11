@@ -62,7 +62,7 @@ const AppCard = () => {
       <div className="m-[25px]">
         <img
           className="w-[325px] h-[190px] rounded-[15.07px]"
-          src="https://s3-alpha-sig.figma.com/img/a323/c892/d59a0fe83ebe5e87ededc1756d6154a8?Expires=1722211200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=C6JHoc4YDyGTandX~kmcFRxrFys5YWwJFHe8jkLjy-4blmEwOgxGAhbCrdHzCXT8QMRuATW2Falnwa6vc1S1UygJgMt4vPlHIyJsvAH3-CIjZ3detIDZ0~7eK7FxWg5izXvDgNLZS5fBfw33K4lJjSTuhaDwPV4~Me~inhGeTBVawsuSzhoeLbBUK~rOdhzzVlzxBOW6QSGzAHPE3nRzl4S-tW2weIlCfN-nVGlwCmG5rpenEFcMYxsuxzEgw4vKTQSxT1PaKVo0SSA6WN~p~q8Z~9O1Jq8QFSC~titxL9qOpSXY0i0OpTujwkK7L5eAsRjzzNtJSrveIoibEl7JnQ__"
+          src="https://i.ibb.co/8PBFyYg/image.png"
         />
       </div>
 

@@ -87,10 +87,12 @@ const Table = () => {
       <thead>
         <tr>
           {tableHeader.map((header, index) => (
-            <th key={index}>
+            <th key={index} style={{textWrap:'nowrap'}}>
               {/* <div className="resize flex "> */}
+              <div className="flex gap-[10px] items-center">
                 <span className="tdText">{header}</span>
                 <img className="shortIcon icon" src={sort} alt="Sort" />
+                </div>
               {/* </div> */}
             </th>
           ))}
@@ -107,46 +109,6 @@ const Table = () => {
 
   const headers = getHeaders(sheetData);
 
-  /** return (
-    <div className="table-container">
-      <table className="intractive-table column_resize_table">
-        <TableHeader headers={headers} />
-        <tbody>
-           {loading ? Array(10)
-                .fill("")
-                .map((_, index) => renderSkeletonRows(index))
-            : renderTableRows()} 
-        </tbody>
-      </table>
-    </div>
-  );
-
-  return (
-    <div className="table-container">
-      <table className="intractive-table column_resize_table">
-        <TableHeader headers={headers} />
-        <tbody>
-          {sheetData.map((row, index) => (
-            <tr key={index}>
-              {headers.map((header, i) => (
-                <td key={i}>{row[header]}</td>
-              ))}
-              <td className="tdcenter">
-                <div className="inline-flex gap-[8px] items-center">
-                  <div className="flex w-[28px] h-[28px] justify-center items-center bg-[#F6F6F6] rounded-[380px]">
-                    <img src={edit} alt="Edit" />
-                  </div>
-                  <div className="flex w-[28px] h-[28px] justify-center items-center bg-[#F6F6F6] rounded-[380px]">
-                    <img src={deleteIcon} alt="Delete" />
-                  </div>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  ) **/
 
   return (
     <div className="table-container">
@@ -159,6 +121,7 @@ const Table = () => {
           </tbody>
         </table>
       ) : (
+        <div style={{overflowX:'auto', width:'100%', scrollbarWidth:'thin'}}>
         <table className="intractive-table column_resize_table">
           <TableHeader headers={headers} />
           <tbody>
@@ -181,6 +144,7 @@ const Table = () => {
             ))}
           </tbody>
         </table>
+        </div>
       )}
     </div>
   );

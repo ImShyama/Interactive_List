@@ -1,4 +1,4 @@
-import React, { useState, useContext  } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import "./setting.css";
@@ -81,10 +81,11 @@ const AddData = () => {
         </div>
       </div>
       <div className="submit_sheetData">
-        <button className="submit_btn"><span className="span_btn">Save Changes</span></button>
+        <button className="submit_btn">
+          <span className="span_btn">Save Changes</span>
+        </button>
       </div>
     </div>
-    
   );
 };
 
@@ -139,21 +140,23 @@ const SpreadsheetSettings = () => {
         </div>
       </div>
       <div className="submit_sheetData">
-        <button className="submit_btn"><span className="span_btn">Save Changes</span></button>
+        <button className="submit_btn">
+          <span className="span_btn">Save Changes</span>
+        </button>
       </div>
     </div>
   );
 };
 
-const Setting = ({closeDrawer}) => {
+const Setting = ({ closeDrawer }) => {
   const { setToken, setProfile } = useContext(UserContext);
-  console.log(setToken, setProfile)
+  console.log(setToken, setProfile);
   const [addData, setAddData] = useState(false);
   const [addSheet, setAddSheet] = useState(false);
   const nav = useNavigate();
 
   const handleLogout = () => {
-    console.log("logout clicked")
+    console.log("logout clicked");
     // Clear cookies
     Cookies.remove("token");
     Cookies.remove("profile");
@@ -225,14 +228,20 @@ const Setting = ({closeDrawer}) => {
               </div>
               <div className="icon_outer">
                 <div className="icon_inner">
-                  <img onClick={()=>{handleLogout()}} className="icon" src={logoutIcon} />
+                  <img
+                    onClick={() => {
+                      handleLogout();
+                    }}
+                    className="icon"
+                    src={logoutIcon}
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div className="setting_filter">
-        <div className="setting_filter_bottom">
+          <div className="setting_filter_bottom">
             <div
               className="setting_filter_bottom_inner"
               onClick={() => {
@@ -246,7 +255,7 @@ const Setting = ({closeDrawer}) => {
             </div>
           </div>
           {addSheet && <SpreadsheetSettings />}
-          
+
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="472"
