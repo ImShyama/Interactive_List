@@ -10,6 +10,11 @@ import { UserContext } from "../context/UserContext";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import useSpreadSheetDetails from "../utils/useSpreadSheetDetails";
+import { useDispatch, useSelector } from "react-redux";
+import { updateSetting } from "../utils/settingSlice";
+import { HOST } from "../utils/constants.js";
+import InteractiveList from "./InteractiveList.js";
+
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
@@ -21,20 +26,47 @@ const Table = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const sheetdetails = useSpreadSheetDetails(id);
-  console.log("sheetDetails: ",sheetdetails);
-  // const {sheetdetails.spreadsheetUrl } = sheetdetails;
-  useEffect(() => {
 
+
+  const dispatch = useDispatch();
+  const settings = useSelector((state) => state.setting.settings); // Redux state for settings
+
+  const [hasInitialized, setHasInitialized] = useState(false); // To track if settings were initialized
+
+  // Function to add settings to the Redux store
+  function handleAddSetting(sheetdetails) {
+    dispatch(updateSetting(sheetdetails));
+  }
+
+
+  // Fetch table data using either settings or sheetdetails
+
+  // Only set settings once on initial load
+  useEffect(() => {
     if (!sheetdetails || !sheetdetails.spreadsheetId || !sheetdetails.firstTabDataRange) {
-      return; // Do nothing if sheetdetails is null or undefined
+      return; // Do nothing if sheetdetails are incomplete
     }
 
+    console.log("first useEffect")
+
+    // Set initial settings in Redux only once
+    if (!hasInitialized) {
+      handleAddSetting(sheetdetails);
+      setHasInitialized(true); // Ensure it's set only once
+    }
+  }, [sheetdetails, hasInitialized, dispatch]); // Only run once with `sheetdetails`
+
+  useEffect(() => {
+    if (!id ) return;
+
+    console.log("second useEffect")
+
+    // Fetch sheet data
     axios
       .post(
-        "http://localhost:4000/getSheetData",
+        `${HOST}/getSheetDataWithID`,
         {
-          spreadSheetID: sheetdetails.spreadsheetId,
-          range: sheetdetails.firstTabDataRange, 
+          sheetID: id
         },
         {
           headers: {
@@ -48,9 +80,14 @@ const Table = () => {
           navigate("/");
           return;
         }
-        const [header, filterRow, ...dataRows] = res;
-        setSheetData(res);
-        console.log("res: ",resizeBy)
+
+        const [header, filterRow, ...dataRows] = res.rows;
+        const permissions = res.permissions;
+        console.log("permissions",permissions)
+        if(permissions == "view") {
+          navigate(`/${id}/view`);
+        }
+        setSheetData(res.rows);
         setTableHeader(header);
         setFilter(filterRow);
         setTableData(dataRows);
@@ -60,93 +97,54 @@ const Table = () => {
         console.log(err.message);
         setLoading(false);
       });
-  }, [sheetdetails, token, navigate]);
+  }, [sheetdetails, settings.spreadsheetId, settings.firstTabDataRange, token, navigate]);
 
-  const renderSkeletonRows = () => {
-    return (
-      <tr>
-        {Array(7)
-          .fill("")
-          .map((_, index) => (
-            <td key={index}>
-              <Skeleton height={20} />
-            </td>
-          ))}
-      </tr>
-    );
-  };
+  // useEffect(() => {
+  //   if (!sheetdetails || !settings.spreadsheetId || !settings.firstTabDataRange) return;
 
-  // Utility function to get headers from the data
-  const getHeaders = (data) => {
-    if (data.length === 0) return [];
-    return Object.keys(data[0]);
-  };
+  //   console.log("second useEffect")
 
-  const TableHeader = ({ headers }) => {
-    return (
-      <thead>
-        <tr>
-          {tableHeader.map((header, index) => (
-            <th key={index} style={{textWrap:'nowrap'}}>
-              {/* <div className="resize flex "> */}
-              <div className="flex gap-[10px] items-center">
-                <span className="tdText">{header}</span>
-                <img className="shortIcon icon" src={sort} alt="Sort" />
-                </div>
-              {/* </div> */}
-            </th>
-          ))}
-          <th>
-            {/* <div className="resize flex "> */}
-              <span className="tdText">Action</span>
-            {/* </div> */}
-          </th>
-        </tr>
-      </thead>
-    );
-  };
+  //   // Fetch sheet data
+  //   axios
+  //     .post(
+  //       `${HOST}/getSheetData`,
+  //       {
+  //         spreadSheetID: settings.spreadsheetId || sheetdetails.spreadsheetId,
+  //         range: settings.firstTabDataRange || sheetdetails.firstTabDataRange,
+  //       },
+  //       {
+  //         headers: {
+  //           authorization: "Bearer " + token,
+  //         },
+  //       }
+  //     )
+  //     .then(({ data: res }) => {
+  //       if (res.error) {
+  //         alert(res.error);
+  //         navigate("/");
+  //         return;
+  //       }
 
+  //       const [header, filterRow, ...dataRows] = res;
+  //       setSheetData(res);
+  //       setTableHeader(header);
+  //       setFilter(filterRow);
+  //       setTableData(dataRows);
+  //       setLoading(false);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.message);
+  //       setLoading(false);
+  //     });
+  // }, [sheetdetails, settings.spreadsheetId, settings.firstTabDataRange, token, navigate]);
 
-  const headers = getHeaders(sheetData);
+  console.log("sheetData",sheetData)
+  console.log("tableHeader",tableHeader)
+  console.log("tableData",tableData)
 
 
   return (
-    <div className="table-container">
-      {loading ? (
-        <table className="intractive-table column_resize_table">
-          <tbody>
-            {Array(10)
-              .fill("")
-              .map((_, index) => renderSkeletonRows(index))}
-          </tbody>
-        </table>
-      ) : (
-        <div style={{overflowX:'auto', width:'100%', scrollbarWidth:'thin'}}>
-        <table className="intractive-table column_resize_table">
-          <TableHeader headers={headers} />
-          <tbody>
-            {tableData.map((row, index) => (
-              <tr key={index}>
-                {headers.map((header, i) => (
-                  <td key={i}>{row[header]}</td>
-                ))}
-                <td className="tdcenter">
-                  <div className="inline-flex gap-[8px] items-center">
-                    <div className="flex w-[28px] h-[28px] justify-center items-center bg-[#F6F6F6] rounded-[380px]">
-                      <img src={edit} alt="Edit" />
-                    </div>
-                    <div className="flex w-[28px] h-[28px] justify-center items-center bg-[#F6F6F6] rounded-[380px]">
-                      <img src={deleteIcon} alt="Delete" />
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        </div>
-      )}
-    </div>
+    <InteractiveList data={sheetData} headers={tableHeader} />
   );
 };
 

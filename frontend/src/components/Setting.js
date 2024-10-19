@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import axios from "axios";
 import "./setting.css";
 import settingIcon from "../assets/settingIcon.svg";
 import cancelIcon from "../assets/cancelIcon.svg";
@@ -16,6 +17,9 @@ import filterIcon from "../assets/filterIcon.svg";
 import sheetIcon from "../assets/sheetIcon.svg";
 import openIcon from "../assets/openIcon.svg";
 import { UserContext } from "../context/UserContext";
+import { useSelector, useDispatch } from "react-redux";
+import { updateSetting } from "../utils/settingSlice";
+import { HOST } from "../utils/constants.js";
 
 const AddData = () => {
   return (
@@ -90,17 +94,63 @@ const AddData = () => {
 };
 
 const SpreadsheetSettings = () => {
+
+  const dispatch = useDispatch();
+  const settingData = useSelector((state) => state.setting.settings); // Get the current settings from Redux
+
+  const [selectedSheet, setSelectedSheet] = useState(settingData?.firstSheetName);
+  const [dataRange, setDataRange] = useState(settingData?.firstTabDataRange.split("!")[1]);
+
+  const { token } = useContext(UserContext);
+
+  const handleSheetChange = (e) => {
+    setSelectedSheet(e.target.value);
+  };
+
+  const handleRangeChange = (e) => {
+    setDataRange(e.target.value);
+  };
+
+  
+
+const handleSaveChanges = async () => {
+  const updatedSettings = {
+    firstSheetName: selectedSheet,
+    firstTabDataRange: `${selectedSheet}!${dataRange}`,
+  };
+
+  // Dispatch action to update settings in Redux
+  dispatch(updateSetting(updatedSettings));
+
+  try {
+    // Make the API call to update the settings in MongoDB
+    const response = await axios.put(`${HOST}/spreadsheet/${settingData._id}`, updatedSettings,{
+      headers: {
+        authorization: "Bearer " + token,
+      },
+    });
+    console.log("Updated in DB:", response.data);
+  } catch (error) {
+    console.error("Error updating settings in DB:", error);
+  }
+};
+
+
+
   return (
     <div className="Spreadsheet_setting">
       <div className="sheet_link">
         <div className="sheet_link_header">
           <img src={sheetIcon} />
-          <span className="sheet_title">Copy Of Use Case Repository</span>
+          <span className="sheet_title" >{settingData.spreadsheetName}</span>
         </div>
         <div className="sheet_btn">
-          <div className="sheet_btn_open">
-            <img src={openIcon} />
-            <span className="sheet_btn_open_text">Open</span>
+          <div >
+            <a className="sheet_btn_open" target="_blank" href={settingData.spreadsheetUrl}>
+
+              <img src={openIcon} />
+              <span className="sheet_btn_open_text" >Open</span>
+            </a>
           </div>
           <div className="sheet_btn_select">
             <span className="sheet_btn_select_text">Select</span>
@@ -122,11 +172,11 @@ const SpreadsheetSettings = () => {
             <span className="sheet_data_text">Select a Data Sheet</span>
           </div>
           <div className="sheet_data_select">
-            <select className="add_input">
-              <option value="volvo">Sheet1</option>
-              <option value="saab">Sheet2</option>
+            <select className="add_input" value={selectedSheet} onChange={handleSheetChange}>
+              <option value="volvo" >{settingData.firstSheetName}</option>
+              {/* <option value="saab">Sheet2</option>
               <option value="opel">Sheet3</option>
-              <option value="audi">Sheet4</option>
+              <option value="audi">Sheet4</option> */}
             </select>
           </div>
         </div>
@@ -135,12 +185,15 @@ const SpreadsheetSettings = () => {
             <span className="sheet_data_text">Select a Data Sheet</span>
           </div>
           <div className="sheet_data_select">
-            <input className="add_input" placeholder="Ex-A1:H" />
+            <input className="add_input"
+              placeholder="Ex-A1:H"
+              value={dataRange}
+              onChange={handleRangeChange} />
           </div>
         </div>
       </div>
       <div className="submit_sheetData">
-        <button className="submit_btn">
+        <button className="submit_btn" onClick={handleSaveChanges}>
           <span className="span_btn">Save Changes</span>
         </button>
       </div>
@@ -169,6 +222,11 @@ const Setting = ({ closeDrawer }) => {
     // Redirect to login page
     nav("/");
   };
+
+  // subscribing to  the store using Selector 
+
+  const setting = useSelector((store) => store.setting.settings)
+  console.log("setting", setting);
 
   return (
     <div>

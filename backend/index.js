@@ -11,7 +11,13 @@ const bodyParser = require("body-parser");
 const { authenticateToken } = require("./Middlewares/AuthenticateToken");
 const { google } = require("googleapis");
 const Sheet = require("./Models/SheetModel.js");
+const User = require("./Models/UserModel.js");
 const fetchuser = require("./Middlewares/FetchUser.js");
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+const UserModel = require("./Models/UserModel");
+
+const secret = process.env.TOKEN_KEY;
 
 mongoose
   .connect(MONGO_URL, {
@@ -35,6 +41,81 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/", authRoute);
+
+app.post("/getSheetDataWithID", async (req, res) => {
+
+  const authHeader = req?.headers?.authorization;
+    const token = req.cookies.token || (authHeader && authHeader.split(' ')[1]);
+    console.log("Token: ",token);
+    // if (!token) return res?.sendStatus(401);
+    jwt.verify(token, secret, async (err, decoded) => {
+        if (err) return ;
+        const user = await UserModel.findById(decoded.id).lean();
+        if (!user) return ;
+        req.user = user;
+        // next();
+    });
+
+  const { sheetID } = req.body;
+
+  const sheetDetails = await Sheet.findById(sheetID).lean();
+
+  // const isValidUser = sheetDetails.sharedWith.find(access => access.email === req.user.email);
+  // if (!isValidUser) {
+  //   res.status(401).json({ error: "Unauthorized access." });
+  //   return;
+  // }
+  // const permissions = isValidUser.permission ;
+
+  const sheetOwner = await User.findById(sheetDetails.userId).lean();
+  const spreadSheetID = sheetDetails.spreadsheetId;
+  const range = sheetDetails.firstTabDataRange;
+
+  const user = sheetOwner 
+  const refreshToken = user.googleRefreshToken;
+
+  // Create an OAuth2 client with the given credentials
+  const authClient = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  // Set the refresh token for the OAuth2 client
+  authClient.setCredentials({
+    refresh_token: refreshToken,
+  });
+
+  const sheets = google.sheets({ version: "v4", auth: authClient });
+
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: spreadSheetID,
+      range: range,
+    });
+
+    const rows = response.data.values;
+    if (!rows || rows.length === 0) {
+      res.status(404).json({ error: "No data found." });
+      return;
+    }
+
+    console.log("sheetOwner",sheetOwner);
+    console.log("user",req.user);
+    console.log(sheetOwner?._id.toString() , req?.user?._id.toString())
+    if(sheetOwner?._id.toString() === req?.user?._id.toString()){
+      const permissions = "edit";
+      res.status(200).json({rows,permissions});
+      return;
+    }
+    const permissions = "view";
+
+    res.status(200).json({rows,permissions});
+  } catch (error) {
+    console.error("Error fetching spreadsheet data:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.use(authenticateToken);
 
@@ -175,7 +256,7 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
   }
 }
 
-async function addSpreadsheet(authClient, sheet_id, userId, appName) {
+async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) {
   const sheets = google.sheets({ version: "v4", auth: authClient });
 
   try {
@@ -269,6 +350,20 @@ async function addSpreadsheet(authClient, sheet_id, userId, appName) {
     const firstSheetName = firstSheet.properties.title;
     const firstSheetUrl = `https://docs.google.com/spreadsheets/d/${sheet_id}/edit#gid=${firstSheetId}`;
 
+    const tabs = getSpreadsheetResponse.data.sheets;
+    const sheetDetails = tabs.map(sheet => {
+      const sheetId = sheet.properties.sheetId;
+      const sheetName = sheet.properties.title;
+      const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheet_id}/edit#gid=${sheetId}`;
+      
+      return {
+        name: sheetName,
+        url: sheetUrl
+      };
+    });
+    
+    console.log(sheetDetails);
+
     // Get the data range of the first sheet
     const firstSheetDataResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: sheet_id,
@@ -288,7 +383,9 @@ async function addSpreadsheet(authClient, sheet_id, userId, appName) {
       firstSheetName: firstSheetName,
       firstTabDataRange: firstTabDataRange,
       firstTabHeader: firstTabHeader,
-      spreadsheetName: appName,
+      spreadsheetName: sheetName,
+      appName: appName,
+      sheetDetails: sheetDetails,
     };
 
     console.log("res", res);
@@ -305,6 +402,7 @@ async function addSpreadsheet(authClient, sheet_id, userId, appName) {
       firstTabDataRange: res.firstTabDataRange,
       firstTabHeader: res.firstTabHeader,
       appName: appName,
+      sheetDetails: sheetDetails
     });
 
     console.log("All sheets copied successfully.", newSheet);
@@ -354,6 +452,7 @@ app.post("/createNewSpreadsheet", async (req, res) => {
 
   const sheet_id = req.body.spreadSheetID;
   const userId = req.user._id;
+  const sheetName = req.body.sheetName;
   const appName = req.body.appName;
 
   // Create an OAuth2 client with the given credentials
@@ -369,7 +468,7 @@ app.post("/createNewSpreadsheet", async (req, res) => {
   });
 
   try {
-    const result = await addSpreadsheet(authClient, sheet_id, userId, appName);
+    const result = await addSpreadsheet(authClient, sheet_id, userId, sheetName, appName);
     res.status(200).json(result);
   } catch (err) {
     console.log("error: ", err);
@@ -505,3 +604,45 @@ app.delete("/deleteSpreadsheet/:id", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
+
+
+// Update sheet details route (PUT request)
+app.put('/spreadsheet/:id', async (req, res) => {
+  try {
+      const SheetId = req.params.id; // Get the ID from the request params
+      const updatedSpreadsheet = req.body; // Get the updated settings from the request body
+
+      // Update the settings document in MongoDB
+      const updatedSetting = await Sheet.findByIdAndUpdate(SheetId, updatedSpreadsheet, { new: true });
+
+      if (!updatedSetting) {
+          return res.status(404).json({ message: "Setting not found" });
+      }
+
+      // Return the updated settings
+      res.status(200).json(updatedSetting);
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+
+app.post('/addEmails/:id', async (req, res) => {
+  try {
+    const { emails } = req.body;
+    const SheetId = req.params.id; // Get the ID from the request params
+
+    // Update the settings document in MongoDB
+    const updatedSetting = await Sheet.findByIdAndUpdate(SheetId, { sharedWith:emails }, { new: true });
+
+    if (!updatedSetting) {
+      return res.status(404).json({ message: "Setting not found" });
+    }
+
+    // Return the updated settings
+    res.status(200).json(updatedSetting);
+    console.log(updatedSetting);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+})

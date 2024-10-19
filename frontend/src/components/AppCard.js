@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
 
-const AppCard = () => {
+const AppCard = ({appName,appView,appImg,description}) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { token} = useContext(UserContext);
+  const { token } = useContext(UserContext);
+  console.log("appName",appName)
 
   const Loader = () => {
     return (
@@ -18,7 +19,7 @@ const AppCard = () => {
       </div>
     );
   };
-  
+
 
   const handleCopy = () => {
 
@@ -43,7 +44,7 @@ const AppCard = () => {
         if (status === 200 && !res.error) {
           console.log("res data: ", res);
           // Redirect to edit page with the new spreadsheet ID
-          navigate(`/interactivelist/${res._id}`);
+          navigate(`/${res._id}/edit`);
         } else {
           alert(res.error);
         }
@@ -58,25 +59,31 @@ const AppCard = () => {
 
 
   return (
-    <div className="w-[350px] h-[400px] m-2 shadow-md flex flex-col items-start rounded-[15.07px] bg-[#FFFCF8]">
+    <div className="w-[350px] h-[400px] m-2 shadow-md flex flex-col  rounded-[15.07px] bg-[#FFFCF8]">
       <div className="m-[25px]">
         <img
           className="w-[325px] h-[190px] rounded-[15.07px]"
-          src="https://i.ibb.co/8PBFyYg/image.png"
+          src={appImg}
         />
       </div>
 
       <div className="flex justify-start mx-[25px]">
-        <span className="text-[21.52px]">Interactive List</span>
+        <span className="text-[21.52px]">{appName}</span>
       </div>
-      <div className="mx-[25px] my-2">
+      <div className="flex justify-start mx-[25px] my-2">
         <span className="text-[14.4px]">
-          List all employees attandance score.
+          {description}
         </span>
       </div>
-      <div className="mx-[25px] flex justify-center items-center shrink-0 ">
-      {loading && <Loader />}
-        <button className="border border-[#FFA500] rounded-[13.99px] py-[10px] px-[15px] text-[15.07px]" onClick={handleCopy}>
+      <div className="mx-[25px] flex justify-between items-center">
+        <button className="py-[11px] px-[16px] text-[15.07px] rounded-[13.989px] bg-[#FFA500] text-white"
+          onClick={() => navigate(`/interactivelistview`)}
+        >
+          View
+        </button>
+
+        {loading && <Loader />}
+        <button className="border border-[#FFA500] rounded-[13.99px] py-[10px] px-[15px] text-[15.07px] text-[#FFA500]" onClick={handleCopy}>
           Copy
         </button>
       </div>

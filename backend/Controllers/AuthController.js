@@ -16,6 +16,7 @@ module.exports.Signup = async (req, res, next) => {
     res.cookie("token", token, {
       withCredentials: true,
       httpOnly: false,
+      maxAge: 1000*60*60*60*24*30,
     });
     res
       .status(201)
@@ -44,6 +45,7 @@ module.exports.Login = async (req, res, next) => {
     res.cookie("token", token, {
       withCredentials: true,
       httpOnly: false,
+      maxAge: 1000*60*60*60*24*30,
     });
     res
       .status(201)

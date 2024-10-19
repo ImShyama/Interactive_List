@@ -24,17 +24,8 @@ body {
 }
 
 body {
-  /* display: flex; */
-  /* justify-content: center;
-  align-items: center; */
   font-family: Poppins, Verdana, Geneva, Tahoma, sans-serif;
   background: #f5f6f7;
-  /* color: var(--white, #fff);
-  font-family: Poppins;
-  font-size: 200px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal; */
 }
 
 .form_container_main {
@@ -189,3 +180,73 @@ span a {
   flex-shrink: 0;
   cursor: pointer;
 }
+
+
+/* Change focus and hover colors to orange */
+.custom-input:hover, .custom-input:focus {
+  border-color: #FFA500 !important; /* Orange border on hover and focus */
+  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2); /* Orange shadow */
+}
+
+/* Change the search icon color */
+.custom-input .ant-input-prefix {
+  color: #FFA500 !important; /* Orange search icon */
+}
+
+
+/* Change hover and focus colors to orange for Select component */
+.custom-select .ant-select-selector:hover,
+.custom-select .ant-select-selector:focus,
+.custom-select .ant-select-selector:focus-visible,
+.custom-select .ant-select-selector:active {
+  border-color: #FFA500 !important; /* Orange border on hover, focus, and active */
+  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2) !important; /* Orange shadow */
+}
+
+/* Change the dropdown arrow color */
+.custom-select .ant-select-arrow {
+  color: #FFA500 !important; /* Orange arrow icon */
+}
+
+/* Change selected option text and border color */
+.custom-select .ant-select-selection-item {
+  color: #FFA500 !important; /* Orange selected option text */
+}
+
+
+/* styles.css */
+.custom-row {
+  height: 22px; /* Adjust this value to your preference */
+}
+
+.custom-row td {
+  padding: 8px 16px; /* Adjust top/bottom and left/right padding as needed */
+}
+
+
+/* For Webkit browsers (Chrome, Safari, and Edge) */
+::-webkit-scrollbar {
+  width: 4px; /* Set the width for vertical scrollbars */
+  height: 8px; /* Set the height for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Optional: background for the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FFA500; /* Set the color of the scrollbar */
+  border-radius: 10px; /* Optional: round edges of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FFA500; /* Optional: hover color for the scrollbar */
+}
+
+/* For Firefox
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+} */
+
+

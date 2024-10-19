@@ -16,6 +16,8 @@ const Header = () => {
   const { token } = useContext(UserContext);
   const navigate = useNavigate();
 
+  const isEditMode = window.location.pathname.endsWith('/edit');
+
   const profileRef = useRef(null); // Ref for the Profile component
   const profileImageRef = useRef(null); // Ref for the profile image
 
@@ -80,7 +82,7 @@ const Header = () => {
           </div>
           {token ? (
             <div className="right-panel">
-              <div className="right-panel-setting">
+              { isEditMode && (<div className="right-panel-setting">
                 <img
                   src={isDrawerOpen ? settingsIcon : settingsIcon1}
                   onClick={(e) => {
@@ -91,8 +93,8 @@ const Header = () => {
                     isDrawerOpen ? "" : "text-orange-500"
                   }`}
                 />
-              </div>
-              <img src={dividerIcon} />
+              </div>)}
+              { isEditMode && (<img src={dividerIcon} />)}
               <div className="right-pannel-profil">
                 <img
                   ref={profileImageRef} // Added ref to the profile image

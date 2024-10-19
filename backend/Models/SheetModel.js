@@ -9,7 +9,10 @@ const SheetSchema = new mongoose.Schema({
     firstSheetId: String,
     firstSheetUrl: String,
     firstTabDataRange: String,
-    firstTabHeader: Array
+    firstTabHeader: Array,
+    appName: String,
+    sheetDetails: Object,
+    sharedWith:Array,
 });
 
 

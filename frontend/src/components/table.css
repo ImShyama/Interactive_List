@@ -16,7 +16,6 @@
 .table-container {
   width: 100%;
   padding: 20px 50px;
-  /* overflow-x: auto; Enable horizontal scrolling */
   display: block;   /* Ensure the container allows for scrolling */
   /* border: 2px solid red; */
 }
@@ -29,7 +28,6 @@
   background: var(--white, #fff);
   border-collapse: collapse;
   /* table-layout: auto; Allow the table to adjust its layout based on content */
-  overflow-x: auto !important;
   
 }
 
@@ -133,7 +131,7 @@ td {
  
 .resize {
   resize: both;
-  overflow: auto;
+  /* overflow: auto; */
   width: auto;
   /* height: 120px; */
   margin: 0px;
