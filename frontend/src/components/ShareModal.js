@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext } from "react";
 import { FRONTENDHOST, HOST } from "../utils/constants";
-import axios from "axios";
 import { UserContext } from "../context/UserContext";
 
 const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith }) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import {React, useEffect, useRef, useState, useContext } from 'react';
 import { SearchOutlined, BarsOutlined, EllipsisOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Popover, Tooltip, Pagination } from 'antd';
 import Highlighter from 'react-highlight-words';
@@ -6,6 +6,11 @@ import label from '../assets/label.svg'
 import { BiSearch } from 'react-icons/bi';
 import { useDispatch, useSelector } from "react-redux";
 import EditableSpreadsheetName from "./EditableSpreadsheetName";
+import DeleteAlert from './DeleteAlert';
+import axios from 'axios';  // Assuming you're using axios for API calls
+import { HOST } from '../utils/constants';  // Assuming you have HOST defined somewhere
+import { UserContext } from "../context/UserContext";
+
 
 // const data = [
 //   {
@@ -43,7 +48,7 @@ const convertArrayToJSON = (data) => {
   const keys = data[0];
 
   // Map the rest of the arrays to JSON objects
-  const jsonData = data.slice(2).map((item, index) => {
+  const jsonData = data.slice(1).map((item, index) => {
     const jsonObject = {};
     keys.forEach((key, i) => {
       jsonObject[key.replace(/\s+/g, '_').toLowerCase()] = item[i]; // Replace spaces with underscores and make keys lowercase
@@ -63,19 +68,50 @@ const InteractiveList = ({ data, headers }) => {
   const [searchedColumns, setSearchedColumns] = useState([]);
   const [searchGLobal, setSearchGlobal] = useState();
   const searchInput = useRef(null);
-
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [rowToDelete, setRowToDelete] = useState(null);
+  const [rowToEdit, setRowToEdit] = useState(null);
   headers = headers.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
   data = convertArrayToJSON(data);
   const [filteredData, setFilteredData] = useState(data);
+  const { token } = useContext(UserContext);
+
+
   const tableChangehandler = (pagination, filters, sorter) => {
     setfilterInfo(filters)
-
   }
   // Check if the URL ends with /edit
   const isEditMode = window.location.pathname.endsWith('/edit');
 
-  const dispatch = useDispatch();
   const settings = useSelector((state) => state.setting.settings);
+
+  async function deleteRow(spreadSheetID, sheetName, rowIndex, token) {
+    try {
+      // Make the API call to your backend
+      const response = await axios.post(
+        `${HOST}/deleteRow`,
+        {
+          spreadSheetID,
+          sheetName,
+          rowIndex,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
+          },
+        }
+      );
+  
+      // Handle success response
+      console.log('Row deleted successfully:', response.data);
+      return response.data;
+    } catch (error) {
+      // Handle errors
+      console.error('Failed to delete row:', error.response?.data?.error || error.message);
+      throw error;
+    }
+  }
 
 
   useEffect(() => {
@@ -100,28 +136,6 @@ const InteractiveList = ({ data, headers }) => {
     // You can then set this filtered data to a state if needed
     setFilteredData(filteredData);
   };
-
-
-
-  // const handleGlobalReset = () => {
-  //   // Clear global search
-  //   setSearchGlobal(''); // Reset the global search query
-
-  //   // Reset the filtered data to the original dataset
-  //   setFilteredData(data); 
-
-  //   // Reset individual column search
-  //   setSearchedColumns([]); // Clear the state tracking searched columns
-  //   setSearchText(''); // Clear any search text
-
-  //   // Clear filters in the table
-  //   // Assuming you can pass a reference to the Table instance and use clearFilters
-  //   if (searchInput.current) {
-  //     searchInput.current.clearFilters(); // Ant Design's method to clear all column filters
-  //   }
-  // };
-
-  // console.log("searchedColumns",searchedColumns)
 
 
   const calculateSum = (dataIndex) => {
@@ -270,78 +284,67 @@ const InteractiveList = ({ data, headers }) => {
     }
   };
 
+
   const handleDeleteClick = (record) => {
-    // console.log(record);
+    setRowToDelete(+record.key_id + 1);
+    setConfirmModalOpen(true);
+    console.log(+record.key_id + 1);
+  }
+
+  const handleDeleteCancel = () => {
+    setConfirmModalOpen(false);
+  };
+
+  const handleDeleteRow = () => {
+    console.log(rowToDelete)
+    const status = deleteRow(settings.spreadsheetId, settings.firstSheetName, rowToDelete)
+    setConfirmModalOpen(false);
+  };
+
+  async function deleteRow(spreadSheetID, sheetName, rowIndex) {
+    try {
+      // Make the API call to your backend
+      const response = await axios.post(
+        `${HOST}/deleteRow`,
+        {
+          spreadSheetID,
+          sheetName,
+          rowIndex,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
+          },
+        }
+      );
+  
+      // Handle success response
+      console.log('Row deleted successfully:', response.data);
+      console.log('Filtered data:', filteredData);
+      const updatedData = filteredData.filter((row) => row.key_id != rowIndex-1);
+      setFilteredData(updatedData);
+      return response.data;
+    } catch (error) {
+      // Handle errors
+      console.error('Failed to delete row:', error.response?.data?.error || error.message);
+      throw error;
+    }
   }
 
   const handleEdit = (record) => {
-    // console.log(record)
+    console.log(record)
   }
 
   // Calculate maxHeight based on window height
   const maxHeight = window.innerHeight - 220;
 
-  // const columns = headers.map((header) => ({
-  //   title: (
-  //     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-  //       {/* <span>{header.replace(/_/g, ' ').toUpperCase()}</span> */}
-  //       <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}>
-  //         <span
-  //           style={{
-  //             overflow: 'hidden',
-  //             whiteSpace: 'normal',
-  //             textOverflow: 'ellipsis',
-  //             display: '-webkit-box',
-  //             WebkitLineClamp: 2,
-  //             WebkitBoxOrient: 'vertical',
-  //             maxWidth: 100, // Adjust the width to your preference
 
-  //           }}
-  //         >
-  //           {header.replace(/_/g, ' ').toUpperCase()}
-  //         </span>
-  //       </Tooltip>
-  //       <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="bottom">
-  //         <img src={label} alt="label" style={{ marginLeft: 8, cursor: 'pointer', height: "18px" }} />
-  //         {/* <BarsOutlined style={{ marginLeft: 8, cursor: 'pointer' }} /> */}
-  //       </Popover>
-
-  //     </div>
-  //   ),
-  //   dataIndex: header,
-  //   key: header,
-  //   maxWidth: '10%',
-  //   ...getColumnSearchProps(header),
-
-  //   sorter: (a, b) => {
-  //     if (isNumeric(a[header]) && isNumeric(b[header])) {
-  //       return a[header] - b[header];
-  //     }
-  //     return a[header].toString().localeCompare(b[header].toString());
-  //   },
-  //   render: (text) => {
-  //     // Check if the email is a valid URL
-  //     return isValidUrl(text) ? (
-  //       <a href={text} target="_blank" rel="noopener noreferrer"
-  //         className="text-[#437FFF] font-poppins font-normal leading-[26.058px]"
-  //       >
-  //         Click here
-  //       </a>
-  //     ) : (
-  //       text
-  //     );
-  //   },
-  //   onHeaderCell: () => ({
-  //     style: {
-  //       backgroundColor: searchedColumns.includes(header) ? 'rgb(216 216 216)' : 'transparent',
-  //     }
-  //   })
-  // }));
 
   const columns = [
-    ...headers.map((header) => ({
+    ...headers.map((header, index) => ({
       title: (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+        <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}>
             <span
               style={{
@@ -401,11 +404,11 @@ const InteractiveList = ({ data, headers }) => {
           render: (record) => (
             <div className='flex gap-2'>
               <button onClick={() => handleEdit(record)}>
-                <div class="group">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" class="group-hover:stroke-orange-500">
-                    <g clip-path="url(#clip0_508_940)">
-                      <path d="M17.6462 5.67633C18.0868 5.23585 18.3344 4.63839 18.3345 4.01538C18.3346 3.39237 18.0871 2.79484 17.6467 2.35425C17.2062 1.91366 16.6087 1.66609 15.9857 1.66602C15.3627 1.66594 14.7652 1.91335 14.3246 2.35383L3.20291 13.478C3.00943 13.6709 2.86634 13.9084 2.78625 14.1697L1.68541 17.7963C1.66388 17.8684 1.66225 17.945 1.68071 18.0179C1.69916 18.0908 1.73701 18.1574 1.79024 18.2105C1.84347 18.2636 1.9101 18.3014 1.98305 18.3197C2.05599 18.3381 2.13255 18.3363 2.20458 18.3147L5.83208 17.2147C6.09306 17.1353 6.33056 16.9931 6.52375 16.8005L17.6462 5.67633Z" stroke="#919191" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
-                      <path d="M12.5 4.16602L15.8333 7.49935" stroke="#919191" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                <div className="group">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:stroke-orange-500">
+                    <g clipPath="url(#clip0_508_940)">
+                      <path d="M17.6462 5.67633C18.0868 5.23585 18.3344 4.63839 18.3345 4.01538C18.3346 3.39237 18.0871 2.79484 17.6467 2.35425C17.2062 1.91366 16.6087 1.66609 15.9857 1.66602C15.3627 1.66594 14.7652 1.91335 14.3246 2.35383L3.20291 13.478C3.00943 13.6709 2.86634 13.9084 2.78625 14.1697L1.68541 17.7963C1.66388 17.8684 1.66225 17.945 1.68071 18.0179C1.69916 18.0908 1.73701 18.1574 1.79024 18.2105C1.84347 18.2636 1.9101 18.3014 1.98305 18.3197C2.05599 18.3381 2.13255 18.3363 2.20458 18.3147L5.83208 17.2147C6.09306 17.1353 6.33056 16.9931 6.52375 16.8005L17.6462 5.67633Z" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M12.5 4.16602L15.8333 7.49935" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                     </g>
                     <defs>
                       <clipPath id="clip0_508_940">
@@ -416,13 +419,13 @@ const InteractiveList = ({ data, headers }) => {
                 </div>
               </button>
               <button onClick={() => handleDeleteClick(record)}>
-                <div class="group">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" class="group-hover:stroke-orange-500">
-                    <path d="M2.5 5H17.5" stroke="#919191" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M15.8346 5V16.6667C15.8346 17.5 15.0013 18.3333 14.168 18.3333H5.83464C5.0013 18.3333 4.16797 17.5 4.16797 16.6667V5" stroke="#919191" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M6.66797 4.99935V3.33268C6.66797 2.49935 7.5013 1.66602 8.33464 1.66602H11.668C12.5013 1.66602 13.3346 2.49935 13.3346 3.33268V4.99935" stroke="#919191" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M8.33203 9.16602V14.166" stroke="#919191" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M11.668 9.16602V14.166" stroke="#919191" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round" />
+                <div className="group">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:stroke-orange-500">
+                    <path d="M2.5 5H17.5" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M15.8346 5V16.6667C15.8346 17.5 15.0013 18.3333 14.168 18.3333H5.83464C5.0013 18.3333 4.16797 17.5 4.16797 16.6667V5" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M6.66797 4.99935V3.33268C6.66797 2.49935 7.5013 1.66602 8.33464 1.66602H11.668C12.5013 1.66602 13.3346 2.49935 13.3346 3.33268V4.99935" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M8.33203 9.16602V14.166" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M11.668 9.16602V14.166" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
               </button>
@@ -432,6 +435,7 @@ const InteractiveList = ({ data, headers }) => {
               >
                 Action
               </a> */}
+
             </div>
           ),
         },
@@ -446,7 +450,7 @@ const InteractiveList = ({ data, headers }) => {
   return (
     <div>
       <div className='flex text-center justify-between px-[50px]'>
-      
+
         {settings && <EditableSpreadsheetName settings={settings} />}
         {/* <div><span className="text-[#2A3C54] font-poppins text-[30px] font-medium">{settings.spreadsheetName}</span></div> */}
         <div>
@@ -469,9 +473,9 @@ const InteractiveList = ({ data, headers }) => {
 
       <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[20px]'>
         {/* Scrollable table container */}
-        <div style={{ width: '100%'}}>
+        <div style={{ width: '100%' }}>
           {/* style={{ width: '100%', overflowX: 'auto', maxHeight: maxHeight, }} */}
-          <div style={{  }}>
+          <div style={{}}>
             <Table
               onChange={tableChangehandler}
               columns={columns}
@@ -479,7 +483,7 @@ const InteractiveList = ({ data, headers }) => {
               pagination={false}
               rowClassName="custom-row"
               scroll={{ x: "max-content" }}
-              style={{maxHeight: maxHeight, overflowY: 'auto',}}
+              style={{ maxHeight: maxHeight, overflowY: 'auto', }}
               sticky
             />
           </div>
@@ -499,7 +503,14 @@ const InteractiveList = ({ data, headers }) => {
           />
 
         </div>
+
       </div>
+      <DeleteAlert
+        isOpen={confirmModalOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteRow}
+        sheetName="this row"
+      />
     </div>
   )
 };

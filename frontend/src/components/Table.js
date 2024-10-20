@@ -38,28 +38,20 @@ const Table = () => {
     dispatch(updateSetting(sheetdetails));
   }
 
-
-  // Fetch table data using either settings or sheetdetails
-
-  // Only set settings once on initial load
   useEffect(() => {
     if (!sheetdetails || !sheetdetails.spreadsheetId || !sheetdetails.firstTabDataRange) {
       return; // Do nothing if sheetdetails are incomplete
     }
-
-    console.log("first useEffect")
 
     // Set initial settings in Redux only once
     if (!hasInitialized) {
       handleAddSetting(sheetdetails);
       setHasInitialized(true); // Ensure it's set only once
     }
-  }, [sheetdetails, hasInitialized, dispatch]); // Only run once with `sheetdetails`
+  }, [sheetdetails, hasInitialized, dispatch]); 
 
   useEffect(() => {
     if (!id ) return;
-
-    console.log("second useEffect")
 
     // Fetch sheet data
     axios
@@ -81,15 +73,13 @@ const Table = () => {
           return;
         }
 
-        const [header, filterRow, ...dataRows] = res.rows;
+        const [header, ...dataRows] = res.rows;
         const permissions = res.permissions;
-        console.log("permissions",permissions)
         if(permissions == "view") {
           navigate(`/${id}/view`);
         }
         setSheetData(res.rows);
         setTableHeader(header);
-        setFilter(filterRow);
         setTableData(dataRows);
         setLoading(false);
       })
@@ -99,48 +89,6 @@ const Table = () => {
       });
   }, [sheetdetails, settings.spreadsheetId, settings.firstTabDataRange, token, navigate]);
 
-  // useEffect(() => {
-  //   if (!sheetdetails || !settings.spreadsheetId || !settings.firstTabDataRange) return;
-
-  //   console.log("second useEffect")
-
-  //   // Fetch sheet data
-  //   axios
-  //     .post(
-  //       `${HOST}/getSheetData`,
-  //       {
-  //         spreadSheetID: settings.spreadsheetId || sheetdetails.spreadsheetId,
-  //         range: settings.firstTabDataRange || sheetdetails.firstTabDataRange,
-  //       },
-  //       {
-  //         headers: {
-  //           authorization: "Bearer " + token,
-  //         },
-  //       }
-  //     )
-  //     .then(({ data: res }) => {
-  //       if (res.error) {
-  //         alert(res.error);
-  //         navigate("/");
-  //         return;
-  //       }
-
-  //       const [header, filterRow, ...dataRows] = res;
-  //       setSheetData(res);
-  //       setTableHeader(header);
-  //       setFilter(filterRow);
-  //       setTableData(dataRows);
-  //       setLoading(false);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err.message);
-  //       setLoading(false);
-  //     });
-  // }, [sheetdetails, settings.spreadsheetId, settings.firstTabDataRange, token, navigate]);
-
-  console.log("sheetData",sheetData)
-  console.log("tableHeader",tableHeader)
-  console.log("tableData",tableData)
 
 
   return (

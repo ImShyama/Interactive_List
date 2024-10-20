@@ -1,11 +1,20 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
+import { UserContext } from "../context/UserContext";
+import { HOST } from '../utils/constants';
+import { useSelector, useDispatch } from "react-redux";
+import { updateSetting } from "../utils/settingSlice";
 
 const EditableSpreadsheetName = ({ settings }) => {
+
+  const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState(settings?.spreadsheetName || '');
+  const { token } = useContext(UserContext);
 
   const isEditMode = window.location.pathname.endsWith('/edit');
   const spanRef = useRef(null);
+
+  
 
   useEffect(() => {
     // Update the content if the settings change externally
@@ -18,11 +27,41 @@ const EditableSpreadsheetName = ({ settings }) => {
     }
   }, [settings]);
 
-  const handleBlur = () => {
-    setIsEditing(false);
-    setEditedName(spanRef.current.textContent); 
-  };
 
+  const handleBlur = async () => {
+    const newname = spanRef.current.textContent; // Get the updated name
+    const sheetId = settings.spreadsheetId; // Assuming spreadsheetId is available in your component
+  
+    try {
+      // Call your backend API to update the spreadsheet name
+      const response = await fetch(`${HOST}/renameSpreadsheet/${sheetId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          authorization: "Bearer " + token, // Assuming you have token from context
+        },
+        body: JSON.stringify({ newname }), // Send the updated name in the body
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        setEditedName(newname); // Update state with new name
+        // Dispatch action to update settings in Redux
+        dispatch(updateSetting(data.updatedSettings));
+      } else {
+        console.error('Error:', data.message || 'An error occurred');
+        // Handle the error, e.g., show an error message
+      }
+    } catch (error) {
+      console.error('Request failed:', error);
+      // Handle network errors or any other issues
+    } finally {
+      setIsEditing(false); // Exit editing mode
+    }
+  };
+  
+  // handleKeyDown function remains unchanged
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -30,6 +69,7 @@ const EditableSpreadsheetName = ({ settings }) => {
     }
   };
 
+  
   return (
     <div>
       {

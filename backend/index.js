@@ -47,13 +47,11 @@ app.post("/getSheetDataWithID", async (req, res) => {
   const authHeader = req?.headers?.authorization;
     const token = req.cookies.token || (authHeader && authHeader.split(' ')[1]);
     console.log("Token: ",token);
-    // if (!token) return res?.sendStatus(401);
     jwt.verify(token, secret, async (err, decoded) => {
         if (err) return ;
         const user = await UserModel.findById(decoded.id).lean();
         if (!user) return ;
         req.user = user;
-        // next();
     });
 
   const { sheetID } = req.body;
@@ -412,6 +410,84 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
   }
 }
 
+// Define a function to rename the spreadsheet
+async function renameSpreadsheet(authClient, spreadSheetID, newName) {
+  const sheets = google.sheets({ version: 'v4', auth: authClient });
+
+  const request = {
+    spreadsheetId: spreadSheetID,
+    resource: {
+      requests: [
+        {
+          updateSpreadsheetProperties: {
+            properties: {
+              title: newName,  // The new name for the spreadsheet
+            },
+            fields: 'title',
+          },
+        },
+      ],
+    },
+  };
+
+  try {
+    const response = await sheets.spreadsheets.batchUpdate(request);
+    console.log("Spreadsheet renamed successfully: ", response.data);
+    return response.data;
+    
+  } catch (error) {
+    console.error('Error renaming spreadsheet:', error);
+    throw new Error('Failed to rename spreadsheet');
+  }
+}
+
+// Define a function to delete a row from a spreadsheet
+async function deleteRowFromSpreadsheet(authClient, spreadSheetID, sheetName, rowIndex) {
+  const sheets = google.sheets({ version: 'v4', auth: authClient });
+
+  // First, get the sheetId for the given sheetName
+  const getSheetMetadata = await sheets.spreadsheets.get({
+    spreadsheetId: spreadSheetID,
+  });
+
+  // Find the sheet ID for the specific sheet name
+  const sheet = getSheetMetadata.data.sheets.find(
+    (s) => s.properties.title === sheetName
+  );
+
+  if (!sheet) {
+    throw new Error(`Sheet with name "${sheetName}" not found.`);
+  }
+
+  const sheetId = sheet.properties.sheetId;
+
+  const request = {
+    spreadsheetId: spreadSheetID,
+    resource: {
+      requests: [
+        {
+          deleteDimension: {
+            range: {
+              sheetId: sheetId,
+              dimension: 'ROWS',
+              startIndex: rowIndex - 1, // Sheets API uses zero-based indexing
+              endIndex: rowIndex,  // The row index you want to delete
+            },
+          },
+        },
+      ],
+    },
+  };
+
+  try {
+    const response = await sheets.spreadsheets.batchUpdate(request);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting row:', error);
+    throw new Error('Failed to delete row');
+  }
+}
+
 app.post("/copySpreadsheet", async (req, res) => {
   console.log("user: ", req.user);
   console.log("refreshToken", req.user.googleRefreshToken);
@@ -469,6 +545,81 @@ app.post("/createNewSpreadsheet", async (req, res) => {
 
   try {
     const result = await addSpreadsheet(authClient, sheet_id, userId, sheetName, appName);
+    res.status(200).json(result);
+  } catch (err) {
+    console.log("error: ", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Define the API endpoint
+app.post("/renameSpreadsheet/:id", async (req, res) => {
+
+  const spreadSheetID = req.params.id;
+  const newName = req.body.newname;
+  const userId = req.user._id;
+
+  // Create an OAuth2 client with the given credentials
+  const authClient = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  // Set the refresh token for the OAuth2 client
+  authClient.setCredentials({
+    refresh_token: req.user.googleRefreshToken,
+  });
+
+  try {
+    // Call the renameSpreadsheet function to rename the spreadsheet
+    const result = await renameSpreadsheet(authClient, spreadSheetID, newName);
+    
+    // Find the document in MongoDB and update its settings
+    const updatedSheetSetting = await Sheet.findOneAndUpdate(
+      { spreadsheetId: spreadSheetID, userId },  // Find by sheet and user
+      { $set: { spreadsheetName: newName } },  // Update the sheet name in the DB
+      { new: true, upsert: true }   // Return the updated document
+    );
+
+    if (!updatedSheetSetting) {
+      return res.status(404).json({ error: 'Spreadsheet settings not found.' });
+    }
+
+    // Respond with the renamed spreadsheet and updated MongoDB settings
+    res.status(200).json({
+      message: "Spreadsheet renamed successfully",
+      googleSheetResponse: result,
+      updatedSettings: updatedSheetSetting,
+    });
+
+  } catch (err) {
+    console.log("error: ", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Define the API endpoint
+app.post("/deleteRow", async (req, res) => {
+  const spreadSheetID = req.body.spreadSheetID;
+  const sheetName = req.body.sheetName;
+  const rowIndex = req.body.rowIndex;  // This should be the row number you want to delete (1-based index)
+
+  // Create an OAuth2 client with the given credentials
+  const authClient = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  // Set the refresh token for the OAuth2 client
+  authClient.setCredentials({
+    refresh_token: req.user.googleRefreshToken,
+  });
+
+  try {
+    // Call the deleteRowFromSpreadsheet function to delete the row
+    const result = await deleteRowFromSpreadsheet(authClient, spreadSheetID, sheetName, rowIndex);
     res.status(200).json(result);
   } catch (err) {
     console.log("error: ", err);
