@@ -11,7 +11,7 @@ const SheetSchema = new mongoose.Schema({
     firstTabDataRange: String,
     firstTabHeader: Array,
     appName: String,
-    sheetDetails: Object,
+    sheetDetails: Array,
     sharedWith:Array,
 });
 

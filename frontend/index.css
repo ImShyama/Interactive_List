@@ -243,10 +243,18 @@ span a {
   background: #FFA500; /* Optional: hover color for the scrollbar */
 }
 
-/* For Firefox
-* {
-  scrollbar-width: thin;
-  scrollbar-color: #888 #f1f1f1;
-} */
 
+.react-resizable {
+  position: relative;
+  background-clip: padding-box;
+}
 
+.react-resizable-handle {
+  position: absolute;
+  inset-inline-end: -5px;
+  bottom: 0;
+  z-index: 1;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+}

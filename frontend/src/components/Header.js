@@ -40,6 +40,10 @@ const Header = () => {
     }
   };
 
+  const handleToggleDrawer = () => {
+    setIsDrawerOpen((prev) => !prev);
+  };
+
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -87,7 +91,8 @@ const Header = () => {
                   src={isDrawerOpen ? settingsIcon : settingsIcon1}
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsDrawerOpen(!isDrawerOpen);
+                    handleToggleDrawer();
+                    
                   }}
                   className={`cursor-pointer ${
                     isDrawerOpen ? "" : "text-orange-500"
@@ -123,7 +128,7 @@ const Header = () => {
           )}
         </div>
 
-        {isDrawerOpen && <Setting closeDrawer={closeDrawer} />}
+        {isDrawerOpen && <Setting closeDrawer={closeDrawer} handleToggleDrawer={handleToggleDrawer} />}
       </div>
       {isProfileVisible && (
         <div ref={profileRef} className="absolute right-[45px] mt-[-10px]">

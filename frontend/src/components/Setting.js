@@ -111,29 +111,31 @@ const SpreadsheetSettings = () => {
     setDataRange(e.target.value);
   };
 
-  
 
-const handleSaveChanges = async () => {
-  const updatedSettings = {
-    firstSheetName: selectedSheet,
-    firstTabDataRange: `${selectedSheet}!${dataRange}`,
+
+  const handleSaveChanges = async () => {
+    const updatedSettings = {
+      firstSheetName: selectedSheet,
+      firstTabDataRange: `${selectedSheet}!${dataRange}`,
+    };
+
+    // Dispatch action to update settings in Redux
+    dispatch(updateSetting(updatedSettings));
+
+    try {
+      // Make the API call to update the settings in MongoDB
+      const response = await axios.put(`${HOST}/spreadsheet/${settingData._id}`, updatedSettings, {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      });
+      console.log("Updated in DB:", response.data);
+    } catch (error) {
+      console.error("Error updating settings in DB:", error);
+    }
   };
 
-  // Dispatch action to update settings in Redux
-  dispatch(updateSetting(updatedSettings));
-
-  try {
-    // Make the API call to update the settings in MongoDB
-    const response = await axios.put(`${HOST}/spreadsheet/${settingData._id}`, updatedSettings,{
-      headers: {
-        authorization: "Bearer " + token,
-      },
-    });
-    console.log("Updated in DB:", response.data);
-  } catch (error) {
-    console.error("Error updating settings in DB:", error);
-  }
-};
+  console.log("settingData", settingData);
 
 
 
@@ -173,10 +175,11 @@ const handleSaveChanges = async () => {
           </div>
           <div className="sheet_data_select">
             <select className="add_input" value={selectedSheet} onChange={handleSheetChange}>
-              <option value="volvo" >{settingData.firstSheetName}</option>
-              {/* <option value="saab">Sheet2</option>
-              <option value="opel">Sheet3</option>
-              <option value="audi">Sheet4</option> */}
+              {settingData.sheetDetails.map((sheet, index) => (
+                <option key={index} value={sheet.name}>
+                  {sheet.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -201,7 +204,7 @@ const handleSaveChanges = async () => {
   );
 };
 
-const Setting = ({ closeDrawer }) => {
+const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const { setToken, setProfile } = useContext(UserContext);
   console.log(setToken, setProfile);
   const [addData, setAddData] = useState(false);
@@ -242,13 +245,15 @@ const Setting = ({ closeDrawer }) => {
               </div>
             </div>
             <div className="setting_icons_top_right">
-              <div className="setting_icons_top_right_inner">
+              <div className="setting_icons_top_right_inner"
+                onClick={() => handleToggleDrawer()}
+              >
                 <span>Cancel</span>
                 <img src={cancelIcon} />
               </div>
             </div>
           </div>
-          <div className="setting_icons_bottom">
+          {/* <div className="setting_icons_bottom">
             <div className="setting_icons_bottom_1">
               <div className="setting_icons_bottom_search">
                 <img
@@ -296,7 +301,7 @@ const Setting = ({ closeDrawer }) => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="setting_filter">
           <div className="setting_filter_bottom">
@@ -314,7 +319,7 @@ const Setting = ({ closeDrawer }) => {
           </div>
           {addSheet && <SpreadsheetSettings />}
 
-          <svg
+          {/* <svg
             xmlns="http://www.w3.org/2000/svg"
             width="472"
             height="2"
@@ -341,7 +346,7 @@ const Setting = ({ closeDrawer }) => {
               </div>
             </div>
           </div>
-          {addData && <AddData />}
+          {addData && <AddData />} */}
         </div>
       </div>
     </div>

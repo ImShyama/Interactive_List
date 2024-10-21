@@ -45,14 +45,14 @@ app.use("/", authRoute);
 app.post("/getSheetDataWithID", async (req, res) => {
 
   const authHeader = req?.headers?.authorization;
-    const token = req.cookies.token || (authHeader && authHeader.split(' ')[1]);
-    console.log("Token: ",token);
-    jwt.verify(token, secret, async (err, decoded) => {
-        if (err) return ;
-        const user = await UserModel.findById(decoded.id).lean();
-        if (!user) return ;
-        req.user = user;
-    });
+  const token = req.cookies.token || (authHeader && authHeader.split(' ')[1]);
+  console.log("Token: ", token);
+  jwt.verify(token, secret, async (err, decoded) => {
+    if (err) return;
+    const user = await UserModel.findById(decoded.id).lean();
+    if (!user) return;
+    req.user = user;
+  });
 
   const { sheetID } = req.body;
 
@@ -69,7 +69,7 @@ app.post("/getSheetDataWithID", async (req, res) => {
   const spreadSheetID = sheetDetails.spreadsheetId;
   const range = sheetDetails.firstTabDataRange;
 
-  const user = sheetOwner 
+  const user = sheetOwner
   const refreshToken = user.googleRefreshToken;
 
   // Create an OAuth2 client with the given credentials
@@ -98,17 +98,17 @@ app.post("/getSheetDataWithID", async (req, res) => {
       return;
     }
 
-    console.log("sheetOwner",sheetOwner);
-    console.log("user",req.user);
-    console.log(sheetOwner?._id.toString() , req?.user?._id.toString())
-    if(sheetOwner?._id.toString() === req?.user?._id.toString()){
+    console.log("sheetOwner", sheetOwner);
+    console.log("user", req.user);
+    console.log(sheetOwner?._id.toString(), req?.user?._id.toString())
+    if (sheetOwner?._id.toString() === req?.user?._id.toString()) {
       const permissions = "edit";
-      res.status(200).json({rows,permissions});
+      res.status(200).json({ rows, permissions });
       return;
     }
     const permissions = "view";
 
-    res.status(200).json({rows,permissions});
+    res.status(200).json({ rows, permissions });
   } catch (error) {
     console.error("Error fetching spreadsheet data:", error);
     res.status(500).json({ error: error.message });
@@ -206,10 +206,25 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
     const newSpreadsheetResponse = await sheets.spreadsheets.get({
       spreadsheetId: newSpreadsheetId,
     });
+
+
     const firstSheet = newSpreadsheetResponse.data.sheets[0];
     const firstSheetId = firstSheet.properties.sheetId;
     const firstSheetName = firstSheet.properties.title;
     const firstSheetUrl = `https://docs.google.com/spreadsheets/d/${newSpreadsheetId}/edit#gid=${firstSheetId}`;
+
+    const tabs = newSpreadsheetResponse.data.sheets;
+    const sheetDetails = tabs.map(sheet => {
+      const sheetId = sheet.properties.sheetId;
+      const sheetName = sheet.properties.title;
+      const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheet_id}/edit#gid=${sheetId}`;
+
+      return {
+        name: sheetName,
+        url: sheetUrl,
+        sheetId: sheetId,
+      };
+    });
 
     // Get the data range of the first sheet
     const firstSheetDataResponse = await sheets.spreadsheets.values.get({
@@ -231,6 +246,7 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       firstTabDataRange: firstTabDataRange,
       firstTabHeader: firstTabHeader,
       spreadsheetName: `Copy of ${sourceSpreadsheetTitle}`,
+      sheetDetails: sheetDetails,
     };
 
     // Save the sheet details to the database
@@ -245,6 +261,7 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       firstTabDataRange: res.firstTabDataRange,
       firstTabHeader: res.firstTabHeader,
       appName: appName,
+      sheetDetails: res.sheetDetails,
     });
 
     console.log("All sheets copied successfully.", newSheet);
@@ -266,82 +283,9 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
 
     const sourceSpreadsheetTitle = getSpreadsheetResponse.data.properties.title;
 
-    console.log("title", sourceSpreadsheetTitle);
+    // Extract all sheet names by looping over newSpreadsheetResponse.data.sheets
+    const allSheetNames = getSpreadsheetResponse.data.sheets.map(sheet => sheet.properties.title);
 
-    // Create a new spreadsheet
-    // const createResponse = await sheets.spreadsheets.create({
-    //   resource: {
-    //     properties: {
-    //       title: `Copy of ${sourceSpreadsheetTitle}`,
-    //     },
-    //   },
-    // });
-    // const newSpreadsheetId = createResponse.data.spreadsheetId;
-    // console.log("New Spreadsheet ID:", newSpreadsheetId);
-
-    // const sourceSheets = getSpreadsheetResponse.data.sheets;
-
-    // for (const sheet of sourceSheets) {
-    //   const sourceSheetId = sheet.properties.sheetId;
-    //   const sourceSheetName = sheet.properties.title;
-
-    //   console.log(
-    //     `Copying sheet: ${sourceSheetName} with ID: ${sourceSheetId}`
-    //   );
-
-    //   // Prepare the request to copy the sheet
-    //   const request = {
-    //     spreadsheetId: sheet_id,
-    //     sheetId: sourceSheetId,
-    //     resource: {
-    //       destinationSpreadsheetId: newSpreadsheetId,
-    //     },
-    //   };
-
-    //   // Copy the sheet to the new spreadsheet
-    //   const copyResponse = await sheets.spreadsheets.sheets.copyTo(request);
-
-    //   // Rename the copied sheet to match the source sheet name
-    //   const copiedSheetId = copyResponse.data.sheetId;
-    //   await sheets.spreadsheets.batchUpdate({
-    //     spreadsheetId: newSpreadsheetId,
-    //     resource: {
-    //       requests: [
-    //         {
-    //           updateSheetProperties: {
-    //             properties: {
-    //               sheetId: copiedSheetId,
-    //               title: sourceSheetName,
-    //             },
-    //             fields: "title",
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   });
-
-    //   console.log(`Sheet copied and renamed to: ${sourceSheetName}`);
-    // }
-
-    // // Delete the default "Sheet1" from the new spreadsheet
-    // const deleteSheetResponse = await sheets.spreadsheets.batchUpdate({
-    //   spreadsheetId: newSpreadsheetId,
-    //   resource: {
-    //     requests: [
-    //       {
-    //         deleteSheet: {
-    //           sheetId: createResponse.data.sheets[0].properties.sheetId,
-    //         },
-    //       },
-    //     ],
-    //   },
-    // });
-    // console.log("Default Sheet1 deleted:", deleteSheetResponse.data);
-
-    // Retrieve details of the first sheet in the new spreadsheet
-    // const newSpreadsheetResponse = await sheets.spreadsheets.get({
-    //   spreadsheetId: newSpreadsheetId,
-    // });
     const firstSheet = getSpreadsheetResponse.data.sheets[0];
     const firstSheetId = firstSheet.properties.sheetId;
     console.log("firstSheet", firstSheet);
@@ -353,13 +297,14 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       const sheetId = sheet.properties.sheetId;
       const sheetName = sheet.properties.title;
       const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheet_id}/edit#gid=${sheetId}`;
-      
+
       return {
         name: sheetName,
-        url: sheetUrl
+        url: sheetUrl,
+        sheetId: sheetId,
       };
     });
-    
+
     console.log(sheetDetails);
 
     // Get the data range of the first sheet
@@ -434,7 +379,7 @@ async function renameSpreadsheet(authClient, spreadSheetID, newName) {
     const response = await sheets.spreadsheets.batchUpdate(request);
     console.log("Spreadsheet renamed successfully: ", response.data);
     return response.data;
-    
+
   } catch (error) {
     console.error('Error renaming spreadsheet:', error);
     throw new Error('Failed to rename spreadsheet');
@@ -485,6 +430,41 @@ async function deleteRowFromSpreadsheet(authClient, spreadSheetID, sheetName, ro
   } catch (error) {
     console.error('Error deleting row:', error);
     throw new Error('Failed to delete row');
+  }
+}
+
+// Define a function to edit row data in a spreadsheet
+async function editRowInSpreadsheet(authClient, spreadSheetID, sheetName, rowIndex, newData) {
+  const sheets = google.sheets({ version: 'v4', auth: authClient });
+
+  // Define the range you want to update (e.g., "Sheet1!A5:E5" for row 5)
+  const range = `${sheetName}!A${rowIndex}:${String.fromCharCode(64 + newData.length)}${rowIndex}`;
+
+  const updateRequest = {
+    spreadsheetId: spreadSheetID,
+    range: range,
+    valueInputOption: 'RAW', // Can also be 'USER_ENTERED' if you want Google Sheets to interpret data types
+    resource: {
+      values: [newData], // Pass the new row data here as an array
+    },
+  };
+
+  try {
+    // Update the row data
+    await sheets.spreadsheets.values.update(updateRequest);
+
+    // After successful update, get the entire sheet's data
+    const getRequest = {
+      spreadsheetId: spreadSheetID,
+      range: `${sheetName}`,  // Get all data from the sheet
+    };
+    const getResponse = await sheets.spreadsheets.values.get(getRequest);
+
+    // Return the updated sheet data
+    return getResponse.data;
+  } catch (error) {
+    console.error('Error editing row:', error);
+    throw new Error('Failed to edit row data');
   }
 }
 
@@ -574,7 +554,7 @@ app.post("/renameSpreadsheet/:id", async (req, res) => {
   try {
     // Call the renameSpreadsheet function to rename the spreadsheet
     const result = await renameSpreadsheet(authClient, spreadSheetID, newName);
-    
+
     // Find the document in MongoDB and update its settings
     const updatedSheetSetting = await Sheet.findOneAndUpdate(
       { spreadsheetId: spreadSheetID, userId },  // Find by sheet and user
@@ -621,6 +601,38 @@ app.post("/deleteRow", async (req, res) => {
     // Call the deleteRowFromSpreadsheet function to delete the row
     const result = await deleteRowFromSpreadsheet(authClient, spreadSheetID, sheetName, rowIndex);
     res.status(200).json(result);
+  } catch (err) {
+    console.log("error: ", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Define the API endpoint
+app.post("/editRow", async (req, res) => {
+  const spreadSheetID = req.body.spreadSheetID;
+  const sheetName = req.body.sheetName;
+  const rowIndex = req.body.rowIndex;  // Row number to edit (1-based index)
+  const newData = req.body.newData;  // Array of new row data (e.g., ["Name", "Age", "Country", ...])
+
+  // Create an OAuth2 client with the given credentials
+  const authClient = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  // Set the refresh token for the OAuth2 client
+  authClient.setCredentials({
+    refresh_token: req.user.googleRefreshToken,
+  });
+
+  try {
+    // Call the editRowInSpreadsheet function to edit the row and get updated sheet data
+    const updatedSheetData = await editRowInSpreadsheet(authClient, spreadSheetID, sheetName, rowIndex, newData);
+    res.status(200).json({
+      message: "Row updated successfully",
+      updatedSheetData: updatedSheetData
+    });
   } catch (err) {
     console.log("error: ", err);
     res.status(500).json({ error: err.message });
@@ -760,20 +772,20 @@ app.listen(PORT, () => {
 // Update sheet details route (PUT request)
 app.put('/spreadsheet/:id', async (req, res) => {
   try {
-      const SheetId = req.params.id; // Get the ID from the request params
-      const updatedSpreadsheet = req.body; // Get the updated settings from the request body
+    const SheetId = req.params.id; // Get the ID from the request params
+    const updatedSpreadsheet = req.body; // Get the updated settings from the request body
 
-      // Update the settings document in MongoDB
-      const updatedSetting = await Sheet.findByIdAndUpdate(SheetId, updatedSpreadsheet, { new: true });
+    // Update the settings document in MongoDB
+    const updatedSetting = await Sheet.findByIdAndUpdate(SheetId, updatedSpreadsheet, { new: true });
 
-      if (!updatedSetting) {
-          return res.status(404).json({ message: "Setting not found" });
-      }
+    if (!updatedSetting) {
+      return res.status(404).json({ message: "Setting not found" });
+    }
 
-      // Return the updated settings
-      res.status(200).json(updatedSetting);
+    // Return the updated settings
+    res.status(200).json(updatedSetting);
   } catch (error) {
-      res.status(500).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -784,7 +796,7 @@ app.post('/addEmails/:id', async (req, res) => {
     const SheetId = req.params.id; // Get the ID from the request params
 
     // Update the settings document in MongoDB
-    const updatedSetting = await Sheet.findByIdAndUpdate(SheetId, { sharedWith:emails }, { new: true });
+    const updatedSetting = await Sheet.findByIdAndUpdate(SheetId, { sharedWith: emails }, { new: true });
 
     if (!updatedSetting) {
       return res.status(404).json({ message: "Setting not found" });

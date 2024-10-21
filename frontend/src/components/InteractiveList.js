@@ -7,6 +7,7 @@ import { BiSearch } from 'react-icons/bi';
 import { useDispatch, useSelector } from "react-redux";
 import EditableSpreadsheetName from "./EditableSpreadsheetName";
 import DeleteAlert from './DeleteAlert';
+import EditRow from './EditRow';
 import axios from 'axios';  // Assuming you're using axios for API calls
 import { HOST } from '../utils/constants';  // Assuming you have HOST defined somewhere
 import { UserContext } from "../context/UserContext";
@@ -69,6 +70,7 @@ const InteractiveList = ({ data, headers }) => {
   const [searchGLobal, setSearchGlobal] = useState();
   const searchInput = useRef(null);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
   const [rowToEdit, setRowToEdit] = useState(null);
   headers = headers.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
@@ -334,18 +336,69 @@ const InteractiveList = ({ data, headers }) => {
 
   const handleEdit = (record) => {
     console.log(record)
+    setRowToEdit(record);
+    setConfirmEditModalOpen(true);
   }
+
+  const handleEditCancel = () => {
+    setConfirmEditModalOpen(false);
+  };
+
+  const handleSaveAPI = async (updatedRow, rowIndex) => {
+    const spreadSheetID = settings.spreadsheetId;
+    const sheetName = settings.firstSheetName;
+    // const newData = Object.values(updatedRow);  // Convert the row object to an array for newData
+    const newData = Object.entries(updatedRow)
+  .filter(([key]) => key !== 'key_id')  // Filter out the key_id field
+  .map(([, value]) => value);  // Map to get only the values
+
+
+    try {
+      const response = await axios.post(`${HOST}/editRow`, {
+        spreadSheetID,
+        sheetName,
+        rowIndex,
+        newData,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
+        },
+      });
+  
+      console.log('Row edited successfully:', response.data);
+      // Handle successful response (e.g., show success notification)
+      const updatedSheetData = convertArrayToJSON(response.data?.updatedSheetData?.values);
+
+      setFilteredData(updatedSheetData);
+    } catch (error) {
+      console.error('Error editing row:', error);
+      // Handle error response (e.g., show error notification)
+    }
+  };
+
+  const handleEditRow = async (updatedRow) => {
+    const rowIndex = +updatedRow.key_id + 1;  // Assuming key_id is the 0-based index, add 1 to get 1-based index for the sheet
+  
+    try {
+      // Call the API with the updated row data and rowIndex
+      await handleSaveAPI(updatedRow, rowIndex);
+  
+      setConfirmEditModalOpen(false);
+    } catch (error) {
+      console.error('Error saving row:', error);
+    }
+  };
 
   // Calculate maxHeight based on window height
   const maxHeight = window.innerHeight - 220;
-
-
 
   const columns = [
     ...headers.map((header, index) => ({
       title: (
         <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-          <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}>
+          {/* <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}> */}
             <span
               style={{
                 overflow: 'hidden',
@@ -359,7 +412,7 @@ const InteractiveList = ({ data, headers }) => {
             >
               {header.replace(/_/g, ' ').toUpperCase()}
             </span>
-          </Tooltip>
+          {/* </Tooltip> */}
           <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="bottom">
             <img src={label} alt="label" style={{ marginLeft: 8, cursor: 'pointer', height: '18px' }} />
           </Popover>
@@ -367,7 +420,6 @@ const InteractiveList = ({ data, headers }) => {
       ),
       dataIndex: header,
       key: header,
-      // maxWidth: '10%',
       width: "200px",
       ellipsis: true,
       ...getColumnSearchProps(header),
@@ -443,7 +495,6 @@ const InteractiveList = ({ data, headers }) => {
       : []),
   ];
 
-
   // Function to handle pagination and slice the data
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
@@ -510,6 +561,13 @@ const InteractiveList = ({ data, headers }) => {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteRow}
         sheetName="this row"
+      />
+      <EditRow 
+        isOpen={confirmEditModalOpen}
+        onClose={handleEditCancel}
+        onConfirm={handleEditRow}
+        modelName="Edit"
+        row={rowToEdit}
       />
     </div>
   )
