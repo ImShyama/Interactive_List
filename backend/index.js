@@ -39,6 +39,8 @@ app.use(cookieParser());
 
 app.use(express.json());
 
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
 app.use("/", authRoute);
 
 app.post("/getSheetDataWithID", async (req, res) => {
@@ -113,6 +115,8 @@ app.post("/getSheetDataWithID", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
 
 app.use(authenticateToken);
 
@@ -1077,7 +1081,7 @@ app.post("/bulkCopyFromAnotherSheet", async (req, res) => {
 });
 
 
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
 
 app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
