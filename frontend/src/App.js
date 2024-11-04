@@ -19,6 +19,7 @@ import Testing from "./components/Testing";
 import { Provider } from "react-redux"
 import appStore from "./utils/appStore";
 import { ConfigProvider } from "antd";
+import Testing1 from "./components/Testing1";
 
 const Layout = () => {
   return (
@@ -79,6 +80,10 @@ const appRouter = createBrowserRouter([
       {
         path: "/testing",
         element: <Testing />,
+      },
+      {
+        path: "/testing1",
+        element: <Testing1 />,
       },
 
     ],

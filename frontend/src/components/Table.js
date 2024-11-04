@@ -92,7 +92,7 @@ const Table = () => {
 
 
   return (
-    <InteractiveList data={sheetData} headers={tableHeader} />
+   <div> {tableHeader.length > 1 && <InteractiveList data={sheetData} headers={tableHeader} />}</div>
   );
 };
 

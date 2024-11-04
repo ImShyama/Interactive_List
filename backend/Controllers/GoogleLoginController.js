@@ -15,7 +15,10 @@ exports.InitiateGoogleLogin = (req, res) => {
     const authUrl = client.generateAuthUrl({
         access_type: 'offline',
         prompt: 'consent',  // This ensures that a new refresh token is issued
-        scope: ['email', 'profile', "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"] // Add any additional scopes you need
+        scope: ['email', 'profile'
+            , "https://www.googleapis.com/auth/spreadsheets"
+            , "https://www.googleapis.com/auth/drive"
+        ] // Add any additional scopes you need
     });
     res.redirect(authUrl);
 }

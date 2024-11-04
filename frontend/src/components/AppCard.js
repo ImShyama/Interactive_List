@@ -2,23 +2,16 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
+import Loader from "./Loader";
+import { HOST } from "../utils/constants";
 
-const AppCard = ({appName,appView,appImg,description}) => {
+const AppCard = ({ appName, appView, appImg, description }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { token } = useContext(UserContext);
-  console.log("appName",appName)
+  console.log("appName", appName)
 
-  const Loader = () => {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
-        <div className="flex flex-col items-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin mb-4"></div>
-          <span className="text-lg font-semibold text-gray-700">Creating a copy...</span>
-        </div>
-      </div>
-    );
-  };
+
 
 
   const handleCopy = () => {
@@ -27,7 +20,7 @@ const AppCard = ({appName,appView,appImg,description}) => {
 
     axios
       .post(
-        "http://localhost:4000/copySpreadsheet",
+        `${HOST}/copySpreadsheet`,
         {
           spreadSheetID:
             "1YW0WNJVnT4AU68wAmLbQjj5xbJluBwICMGLFAeY07Pc",
@@ -82,7 +75,13 @@ const AppCard = ({appName,appView,appImg,description}) => {
           View
         </button>
 
-        {loading && <Loader />}
+        {loading &&
+          <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-50">
+            <div className="flex flex-col items-center">
+              <Loader textToDisplay={"Creating a copy..."} />
+            </div>
+          </div>
+        }
         <button className="border border-[#FFA500] rounded-[13.99px] py-[10px] px-[15px] text-[15.07px] text-[#FFA500]" onClick={handleCopy}>
           Copy
         </button>

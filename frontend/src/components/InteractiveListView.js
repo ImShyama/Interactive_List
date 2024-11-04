@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { SearchOutlined, BarsOutlined } from '@ant-design/icons';
+import React, { useRef, useState, useEffect } from 'react';
+import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Popover, Tooltip, Pagination, ConfigProvider } from 'antd';
 import Highlighter from 'react-highlight-words';
 import label from '../assets/label.svg'
@@ -8,9 +8,41 @@ import { CLIENTID, DEVELOPERKEY, HOST } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { Resizable } from 'react-resizable';
+import './table.css';
 
-// Function to check if a value is numeric
+const ResizableTitle = (props) => {
+    const { onResize, width, ...restProps } = props;
+    if (!width) {
+        return <th {...restProps} />;
+    }
+    return (
+        <Resizable
+            width={width}
+            height={0}
+            handle={<span className="react-resizable-handle" onClick={(e) => e.stopPropagation()} />}
+            onResize={onResize}
+            draggableOpts={{
+                enableUserSelectHack: false,
+            }}
+        >
+            <th {...restProps} />
+        </Resizable>
+    );
+};
+
 const isNumeric = (value) => !isNaN(parseFloat(value)) && isFinite(value);
+
+const maxHeight = window.innerHeight - 220;
+
+const loadColumnWidthsFromCookies = () => {
+    const savedWidths = Cookies.get('InteractiveListSavedColumnWidths');
+    return savedWidths ? JSON.parse(savedWidths) : null;
+};
+
+const saveColumnWidthsToCookies = (columnWidths) => {
+    Cookies.set('InteractiveListSavedColumnWidths', JSON.stringify(columnWidths), { expires: 7 }); // Cookie expires in 7 days
+};
 
 const InteractiveListView = () => {
     const [filterInfo, setfilterInfo] = useState({})
@@ -21,8 +53,6 @@ const InteractiveListView = () => {
     const [searchedColumns, setSearchedColumns] = useState([]);
     const searchInput = useRef(null);
     const navigate = useNavigate();
-
-
 
     // Utility functions to calculate aggregates dynamically
     const calculateSum = (dataIndex) => {
@@ -199,34 +229,11 @@ const InteractiveListView = () => {
         setSearchedColumns((prev) => prev.filter(column => column !== dataIndex));
     };
 
-    const handleGlobalReset = () => {
-        setSearchGlobal(''); // Clear the search input
-        setfilterInfo({})
-        setFilteredData([...filteredData]);
-        setSearchedColumns([]);
-    };
-
-    const handleGlobalSearch = (e) => {
-        const value = e.target.value.toLowerCase();
-        setSearchGlobal(value);
-
-        // Filter the data globally across all columns
-        const filteredData = data.filter((record) => {
-            return Object.keys(record).some((key) =>
-                record[key]?.toString().toLowerCase().includes(value)
-            );
-        });
-
-        // You can then set this filtered data to a state if needed
-        setFilteredData(filteredData);
-    };
-
-
     const getColumnSearchProps = (dataIndex) => ({
+       
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
 
             <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-
                 <Input
                     ref={searchInput}
                     placeholder={`Search ${dataIndex}`}
@@ -248,7 +255,7 @@ const InteractiveListView = () => {
                     <Button
                         onClick={() => {
                             clearFilters &&
-                            handleReset(clearFilters, dataIndex);
+                                handleReset(clearFilters, dataIndex);
                             confirm({ closeDropdown: false });
                             setSearchText(selectedKeys[0]);
                             setSearchedColumn(dataIndex);
@@ -285,7 +292,7 @@ const InteractiveListView = () => {
         ),
         filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#FFA500' : undefined }} />,
         onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-        filteredValue: filterInfo && filterInfo[dataIndex] || "",
+        // filteredValue: filterInfo && filterInfo[dataIndex] || "",
         onFilterDropdownOpenChange: (visible) => {
             if (visible) {
                 setTimeout(() => searchInput.current?.select(), 100);
@@ -312,10 +319,65 @@ const InteractiveListView = () => {
         }
     };
 
-    // Calculate maxHeight based on window height
-    const maxHeight = window.innerHeight - 220;
+    // const columns = headers.map((header) => ({
+    //     title: (
+    //         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+    //             {/* <span>{header.replace(/_/g, ' ').toUpperCase()}</span> */}
+    //             <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}>
+    //                 <span
+    //                     style={{
+    //                         overflow: 'hidden',
+    //                         whiteSpace: 'normal',
+    //                         textOverflow: 'ellipsis',
+    //                         display: '-webkit-box',
+    //                         WebkitLineClamp: 2,
+    //                         WebkitBoxOrient: 'vertical',
+    //                         maxWidth: 100, // Adjust the width to your preference
 
-    const columns = headers.map((header) => ({
+    //                     }}
+    //                 >
+    //                     {header.replace(/_/g, ' ').toUpperCase()}
+    //                 </span>
+    //             </Tooltip>
+    //             <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="bottom">
+    //                 <img src={label} alt="label" style={{ marginLeft: 8, cursor: 'pointer', height: "18px" }} />
+    //                 {/* <BarsOutlined style={{ marginLeft: 8, cursor: 'pointer' }} /> */}
+    //             </Popover>
+
+    //         </div>
+    //     ),
+    //     dataIndex: header,
+    //     key: header,
+    //     width: 200,
+    //     ...getColumnSearchProps(header),
+
+    //     sorter: (a, b) => {
+    //         if (isNumeric(a[header]) && isNumeric(b[header])) {
+    //             return a[header] - b[header];
+    //         }
+    //         return a[header].toString().localeCompare(b[header].toString());
+    //     },
+    //     render: (text) => {
+    //         // Check if the email is a valid URL
+    //         return isValidUrl(text) ? (
+    //             <a href={text} target="_blank" rel="noopener noreferrer"
+    //                 className="text-[#437FFF] font-poppins font-normal leading-[26.058px]"
+    //             >
+    //                 Click here
+    //             </a>
+    //         ) : (
+    //             text
+    //         );
+    //     },
+    //     onHeaderCell: () => ({
+    //         style: {
+    //             backgroundColor: searchedColumns.includes(header) ? 'rgb(216 216 216)' : 'transparent',  // Apply blue background to the entire header cell
+    //             // color: searchedColumns.includes(header) ? '#fff' : '#000',
+    //         }
+    //     })
+    // }))
+
+    const [columns, setColumns] = useState(headers.map((header) => ({
         title: (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                 {/* <span>{header.replace(/_/g, ' ').toUpperCase()}</span> */}
@@ -344,7 +406,7 @@ const InteractiveListView = () => {
         ),
         dataIndex: header,
         key: header,
-        // maxWidth: '10%',
+        width: 200,
         ...getColumnSearchProps(header),
 
         sorter: (a, b) => {
@@ -371,7 +433,47 @@ const InteractiveListView = () => {
                 // color: searchedColumns.includes(header) ? '#fff' : '#000',
             }
         })
+    })))
+
+    useEffect(() => {
+        const savedColumnWidths = loadColumnWidthsFromCookies();
+
+        if (savedColumnWidths) {
+            const newColumns = columns.map((col, index) => ({
+                ...col,
+                width: savedColumnWidths[index] || col.width, // Use saved width or fallback to default width
+            }));
+
+            setColumns(newColumns);
+        }
+    }, []);
+
+    const handleResize = (index) => (_, { size }) => {
+        const newColumns = [...columns];
+        newColumns[index] = {
+            ...newColumns[index],
+            width: size.width,
+        };
+        setColumns(newColumns);
+
+        // Get current column widths and save to cookies
+        const columnWidths = newColumns.map((col) => col.width);
+        saveColumnWidthsToCookies(columnWidths);
+    };
+
+    const mergedColumns = columns.map((col, index) => ({
+        ...col,
+        onHeaderCell: (column) => ({
+            width: column.width,
+            onResize: handleResize(index),
+            style: {
+                backgroundColor: searchedColumns.includes(column.dataIndex) ? 'rgb(216 216 216)' : 'transparent',  // Apply blue background to the entire header cell
+                // color: searchedColumns.includes(header) ? '#fff' : '#000',
+            }
+        }),
     }));
+
+    console.log("mergedColumns", mergedColumns)
 
     // Function to handle pagination and slice the data
     const paginatedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -437,10 +539,10 @@ const InteractiveListView = () => {
 
     return (
         <div>
-            <div className='flex text-center justify-between px-[50px]'>
-                <div><span className="text-[#2A3C54] font-poppins text-[30px] font-medium">Interactive List</span></div>
+            <div className='flex text-center justify-between items-center px-[50px]'>
+                <div><span className="text-[#2A3C54] font-poppins text-[24px] font-medium">Interactive List</span></div>
                 <div>
-                    <button className="flex w-[204px] h-[44px] p-[10px] justify-center items-center gap-[10px] flex-shrink-0 bg-[#FFB041] text-white rounded-md hover:bg-[#FFB041]"
+                    <button className="flex py-[5px] px-[10px] justify-center items-center gap-[5px] flex-shrink-0 bg-[#FFB041] text-white rounded-md hover:bg-[#FFB041]"
                         onClick={handleOpenPicker}
                     >
                         <span className="text-white font-poppins text-[14px] font-bold leading-normal">+</span>
@@ -451,49 +553,41 @@ const InteractiveListView = () => {
                 </div>
             </div>
 
-            <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[20px]'>
-                {/* Scrollable table container */}
+            <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[10px]'>
+
                 <div style={{ width: '100%', overflowX: 'auto', maxHeight: maxHeight, }}>
                     <div style={{ minWidth: '1500px' }}>
-                        <ConfigProvider
-                            theme={{
-                                token: {
-                                    colorPrimary: '#FFA500', // Orange
+                        <Table
+                            bordered
+                            components={{
+                                header: {
+                                    cell: ResizableTitle,
                                 },
                             }}
-                        >
-                            <Table
-                                columns={columns}
-                                dataSource={paginatedData}
-                                pagination={false}
-                                rowClassName="custom-row"
-                                scroll={{ x: true }}
-                            />
-                        </ConfigProvider>
+                            columns={mergedColumns}
+                            dataSource={paginatedData}
+                            pagination={false}
+                            rowClassName="custom-row"
+                            scroll={{ x: true }}
+                            // small
+                            sticky
+                            size="small"
+                        />
                     </div>
                 </div>
 
                 {/* Pagination outside the scroll */}
-                <div style={{ display: 'flex', justifyContent: 'right', marginTop: '16px' }}>
-                    <ConfigProvider
-                        theme={{
-                            token: {
-                                colorPrimary: '#FFA500', // Orange
-                            },
+                <div style={{ display: 'flex', justifyContent: 'right', marginTop: '10px' }}>
+                    <Pagination
+                        current={currentPage}
+                        pageSize={pageSize}
+                        total={data.length}
+                        showSizeChanger
+                        onChange={(page, size) => {
+                            setCurrentPage(page);
+                            setPageSize(size);
                         }}
-                    >
-                        <Pagination
-                            current={currentPage}
-                            pageSize={pageSize}
-                            total={data.length}
-                            showSizeChanger
-                            onChange={(page, size) => {
-                                setCurrentPage(page);
-                                setPageSize(size);
-                            }}
-                        />
-                    </ConfigProvider>
-
+                    />
                 </div>
             </div>
         </div>

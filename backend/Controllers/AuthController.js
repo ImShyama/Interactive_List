@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const secret = "CBXTREEIL";
 
+
 module.exports.Signup = async (req, res, next) => {
   try {
     const { email, password, username, createdAt } = req.body;
@@ -16,7 +17,7 @@ module.exports.Signup = async (req, res, next) => {
     res.cookie("token", token, {
       withCredentials: true,
       httpOnly: false,
-      maxAge: 1000*60*60*60*24*30,
+      maxAge: 1000*60*60*60*24*5,
     });
     res
       .status(201)
@@ -45,7 +46,7 @@ module.exports.Login = async (req, res, next) => {
     res.cookie("token", token, {
       withCredentials: true,
       httpOnly: false,
-      maxAge: 1000*60*60*60*24*30,
+      maxAge: 1000*60*60*60*24*5,
     });
     res
       .status(201)

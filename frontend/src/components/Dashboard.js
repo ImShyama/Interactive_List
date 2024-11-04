@@ -12,6 +12,7 @@ import refreshAccessToken from '../utils/refreshAccessToken';
 import { APPS, APPSNAME } from '../utils/constants';
 import { Input, Select } from 'antd';
 import { BiSearch } from 'react-icons/bi';
+import { HOST } from '../utils/constants';
 
 
 const { Search } = Input;
@@ -56,7 +57,7 @@ const Dashboard = () => {
 
       axios
         .post(
-          "http://localhost:4000/createNewSpreadsheet",
+          `${HOST}}/createNewSpreadsheet`,
           {
             url: data?.docs?.[0]?.url,
             spreadSheetID: data?.docs?.[0]?.id,

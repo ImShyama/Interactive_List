@@ -8,6 +8,7 @@ import settingsIcon from "../assets/settingIcon.svg";
 import settingsIcon1 from "../assets/settingIcon1.svg";
 import dividerIcon from "../assets/dividerIcon.svg";
 import { UserContext } from "../context/UserContext";
+import { HOST } from "../utils/constants";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -51,7 +52,7 @@ const Header = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/getuser`, {
+      .get(`${HOST}/getuser`, {
         headers: {
           authorization: "Bearer " + token,
         },
@@ -64,6 +65,7 @@ const Header = () => {
         setUser(res);
       })
       .catch((err) => {
+        // navigate("/");
         console.log(err.message);
       });
   }, [token]);

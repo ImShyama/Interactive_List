@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { SearchOutlined, BarsOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Popover, Tooltip, Pagination, ConfigProvider } from 'antd';
 import Highlighter from 'react-highlight-words';
 import label from '../assets/label.svg'
@@ -8,27 +8,34 @@ import { CLIENTID, DEVELOPERKEY, HOST } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { Resizable } from 'react-resizable';
+import './table.css';
+
+const ResizableTitle = (props) => {
+    const { onResize, width, ...restProps } = props;
+    if (!width) {
+        return <th {...restProps} />;
+    }
+    return (
+        <Resizable
+            width={width}
+            height={0}
+            handle={<span className="react-resizable-handle" onClick={(e) => e.stopPropagation()} />}
+            onResize={onResize}
+            draggableOpts={{
+                enableUserSelectHack: false,
+            }}
+        >
+            <th {...restProps} />
+        </Resizable>
+    );
+};
 
 // Function to check if a value is numeric
 const isNumeric = (value) => !isNaN(parseFloat(value)) && isFinite(value);
-const convertArrayToJSON = (data) => {
-    // The first array contains the keys
-    const keys = data[0];
 
-    // Map the rest of the arrays to JSON objects
-    const jsonData = data.slice(2).map((item, index) => {
-        const jsonObject = {};
-        keys.forEach((key, i) => {
-            jsonObject[key.replace(/\s+/g, '_').toLowerCase()] = item[i]; // Replace spaces with underscores and make keys lowercase
-        });
-        return { key_id: (index + 1).toString(), ...jsonObject }; // Add key_id
-    });
-
-    return jsonData;
-};
-
-const InteractiveListPreview = ({ data, headers }) => {
-
+const Testing1 = () => {
+    const [filterInfo, setfilterInfo] = useState({})
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -55,131 +62,128 @@ const InteractiveListPreview = ({ data, headers }) => {
         return sum;
     };
 
-    // const headers = [
-    //     "manager_name",
-    //     "employee_name",
-    //     "employee_e-mail_id",
-    //     "feedback_month",
-    //     "site_timings",
-    //     "total_score_(in_100)",
-    //     "year"
-    // ]
+    const headers = [
+        "manager_name",
+        "employee_name",
+        "employee_e-mail_id",
+        "feedback_month",
+        "site_timings",
+        "total_score_(in_100)",
+        "year"
+    ]
 
-    // const data = [
-    //     {
-    //         "key_id": "1",
-    //         "manager_name": "Shubham Khanna",
-    //         "employee_name": "Nisha",
-    //         "employee_e-mail_id": "sus@tnspll.in",
-    //         "feedback_month": "January",
-    //         "site_timings": "7",
-    //         "total_score_(in_100)": "69",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "2",
-    //         "manager_name": "Shubham Khanna",
-    //         "employee_name": "Mukesh Prajapati",
-    //         "employee_e-mail_id": "sus@tnspll.in",
-    //         "feedback_month": "January",
-    //         "site_timings": "3",
-    //         "total_score_(in_100)": "34",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "3",
-    //         "manager_name": "Shubham Khanna",
-    //         "employee_name": "Sushil",
-    //         "employee_e-mail_id": "sus@tnspll.in",
-    //         "feedback_month": "January",
-    //         "site_timings": "3",
-    //         "total_score_(in_100)": "48",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "4",
-    //         "manager_name": "Shubham Khanna",
-    //         "employee_name": "Gaurav",
-    //         "employee_e-mail_id": "kul@tnspll.in",
-    //         "feedback_month": "January",
-    //         "site_timings": "5",
-    //         "total_score_(in_100)": "33",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "5",
-    //         "manager_name": "Shubham Khanna",
-    //         "employee_name": "Kuldeep",
-    //         "employee_e-mail_id": "kul@tnspll.in",
-    //         "feedback_month": "January",
-    //         "site_timings": "0",
-    //         "total_score_(in_100)": "37",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "6",
-    //         "manager_name": "Shubham Khanna",
-    //         "employee_name": "Phool Babu",
-    //         "employee_e-mail_id": "pb@tnspll.in",
-    //         "feedback_month": "January",
-    //         "site_timings": "1",
-    //         "total_score_(in_100)": "53",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "7",
-    //         "manager_name": "Shubham Khanna",
-    //         "employee_name": "Avesh",
-    //         "employee_e-mail_id": "av@tnspll.in",
-    //         "feedback_month": "February",
-    //         "site_timings": "5",
-    //         "total_score_(in_100)": "70",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "8",
-    //         "manager_name": "Kusum",
-    //         "employee_name": "Manoj",
-    //         "employee_e-mail_id": "mn@tnspll.in",
-    //         "feedback_month": "February",
-    //         "site_timings": "8",
-    //         "total_score_(in_100)": "77",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "9",
-    //         "manager_name": "Kusum",
-    //         "employee_name": "Dharamveer",
-    //         "employee_e-mail_id": "dh@tnspll.in",
-    //         "feedback_month": "February",
-    //         "site_timings": "2",
-    //         "total_score_(in_100)": "53",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "10",
-    //         "manager_name": "Kusum",
-    //         "employee_name": "Akhlesh",
-    //         "employee_e-mail_id": "ak@tnspll.in",
-    //         "feedback_month": "February",
-    //         "site_timings": "5",
-    //         "total_score_(in_100)": "50",
-    //         "year": "2020"
-    //     },
-    //     {
-    //         "key_id": "11",
-    //         "manager_name": "Amit Sharma",
-    //         "employee_name": "Dubey",
-    //         "employee_e-mail_id": "du@tnspll.in",
-    //         "feedback_month": "September",
-    //         "site_timings": "7",
-    //         "total_score_(in_100)": "42",
-    //         "year": "2020"
-    //     }
-    // ]
-
-    headers = headers?.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
-    data = convertArrayToJSON(data);
+    const data = [
+        {
+            "key_id": "1",
+            "manager_name": "Shubham Khanna",
+            "employee_name": "Nisha",
+            "employee_e-mail_id": "sus@tnspll.in",
+            "feedback_month": "January",
+            "site_timings": "7",
+            "total_score_(in_100)": "69",
+            "year": "2020"
+        },
+        {
+            "key_id": "2",
+            "manager_name": "Shubham Khanna",
+            "employee_name": "Mukesh Prajapati",
+            "employee_e-mail_id": "sus@tnspll.in",
+            "feedback_month": "January",
+            "site_timings": "3",
+            "total_score_(in_100)": "34",
+            "year": "2020"
+        },
+        {
+            "key_id": "3",
+            "manager_name": "Shubham Khanna",
+            "employee_name": "Sushil",
+            "employee_e-mail_id": "sus@tnspll.in",
+            "feedback_month": "January",
+            "site_timings": "3",
+            "total_score_(in_100)": "48",
+            "year": "2020"
+        },
+        {
+            "key_id": "4",
+            "manager_name": "Shubham Khanna",
+            "employee_name": "Gaurav",
+            "employee_e-mail_id": "kul@tnspll.in",
+            "feedback_month": "January",
+            "site_timings": "5",
+            "total_score_(in_100)": "33",
+            "year": "2020"
+        },
+        {
+            "key_id": "5",
+            "manager_name": "Shubham Khanna",
+            "employee_name": "Kuldeep",
+            "employee_e-mail_id": "kul@tnspll.in",
+            "feedback_month": "January",
+            "site_timings": "0",
+            "total_score_(in_100)": "37",
+            "year": "2020"
+        },
+        {
+            "key_id": "6",
+            "manager_name": "Shubham Khanna",
+            "employee_name": "Phool Babu",
+            "employee_e-mail_id": "pb@tnspll.in",
+            "feedback_month": "January",
+            "site_timings": "1",
+            "total_score_(in_100)": "53",
+            "year": "2020"
+        },
+        {
+            "key_id": "7",
+            "manager_name": "Shubham Khanna",
+            "employee_name": "Avesh",
+            "employee_e-mail_id": "av@tnspll.in",
+            "feedback_month": "February",
+            "site_timings": "5",
+            "total_score_(in_100)": "70",
+            "year": "2020"
+        },
+        {
+            "key_id": "8",
+            "manager_name": "Kusum",
+            "employee_name": "Manoj",
+            "employee_e-mail_id": "mn@tnspll.in",
+            "feedback_month": "February",
+            "site_timings": "8",
+            "total_score_(in_100)": "77",
+            "year": "2020"
+        },
+        {
+            "key_id": "9",
+            "manager_name": "Kusum",
+            "employee_name": "Dharamveer",
+            "employee_e-mail_id": "dh@tnspll.in",
+            "feedback_month": "February",
+            "site_timings": "2",
+            "total_score_(in_100)": "53",
+            "year": "2020"
+        },
+        {
+            "key_id": "10",
+            "manager_name": "Kusum",
+            "employee_name": "Akhlesh",
+            "employee_e-mail_id": "ak@tnspll.in",
+            "feedback_month": "February",
+            "site_timings": "5",
+            "total_score_(in_100)": "50",
+            "year": "2020"
+        },
+        {
+            "key_id": "11",
+            "manager_name": "Amit Sharma",
+            "employee_name": "Dubey",
+            "employee_e-mail_id": "du@tnspll.in",
+            "feedback_month": "September",
+            "site_timings": "7",
+            "total_score_(in_100)": "42",
+            "year": "2020"
+        }
+    ]
 
     const calculateAverage = (dataIndex) => {
         const sum = calculateSum(dataIndex);
@@ -217,11 +221,34 @@ const InteractiveListPreview = ({ data, headers }) => {
         setSearchedColumns((prev) => prev.filter(column => column !== dataIndex));
     };
 
+    const handleGlobalReset = () => {
+        setSearchGlobal(''); // Clear the search input
+        setfilterInfo({})
+        setFilteredData([...filteredData]);
+        setSearchedColumns([]);
+    };
+
+    const handleGlobalSearch = (e) => {
+        const value = e.target.value.toLowerCase();
+        setSearchGlobal(value);
+
+        // Filter the data globally across all columns
+        const filteredData = data.filter((record) => {
+            return Object.keys(record).some((key) =>
+                record[key]?.toString().toLowerCase().includes(value)
+            );
+        });
+
+        // You can then set this filtered data to a state if needed
+        setFilteredData(filteredData);
+    };
+
+
     const getColumnSearchProps = (dataIndex) => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
 
             <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-                {console.log("selectedKeys", dataIndex, selectedKeys)}
+
                 <Input
                     ref={searchInput}
                     placeholder={`Search ${dataIndex}`}
@@ -243,7 +270,7 @@ const InteractiveListPreview = ({ data, headers }) => {
                     <Button
                         onClick={() => {
                             clearFilters &&
-                            handleReset(clearFilters, dataIndex);
+                                handleReset(clearFilters, dataIndex);
                             confirm({ closeDropdown: false });
                             setSearchText(selectedKeys[0]);
                             setSearchedColumn(dataIndex);
@@ -280,6 +307,7 @@ const InteractiveListPreview = ({ data, headers }) => {
         ),
         filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#FFA500' : undefined }} />,
         onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        filteredValue: filterInfo && filterInfo[dataIndex] || "",
         onFilterDropdownOpenChange: (visible) => {
             if (visible) {
                 setTimeout(() => searchInput.current?.select(), 100);
@@ -307,28 +335,28 @@ const InteractiveListPreview = ({ data, headers }) => {
     };
 
     // Calculate maxHeight based on window height
-    const maxHeight = window.innerHeight - 185;
+    const maxHeight = window.innerHeight - 220;
 
-    const columns = headers.map((header) => ({
+    const [columns, setColumns] = useState(headers.map((header) => ({
         title: (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                 {/* <span>{header.replace(/_/g, ' ').toUpperCase()}</span> */}
-                {/* <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}> */}
-                <span
-                    style={{
-                        overflow: 'hidden',
-                        whiteSpace: 'normal',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        maxWidth: 100, // Adjust the width to your preference
+                <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}>
+                    <span
+                        style={{
+                            overflow: 'hidden',
+                            whiteSpace: 'normal',
+                            textOverflow: 'ellipsis',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            maxWidth: 100, // Adjust the width to your preference
 
-                    }}
-                >
-                    {header.replace(/_/g, ' ').toUpperCase()}
-                </span>
-                {/* </Tooltip> */}
+                        }}
+                    >
+                        {header.replace(/_/g, ' ').toUpperCase()}
+                    </span>
+                </Tooltip>
                 <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="bottom">
                     <img src={label} alt="label" style={{ marginLeft: 8, cursor: 'pointer', height: "18px" }} />
                     {/* <BarsOutlined style={{ marginLeft: 8, cursor: 'pointer' }} /> */}
@@ -365,6 +393,23 @@ const InteractiveListPreview = ({ data, headers }) => {
                 // color: searchedColumns.includes(header) ? '#fff' : '#000',
             }
         })
+    })))
+
+    const handleResize = (index) =>
+        (_, { size }) => {
+            const newColumns = [...columns];
+            newColumns[index] = {
+                ...newColumns[index],
+                width: size.width,
+            };
+            setColumns(newColumns);
+        };
+    const mergedColumns = columns.map((col, index) => ({
+        ...col,
+        onHeaderCell: (column) => ({
+            width: column.width,
+            onResize: handleResize(index),
+        }),
     }));
 
     // Function to handle pagination and slice the data
@@ -430,19 +475,39 @@ const InteractiveListPreview = ({ data, headers }) => {
     };
 
     return (
-        <div className=''>
-            <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10'>
-                {/* Scrollable table container */}
+        <div>
+            <div className='flex text-center justify-between px-[50px]'>
+                <div><span className="text-[#2A3C54] font-poppins text-[30px] font-medium">Interactive List</span></div>
+                <div>
+                    <button className="flex w-[204px] h-[44px] p-[10px] justify-center items-center gap-[10px] flex-shrink-0 bg-[#FFB041] text-white rounded-md hover:bg-[#FFB041]"
+                        onClick={handleOpenPicker}
+                    >
+                        <span className="text-white font-poppins text-[14px] font-bold leading-normal">+</span>
+                        <span className="text-white font-poppins text-[14px] font-bold leading-normal">Create app from zero</span>
+                        {/* + Create app from zero */}
+                    </button>
+
+                </div>
+            </div>
+
+            <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[20px]'>
+               
                 <div style={{ width: '100%', overflowX: 'auto', maxHeight: maxHeight, }}>
-                    <div style={{}}>
+                    <div style={{ minWidth: '1500px' }}>
                         <Table
-                            columns={columns}
+                        bordered
+                            components={{
+                                header: {
+                                    cell: ResizableTitle,
+                                },
+                            }}
+                            columns={mergedColumns}
                             dataSource={paginatedData}
                             pagination={false}
                             rowClassName="custom-row"
-                            size="small"
+                            scroll={{ x: true }}
+                            // small
                             sticky
-                            scroll={{ x: "max-content" }}
                         />
                     </div>
                 </div>
@@ -465,4 +530,5 @@ const InteractiveListPreview = ({ data, headers }) => {
     )
 };
 
-export default InteractiveListPreview;
+export default Testing1;
+

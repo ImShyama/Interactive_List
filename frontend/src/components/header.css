@@ -3,7 +3,11 @@
 .header_main {
   display: flex;
   justify-content: space-between;
-  padding: 20px 50px;
+  padding: 10px 50px;
+  background-color: #FEFBF7;
+  top:0;
+  position: sticky;
+  margin-bottom: 5px;
 }
 
 .left-panel {

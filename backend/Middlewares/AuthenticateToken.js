@@ -10,6 +10,7 @@ exports.authenticateToken = (req, res, next) => {
     console.log("Token: ",token);
     if (!token) return res?.sendStatus(401);
     jwt.verify(token, secret, async (err, decoded) => {
+        console.log({err, decoded});
         if (err) return res.sendStatus(403);
         const user = await UserModel.findById(decoded.id);
         if (!user) return res.sendStatus(404);

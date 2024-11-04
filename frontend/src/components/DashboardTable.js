@@ -60,8 +60,8 @@ const DashboardTable = () => {
       });
   }, []);
 
-  const handleShare = (spreadsheetId,sharedWith) => {
-    console.log("sharedWith",sharedWith);
+  const handleShare = (spreadsheetId, sharedWith) => {
+    console.log("sharedWith", sharedWith);
     setSpreadsheetIdForShare(spreadsheetId); // Set the selected spreadsheetId
     setShowModal(true); // Open the modal
     setSheetSharedWith(sharedWith);
@@ -139,18 +139,50 @@ const DashboardTable = () => {
   };
 
 
-  const tableData = filteredSheets.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const tableData = filteredSheets
+  .slice()
+  .sort((a, b) => {
+    const dateA = new Date(a.lastUpdatedDate);
+    const dateB = new Date(b.lastUpdatedDate);
+
+    if (isNaN(dateA.getTime())) return 1; 
+    if (isNaN(dateB.getTime())) return -1;
+
+    return dateB - dateA;
+  })
+  .slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+
+
+  // Function to format date in dd/MM/YYYY hh:mm:ss format
+  function formatLastUpdatedDate(dateInput) {
+    // Check if dateInput is valid
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) {
+      return "N/A";  // Return "N/A" if the date is invalid
+    }
+
+    // Format the date using toLocaleString with 'en-GB' options
+    const formattedDate = date.toLocaleString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+
+    return formattedDate;
+  }
+
 
   return (
     <>
       <div className="overflow-x-auto m-4 rounded-[10.423px] border-[1.303px] border-[#FFF7EA] bg-[#FEFBF7] overflow-hidden">
         <div className="w-[100%] border-b-[1.303px]">
-          <div className="flex w-1/3 gap-[10px] justify-start p-4 relative z-[100]">
+          <div className="flex gap-[10px]  p-4 relative z-[100]">
             {/* Search input */}
-            <div className="flex flex-1">
+            <div className="flex">
               <Input
                 prefix={<BiSearch />}
                 value={searchQuery}
@@ -202,8 +234,8 @@ const DashboardTable = () => {
                       {sheet.spreadsheetName || sheet.firstSheetName}
                     </a>
                   </td>
-                  <td className="px-4 py-2 text-[14px]">Owner</td>
-                  <td className="px-4 py-2 text-[14px]">06/20/2024</td>
+                  <td className="px-4 py-2 text-[14px]">{sheet.access || "N/A"}</td>
+                  <td className="px-4 py-2 text-[14px]">{formatLastUpdatedDate(sheet.lastUpdatedDate)}</td>
                   <td className="px-4 py-2 flex gap-[15px] justify-start items-center">
                     <button onClick={() => openModal(sheet)} className="relative">
                       <div class="group">

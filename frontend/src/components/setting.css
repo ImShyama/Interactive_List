@@ -27,7 +27,7 @@
   display: flex;
   width: 450px;
   align-items: center;
-  gap: 217px;
+  gap: 117px;
 }
 
 .setting_icons_top_left {
@@ -58,14 +58,14 @@
 
 .setting_icons_top_right {
   display: flex;
-  width: 106px;
+  /* width: 106px; */
   align-items: center;
-  gap: 34px;
+  gap: 16px;
 }
 
 .setting_icons_top_right_inner {
   display: flex;
-  width: 106px;
+  width: 41px;
   height: 41px;
   padding: 0px 12px;
   justify-content: center;
@@ -159,7 +159,7 @@
 .setting_filter_top1_text {
   color: var(--black, #111);
   font-family: Poppins;
-  font-size: 14px;
+  font-size: 18px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -211,7 +211,7 @@
 .setting_filter_bottom_span {
   color: var(--black, #111);
   font-family: Poppins;
-  font-size: 16px;
+  font-size: 18px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -269,7 +269,7 @@
 .Spreadsheet_setting {
   display: flex;
   width: 450px;
-  height: 297px;
+  /* height: 297px; */
   flex-direction: column;
   align-items: flex-start;
   gap: 24px;
@@ -328,7 +328,7 @@
 
 .sheet_btn_select {
   display: flex;
-  width: 89px;
+  /* width: 89px; */
   height: 41px;
   padding: 0px 14px;
   justify-content: center;
@@ -417,9 +417,10 @@ gap: 10px;
 
 .submit_btn{
     display: flex;
-width: 148px;
-height: 46px;
-padding: 10px;
+/* width: 115px; */
+height: 36px;
+padding-block: 10px;
+padding-inline: 14px;
 justify-content: center;
 align-items: center;
 gap: 10px;
@@ -428,6 +429,12 @@ border-radius: 82px;
 background: var(--brand-color-2, #FFA500);
 box-shadow: 6px 4px 24.5px 0px rgba(134, 138, 156, 0.25);
 cursor: pointer;
+}
+
+.submit_btn:disabled {
+  background: #cccccc; /* Disabled state background */
+  cursor: not-allowed;  /* Disabled state cursor */
+  box-shadow: none;     /* Remove shadow when disabled */
 }
 
 .span_btn{

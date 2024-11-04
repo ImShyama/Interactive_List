@@ -13,6 +13,9 @@ const SheetSchema = new mongoose.Schema({
     appName: String,
     sheetDetails: Array,
     sharedWith:Array,
+    tableSettings: Array,
+    access: String,
+    lastUpdatedDate: String,
 });
 
 

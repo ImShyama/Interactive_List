@@ -1,17 +1,68 @@
-import {React, useEffect, useRef, useState, useContext } from 'react';
-import { SearchOutlined, BarsOutlined, EllipsisOutlined } from '@ant-design/icons';
+import { React, useEffect, useRef, useState, useContext } from 'react';
+import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Popover, Tooltip, Pagination } from 'antd';
 import Highlighter from 'react-highlight-words';
 import label from '../assets/label.svg'
 import { BiSearch } from 'react-icons/bi';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import EditableSpreadsheetName from "./EditableSpreadsheetName";
 import DeleteAlert from './DeleteAlert';
 import EditRow from './EditRow';
-import axios from 'axios';  // Assuming you're using axios for API calls
-import { HOST } from '../utils/constants';  // Assuming you have HOST defined somewhere
+import axios from 'axios';
+import { HOST } from '../utils/constants';
 import { UserContext } from "../context/UserContext";
+import Cookies from 'js-cookie';
+import { Resizable } from 'react-resizable';
+import './table.css';
+import bulkAdd from '../assets/bulkAdd.svg';
+import add from '../assets/addButton.svg';
+import reset from '../assets/reset.svg';
+import search from '../assets/search.svg';
+import cancel from '../assets/cancel.svg';
+import BulkAdd from './BulkAdd';
+import useDrivePicker from 'react-google-drive-picker';
+import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
+import styled from 'styled-components';
+import { EllipsisOutlined, FilterOutlined } from '@ant-design/icons';
+import { VerticalEllipsis, LabelIcon } from '../assets/svgIcons';
 
+
+// Styled component for the Ant Table
+const StyledAntTable = styled(Table)`
+  .ant-table-container .ant-table-content table thead.ant-table-thead .ant-table-cell {
+    background-color: ${(props) => props.headerBgColor} !important;
+    color: ${(props) => props.headerTextColor} !important;
+    font-size: ${(props) => props.headerFontSize}px !important;
+    font-family: ${(props) => props.headerFontFamily} !important;
+  }
+
+  .ant-table-container .ant-table-content table tbody.ant-table-tbody .ant-table-cell {
+    background-color: ${(props) => props.bodyBgColor} !important;
+    color: ${(props) => props.bodyTextColor} !important;
+    font-size: ${(props) => props.bodyFontSize}px !important;
+    font-family: ${(props) => props.bodyFontFamily} !important;
+  }
+`;
+
+const ResizableTitle = (props) => {
+  const { onResize, width, ...restProps } = props;
+  if (!width) {
+    return <th {...restProps} />;
+  }
+  return (
+    <Resizable
+      width={width}
+      height={0}
+      handle={<span className="react-resizable-handle" onClick={(e) => e.stopPropagation()} />}
+      onResize={onResize}
+      draggableOpts={{
+        enableUserSelectHack: false,
+      }}
+    >
+      <th {...restProps} />
+    </Resizable>
+  );
+};
 
 // const data = [
 //   {
@@ -44,6 +95,7 @@ import { UserContext } from "../context/UserContext";
 
 // Function to check if a value is numeric
 const isNumeric = (value) => !isNaN(parseFloat(value)) && isFinite(value);
+
 const convertArrayToJSON = (data) => {
   // The first array contains the keys
   const keys = data[0];
@@ -60,7 +112,21 @@ const convertArrayToJSON = (data) => {
   return jsonData;
 };
 
+const loadColumnWidthsFromCookies = () => {
+  // const cookiesName = settings?._id + settings?.firstSheetName;
+  // console.log("cookiesName", cookiesName);
+  const savedWidths = Cookies.get("cookiesName");
+  return savedWidths ? JSON.parse(savedWidths) : null;
+};
+
+const saveColumnWidthsToCookies = (columnWidths) => {
+  // const cookiesName = settings?._id + settings?.firstSheetName;
+  // console.log("cookiesName", cookiesName);
+  Cookies.set("cookiesName", JSON.stringify(columnWidths), { expires: 7 }); // Cookie expires in 7 days
+};
+
 const InteractiveList = ({ data, headers }) => {
+
   const [filterInfo, setfilterInfo] = useState({})
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
@@ -71,21 +137,33 @@ const InteractiveList = ({ data, headers }) => {
   const searchInput = useRef(null);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
+  const [confirmAddModalOpen, setConfirmAddModalOpen] = useState(false);
+  const [confirmBulkAddModalOpen, setConfirmBulkAddModalOpen] = useState(false);
   const [rowToDelete, setRowToDelete] = useState(null);
   const [rowToEdit, setRowToEdit] = useState(null);
+  const [selectSpreadsheet, setSelectSpreadsheet] = useState(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   headers = headers.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
   data = convertArrayToJSON(data);
   const [filteredData, setFilteredData] = useState(data);
   const { token } = useContext(UserContext);
-
-
-  const tableChangehandler = (pagination, filters, sorter) => {
-    setfilterInfo(filters)
-  }
-  // Check if the URL ends with /edit
+  const clientId = CLIENTID
+  const developerKey = DEVELOPERKEY
   const isEditMode = window.location.pathname.endsWith('/edit');
+  const settings = useSelector((state) => state?.setting?.settings);
 
-  const settings = useSelector((state) => state.setting.settings);
+  const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
+
+  const [headerBgColor, setHeaderBgColor] = useState(tableSettings?.headerBgColor || '#000000'); // Default header background color
+  const [headerTextColor, setHeaderTextColor] = useState(tableSettings?.headerTextColor || '#ffffff'); // Default header text color
+  const [headerFontSize, setHeaderFontSize] = useState(tableSettings?.headerFontSize || 14); // Default header font size
+  const [headerFontFamily, setHeaderFontFamily] = useState(tableSettings?.headerFontStyle || 'Poppins'); // Default header font family
+
+  // const [bodyBgColor, setBodyBgColor] = useState(tableSettings?.bodyBgColor || '#ffffff'); // Default body background color
+  const [bodyTextColor, setBodyTextColor] = useState(tableSettings?.bodyTextColor || '#000000'); // Default body text color
+  const [bodyFontSize, setBodyFontSize] = useState(tableSettings?.bodyFontSize || 12); // Default body font size
+  const [bodyFontFamily, setBodyFontFamily] = useState(tableSettings?.bodyFontFamily || 'Poppins'); // Default body font family
+
 
   async function deleteRow(spreadSheetID, sheetName, rowIndex, token) {
     try {
@@ -104,7 +182,7 @@ const InteractiveList = ({ data, headers }) => {
           },
         }
       );
-  
+
       // Handle success response
       console.log('Row deleted successfully:', response.data);
       return response.data;
@@ -114,6 +192,20 @@ const InteractiveList = ({ data, headers }) => {
       throw error;
     }
   }
+
+  useEffect(() => {
+    const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
+
+    setHeaderBgColor(tableSettings?.headerBgColor); // Default header background color
+    setHeaderTextColor(tableSettings?.headerTextColor); // Default header text color
+    setHeaderFontSize(tableSettings?.headerFontSize); // Default header font size
+    setHeaderFontFamily(tableSettings?.headerFontStyle); // Default header font family
+
+    // setBodyBgColor(tableSettings?.bodyBgColor || '#ffffff'); // Default body background color
+    setBodyTextColor(tableSettings?.bodyTextColor || '#000000'); // Default body text color
+    setBodyFontSize(tableSettings?.bodyFontSize || 12); // Default body font size
+    setBodyFontFamily(tableSettings?.bodyFontFamily || 'Poppins'); // Default body font family
+  }, [settings]);
 
 
   useEffect(() => {
@@ -193,7 +285,6 @@ const InteractiveList = ({ data, headers }) => {
     });
   };
 
-
   const handleGlobalReset = () => {
     setSearchGlobal(''); // Clear the search input
     setfilterInfo({})
@@ -259,7 +350,7 @@ const InteractiveList = ({ data, headers }) => {
     ),
     filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#FFA500' : undefined }} />,
     onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    filteredValue: filterInfo && filterInfo[dataIndex] || "",
+    // filteredValue: filterInfo && filterInfo[dataIndex] || "",
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);
@@ -285,7 +376,6 @@ const InteractiveList = ({ data, headers }) => {
       return false;
     }
   };
-
 
   const handleDeleteClick = (record) => {
     setRowToDelete(+record.key_id + 1);
@@ -320,11 +410,11 @@ const InteractiveList = ({ data, headers }) => {
           },
         }
       );
-  
+
       // Handle success response
       console.log('Row deleted successfully:', response.data);
       console.log('Filtered data:', filteredData);
-      const updatedData = filteredData.filter((row) => row.key_id != rowIndex-1);
+      const updatedData = filteredData.filter((row) => row.key_id != rowIndex - 1);
       setFilteredData(updatedData);
       return response.data;
     } catch (error) {
@@ -349,8 +439,8 @@ const InteractiveList = ({ data, headers }) => {
     const sheetName = settings.firstSheetName;
     // const newData = Object.values(updatedRow);  // Convert the row object to an array for newData
     const newData = Object.entries(updatedRow)
-  .filter(([key]) => key !== 'key_id')  // Filter out the key_id field
-  .map(([, value]) => value);  // Map to get only the values
+      .filter(([key]) => key !== 'key_id')  // Filter out the key_id field
+      .map(([, value]) => value);  // Map to get only the values
 
 
     try {
@@ -360,13 +450,13 @@ const InteractiveList = ({ data, headers }) => {
         rowIndex,
         newData,
       },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
-        },
-      });
-  
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
+          },
+        });
+
       console.log('Row edited successfully:', response.data);
       // Handle successful response (e.g., show success notification)
       const updatedSheetData = convertArrayToJSON(response.data?.updatedSheetData?.values);
@@ -380,49 +470,321 @@ const InteractiveList = ({ data, headers }) => {
 
   const handleEditRow = async (updatedRow) => {
     const rowIndex = +updatedRow.key_id + 1;  // Assuming key_id is the 0-based index, add 1 to get 1-based index for the sheet
-  
+
     try {
       // Call the API with the updated row data and rowIndex
       await handleSaveAPI(updatedRow, rowIndex);
-  
+
       setConfirmEditModalOpen(false);
     } catch (error) {
       console.error('Error saving row:', error);
     }
   };
+  const handleAdd = () => {
+    console.log(headers)
+    const obj = headers.reduce((acc, curr) => {
+      acc[curr] = "";
+      return acc;
+    }, {});
+    setRowToEdit(obj);
+    setConfirmAddModalOpen(true);
+  }
+
+  const handleAddCancel = () => {
+    setConfirmAddModalOpen(false);
+  };
+
+  const handleAddAPI = async (updatedRow) => {
+    const spreadSheetID = settings.spreadsheetId;
+    const sheetName = settings.firstSheetName;
+    // const newData = Object.values(updatedRow);  // Convert the row object to an array for newData
+    const rowData = Object.entries(updatedRow)
+      .filter(([key]) => key !== 'key_id')  // Filter out the key_id field
+      .map(([, value]) => value);  // Map to get only the values
+
+
+    try {
+      const response = await axios.post(`${HOST}/addRow`, {
+        spreadSheetID,
+        sheetName,
+        rowData,
+      },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
+          },
+        });
+
+      console.log('Row edited successfully:', response.data);
+      // Handle successful response (e.g., show success notification)
+      const updatedSheetData = convertArrayToJSON(response.data?.updatedSheetData?.values);
+
+      setFilteredData(updatedSheetData);
+    } catch (error) {
+      console.error('Error editing row:', error);
+      // Handle error response (e.g., show error notification)
+    }
+  };
+
+  const handleAddRow = async (updatedRow) => {
+
+    try {
+      // Call the API with the updated row data and rowIndex
+      await handleAddAPI(updatedRow);
+
+      setConfirmAddModalOpen(false);
+    } catch (error) {
+      console.error('Error saving row:', error);
+    }
+  };
+
+  const handleAddBukl = () => {
+    setConfirmBulkAddModalOpen(true);
+  }
+
+  const handleBulkAddCancel = () => {
+    setConfirmBulkAddModalOpen(false);
+    setSelectSpreadsheet(null);
+  }
+
+  const handleBuldData = (data) => {
+    setFilteredData(convertArrayToJSON(data));
+    setConfirmBulkAddModalOpen(false);
+  }
+
+  const handleAddSheet = (data) => {
+    if (data.action === "picked") {
+      console.log("data", data);
+
+      axios
+        .post(
+          `${HOST}/createNewSpreadsheet`,
+          {
+            url: data?.docs?.[0]?.url,
+            spreadSheetID: data?.docs?.[0]?.id,
+            sheetName: data?.docs?.[0]?.name,
+            appName: 'Interactive List'
+          },
+          {
+            headers: {
+              authorization: "Bearer " + token
+            },
+          }
+        )
+        .then(({ data: res, status }) => {
+          if (status === 200 && !res.error) {
+            console.log("res data: ", res);
+            // Redirect to edit page with the new spreadsheet ID
+            navigate(`/${res._id}/edit`);
+          } else {
+            alert(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    }
+  };
+
+  const [openPicker, authResponse] = useDrivePicker();
+
+  // Function to trigger the Google Drive Picker
+  const handleOpenPicker = () => {
+    openPicker({
+      clientId,
+      developerKey,
+      viewId: "DOCS",
+      showUploadView: true,
+      showUploadFolders: true,
+      supportDrives: true,
+      multiselect: false, // Single file picker for spreadsheet
+      callbackFunction: (data) => {
+        if (data.action === 'cancel') {
+          console.log('User clicked cancel/close button');
+        } else if (data.action === 'picked') {
+          const spreadSheetID = data.docs[0].id; // Extract Spreadsheet ID
+          console.log(`Spreadsheet ID: ${spreadSheetID}`);
+          getSpreadsheetDetails(spreadSheetID); // Call the API to get sheet details
+        }
+      },
+    });
+  };
+
+  // Function to make an API call to your backend to fetch spreadsheet details
+  const getSpreadsheetDetails = async (spreadSheetID) => {
+
+    try {
+      const response = await axios.post(`${HOST}/getSpreadsheetDetails`,
+        { spreadSheetID },  // Request body
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
+          },
+        }
+      );
+
+      setSelectSpreadsheet(response.data.data);
+
+      // You can now use the spreadsheet details (name, sheet names, URL)
+      const { spreadsheetName, sheetNames, sheetUrl } = response.data.data;
+    } catch (error) {
+      console.error('Error fetching spreadsheet details:', error);
+    }
+  };
+
+  // const getColumnSearchProps = (dataIndex) => ({
+  //   renderFilterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+  //     <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+  //       <Input
+  //         ref={searchInput}
+  //         placeholder={`Search ${dataIndex}`}
+  //         value={selectedKeys[0]}
+  //         onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+  //         onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+  //         style={{ marginBottom: 8, display: 'block' }}
+  //       />
+  //       <Space>
+  //         <Button
+  //           type="primary"
+  //           onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+  //           icon={<SearchOutlined />}
+  //           size="small"
+  //           style={{ width: 90 }}
+  //         >
+  //           Search
+  //         </Button>
+  //         <Button
+  //           onClick={() => handleReset(clearFilters, dataIndex)}
+  //           size="small"
+  //           style={{ width: 90 }}
+  //         >
+  //           Reset
+  //         </Button>
+  //         <Button type="link" size="small" onClick={close}>
+  //           Close
+  //         </Button>
+  //       </Space>
+  //     </div>
+  //   ),
+  //   filterIcon: (filtered) => <SearchOutlined style={{ color: filtered ? '#FFA500' : undefined }} />,
+  //   onFilter: (value, record) => record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+  //   onFilterDropdownOpenChange: (visible) => {
+  //     if (visible) {
+  //       setTimeout(() => searchInput.current?.select(), 100);
+  //     }
+  //   },
+  //   render: (text) => (searchedColumn === dataIndex ? (
+  //     <Highlighter
+  //       highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+  //       searchWords={[searchText]}
+  //       autoEscape
+  //       textToHighlight={text ? text.toString() : ''}
+  //     />
+  //   ) : text),
+  // });
+  
+  // const ColumnFilter = ({ dataIndex, confirm, clearFilters, close }) => {
+  //   const searchInput = useRef(null);
+  
+  //   return (
+  //     <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+  //       <Input
+  //         ref={searchInput}
+  //         placeholder={`Search ${dataIndex}`}
+  //         onPressEnter={() => confirm()}
+  //         style={{ marginBottom: 8, display: 'block' }}
+  //       />
+  //       <Space>
+  //         <Button
+  //           type="primary"
+  //           onClick={() => confirm()}
+  //           icon={<SearchOutlined />}
+  //           size="small"
+  //           style={{ width: 90 }}
+  //         >
+  //           Search
+  //         </Button>
+  //         <Button onClick={() => clearFilters()} size="small" style={{ width: 90 }}>
+  //           Reset
+  //         </Button>
+  //         <Button type="link" size="small" onClick={() => close()}>
+  //           Close
+  //         </Button>
+  //       </Space>
+  //     </div>
+  //   );
+  // };
+
 
   // Calculate maxHeight based on window height
   const maxHeight = window.innerHeight - 220;
 
-  const columns = [
+  const [columns, setColumns] = useState([
     ...headers.map((header, index) => ({
       title: (
         <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
           {/* <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}> */}
-            <span
-              style={{
-                overflow: 'hidden',
-                whiteSpace: 'normal',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                maxWidth: 100, // Adjust the width to your preference
-              }}
-            >
-              {header.replace(/_/g, ' ').toUpperCase()}
-            </span>
+          <span
+            style={{
+              overflow: 'hidden',
+              whiteSpace: 'normal',
+              textOverflow: 'ellipsis',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              maxWidth: 100, // Adjust the width to your preference
+            }}
+          >
+            {header.replace(/_/g, ' ').toUpperCase()}
+          </span>
           {/* </Tooltip> */}
           <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="bottom">
             <img src={label} alt="label" style={{ marginLeft: 8, cursor: 'pointer', height: '18px' }} />
           </Popover>
+          {/* <Popover
+            trigger="click"
+            placement="bottomRight"
+            content={
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+  
+                <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="right">
+                  <div style={{ cursor: 'pointer', color: 'blue' }}><LabelIcon /></div>
+                </Popover>
+
+                <Popover
+                content={({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+                  <ColumnFilter
+                    dataIndex={header}
+                    setSelectedKeys={setSelectedKeys}
+                    selectedKeys={selectedKeys}
+                    confirm={confirm}
+                    clearFilters={clearFilters}
+                  />
+                )}
+                trigger="click"
+                placement="right"
+              >
+                <div style={{ cursor: 'pointer', color: 'blue', display: 'flex', alignItems: 'center' }}>
+                  <FilterOutlined style={{ marginRight: 4 }} /> Filter
+                </div>
+              </Popover>
+              </div>
+            }
+          >
+            <div style={{ display: 'inline-flex', cursor: 'pointer' }}>
+              <VerticalEllipsis />
+            </div>
+          </Popover> */}
         </div>
       ),
       dataIndex: header,
       key: header,
-      width: "200px",
+      width: 200,
       ellipsis: true,
       ...getColumnSearchProps(header),
+
       sorter: (a, b) => {
         if (isNumeric(a[header]) && isNumeric(b[header])) {
           return a[header] - b[header];
@@ -443,7 +805,17 @@ const InteractiveList = ({ data, headers }) => {
           backgroundColor: searchedColumns.includes(header) ? 'rgb(216 216 216)' : 'transparent',
         },
       }),
+      // Styling for the body cells
+      onCell: (record) => ({
+        style: {
+          // backgroundColor: bodyBgColor, // Body background color
+          color: bodyTextColor, // Body text color
+          fontFamily: bodyFontFamily, // Body font family
+          fontSize: `${bodyFontSize}px`, // Body font size
+        },
+      }),
     })),
+
 
     // Conditionally add the Action column if params includes 'edit'
     ...(isEditMode
@@ -481,67 +853,203 @@ const InteractiveList = ({ data, headers }) => {
                   </svg>
                 </div>
               </button>
-              {/* <a
-                onClick={() => handleAction(record)}
-                style={{ color: '#437FFF', cursor: 'pointer' }}
-              >
-                Action
-              </a> */}
 
             </div>
           ),
         },
       ]
       : []),
-  ];
+  ]);
+
+
+  useEffect(() => {
+    const savedColumnWidths = loadColumnWidthsFromCookies();
+    console.log("savedColumnWidths", savedColumnWidths);
+    if (savedColumnWidths) {
+      const newColumns = columns.map((col, index) => ({
+        ...col,
+        width: savedColumnWidths[index] || col.width, // Use saved width or fallback to default width
+      }));
+
+      setColumns(newColumns);
+    }
+  }, []);
+
+  const handleResize = (index) => (_, { size }) => {
+    const newColumns = [...columns];
+    newColumns[index] = {
+      ...newColumns[index],
+      width: size.width,
+    };
+    setColumns(newColumns);
+
+    // Get current column widths and save to cookies
+    const columnWidths = newColumns.map((col) => col.width);
+    saveColumnWidthsToCookies(columnWidths);
+  };
+
+
+  const mergedColumns = columns.map((col, index) => ({
+    ...col,
+    onHeaderCell: (column) => ({
+      width: column.width,
+      onResize: handleResize(index),
+      // style: {
+      //   backgroundColor: searchedColumns.includes(column.dataIndex) ? 'rgb(216 216 216)' : headerBgColor,  // Apply blue background to the entire header cell
+      //   color: headerTextColor,
+
+      //   // color: searchedColumns.includes(header) ? '#fff' : '#000',
+      // }
+      style: {
+        backgroundColor: searchedColumns.includes(column.dataIndex) ? 'rgb(216 216 216)' : headerBgColor,  // Background color logic
+        color: headerTextColor, // Text color logic
+        fontFamily: headerFontFamily, // Add the font family
+        fontSize: `${headerFontSize}px`, // Add the font size and ensure it's in 'px' or another unit
+
+        // Additional styles can go here...
+      }
+
+    }),
+    // Styling for the body cells
+    // onCell: (record) => ({
+    //   style: {
+    //     backgroundColor: bodyBgColor, // Body background color
+    //     color: bodyTextColor, // Body text color
+    //     fontFamily: bodyFontFamily, // Body font family
+    //     fontSize: `${bodyFontSize}px`, // Body font size
+    //   },
+    // }),
+  }));
+
+  console.log('headerfont', headerFontFamily);
+
+  const openSearch = () => {
+    setIsSearchOpen(true);
+  };
+
+  const closeSearch = () => {
+    setIsSearchOpen(false);
+  };
+
 
   // Function to handle pagination and slice the data
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   return (
     <div>
-      <div className='flex text-center justify-between px-[50px]'>
+      <div className='flex text-center justify-between items-center px-[50px]'>
 
         {settings && <EditableSpreadsheetName settings={settings} />}
         {/* <div><span className="text-[#2A3C54] font-poppins text-[30px] font-medium">{settings.spreadsheetName}</span></div> */}
-        <div>
-          <Input
+        <div className='flex justify-end items-center'>
+
+          {isSearchOpen && <Input
             prefix={<BiSearch />}
             value={searchGLobal}
             onChange={handleGlobalSearch}
             style={{ width: "200px" }}
-            className="min-w-[150px] px-4 py-2 mx-2"
+            className="min-w-[150px] px-4 py-1 mx-2"
             placeholder="Search"
-          />
+          />}
+
+
+          {isSearchOpen && <button
+            onClick={closeSearch}
+            className="bg-[#FFA500] rounded-[4px] p-1 mr-2"
+          // className="border border-[#FFA500] text-[#FFA500] px-4 py-1 rounded-md hover:bg-[#FFA500] hover:text-white transition-colors duration-200"
+          >
+            {/* <span>Reset</span> */}
+            <img src={cancel} alt="search" className="w-[18px] h-[18px]" />
+          </button>}
+
+
+
+          {!isSearchOpen && <button
+            onClick={openSearch}
+            className="bg-[#FFA500] rounded-[4px] p-1 mx-2"
+          // className="border border-[#FFA500] text-[#FFA500] px-4 py-1 rounded-md hover:bg-[#FFA500] hover:text-white transition-colors duration-200"
+          >
+            {/* <span>Reset</span> */}
+            <img src={search} alt="search" className="w-[18px] h-[18px]" />
+          </button>}
+
+
           <button
             onClick={handleGlobalReset}
-            className="border border-[#FFA500] text-[#FFA500] px-4 py-2 rounded-md hover:bg-[#FFA500] hover:text-white transition-colors duration-200">
-            <span>Reset</span>
+            className="bg-[#FFA500] rounded-[4px] p-1"
+          // className="border border-[#FFA500] text-[#FFA500] px-4 py-1 rounded-md hover:bg-[#FFA500] hover:text-white transition-colors duration-200"
+          >
+            {/* <span>Reset</span> */}
+            <img src={reset} alt="reset" className="w-[18px] h-[18px]" />
           </button>
+
+          <button
+            onClick={handleAdd}
+            className='mx-2'
+          // className="border border-[#FFA500] px-4 py-1 rounded-md bg-[#FFA500] text-white transition-colors duration-200"
+          >
+            <img src={add} alt="add" className="w-[26px] h-[26px]" />
+            {/* <span>ADD +</span> */}
+          </button>
+
+          <button
+            onClick={handleAddBukl}
+
+
+          // className="border border-[#FFA500] px-2 py-1 mx-2 rounded-md bg-[#FFA500] text-white transition-colors duration-200"
+          >
+            {/* <span>Bulk +</span> */}
+            <img src={bulkAdd} alt="bulk" className="w-[30px] h-[30px]" />
+          </button>
+
 
         </div>
       </div>
 
-      <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[20px]'>
-        {/* Scrollable table container */}
-        <div style={{ width: '100%' }}>
-          {/* style={{ width: '100%', overflowX: 'auto', maxHeight: maxHeight, }} */}
+      <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[10px]'>
+        <div style={{ width: '100%', overflowX: 'auto', maxHeight: maxHeight, }}>
           <div style={{}}>
+            {console.log('headerBgColor1', headerBgColor)}
             <Table
-              onChange={tableChangehandler}
-              columns={columns}
+              // onChange={tableChangehandler}
+              bordered
+              // headerBgColor={headerBgColor}
+              // headerTextColor={headerTextColor}
+              // headerFontSize={headerFontSize}
+              // headerFontFamily={headerFontFamily}
+              // bodyBgColor={bodyBgColor}
+              // bodyTextColor={bodyTextColor}
+              // bodyFontSize={bodyFontSize}
+              // bodyFontFamily={bodyFontFamily}
+              components={{
+                header: {
+                  cell: ResizableTitle,
+                },
+              }}
+              columns={mergedColumns}
               dataSource={paginatedData}
               pagination={false}
               rowClassName="custom-row"
               scroll={{ x: "max-content" }}
-              style={{ maxHeight: maxHeight, overflowY: 'auto', }}
+              // style={{
+              //   maxHeight: maxHeight, overflowY: 'auto',
+              //   '--header-bg-color': headerBgColor,
+              //   '--header-text-color': headerTextColor,
+              //   '--header-font-size': `${headerFontSize}px`,
+              //   '--header-font-family': headerFontFamily,
+              //   '--body-bg-color': bodyBgColor,
+              //   '--body-text-color': bodyTextColor,
+              //   '--body-font-size': `${bodyFontSize}px`,
+              //   '--body-font-family': bodyFontFamily,
+              // }}
               sticky
+              size="small"
             />
           </div>
         </div>
 
         {/* Pagination outside the scroll */}
-        <div style={{ display: 'flex', justifyContent: 'right', marginTop: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'right', marginTop: '10px' }}>
           <Pagination
             current={currentPage}
             pageSize={pageSize}
@@ -562,12 +1070,27 @@ const InteractiveList = ({ data, headers }) => {
         onConfirm={handleDeleteRow}
         sheetName="this row"
       />
-      <EditRow 
+
+      <EditRow
+        isOpen={confirmAddModalOpen}
+        onClose={handleAddCancel}
+        onConfirm={handleAddRow}
+        modelName="Add Row"
+        row={rowToEdit}
+      />
+      <EditRow
         isOpen={confirmEditModalOpen}
         onClose={handleEditCancel}
         onConfirm={handleEditRow}
-        modelName="Edit"
+        modelName="Edit Row"
         row={rowToEdit}
+      />
+      <BulkAdd
+        isOpen={confirmBulkAddModalOpen}
+        onClose={handleBulkAddCancel}
+        openPicker={handleOpenPicker}
+        spreadSheetData={selectSpreadsheet}
+        handleBuldData={handleBuldData}
       />
     </div>
   )

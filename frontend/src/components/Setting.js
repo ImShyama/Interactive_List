@@ -20,80 +20,197 @@ import { UserContext } from "../context/UserContext";
 import { useSelector, useDispatch } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import { HOST } from "../utils/constants.js";
+import ColorPick from "./ColorPick.js";
+import useDrivePicker from 'react-google-drive-picker';
+import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
+import { ColorPicker } from "antd";
+import Loader from "./Loader";
 
-const AddData = () => {
+
+const AddData = ({ activateSave }) => {
+
+  const dispatch = useDispatch();
+  const settingData = useSelector((state) => state.setting.settings);
+  const tableSettings = settingData?.tableSettings[0];
+
+  // Initial state to manage all inputs
+  const [formData, setFormData] = useState({
+    headerBgColor: tableSettings?.headerBgColor || '#945d5d',
+    headerTextColor: tableSettings?.headerTextColor || '#000000',
+    headerFontSize: tableSettings?.headerFontSize || '14',
+    headerFontStyle: tableSettings?.headerFontStyle || 'Poppins',
+    bodyBgColor: tableSettings?.bodyBgColor || '#ffffff',
+    bodyTextColor: tableSettings?.bodyTextColor || '#000000',
+    bodyFontSize: tableSettings?.bodyFontSize || '11',
+    bodyFontStyle: tableSettings?.bodyFontStyle || 'Poppins',
+  });
+
+  // Handle change for all input fields
+  // const handleChange = (field, value) => {
+  //   setFormData({
+  //     ...formData,
+  //     [field]: value,
+  //   });
+  //   activateSave();
+  //   const updatedSettings = {
+  //     tableSettings: formData,
+  //   };
+  //   dispatch(updateSetting(updatedSettings));
+  //   console.log("updatedSettings", settingData);
+
+  // };
+
+  const handleChange = (field, value) => {
+    setFormData((prevFormData) => {
+      const updatedFormData = {
+        ...prevFormData,
+        [field]: value,
+      };
+
+      // Dispatch and log after the formData is updated
+      const updatedSettings = {
+        tableSettings: [updatedFormData],
+      };
+      dispatch(updateSetting(updatedSettings));
+      console.log("Updated settings:", settingData);
+
+      return updatedFormData;
+    });
+
+    activateSave();  // Save button activation
+  };
+
+
+  // Handle form submission
+  const handleTableSaveChanges = () => {
+    console.log('Saved Data:', formData);
+    // Perform your API call or other operations here
+  };
+
   return (
-    <div className="add_data">
-      <div className="add_data_group">
-        <div className="add_data_label">
-          <span>Employee Name</span>
+    <div className="w-[100%]">
+      <div className="flex gap-5 px-2">
+        {/* Header Settings */}
+        <div className="w-[50%]">
+          <div className="inline-flex h-[30px] px-[16px] mb-2 flex-col justify-center items-start gap-[35.163px] flex-shrink-0 border-l-2 border-[#FFA500]">
+            <span className="text-[#111] font-poppins text-[16px] font-medium leading-normal">
+              Header Settings
+            </span>
+          </div>
+          <div className="flex justify-between items-center my-3">
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Background Color</span>
+            <ColorPicker
+              value={formData.headerBgColor}
+              onChange={(color) => {
+                if (color && color.toHexString()) {
+                  handleChange('headerBgColor', color.toHexString())
+                }
+              }}
+            />
+          </div>
+          <div className="flex justify-between items-center my-3">
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Color</span>
+            <ColorPicker
+              value={formData.headerTextColor}  // value should come from the state
+              onChange={(color) => {
+                console.log("Color object: ", color.toHexString());  // Log to verify the object
+                if (color && color.toHexString()) {
+                  handleChange('headerTextColor', color.toHexString());
+                }
+              }}
+            />
+
+
+          </div>
+          <div className="flex justify-between items-center my-3">
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Size</span>
+            <select
+              className="bg-[#EDEDED] rounded-[4.789px]"
+              value={formData.headerFontSize}
+              onChange={(e) => handleChange('headerFontSize', e.target.value)}
+            >
+              <option value="10">10</option>
+              <option value="12">12</option>
+              <option value="14">14</option>
+            </select>
+          </div>
+          <div className="flex justify-between items-center my-3">
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Style</span>
+            <select
+              className="bg-[#EDEDED] rounded-[4.789px]"
+              value={formData.headerFontStyle}
+              onChange={(e) => handleChange('headerFontStyle', e.target.value)}
+            >
+              <option value="Poppins">Poppins</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Arial">Arial</option>
+              <option value="Times New Roman">Times New</option>
+              <option value="Courier New">Courier New</option>
+            </select>
+          </div>
         </div>
-        <div className="add_data_input">
-          <input
-            className="add_input"
-            type="text"
-            placeholder="Ex-Dharmesh Patel"
-          />
+
+        {/* Body Settings */}
+        <div className="w-[50%]">
+          <div className="inline-flex h-[30px] px-[16px] mb-2 flex-col justify-center items-start gap-[35.163px] flex-shrink-0 border-l-2 border-[#FFA500]">
+            <span className="text-[#111] font-poppins text-[16px] font-medium leading-normal">
+              Body Settings
+            </span>
+          </div>
+          <div className="flex justify-between items-center my-3">
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Background Color</span>
+            <ColorPicker
+              value={formData.bodyBgColor}
+              onChange={(color) => handleChange('bodyBgColor', color.toHexString())}
+            />
+          </div>
+          <div className="flex justify-between items-center my-3">
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Color</span>
+            <ColorPicker
+              value={formData.bodyTextColor}
+              onChange={(color) => handleChange('bodyTextColor', color.toHexString())}
+            />
+          </div>
+          <div className="flex justify-between items-center my-3">
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Size</span>
+            <select
+              className="bg-[#EDEDED] rounded-[4.789px]"
+              value={formData.bodyFontSize}
+              onChange={(e) => handleChange('bodyFontSize', e.target.value)}
+            >
+              <option value="10">10</option>
+              <option value="12">12</option>
+              <option value="14">14</option>
+            </select>
+          </div>
+          <div className="flex justify-between items-center my-3">
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Style</span>
+            <select
+              className="bg-[#EDEDED] rounded-[4.789px]"
+              value={formData.bodyFontStyle}
+              onChange={(e) => handleChange('bodyFontStyle', e.target.value)}
+            >
+              <option value="Poppins">Poppins</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Arial">Arial</option>
+              <option value="Times New Roman">Times New</option>
+              <option value="Courier New">Courier New</option>
+            </select>
+          </div>
         </div>
       </div>
-      <div className="add_data_group">
-        <div className="add_data_label">
-          <span>Manager Name</span>
-        </div>
-        <div className="add_data_input">
-          <input
-            className="add_input"
-            type="text"
-            placeholder="Ex-Sudip Patel"
-          />
-        </div>
-      </div>
-      <div className="add_data_group">
-        <div className="add_data_label">
-          <span>Employee ID</span>
-        </div>
-        <div className="add_data_input">
-          <input
-            className="add_input"
-            type="text"
-            placeholder="Ex-dhar45@gmail.com"
-          />
-        </div>
-      </div>
-      <div className="add_data_group">
-        <div className="add_data_label">
-          <span>Feedback Month</span>
-        </div>
-        <div className="add_data_input">
-          <input className="add_input" type="text" placeholder="Ex-September" />
-        </div>
-      </div>
-      <div className="add_data_group">
-        <div className="add_data_label">
-          <span>Total Score</span>
-        </div>
-        <div className="add_data_input">
-          <input className="add_input" type="number" placeholder="Ex-66" />
-        </div>
-      </div>
-      <div className="add_data_group">
-        <div className="add_data_label">
-          <span>Year</span>
-        </div>
-        <div className="add_data_input">
-          <input className="add_input" type="number" placeholder="Ex-2024" />
-        </div>
-      </div>
-      <div className="submit_sheetData">
-        <button className="submit_btn">
+
+      {/* <div className="submit_sheetData my-2">
+        <button className="submit_btn" onClick={handleTableSaveChanges}>
           <span className="span_btn">Save Changes</span>
         </button>
-      </div>
+      </div> */}
     </div>
   );
+
 };
 
-const SpreadsheetSettings = () => {
+const SpreadsheetSettings = ({ activateSave }) => {
 
   const dispatch = useDispatch();
   const settingData = useSelector((state) => state.setting.settings); // Get the current settings from Redux
@@ -103,15 +220,28 @@ const SpreadsheetSettings = () => {
 
   const { token } = useContext(UserContext);
 
+  const clientId = CLIENTID
+  const developerKey = DEVELOPERKEY
+
+
+
   const handleSheetChange = (e) => {
     setSelectedSheet(e.target.value);
+    const updatedSettings = {
+      firstSheetName: e.target.value
+    };
+    dispatch(updateSetting(updatedSettings));
+    activateSave();
   };
 
   const handleRangeChange = (e) => {
     setDataRange(e.target.value);
+    const updatedSettings = {
+      firstTabDataRange: `${selectedSheet}!${e.target.value}`,
+    };
+    dispatch(updateSetting(updatedSettings));
+    activateSave();
   };
-
-
 
   const handleSaveChanges = async () => {
     const updatedSettings = {
@@ -121,23 +251,78 @@ const SpreadsheetSettings = () => {
 
     // Dispatch action to update settings in Redux
     dispatch(updateSetting(updatedSettings));
+    const updatedSpreadsheet = settingData;
 
+    // Make the API call to update the settings in MongoDB
     try {
       // Make the API call to update the settings in MongoDB
-      const response = await axios.put(`${HOST}/spreadsheet/${settingData._id}`, updatedSettings, {
+      const response = await axios.put(`${HOST}/spreadsheet/${settingData._id}`, updatedSpreadsheet, {
         headers: {
           authorization: "Bearer " + token,
         },
       });
-      console.log("Updated in DB:", response.data);
     } catch (error) {
       console.error("Error updating settings in DB:", error);
     }
   };
 
-  console.log("settingData", settingData);
 
+  const getSpreadsheetDetails = async (spreadSheetID) => {
 
+    try {
+      const response = await axios.post(`${HOST}/getSpreadsheetDetails`,
+        { spreadSheetID },  // Request body
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
+          },
+        }
+      );
+      // setSelectSpreadsheet(response.data.data);
+      const data = response.data.data;
+      const updatedSettings = {
+        sheetDetails: data.sheetDetails,
+        firstSheetName: data.sheetDetails[0].name,
+        firstTabDataRange: data.firstSheetDataRange,
+        spreadsheetName: data.spreadsheetName,
+        sheetUrl: data.sheetUrl
+      };
+      // Dispatch action to update settings in Redux
+      dispatch(updateSetting(updatedSettings));
+
+      // You can now use the spreadsheet details (name, sheet names, URL)
+      const { spreadsheetName, sheetNames, sheetUrl } = response.data.data;
+    } catch (error) {
+      console.error('Error fetching spreadsheet details:', error);
+    }
+  };
+
+  const [openPicker, authResponse] = useDrivePicker();
+
+  // Function to trigger the Google Drive Picker
+  const handleOpenPicker = () => {
+    console.log("hello");
+    openPicker({
+      clientId,
+      developerKey,
+      viewId: "DOCS",
+      showUploadView: true,
+      showUploadFolders: true,
+      supportDrives: true,
+      multiselect: false, // Single file picker for spreadsheet
+      callbackFunction: (data) => {
+        if (data.action === 'cancel') {
+          console.log('User clicked cancel/close button');
+        } else if (data.action === 'picked') {
+          const spreadSheetID = data.docs[0].id; // Extract Spreadsheet ID
+          console.log(`Spreadsheet ID: ${spreadSheetID}`);
+          getSpreadsheetDetails(spreadSheetID); // Call the API to get sheet details
+          activateSave();
+        }
+      },
+    });
+  };
 
   return (
     <div className="Spreadsheet_setting">
@@ -149,14 +334,13 @@ const SpreadsheetSettings = () => {
         <div className="sheet_btn">
           <div >
             <a className="sheet_btn_open" target="_blank" href={settingData.spreadsheetUrl}>
-
               <img src={openIcon} />
               <span className="sheet_btn_open_text" >Open</span>
             </a>
           </div>
-          <div className="sheet_btn_select">
+          <button className="sheet_btn_select" onClick={() => handleOpenPicker()}>
             <span className="sheet_btn_select_text">Select</span>
-          </div>
+          </button>
         </div>
       </div>
       <svg
@@ -195,11 +379,11 @@ const SpreadsheetSettings = () => {
           </div>
         </div>
       </div>
-      <div className="submit_sheetData">
+      {/* <div className="submit_sheetData">
         <button className="submit_btn" onClick={handleSaveChanges}>
           <span className="span_btn">Save Changes</span>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -209,27 +393,55 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   console.log(setToken, setProfile);
   const [addData, setAddData] = useState(false);
   const [addSheet, setAddSheet] = useState(false);
+  const [isSaveChanges, setIsSaveChanges] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const nav = useNavigate();
+  const { token } = useContext(UserContext);
 
-  const handleLogout = () => {
-    console.log("logout clicked");
-    // Clear cookies
-    Cookies.remove("token");
-    Cookies.remove("profile");
+  // const handleLogout = () => {
+  //   console.log("logout clicked");
+  //   // Clear cookies
+  //   Cookies.remove("token");
+  //   Cookies.remove("profile");
 
-    // Clear user context
-    setToken(null);
-    setProfile(null);
-    closeDrawer();
+  //   // Clear user context
+  //   setToken(null);
+  //   setProfile(null);
+  //   closeDrawer();
 
-    // Redirect to login page
-    nav("/");
-  };
+  //   // Redirect to login page
+  //   nav("/");
+  // };
+
+  const settingData = useSelector((state) => state.setting.settings);
+
+  const activateSave = () => {
+    setIsSaveChanges(true);
+  }
 
   // subscribing to  the store using Selector 
-
   const setting = useSelector((store) => store.setting.settings)
-  console.log("setting", setting);
+
+  const handleSaveChanges = async () => {
+    setIsLoading(true);
+    // Make the API call to update the settings in MongoDB
+    try {
+      // Make the API call to update the settings in MongoDB
+      const response = await axios.put(`${HOST}/spreadsheet/${settingData._id}`, settingData, {
+        headers: {
+          authorization: "Bearer " + token,
+        },
+      });
+      console.log("Settings updated successfully:", response.data);
+      setIsLoading(false);
+      setIsSaveChanges(false);
+      closeDrawer();
+    } catch (error) {
+      console.error("Error updating settings in DB:", error);
+      setIsLoading(false);
+      setIsSaveChanges(false);
+    }
+  };
 
   return (
     <div>
@@ -245,10 +457,19 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               </div>
             </div>
             <div className="setting_icons_top_right">
+              <button className="submit_btn" onClick={handleSaveChanges} disabled={!isSaveChanges}>
+                {/* {isLoading ? (
+                  <span className="span_btn">
+                    <Loader textToDisplay="" />  
+                  </span>
+                ) : ( */}
+                  <span className="span_btn">Save Changes</span>
+                {/* )} */}
+              </button>
               <div className="setting_icons_top_right_inner"
                 onClick={() => handleToggleDrawer()}
               >
-                <span>Cancel</span>
+                {/* <span>Cancel</span> */}
                 <img src={cancelIcon} />
               </div>
             </div>
@@ -317,9 +538,9 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               <img src={downIcon} />
             </div>
           </div>
-          {addSheet && <SpreadsheetSettings />}
+          {addSheet && <SpreadsheetSettings activateSave={activateSave} />}
 
-          {/* <svg
+          <svg
             xmlns="http://www.w3.org/2000/svg"
             width="472"
             height="2"
@@ -335,18 +556,19 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 setAddData(!addData);
               }}
             >
-              <span className="setting_filter_top1_text">+ Add New Data</span>
+              <span className="setting_filter_top1_text">Table Settings</span>
               <img className="setting_filter_top1_img" src={downIcon} />
             </div>
-            <div className="setting_filter_top2">
+            {/* <div className="setting_filter_top2">
               <div className="setting_filter_top2_inner">
                 <img src={filterIcon} />
                 <span>Filter</span>
                 <img src={downIcon} />
               </div>
-            </div>
+            </div> */}
           </div>
-          {addData && <AddData />} */}
+          {addData && <AddData activateSave={activateSave} />}
+          {/* <ColorPick /> */}
         </div>
       </div>
     </div>

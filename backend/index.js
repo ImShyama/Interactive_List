@@ -7,7 +7,6 @@ const cookieParser = require("cookie-parser");
 const authRoute = require("./Routes/AuthRoute");
 const { MONGO_URL, PORT } = process.env;
 const bodyParser = require("body-parser");
-// const { GoogleDB } = require("googlesheets-raghbir");
 const { authenticateToken } = require("./Middlewares/AuthenticateToken");
 const { google } = require("googleapis");
 const Sheet = require("./Models/SheetModel.js");
@@ -16,7 +15,7 @@ const fetchuser = require("./Middlewares/FetchUser.js");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const UserModel = require("./Models/UserModel");
-
+const path = require("path");
 const secret = process.env.TOKEN_KEY;
 
 mongoose
@@ -123,6 +122,8 @@ app.get("/getUserData", (req, res) => {
 
 async function copySpreadsheet(authClient, sheet_id, userId, appName) {
   const sheets = google.sheets({ version: "v4", auth: authClient });
+  const drive = google.drive({ version: "v3", auth: authClient });
+
 
   try {
     // Get the source spreadsheet details to obtain its title
@@ -131,6 +132,25 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
     });
 
     const sourceSpreadsheetTitle = getSpreadsheetResponse.data.properties.title;
+
+    // Get permissions to determine access (Owner/Shared)
+    const permissionsResponse = await drive.permissions.list({
+      fileId: sheet_id,
+      fields: "permissions(id, role, type)",
+    });
+
+    // Determine if the user is the owner
+    const ownerPermission = permissionsResponse.data.permissions.find(
+      (perm) => perm.role === "owner"
+    );
+    const access = ownerPermission ? "Owner" : "Shared";
+
+    // Get the last updated date of the spreadsheet
+    const lastUpdatedResponse = await drive.files.get({
+      fileId: sheet_id,
+      fields: "modifiedTime",
+    });
+    const lastUpdatedDate = new Date(lastUpdatedResponse.data.modifiedTime);
 
     // Create a new spreadsheet
     const createResponse = await sheets.spreadsheets.create({
@@ -247,6 +267,8 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       firstTabHeader: firstTabHeader,
       spreadsheetName: `Copy of ${sourceSpreadsheetTitle}`,
       sheetDetails: sheetDetails,
+      access: access, // Add access type
+      lastUpdatedDate: lastUpdatedDate, // Add last updated date
     };
 
     // Save the sheet details to the database
@@ -262,6 +284,8 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       firstTabHeader: res.firstTabHeader,
       appName: appName,
       sheetDetails: res.sheetDetails,
+      access: res.access, // Save access type
+      lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
     });
 
     console.log("All sheets copied successfully.", newSheet);
@@ -273,6 +297,8 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
 
 async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) {
   const sheets = google.sheets({ version: "v4", auth: authClient });
+  const drive = google.drive({ version: "v3", auth: authClient });
+
 
   try {
     // Get the source spreadsheet details to obtain its title
@@ -282,6 +308,25 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
     console.log("spradesheet", getSpreadsheetResponse);
 
     const sourceSpreadsheetTitle = getSpreadsheetResponse.data.properties.title;
+
+    // Get permissions to determine access (Owner/Shared)
+    const permissionsResponse = await drive.permissions.list({
+      fileId: sheet_id,
+      fields: "permissions(id, role, type)",
+    });
+
+    // Determine if the user is the owner
+    const ownerPermission = permissionsResponse.data.permissions.find(
+      (perm) => perm.role === "owner"
+    );
+    const access = ownerPermission ? "Owner" : "Shared";
+
+    // Get the last updated date of the spreadsheet
+    const lastUpdatedResponse = await drive.files.get({
+      fileId: sheet_id,
+      fields: "modifiedTime",
+    });
+    const lastUpdatedDate = new Date(lastUpdatedResponse.data.modifiedTime);
 
     // Extract all sheet names by looping over newSpreadsheetResponse.data.sheets
     const allSheetNames = getSpreadsheetResponse.data.sheets.map(sheet => sheet.properties.title);
@@ -329,6 +374,8 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       spreadsheetName: sheetName,
       appName: appName,
       sheetDetails: sheetDetails,
+      access: access, // Add access type
+      lastUpdatedDate: lastUpdatedDate, // Add last updated date
     };
 
     console.log("res", res);
@@ -345,7 +392,9 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       firstTabDataRange: res.firstTabDataRange,
       firstTabHeader: res.firstTabHeader,
       appName: appName,
-      sheetDetails: sheetDetails
+      sheetDetails: sheetDetails,
+      access: res.access, // Save access type
+      lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
     });
 
     console.log("All sheets copied successfully.", newSheet);
@@ -465,6 +514,40 @@ async function editRowInSpreadsheet(authClient, spreadSheetID, sheetName, rowInd
   } catch (error) {
     console.error('Error editing row:', error);
     throw new Error('Failed to edit row data');
+  }
+}
+
+// Define a function to add a row to a spreadsheet
+async function addRowToSpreadsheet(authClient, spreadSheetID, sheetName, rowData) {
+  const sheets = google.sheets({ version: 'v4', auth: authClient });
+
+  // Append the new row
+  const appendRequest = {
+    spreadsheetId: spreadSheetID,
+    range: `${sheetName}`, // The range of the sheet
+    valueInputOption: 'RAW', // or 'USER_ENTERED' if you want Google Sheets to interpret the data
+    insertDataOption: 'INSERT_ROWS', // Append the data as new rows
+    resource: {
+      values: [rowData], // Pass the new row data as an array of arrays
+    },
+  };
+
+  try {
+    // Append the row
+    await sheets.spreadsheets.values.append(appendRequest);
+
+    // After appending, fetch the updated sheet data
+    const getRequest = {
+      spreadsheetId: spreadSheetID,
+      range: `${sheetName}`,  // Get all data from the sheet
+    };
+    const getResponse = await sheets.spreadsheets.values.get(getRequest);
+
+    // Return the updated sheet data
+    return getResponse.data;
+  } catch (error) {
+    console.error('Error adding row:', error);
+    throw new Error('Failed to add row or fetch updated sheet data');
   }
 }
 
@@ -631,6 +714,37 @@ app.post("/editRow", async (req, res) => {
     const updatedSheetData = await editRowInSpreadsheet(authClient, spreadSheetID, sheetName, rowIndex, newData);
     res.status(200).json({
       message: "Row updated successfully",
+      updatedSheetData: updatedSheetData
+    });
+  } catch (err) {
+    console.log("error: ", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Define the API endpoint
+app.post("/addRow", async (req, res) => {
+  const spreadSheetID = req.body.spreadSheetID;
+  const sheetName = req.body.sheetName;
+  const rowData = req.body.rowData;  // Array of new row data (e.g., ["Name", "Age", "Country"])
+
+  // Create an OAuth2 client with the given credentials
+  const authClient = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  // Set the refresh token for the OAuth2 client
+  authClient.setCredentials({
+    refresh_token: req.user.googleRefreshToken,
+  });
+
+  try {
+    // Call the addRowToSpreadsheet function to add the row and get the updated sheet data
+    const updatedSheetData = await addRowToSpreadsheet(authClient, spreadSheetID, sheetName, rowData);
+    res.status(200).json({
+      message: "Row added successfully",
       updatedSheetData: updatedSheetData
     });
   } catch (err) {
@@ -809,3 +923,162 @@ app.post('/addEmails/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 })
+
+// Function to get sheet details including the actual data range of the first sheet
+async function getSheetDetails(authClient, spreadSheetID) {
+  const sheets = google.sheets({ version: 'v4', auth: authClient });
+
+  try {
+    // Fetch the spreadsheet metadata
+    const response = await sheets.spreadsheets.get({
+      spreadsheetId: spreadSheetID,
+    });
+
+    const spreadsheetName = response.data.properties.title;
+    // const sheetNames = response.data.sheets.map(sheet => sheet.properties.title);
+
+    const tabs = response.data.sheets;
+    const sheetDetails = tabs.map(sheet => {
+      const sheetId = sheet.properties.sheetId;
+      const sheetName = sheet.properties.title;
+      const sheetUrl = `https://docs.google.com/spreadsheets/d/${spreadSheetID}/edit#gid=${sheetId}`;
+
+      return {
+        name: sheetName,
+        url: sheetUrl,
+        sheetId: sheetId,
+      };
+    });
+
+
+    const sheetUrl = `https://docs.google.com/spreadsheets/d/${spreadSheetID}`;
+
+    // Get the ID and name of the first sheet
+    const firstSheet = response.data.sheets[0];
+    const firstSheetName = firstSheet.properties.title;
+
+    // Fetch the data from the first sheet to determine the data range
+    const rangeResponse = await sheets.spreadsheets.values.get({
+      spreadsheetId: spreadSheetID,
+      range: firstSheetName,  // This fetches the entire data range where data is available
+      majorDimension: 'ROWS'  // Fetch data row by row
+    });
+
+    const firstSheetDataRange = rangeResponse.data.range;  // This will return the range with actual data
+
+    return {
+      spreadsheetName,
+      sheetDetails,
+      sheetUrl,
+      firstSheetDataRange, 
+    };
+  } catch (error) {
+    console.error('Error fetching sheet details:', error);
+    throw new Error('Failed to fetch sheet details');
+  }
+}
+
+// Define the API endpoint
+app.post("/getSpreadsheetDetails", async (req, res) => {
+  const spreadSheetID = req.body.spreadSheetID;  // Spreadsheet ID from client
+
+  // Create an OAuth2 client with the given credentials
+  const authClient = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  // Set the refresh token for the OAuth2 client
+  authClient.setCredentials({
+    refresh_token: req.user.googleRefreshToken,
+  });
+
+  try {
+    // Call the getSheetDetails function to retrieve sheet metadata
+    const sheetDetails = await getSheetDetails(authClient, spreadSheetID);
+
+    // Return the sheet details as response
+    res.status(200).json({
+      message: "Spreadsheet details fetched successfully",
+      data: sheetDetails
+    });
+  } catch (err) {
+    console.log("error: ", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+async function appendBulkDataAndGetUpdatedData(authClient, originalSheetId, originalSheetName, bulkData) {
+  const sheets = google.sheets({ version: 'v4', auth: authClient });
+
+  // Step 1: Append the bulk data to the original sheet
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: originalSheetId,
+    range: originalSheetName, // Name of the original sheet to which data will be added
+    valueInputOption: 'USER_ENTERED',
+    resource: {
+      values: bulkData, // This should be the array of arrays of bulk data (rows)
+    },
+  });
+
+  // Step 2: Fetch the updated sheet data after appending
+  const updatedSheetResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId: originalSheetId,
+    range: originalSheetName, // Fetch the full range from the original sheet
+  });
+
+  return updatedSheetResponse.data;
+}
+
+// Define the API endpoint
+app.post("/bulkCopyFromAnotherSheet", async (req, res) => {
+  const { originalSheetID, originalSheetName, bulkSheetID, bulkSheetName, bulkSheetRange } = req.body;
+
+  // Create an OAuth2 client with the given credentials
+  const authClient = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  // Set the refresh token for the OAuth2 client
+  authClient.setCredentials({
+    refresh_token: req.user.googleRefreshToken,
+  });
+
+  try {
+    // Fetch bulk data from the other sheet
+    const sheets = google.sheets({ version: 'v4', auth: authClient });
+    const bulkSheetResponse = await sheets.spreadsheets.values.get({
+      spreadsheetId: bulkSheetID,
+      range: `${bulkSheetName}!${bulkSheetRange}`, // e.g., 'Sheet1!A1:D10'
+    });
+
+    const bulkData = bulkSheetResponse.data.values;
+
+    // Append bulk data to the original sheet and get updated data
+    const updatedSheetData = await appendBulkDataAndGetUpdatedData(authClient, originalSheetID, originalSheetName, bulkData);
+
+    // Step 2: Append the extracted data to the original sheet
+    // const updatedSheetInfo = await bulkAddToSheet(authClient, originalSheetID, originalSheetName, bulkData);
+
+    // Return the updated sheet details as a response
+    res.status(200).json({
+      message: "Bulk data copied and added successfully",
+      updatedData: updatedSheetData,
+    });
+  } catch (err) {
+    console.log("error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
+});

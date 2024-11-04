@@ -85,7 +85,7 @@ const EditableSpreadsheetName = ({ settings }) => {
               suppressContentEditableWarning={true}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              className="text-[#2A3C54] font-poppins text-[30px] font-medium w-full outline-none"
+              className="text-[#2A3C54] font-poppins text-[24px] font-medium w-full outline-none"
               style={{ width: '100%', minWidth: '300px', whiteSpace: 'nowrap' }} // Ensure full width
             >
               {editedName}
