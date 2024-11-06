@@ -1,6 +1,7 @@
 const { useEffect, useState, useContext } = require("react");
 import axios from "axios";
 import Cookies from "js-cookie"
+import { HOST } from "./constants";
 
 const useProfile = () => {
   const [user, setUser] = useState(null);
@@ -8,7 +9,7 @@ const useProfile = () => {
 
 
   useEffect(() => {
-    axios.get(`http://localhost:4000/getuser`, {
+    axios.get(`${HOST}/getuser`, {
         headers: {
           authorization: "Bearer " + token,
         },

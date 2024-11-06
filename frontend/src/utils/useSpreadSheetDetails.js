@@ -1,6 +1,7 @@
 const { useEffect, useState, useContext } = require("react");
 import axios from "axios";
 import { UserContext } from "../context/UserContext";
+import { HOST } from "./constants";
 
 const useSpreadSheetDetails = (id) => {
     const [sheetData, setSheetData] = useState(null);
@@ -8,7 +9,7 @@ const useSpreadSheetDetails = (id) => {
     
     useEffect(() => {
         axios
-          .get(`http://localhost:4000/getSheetDetails/${id}`, {
+          .get(`${HOST}/getSheetDetails/${id}`, {
             headers: {
               authorization: "Bearer " + token,
             },

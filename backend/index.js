@@ -99,9 +99,6 @@ app.post("/getSheetDataWithID", async (req, res) => {
       return;
     }
 
-    console.log("sheetOwner", sheetOwner);
-    console.log("user", req.user);
-    console.log(sheetOwner?._id.toString(), req?.user?._id.toString())
     if (sheetOwner?._id.toString() === req?.user?._id.toString()) {
       const permissions = "edit";
       res.status(200).json({ rows, permissions });
@@ -116,6 +113,21 @@ app.post("/getSheetDataWithID", async (req, res) => {
   }
 });
 
+app.get("/getSheetDetails/:id", async (req, res) => {
+  try {
+    const sheetId = req.params.id;
+    const sheet = await Sheet.findById(sheetId);
+
+    if (!sheet) {
+      return res.status(404).json({ error: "Sheet not found" });
+    }
+
+    res.status(200).json(sheet);
+  } catch (error) {
+    console.error("Error fetching sheet details:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 
 
 app.use(authenticateToken);
@@ -165,7 +177,6 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       },
     });
     const newSpreadsheetId = createResponse.data.spreadsheetId;
-    console.log("New Spreadsheet ID:", newSpreadsheetId);
 
     const sourceSheets = getSpreadsheetResponse.data.sheets;
 
@@ -224,7 +235,6 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
         ],
       },
     });
-    console.log("Default Sheet1 deleted:", deleteSheetResponse.data);
 
     // Retrieve details of the first sheet in the new spreadsheet
     const newSpreadsheetResponse = await sheets.spreadsheets.get({
@@ -292,7 +302,6 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
     });
 
-    console.log("All sheets copied successfully.", newSheet);
     return newSheet;
   } catch (err) {
     console.error("The API returned an error: " + err);
@@ -309,7 +318,6 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
     const getSpreadsheetResponse = await sheets.spreadsheets.get({
       spreadsheetId: sheet_id,
     });
-    console.log("spradesheet", getSpreadsheetResponse);
 
     const sourceSpreadsheetTitle = getSpreadsheetResponse.data.properties.title;
 
@@ -337,7 +345,6 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
 
     const firstSheet = getSpreadsheetResponse.data.sheets[0];
     const firstSheetId = firstSheet.properties.sheetId;
-    console.log("firstSheet", firstSheet);
     const firstSheetName = firstSheet.properties.title;
     const firstSheetUrl = `https://docs.google.com/spreadsheets/d/${sheet_id}/edit#gid=${firstSheetId}`;
 
@@ -353,8 +360,6 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
         sheetId: sheetId,
       };
     });
-
-    console.log(sheetDetails);
 
     // Get the data range of the first sheet
     const firstSheetDataResponse = await sheets.spreadsheets.values.get({
@@ -382,8 +387,6 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       lastUpdatedDate: lastUpdatedDate, // Add last updated date
     };
 
-    console.log("res", res);
-
     // Save the sheet details to the database
     const newSheet = await Sheet.create({
       userId: userId,
@@ -401,7 +404,6 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
     });
 
-    console.log("All sheets copied successfully.", newSheet);
     return newSheet;
   } catch (err) {
     console.error("The API returned an error: " + err);
@@ -430,7 +432,6 @@ async function renameSpreadsheet(authClient, spreadSheetID, newName) {
 
   try {
     const response = await sheets.spreadsheets.batchUpdate(request);
-    console.log("Spreadsheet renamed successfully: ", response.data);
     return response.data;
 
   } catch (error) {
@@ -556,9 +557,6 @@ async function addRowToSpreadsheet(authClient, spreadSheetID, sheetName, rowData
 }
 
 app.post("/copySpreadsheet", async (req, res) => {
-  console.log("user: ", req.user);
-  console.log("refreshToken", req.user.googleRefreshToken);
-  console.log("spreadSheetID", req.body.spreadSheetID);
 
   const sheet_id = req.body.spreadSheetID;
   const userId = req.user._id;
@@ -586,12 +584,6 @@ app.post("/copySpreadsheet", async (req, res) => {
 });
 
 app.post("/createNewSpreadsheet", async (req, res) => {
-  console.log("user: ", req.user);
-  console.log("refreshToken", req.user.googleRefreshToken);
-  console.log("spreadSheetID", req.body.spreadSheetID);
-  console.log(process.env.CLIENT_ID);
-  console.log(process.env.CLIENT_SECRET);
-  console.log(process.env.REDIRECT_URI);
 
   const sheet_id = req.body.spreadSheetID;
   const userId = req.user._id;
@@ -795,21 +787,7 @@ app.post("/getSheetData", async (req, res) => {
   }
 });
 
-app.get("/getSheetDetails/:id", async (req, res) => {
-  try {
-    const sheetId = req.params.id;
-    const sheet = await Sheet.findById(sheetId);
 
-    if (!sheet) {
-      return res.status(404).json({ error: "Sheet not found" });
-    }
-
-    res.status(200).json(sheet);
-  } catch (error) {
-    console.error("Error fetching sheet details:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 // Route to get all spreadsheets for a user
 app.post("/getSpreadSheets", async (req, res) => {
@@ -922,7 +900,6 @@ app.post('/addEmails/:id', async (req, res) => {
 
     // Return the updated settings
     res.status(200).json(updatedSetting);
-    console.log(updatedSetting);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

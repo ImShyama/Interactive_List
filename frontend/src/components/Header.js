@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import "./header.css";
 import Setting from "./Setting";
 import Profile from "./Profile";
-import settingsIcon from "../assets/settingIcon.svg";
+// import settingsIcon from "../assets/settingIcon.svg";
 import settingsIcon1 from "../assets/settingIcon1.svg";
+import {SettingIcon} from "../assets/svgIcons";
 import dividerIcon from "../assets/dividerIcon.svg";
 import { UserContext } from "../context/UserContext";
 import { HOST } from "../utils/constants";
@@ -90,7 +91,7 @@ const Header = () => {
             <div className="right-panel">
               { isEditMode && (<div className="right-panel-setting">
                 <img
-                  src={isDrawerOpen ? settingsIcon : settingsIcon1}
+                  src={isDrawerOpen ? SettingIcon : settingsIcon1}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleToggleDrawer();

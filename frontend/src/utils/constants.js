@@ -12,7 +12,8 @@ export const APPS = [
       appName: "Interactive List",
       appView: "InteractiveListView",
       appImg: "https://i.ibb.co/N1c6Djj/Screenshot-2024-10-08-125436.png",
-      description: "List all employees attendance score."
+      description: "List all employees attendance score.",
+      appID:"1sMv_CvZMTaZo1u69xLxzrBrD54n2Ymykd3hvsgEe088"
     },
     // {
     //   appName: "Master File Index",

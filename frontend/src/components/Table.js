@@ -27,7 +27,6 @@ const Table = () => {
   const { id } = useParams();
   const sheetdetails = useSpreadSheetDetails(id);
 
-
   const dispatch = useDispatch();
   const settings = useSelector((state) => state.setting.settings); // Redux state for settings
 
@@ -92,7 +91,7 @@ const Table = () => {
 
 
   return (
-   <div> {tableHeader.length > 1 && <InteractiveList data={sheetData} headers={tableHeader} />}</div>
+   <div> {tableHeader.length > 1 && <InteractiveList data={sheetData} headers={tableHeader} settings={sheetdetails} />}</div>
   );
 };
 

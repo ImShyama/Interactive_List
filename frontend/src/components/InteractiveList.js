@@ -112,18 +112,18 @@ const convertArrayToJSON = (data) => {
   return jsonData;
 };
 
-const loadColumnWidthsFromCookies = () => {
-  // const cookiesName = settings?._id + settings?.firstSheetName;
-  // console.log("cookiesName", cookiesName);
-  const savedWidths = Cookies.get("cookiesName");
-  return savedWidths ? JSON.parse(savedWidths) : null;
-};
+// const loadColumnWidthsFromCookies = () => {
+//   // const cookiesName = settings?._id + settings?.firstSheetName;
+//   // console.log("cookiesName", cookiesName);
+//   const savedWidths = Cookies.get("cookiesName");
+//   return savedWidths ? JSON.parse(savedWidths) : null;
+// };
 
-const saveColumnWidthsToCookies = (columnWidths) => {
-  // const cookiesName = settings?._id + settings?.firstSheetName;
-  // console.log("cookiesName", cookiesName);
-  Cookies.set("cookiesName", JSON.stringify(columnWidths), { expires: 7 }); // Cookie expires in 7 days
-};
+// const saveColumnWidthsToCookies = (columnWidths) => {
+//   // const cookiesName = settings?._id + settings?.firstSheetName;
+//   // console.log("cookiesName", cookiesName);
+//   Cookies.set("cookiesName", JSON.stringify(columnWidths), { expires: 7 }); // Cookie expires in 7 days
+// };
 
 const InteractiveList = ({ data, headers }) => {
 
@@ -152,6 +152,18 @@ const InteractiveList = ({ data, headers }) => {
   const isEditMode = window.location.pathname.endsWith('/edit');
   const settings = useSelector((state) => state?.setting?.settings);
 
+  const loadColumnWidthsFromCookies = () => {
+    const storageKey = settings?._id + settings?.firstSheetName;
+    const savedWidths = localStorage.getItem(storageKey);
+    return savedWidths ? JSON.parse(savedWidths) : null;
+  };
+
+  const saveColumnWidthsToCookies = (columnWidths) => {
+    const storageKey = settings?._id + settings?.firstSheetName;
+    localStorage.setItem(storageKey, JSON.stringify(columnWidths));
+  };
+
+
   const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
 
   const [headerBgColor, setHeaderBgColor] = useState(tableSettings?.headerBgColor || '#000000'); // Default header background color
@@ -162,7 +174,7 @@ const InteractiveList = ({ data, headers }) => {
   // const [bodyBgColor, setBodyBgColor] = useState(tableSettings?.bodyBgColor || '#ffffff'); // Default body background color
   const [bodyTextColor, setBodyTextColor] = useState(tableSettings?.bodyTextColor || '#000000'); // Default body text color
   const [bodyFontSize, setBodyFontSize] = useState(tableSettings?.bodyFontSize || 12); // Default body font size
-  const [bodyFontFamily, setBodyFontFamily] = useState(tableSettings?.bodyFontFamily || 'Poppins'); // Default body font family
+  const [bodyFontFamily, setBodyFontFamily] = useState(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
 
 
   async function deleteRow(spreadSheetID, sheetName, rowIndex, token) {
@@ -204,7 +216,7 @@ const InteractiveList = ({ data, headers }) => {
     // setBodyBgColor(tableSettings?.bodyBgColor || '#ffffff'); // Default body background color
     setBodyTextColor(tableSettings?.bodyTextColor || '#000000'); // Default body text color
     setBodyFontSize(tableSettings?.bodyFontSize || 12); // Default body font size
-    setBodyFontFamily(tableSettings?.bodyFontFamily || 'Poppins'); // Default body font family
+    setBodyFontFamily(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
   }, [settings]);
 
 
@@ -230,6 +242,18 @@ const InteractiveList = ({ data, headers }) => {
     // You can then set this filtered data to a state if needed
     setFilteredData(filteredData);
   };
+
+  const handleGlobalReset = () => {
+    console.log('handleGlobalReset');
+    setSearchGlobal(''); 
+    setSearchText('');   
+    console.log({data});
+    setFilteredData(data); 
+    setSearchedColumns([]); 
+    setfilterInfo({}); 
+    setCurrentPage(1); 
+};
+
 
 
   const calculateSum = (dataIndex) => {
@@ -285,12 +309,7 @@ const InteractiveList = ({ data, headers }) => {
     });
   };
 
-  const handleGlobalReset = () => {
-    setSearchGlobal(''); // Clear the search input
-    setfilterInfo({})
-    setFilteredData([...filteredData]);
-    setSearchedColumns([]);
-  };
+
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
@@ -380,7 +399,6 @@ const InteractiveList = ({ data, headers }) => {
   const handleDeleteClick = (record) => {
     setRowToDelete(+record.key_id + 1);
     setConfirmModalOpen(true);
-    console.log(+record.key_id + 1);
   }
 
   const handleDeleteCancel = () => {
@@ -388,7 +406,6 @@ const InteractiveList = ({ data, headers }) => {
   };
 
   const handleDeleteRow = () => {
-    console.log(rowToDelete)
     const status = deleteRow(settings.spreadsheetId, settings.firstSheetName, rowToDelete)
     setConfirmModalOpen(false);
   };
@@ -412,8 +429,6 @@ const InteractiveList = ({ data, headers }) => {
       );
 
       // Handle success response
-      console.log('Row deleted successfully:', response.data);
-      console.log('Filtered data:', filteredData);
       const updatedData = filteredData.filter((row) => row.key_id != rowIndex - 1);
       setFilteredData(updatedData);
       return response.data;
@@ -425,7 +440,6 @@ const InteractiveList = ({ data, headers }) => {
   }
 
   const handleEdit = (record) => {
-    console.log(record)
     setRowToEdit(record);
     setConfirmEditModalOpen(true);
   }
@@ -456,8 +470,6 @@ const InteractiveList = ({ data, headers }) => {
             Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
           },
         });
-
-      console.log('Row edited successfully:', response.data);
       // Handle successful response (e.g., show success notification)
       const updatedSheetData = convertArrayToJSON(response.data?.updatedSheetData?.values);
 
@@ -481,7 +493,6 @@ const InteractiveList = ({ data, headers }) => {
     }
   };
   const handleAdd = () => {
-    console.log(headers)
     const obj = headers.reduce((acc, curr) => {
       acc[curr] = "";
       return acc;
@@ -516,7 +527,6 @@ const InteractiveList = ({ data, headers }) => {
           },
         });
 
-      console.log('Row edited successfully:', response.data);
       // Handle successful response (e.g., show success notification)
       const updatedSheetData = convertArrayToJSON(response.data?.updatedSheetData?.values);
 
@@ -555,7 +565,6 @@ const InteractiveList = ({ data, headers }) => {
 
   const handleAddSheet = (data) => {
     if (data.action === "picked") {
-      console.log("data", data);
 
       axios
         .post(
@@ -684,10 +693,10 @@ const InteractiveList = ({ data, headers }) => {
   //     />
   //   ) : text),
   // });
-  
+
   // const ColumnFilter = ({ dataIndex, confirm, clearFilters, close }) => {
   //   const searchInput = useRef(null);
-  
+
   //   return (
   //     <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
   //       <Input
@@ -864,7 +873,6 @@ const InteractiveList = ({ data, headers }) => {
 
   useEffect(() => {
     const savedColumnWidths = loadColumnWidthsFromCookies();
-    console.log("savedColumnWidths", savedColumnWidths);
     if (savedColumnWidths) {
       const newColumns = columns.map((col, index) => ({
         ...col,
@@ -911,17 +919,16 @@ const InteractiveList = ({ data, headers }) => {
 
     }),
     // Styling for the body cells
-    // onCell: (record) => ({
-    //   style: {
-    //     backgroundColor: bodyBgColor, // Body background color
-    //     color: bodyTextColor, // Body text color
-    //     fontFamily: bodyFontFamily, // Body font family
-    //     fontSize: `${bodyFontSize}px`, // Body font size
-    //   },
-    // }),
+    onCell: (record) => ({
+      style: {
+        // backgroundColor: bodyBgColor, // Body background color
+        color: bodyTextColor, // Body text color
+        fontFamily: bodyFontFamily, // Body font family
+        fontSize: `${bodyFontSize}px`, // Body font size
+      },
+    }),
   }));
 
-  console.log('headerfont', headerFontFamily);
 
   const openSearch = () => {
     setIsSearchOpen(true);
@@ -1009,7 +1016,6 @@ const InteractiveList = ({ data, headers }) => {
       <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[10px]'>
         <div style={{ width: '100%', overflowX: 'auto', maxHeight: maxHeight, }}>
           <div style={{}}>
-            {console.log('headerBgColor1', headerBgColor)}
             <Table
               // onChange={tableChangehandler}
               bordered

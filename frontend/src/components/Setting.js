@@ -31,11 +31,30 @@ const AddData = ({ activateSave }) => {
 
   const dispatch = useDispatch();
   const settingData = useSelector((state) => state.setting.settings);
-  const tableSettings = settingData?.tableSettings[0];
+  const tableSettings = settingData?.tableSettings?.length > 0 ? settingData.tableSettings[0] : null;
+  const fontSizes = Array.from({ length: 15 }, (_, i) => i + 10);
+  const fontFamilies = [
+    { display: "Poppins", value: "Poppins" },
+    { display: "Roboto", value: "Roboto" },
+    { display: "Arial", value: "Arial" },
+    { display: "Times", value: "Times New Roman" },
+    { display: "Courier", value: "Courier New" },
+    { display: "Verdana", value: "Verdana" },
+    { display: "Georgia", value: "Georgia" },
+    { display: "Trebuchet", value: "Trebuchet MS" },
+    { display: "Lucida", value: "Lucida Console" },
+    { display: "Comic Sans", value: "Comic Sans MS" },
+    { display: "Tahoma", value: "Tahoma" },
+    { display: "Impact", value: "Impact" },
+    { display: "Gill Sans", value: "Gill Sans" },
+    { display: "Palatino", value: "Palatino" },
+    { display: "Arial Black", value: "Arial Black" },
+    { display: "Brush Script", value: "Brush Script MT" }
+  ];
 
   // Initial state to manage all inputs
   const [formData, setFormData] = useState({
-    headerBgColor: tableSettings?.headerBgColor || '#945d5d',
+    headerBgColor: tableSettings?.headerBgColor || '#ffffff',
     headerTextColor: tableSettings?.headerTextColor || '#000000',
     headerFontSize: tableSettings?.headerFontSize || '14',
     headerFontStyle: tableSettings?.headerFontStyle || 'Poppins',
@@ -45,22 +64,8 @@ const AddData = ({ activateSave }) => {
     bodyFontStyle: tableSettings?.bodyFontStyle || 'Poppins',
   });
 
-  // Handle change for all input fields
-  // const handleChange = (field, value) => {
-  //   setFormData({
-  //     ...formData,
-  //     [field]: value,
-  //   });
-  //   activateSave();
-  //   const updatedSettings = {
-  //     tableSettings: formData,
-  //   };
-  //   dispatch(updateSetting(updatedSettings));
-  //   console.log("updatedSettings", settingData);
-
-  // };
-
   const handleChange = (field, value) => {
+    console.log("Field:", field, "Value:", value);
     setFormData((prevFormData) => {
       const updatedFormData = {
         ...prevFormData,
@@ -80,12 +85,6 @@ const AddData = ({ activateSave }) => {
     activateSave();  // Save button activation
   };
 
-
-  // Handle form submission
-  const handleTableSaveChanges = () => {
-    console.log('Saved Data:', formData);
-    // Perform your API call or other operations here
-  };
 
   return (
     <div className="w-[100%]">
@@ -129,9 +128,11 @@ const AddData = ({ activateSave }) => {
               value={formData.headerFontSize}
               onChange={(e) => handleChange('headerFontSize', e.target.value)}
             >
-              <option value="10">10</option>
-              <option value="12">12</option>
-              <option value="14">14</option>
+              {fontSizes.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex justify-between items-center my-3">
@@ -141,11 +142,11 @@ const AddData = ({ activateSave }) => {
               value={formData.headerFontStyle}
               onChange={(e) => handleChange('headerFontStyle', e.target.value)}
             >
-              <option value="Poppins">Poppins</option>
-              <option value="Roboto">Roboto</option>
-              <option value="Arial">Arial</option>
-              <option value="Times New Roman">Times New</option>
-              <option value="Courier New">Courier New</option>
+              {fontFamilies.map((font, index) => (
+                <option key={index} value={font.value}>
+                  {font.display}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -157,13 +158,13 @@ const AddData = ({ activateSave }) => {
               Body Settings
             </span>
           </div>
-          <div className="flex justify-between items-center my-3">
+          {/* <div className="flex justify-between items-center my-3">
             <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Background Color</span>
             <ColorPicker
               value={formData.bodyBgColor}
               onChange={(color) => handleChange('bodyBgColor', color.toHexString())}
             />
-          </div>
+          </div> */}
           <div className="flex justify-between items-center my-3">
             <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Color</span>
             <ColorPicker
@@ -178,9 +179,11 @@ const AddData = ({ activateSave }) => {
               value={formData.bodyFontSize}
               onChange={(e) => handleChange('bodyFontSize', e.target.value)}
             >
-              <option value="10">10</option>
-              <option value="12">12</option>
-              <option value="14">14</option>
+              {fontSizes.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex justify-between items-center my-3">
@@ -190,11 +193,11 @@ const AddData = ({ activateSave }) => {
               value={formData.bodyFontStyle}
               onChange={(e) => handleChange('bodyFontStyle', e.target.value)}
             >
-              <option value="Poppins">Poppins</option>
-              <option value="Roboto">Roboto</option>
-              <option value="Arial">Arial</option>
-              <option value="Times New Roman">Times New</option>
-              <option value="Courier New">Courier New</option>
+              {fontFamilies.map((font, index) => (
+                <option key={index} value={font.value}>
+                  {font.display}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -463,7 +466,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     <Loader textToDisplay="" />  
                   </span>
                 ) : ( */}
-                  <span className="span_btn">Save Changes</span>
+                <span className="span_btn">Save Changes</span>
                 {/* )} */}
               </button>
               <div className="setting_icons_top_right_inner"

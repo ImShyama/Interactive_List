@@ -23,9 +23,10 @@ const AppCard = ({ appName, appView, appImg, description }) => {
         `${HOST}/copySpreadsheet`,
         {
           spreadSheetID:
-            "1YW0WNJVnT4AU68wAmLbQjj5xbJluBwICMGLFAeY07Pc",
-          spreadSheetName: "Sheet1",
-          appName: "InteractiveList"
+            // "1YW0WNJVnT4AU68wAmLbQjj5xbJluBwICMGLFAeY07Pc",
+            "1sMv_CvZMTaZo1u69xLxzrBrD54n2Ymykd3hvsgEe088",
+          spreadSheetName: "Data",
+          appName: "Interactive_List"
         },
         {
           headers: {
