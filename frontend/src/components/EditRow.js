@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 
-const EditRow = ({ isOpen, onClose, onConfirm, modelName, row }) => {
+const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading }) => {
   const [editedRow, setEditedRow] = useState({});
+  const [isDisabled, setIsDisabled] = useState(true);
+  
 
   // Initialize the state with the row data on mount
   useEffect(() => {
@@ -10,12 +12,19 @@ const EditRow = ({ isOpen, onClose, onConfirm, modelName, row }) => {
     }
   }, [row]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setIsDisabled(true);
+    }
+  }, [isOpen]);
+
   // Handle input changes
   const handleInputChange = (key, value) => {
     setEditedRow((prevState) => ({
       ...prevState,
       [key]: value,
     }));
+    setIsDisabled(false);
   };
 
   if (!isOpen) return null;
@@ -86,8 +95,13 @@ const EditRow = ({ isOpen, onClose, onConfirm, modelName, row }) => {
               <button
                 className="flex w-[148px] h-[46px] p-[10px] justify-center items-center gap-[10px] rounded-[82px] bg-[#FFA500] text-white flex-shrink-0"
                 onClick={() => onConfirm(editedRow)}  // Pass the edited row data back on confirm
+                disabled={isDisabled || loading}
               >
-                Save
+                {loading ? (
+                  <div className="loader" /> // Display loader during loading
+                ) : (
+                  modelName === "Edit Row" ? "Edit" : "Save"
+                )}
               </button>
             </div>
           </div>

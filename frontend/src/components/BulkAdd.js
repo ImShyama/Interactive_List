@@ -7,8 +7,9 @@ import "./setting.css";
 import axios from "axios";
 import { HOST } from "../utils/constants";
 import { useSelector } from "react-redux";
+import { notifySuccess } from "../utils/notify";
 
-const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData,handleBuldData }) => {
+const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData, handleBuldData }) => {
 
     // State for selected sheet and data range
     const [selectedSheet, setSelectedSheet] = useState(spreadSheetData?.sheetDetails[0].name);
@@ -72,6 +73,7 @@ const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData,handleBuldData }
             console.error("Error copying data:", err);
         } finally {
             setLoading(false);
+            notifySuccess("Data imported successfully!");
         }
     };
 
@@ -187,11 +189,16 @@ const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData,handleBuldData }
                                 )}
                                 <div className="flex justify-center">
                                     <button
-                                        className="submit_btn"
+                                        className="submit_btn w-[150px]"
                                         onClick={handleSaveChanges}
-                                        disabled={!spreadSheetData} // Disable button if spreadSheetData is null
+                                        disabled={!spreadSheetData || loading} // Disable button if spreadSheetData is null
                                     >
-                                        <span className="span_btn">Add Data</span>
+                                        {loading ? (
+                                            <div className="loader" /> // Display loader during loading
+                                        ) : (
+                                            <span className="span_btn">Add Data</span>
+                                        )}
+
                                     </button>
                                 </div>
                             </div>

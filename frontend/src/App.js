@@ -20,6 +20,8 @@ import { Provider } from "react-redux"
 import appStore from "./utils/appStore";
 import { ConfigProvider } from "antd";
 import Testing1 from "./components/Testing1";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
 
 const Layout = () => {
   return (
@@ -33,6 +35,7 @@ const Layout = () => {
           }}
         >
           <Header />
+          <ToastContainer position="top-right" autoClose={3000} />
           <Outlet />
         </ConfigProvider>
       </>

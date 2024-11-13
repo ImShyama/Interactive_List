@@ -1,6 +1,6 @@
 import { React, useEffect, useRef, useState, useContext } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table, Popover, Tooltip, Pagination } from 'antd';
+import { Button, Input, Space, Table, Popover, Pagination } from 'antd';
 import Highlighter from 'react-highlight-words';
 import label from '../assets/label.svg'
 import { BiSearch } from 'react-icons/bi';
@@ -11,7 +11,6 @@ import EditRow from './EditRow';
 import axios from 'axios';
 import { HOST } from '../utils/constants';
 import { UserContext } from "../context/UserContext";
-import Cookies from 'js-cookie';
 import { Resizable } from 'react-resizable';
 import './table.css';
 import bulkAdd from '../assets/bulkAdd.svg';
@@ -23,8 +22,7 @@ import BulkAdd from './BulkAdd';
 import useDrivePicker from 'react-google-drive-picker';
 import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
 import styled from 'styled-components';
-import { EllipsisOutlined, FilterOutlined } from '@ant-design/icons';
-import { VerticalEllipsis, LabelIcon } from '../assets/svgIcons';
+import { notifySuccess, notifyError } from "../utils/notify";
 
 
 // Styled component for the Ant Table
@@ -143,6 +141,8 @@ const InteractiveList = ({ data, headers }) => {
   const [rowToEdit, setRowToEdit] = useState(null);
   const [selectSpreadsheet, setSelectSpreadsheet] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   headers = headers.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
   data = convertArrayToJSON(data);
   const [filteredData, setFilteredData] = useState(data);
@@ -220,12 +220,12 @@ const InteractiveList = ({ data, headers }) => {
   }, [settings]);
 
 
-  useEffect(() => {
-    // Only set filteredData if it's not already set or if data has changed
-    if (data && data.length > 0 && filteredData.length === 0) {
-      setFilteredData(data);
-    }
-  }, [data, filteredData]);
+  // useEffect(() => {
+  //   // Only set filteredData if it's not already set or if data has changed
+  //   if (data && data.length > 0 && filteredData.length === 0) {
+  //     setFilteredData(data);
+  //   }
+  // }, [data, filteredData]);
 
 
   const handleGlobalSearch = (e) => {
@@ -244,15 +244,14 @@ const InteractiveList = ({ data, headers }) => {
   };
 
   const handleGlobalReset = () => {
-    console.log('handleGlobalReset');
-    setSearchGlobal(''); 
-    setSearchText('');   
-    console.log({data});
-    setFilteredData(data); 
-    setSearchedColumns([]); 
-    setfilterInfo({}); 
-    setCurrentPage(1); 
-};
+    setSearchGlobal('');
+    setSearchText('');
+    setFilteredData(data);
+    setSearchedColumns([]);
+    setfilterInfo({});
+    setCurrentPage(1);
+    setIsSearchOpen(false);
+  };
 
 
 
@@ -408,6 +407,9 @@ const InteractiveList = ({ data, headers }) => {
   const handleDeleteRow = () => {
     const status = deleteRow(settings.spreadsheetId, settings.firstSheetName, rowToDelete)
     setConfirmModalOpen(false);
+    if (status) {
+      notifySuccess("Deleted row successfuly!");
+    }
   };
 
   async function deleteRow(spreadSheetID, sheetName, rowIndex) {
@@ -474,6 +476,7 @@ const InteractiveList = ({ data, headers }) => {
       const updatedSheetData = convertArrayToJSON(response.data?.updatedSheetData?.values);
 
       setFilteredData(updatedSheetData);
+      notifySuccess("Edited row successfuly!");
     } catch (error) {
       console.error('Error editing row:', error);
       // Handle error response (e.g., show error notification)
@@ -481,6 +484,7 @@ const InteractiveList = ({ data, headers }) => {
   };
 
   const handleEditRow = async (updatedRow) => {
+    setLoading(true);
     const rowIndex = +updatedRow.key_id + 1;  // Assuming key_id is the 0-based index, add 1 to get 1-based index for the sheet
 
     try {
@@ -491,7 +495,9 @@ const InteractiveList = ({ data, headers }) => {
     } catch (error) {
       console.error('Error saving row:', error);
     }
+    setLoading(false);
   };
+
   const handleAdd = () => {
     const obj = headers.reduce((acc, curr) => {
       acc[curr] = "";
@@ -531,6 +537,7 @@ const InteractiveList = ({ data, headers }) => {
       const updatedSheetData = convertArrayToJSON(response.data?.updatedSheetData?.values);
 
       setFilteredData(updatedSheetData);
+      notifySuccess("Added row successfuly!");
     } catch (error) {
       console.error('Error editing row:', error);
       // Handle error response (e.g., show error notification)
@@ -538,7 +545,7 @@ const InteractiveList = ({ data, headers }) => {
   };
 
   const handleAddRow = async (updatedRow) => {
-
+    setLoading(true);
     try {
       // Call the API with the updated row data and rowIndex
       await handleAddAPI(updatedRow);
@@ -547,6 +554,7 @@ const InteractiveList = ({ data, headers }) => {
     } catch (error) {
       console.error('Error saving row:', error);
     }
+    setLoading(false);
   };
 
   const handleAddBukl = () => {
@@ -561,6 +569,7 @@ const InteractiveList = ({ data, headers }) => {
   const handleBuldData = (data) => {
     setFilteredData(convertArrayToJSON(data));
     setConfirmBulkAddModalOpen(false);
+    setSelectSpreadsheet(null);
   }
 
   const handleAddSheet = (data) => {
@@ -936,11 +945,17 @@ const InteractiveList = ({ data, headers }) => {
 
   const closeSearch = () => {
     setIsSearchOpen(false);
+    handleGlobalReset();
   };
 
 
-  // Function to handle pagination and slice the data
+
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  // useEffect(() => {
+  //   // Function to handle pagination and slice the data
+  //   setPaginatedData(filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize))
+  // }, [filteredData]);
 
   return (
     <div>
@@ -990,24 +1005,33 @@ const InteractiveList = ({ data, headers }) => {
             <img src={reset} alt="reset" className="w-[18px] h-[18px]" />
           </button>
 
-          <button
-            onClick={handleAdd}
-            className='mx-2'
-          // className="border border-[#FFA500] px-4 py-1 rounded-md bg-[#FFA500] text-white transition-colors duration-200"
-          >
-            <img src={add} alt="add" className="w-[26px] h-[26px]" />
-            {/* <span>ADD +</span> */}
-          </button>
-
-          <button
-            onClick={handleAddBukl}
+          {isEditMode && (
+            <button
+              onClick={handleAdd}
+              className='mx-2'
+            // className="border border-[#FFA500] px-4 py-1 rounded-md bg-[#FFA500] text-white transition-colors duration-200"
+            >
+              <img src={add} alt="add" className="w-[26px] h-[26px]" />
+              {/* <span>ADD +</span> */}
+            </button>
 
 
-          // className="border border-[#FFA500] px-2 py-1 mx-2 rounded-md bg-[#FFA500] text-white transition-colors duration-200"
-          >
-            {/* <span>Bulk +</span> */}
-            <img src={bulkAdd} alt="bulk" className="w-[30px] h-[30px]" />
-          </button>
+
+          )}
+
+          {isEditMode && (
+            <button
+              onClick={handleAddBukl}
+
+
+            // className="border border-[#FFA500] px-2 py-1 mx-2 rounded-md bg-[#FFA500] text-white transition-colors duration-200"
+            >
+              {/* <span>Bulk +</span> */}
+              <img src={bulkAdd} alt="bulk" className="w-[30px] h-[30px]" />
+            </button>
+          )}
+
+
 
 
         </div>
@@ -1017,16 +1041,7 @@ const InteractiveList = ({ data, headers }) => {
         <div style={{ width: '100%', overflowX: 'auto', maxHeight: maxHeight, }}>
           <div style={{}}>
             <Table
-              // onChange={tableChangehandler}
               bordered
-              // headerBgColor={headerBgColor}
-              // headerTextColor={headerTextColor}
-              // headerFontSize={headerFontSize}
-              // headerFontFamily={headerFontFamily}
-              // bodyBgColor={bodyBgColor}
-              // bodyTextColor={bodyTextColor}
-              // bodyFontSize={bodyFontSize}
-              // bodyFontFamily={bodyFontFamily}
               components={{
                 header: {
                   cell: ResizableTitle,
@@ -1037,17 +1052,6 @@ const InteractiveList = ({ data, headers }) => {
               pagination={false}
               rowClassName="custom-row"
               scroll={{ x: "max-content" }}
-              // style={{
-              //   maxHeight: maxHeight, overflowY: 'auto',
-              //   '--header-bg-color': headerBgColor,
-              //   '--header-text-color': headerTextColor,
-              //   '--header-font-size': `${headerFontSize}px`,
-              //   '--header-font-family': headerFontFamily,
-              //   '--body-bg-color': bodyBgColor,
-              //   '--body-text-color': bodyTextColor,
-              //   '--body-font-size': `${bodyFontSize}px`,
-              //   '--body-font-family': bodyFontFamily,
-              // }}
               sticky
               size="small"
             />
@@ -1083,6 +1087,7 @@ const InteractiveList = ({ data, headers }) => {
         onConfirm={handleAddRow}
         modelName="Add Row"
         row={rowToEdit}
+        loading={loading}
       />
       <EditRow
         isOpen={confirmEditModalOpen}
@@ -1090,6 +1095,7 @@ const InteractiveList = ({ data, headers }) => {
         onConfirm={handleEditRow}
         modelName="Edit Row"
         row={rowToEdit}
+        loading={loading}
       />
       <BulkAdd
         isOpen={confirmBulkAddModalOpen}

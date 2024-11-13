@@ -51,6 +51,7 @@ const InteractiveListView = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10); // Set your page size
     const [searchedColumns, setSearchedColumns] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     const searchInput = useRef(null);
     const navigate = useNavigate();
 
@@ -193,6 +194,11 @@ const InteractiveListView = () => {
         }
     ]
 
+    // Set filtered data to the full data initially
+    useEffect(() => {
+        setFilteredData(data);
+    }, [data]);
+
     const calculateAverage = (dataIndex) => {
         const sum = calculateSum(dataIndex);
         const avg = sum / data.filter((record) => isNumeric(record[dataIndex])).length;
@@ -221,6 +227,13 @@ const InteractiveListView = () => {
         setSearchText(selectedKeys[0]);
         setSearchedColumn(dataIndex);
         setSearchedColumns((prev) => [...new Set([...prev, dataIndex])]);
+
+        // Filter the full data and update the filteredData state
+        const newFilteredData = data.filter((record) =>
+            record[dataIndex].toString().toLowerCase().includes(selectedKeys[0].toLowerCase())
+        );
+        setFilteredData(newFilteredData);
+        setCurrentPage(1); // Reset to the first page after filtering
     };
 
     const handleReset = (clearFilters, dataIndex) => {
@@ -473,10 +486,8 @@ const InteractiveListView = () => {
         }),
     }));
 
-    console.log("mergedColumns", mergedColumns)
-
     // Function to handle pagination and slice the data
-    const paginatedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
     const clientId = CLIENTID
     const developerKey = DEVELOPERKEY
     const token = Cookies.get('token');

@@ -442,10 +442,6 @@ img, video {
   margin-bottom: 2rem;
 }
 
-.ml-2 {
-  margin-left: .5rem;
-}
-
 .ml-4 {
   margin-left: 1rem;
 }
@@ -690,6 +686,10 @@ img, video {
   width: 148px;
 }
 
+.w-\[150px\] {
+  width: 150px;
+}
+
 .w-\[18px\] {
   width: 18px;
 }
@@ -831,7 +831,11 @@ img, video {
 }
 
 @keyframes spin {
-  to {
+  0% {
+    transform: rotate(0);
+  }
+
+  100% {
     transform: rotate(360deg);
   }
 }
@@ -1246,9 +1250,9 @@ img, video {
   background-color: rgb(220 252 231 / var(--tw-bg-opacity));
 }
 
-.bg-orange-100 {
+.bg-orange-50 {
   --tw-bg-opacity: 1;
-  background-color: rgb(255 237 213 / var(--tw-bg-opacity));
+  background-color: rgb(255 247 237 / var(--tw-bg-opacity));
 }
 
 .bg-red-100 {
@@ -1720,6 +1724,12 @@ img, video {
   text-decoration-line: underline;
 }
 
+.shadow {
+  --tw-shadow: 0 1px 3px 0 #0000001a, 0 1px 2px -1px #0000001a;
+  --tw-shadow-colored: 0 1px 3px 0 var(--tw-shadow-color), 0 1px 2px -1px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-\[20px_9px_71\.3px_0px_rgba\(149\,161\,184\,0\.26\)\] {
   --tw-shadow: 20px 9px 71.3px 0px #95a1b842;
   --tw-shadow-colored: 20px 9px 71.3px 0px var(--tw-shadow-color);
@@ -2019,6 +2029,21 @@ span a {
   height: 100%;
   position: absolute;
   bottom: 0;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  box-shadow: none;
+  background: #ccc;
+}
+
+.loader {
+  border: 4px solid #0000;
+  border-top-color: #fff;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  animation: .8s linear infinite spin;
 }
 
 .hover\:border-\[\#FFA500\]:hover {

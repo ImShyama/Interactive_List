@@ -6,16 +6,17 @@ import Setting from "./Setting";
 import Profile from "./Profile";
 // import settingsIcon from "../assets/settingIcon.svg";
 import settingsIcon1 from "../assets/settingIcon1.svg";
-import {SettingIcon} from "../assets/svgIcons";
+import { SettingIcon } from "../assets/svgIcons";
 import dividerIcon from "../assets/dividerIcon.svg";
 import { UserContext } from "../context/UserContext";
 import { HOST } from "../utils/constants";
+import Cookies from "js-cookie";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [user, setUser] = useState(null);
-  const { token } = useContext(UserContext);
+  const { token, setToken, setProfile } = useContext(UserContext);
   const navigate = useNavigate();
 
   const isEditMode = window.location.pathname.endsWith('/edit');
@@ -66,8 +67,16 @@ const Header = () => {
         setUser(res);
       })
       .catch((err) => {
-        // navigate("/");
         console.log(err.message);
+        // Clear cookies
+        Cookies.remove("token");
+        Cookies.remove("profile");
+
+        // Clear user context
+        setToken(null);
+        setProfile(null);
+        navigate("/");
+        
       });
   }, [token]);
 
@@ -89,20 +98,19 @@ const Header = () => {
           </div>
           {token ? (
             <div className="right-panel">
-              { isEditMode && (<div className="right-panel-setting">
+              {isEditMode && (<div className="right-panel-setting">
                 <img
                   src={isDrawerOpen ? SettingIcon : settingsIcon1}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleToggleDrawer();
-                    
+
                   }}
-                  className={`cursor-pointer ${
-                    isDrawerOpen ? "" : "text-orange-500"
-                  }`}
+                  className={`cursor-pointer ${isDrawerOpen ? "" : "text-orange-500"
+                    }`}
                 />
               </div>)}
-              { isEditMode && (<img src={dividerIcon} />)}
+              {isEditMode && (<img src={dividerIcon} />)}
               <div className="right-pannel-profil">
                 <img
                   ref={profileImageRef} // Added ref to the profile image

@@ -67,6 +67,19 @@ const DashboardTable = () => {
     setSheetSharedWith(sharedWith);
   };
 
+  const updateSharedWith = (emails, spreadsheetId) => {
+
+    // Update the sharedWith array for the selected spreadsheetId
+    const updatedSheets = filteredSheets.map((sheet) => {
+      if (sheet._id === spreadsheetId) {
+        return { ...sheet, sharedWith: emails };
+      }
+      return sheet;
+    });
+
+    setFilteredSheets(updatedSheets);
+  };
+
 
   // Function to handle search input
   const handleSearch = (e) => {
@@ -302,12 +315,13 @@ const DashboardTable = () => {
           <Preview closeModal={closeModal} sheetdetails={sheetData} />
         )}
 
-        <ShareModal
+        {showModal && <ShareModal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
           spreadsheetId={spreadsheetIdForShare}
           sharedWith={sheetSharedWith}
-        />
+          updateSharedWith={updateSharedWith}
+        />}
 
 
         <div className="p-4 flex justify-end">
