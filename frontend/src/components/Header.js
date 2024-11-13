@@ -69,13 +69,13 @@ const Header = () => {
       .catch((err) => {
         console.log(err.message);
         // Clear cookies
-        Cookies.remove("token");
-        Cookies.remove("profile");
+        // Cookies.remove("token");
+        // Cookies.remove("profile");
 
         // Clear user context
-        setToken(null);
-        setProfile(null);
-        navigate("/");
+        // setToken(null);
+        // setProfile(null);
+        // navigate("/");
         
       });
   }, [token]);
