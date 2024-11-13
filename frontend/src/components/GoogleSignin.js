@@ -61,7 +61,7 @@ function GoogleSignin() {
       const code = searchParams.get("code");
       if (code == null) return;
       axios
-        .get(`${HOST}/auth/google/callback?code=` + code)
+        .get(`${HOST}/auth/google/callback?code=` + code,{ withCredentials: true })
         .then(({ data: res }) => {
           if (res.error) {
             nav("/");
