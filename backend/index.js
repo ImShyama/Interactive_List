@@ -17,6 +17,7 @@ const jwt = require("jsonwebtoken");
 const UserModel = require("./Models/UserModel");
 const path = require("path");
 const secret = process.env.TOKEN_KEY;
+const redirect_uri = process.env.REDIRECT_URI;
 
 mongoose
   .connect(MONGO_URL, {
@@ -28,7 +29,7 @@ mongoose
 
 app.use(
   cors({
-    origin: ["http://localhost:1234"],
+    origin: [redirect_uri],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
