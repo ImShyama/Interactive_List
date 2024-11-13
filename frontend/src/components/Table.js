@@ -74,7 +74,9 @@ const Table = () => {
 
         const [header, ...dataRows] = res.rows;
         const permissions = res.permissions;
-        if(permissions == "view") {
+
+        console.log(res.permissions);
+        if(permissions.toLowerCase() == "view") {
           navigate(`/${id}/view`);
         }
         setSheetData(res.rows);
@@ -84,6 +86,7 @@ const Table = () => {
       })
       .catch((err) => {
         console.log(err.message);
+        navigate(`/`)
         setLoading(false);
       });
   }, [sheetdetails, settings.spreadsheetId, settings.firstTabDataRange, token, navigate]);

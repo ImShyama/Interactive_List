@@ -3,6 +3,8 @@ import { FRONTENDHOST, HOST } from "../utils/constants";
 import { UserContext } from "../context/UserContext";
 import { Input, Select, Space } from 'antd';
 import { notifyError, notifySuccess } from "../utils/notify";
+import { CiEdit } from "react-icons/ci";
+import { IoEyeOutline } from "react-icons/io5";
 
 const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWith }) => {
   const [email, setEmail] = useState("");
@@ -106,6 +108,17 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
     },
   ];
 
+  const iconOptions = [
+    {
+      value: 'Edit',
+      label: <CiEdit size={22} color="#FFA500" />,
+    },
+    {
+      value: 'View',
+      label: <IoEyeOutline size={20} color="#FFA500" />,
+    },
+  ];
+
   if (!isOpen) return null;
 
   return (
@@ -177,7 +190,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
               </div>
               <div className="flex gap-[10px] items-center">
                 <div>
-                  <Select defaultValue={entry.permission} options={options} onChange={(value) => updateAccess(entry.email, value)} bordered={false}
+                  <Select defaultValue={entry.permission} options={iconOptions} onChange={(value) => updateAccess(entry.email, value)} bordered={false}
                     style={{ 
                       backgroundColor: 'transparent', 
                       border: 'none', 

@@ -5,7 +5,7 @@ export const HOST = ""
 export const FRONTENDHOST = "https://interactive-list.onrender.com"
 export const APPSNAME = ["Interactive List"];
 export const CLIENTID = '260938166249-rv9fgk97t8b2qmrpi5nqk8hd4frd2qba.apps.googleusercontent.com';
-export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ'; 
+export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ';
 export const APPS = [
     {
       appName: "Interactive List",

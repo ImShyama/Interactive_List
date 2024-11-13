@@ -44,17 +44,21 @@ app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 app.use("/", authRoute);
 
+app.use(authenticateToken);
+
 app.post("/getSheetDataWithID", async (req, res) => {
 
-  const authHeader = req?.headers?.authorization;
-  const token = req.cookies.token || (authHeader && authHeader.split(' ')[1]);
-  console.log("Token: ", token);
-  jwt.verify(token, secret, async (err, decoded) => {
-    if (err) return;
-    const user = await UserModel.findById(decoded.id).lean();
-    if (!user) return;
-    req.user = user;
-  });
+  // const authHeader = req?.headers?.authorization;
+  // const token = req.cookies.token || (authHeader && authHeader.split(' ')[1]);
+  // console.log("Token: ", token);
+  // jwt.verify(token, secret, async (err, decoded) => {
+  //   if (err) return;
+  //   const user = await UserModel.findById(decoded.id).lean();
+  //   if (!user) return;
+  //   req.user = user;
+  // });
+
+  // const user = req.userId;
 
   const { sheetID } = req.body;
 
@@ -69,6 +73,7 @@ app.post("/getSheetDataWithID", async (req, res) => {
 
   const sheetOwner = await User.findById(sheetDetails.userId).lean();
   const spreadSheetID = sheetDetails.spreadsheetId;
+  const spreadSheeSharedWith = sheetDetails.sharedWith;
   const range = sheetDetails.firstTabDataRange;
 
   const user = sheetOwner
@@ -100,12 +105,15 @@ app.post("/getSheetDataWithID", async (req, res) => {
       return;
     }
 
-    if (sheetOwner?._id.toString() === req?.user?._id.toString()) {
-      const permissions = "edit";
+    let permissions = "edit"
+
+    if (sheetOwner?._id.toString() !== req?.user?._id.toString()) {
+      const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
+      permissions = tempAccess.permission
       res.status(200).json({ rows, permissions });
       return;
     }
-    const permissions = "view";
+    // const permissions = "view";
 
     res.status(200).json({ rows, permissions });
   } catch (error) {
@@ -131,7 +139,7 @@ app.get("/getSheetDetails/:id", async (req, res) => {
 });
 
 
-app.use(authenticateToken);
+
 
 app.get("/getUserData", (req, res) => {
   res.send(req.user);
@@ -793,10 +801,21 @@ app.post("/getSheetData", async (req, res) => {
 // Route to get all spreadsheets for a user
 app.post("/getSpreadSheets", async (req, res) => {
   const userId = req.user._id;
-
+  const emailID = req.user.email;
   try {
-    const sheets = await Sheet.find({ userId });
-    res.status(200).json(sheets);
+    const sheets = await Sheet.find({ $or: [{ userId: userId }, { "sharedWith.email": emailID }] }).lean();
+    const newSheets = sheets.map((sheet) => {
+      var access = "";
+      if (sheet.userId == userId) {
+        access = "owner";
+      } else {
+        let tempSharedWith = sheet.sharedWith.find(access => access.email === emailID)
+        console.log({tempSharedWith});
+        access = tempSharedWith.permission.toLowerCase();
+      }
+      return { ...sheet, access: access };
+    })
+    res.status(200).json(newSheets);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch spreadsheets" });

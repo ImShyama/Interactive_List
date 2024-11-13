@@ -557,7 +557,7 @@ const InteractiveListView = () => {
                         onClick={handleOpenPicker}
                     >
                         <span className="text-white font-poppins text-[14px] font-bold leading-normal">+</span>
-                        <span className="text-white font-poppins text-[14px] font-bold leading-normal">Create app from zero</span>
+                        <span className="text-white font-poppins text-[14px] font-bold leading-normal">Create App from zero</span>
                         {/* + Create app from zero */}
                     </button>
 

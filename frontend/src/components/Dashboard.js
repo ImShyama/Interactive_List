@@ -9,15 +9,17 @@ import uparrow from "../assets/uparrow.svg";
 import downarrow from "../assets/downarrow.svg";
 import updownIcon from "../assets/updownIcon.svg";
 import refreshAccessToken from '../utils/refreshAccessToken';
-import { APPS, APPSNAME } from '../utils/constants';
+import { APPS, APPSNAME, CLIENTID, DEVELOPERKEY } from '../utils/constants';
 import { Input, Select } from 'antd';
 import { BiSearch } from 'react-icons/bi';
 import { HOST } from '../utils/constants';
 
 
 const { Search } = Input;
-const clientId = '210551094674-r1bvcns06j8pj06bk8dnfhl3mh6feuag.apps.googleusercontent.com';
-const developerKey = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ'; // Use correct developer key
+// const clientId = '210551094674-r1bvcns06j8pj06bk8dnfhl3mh6feuag.apps.googleusercontent.com';
+// const developerKey = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ'; // Use correct developer key
+const clientId = CLIENTID
+const developerKey = DEVELOPERKEY
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -29,6 +31,7 @@ const Dashboard = () => {
   const [showWarning, setShowWarning] = useState(false);
   const [showAppCard, setShowAppCard] = useState(true);
   const [apps, setApps] = useState(APPS);
+  const [isDisable, setIsDisable] = useState(true);
 
   {
     console.log("app:",apps);
@@ -43,6 +46,7 @@ const Dashboard = () => {
     if (e.target.value !== "") {
       setShowWarning(false)
     }
+    setIsDisable(false);
   };
 
   useEffect(() => {
@@ -120,6 +124,7 @@ const Dashboard = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedOption("");
+    setIsDisable(true)
   };
 
   const onSearch = () => {
@@ -222,6 +227,7 @@ const Dashboard = () => {
 
               <button className="rounded-[17px] bg-[#FFA500] text-[white] px-4 py-2 w-[380px]"
                 onClick={handleOpenPicker}
+                disabled={isDisable}
               >
                 Submit
               </button>

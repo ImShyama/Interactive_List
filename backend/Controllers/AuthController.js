@@ -15,7 +15,7 @@ module.exports.Signup = async (req, res, next) => {
     const user = await User.create({ email, password, username, createdAt });
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
-      withCredentials: true,
+      // withCredentials: true,
       // httpOnly: false,
       maxAge: 1000*60*60*60*24*5,
     });
@@ -44,7 +44,7 @@ module.exports.Login = async (req, res, next) => {
     }
     const token = createSecretToken(user._id);
     res.cookie("token", token, {
-      withCredentials: true,
+      // withCredentials: true,
       // httpOnly: false,
       maxAge: 1000*60*60*60*24*5,
     });

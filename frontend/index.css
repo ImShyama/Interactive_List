@@ -267,6 +267,22 @@ button:disabled {
   box-shadow: none;     /* Remove shadow when disabled */
 }
 
+.icons:disabled {
+  background: transparent; /* Disabled state background */
+  cursor: not-allowed;  /* Disabled state cursor */
+  box-shadow: none;     /* Remove shadow when disabled */
+}
+
+.icons svg {
+  stroke: #919191; /* Default color */
+}
+
+.icons.disabled-svg {
+  stroke: #d3d3d3; /* Lighter, disabled color */
+}
+
+
+
 /* loader inside a button */
 .loader {
   border: 4px solid transparent; /* Transparent border for the full circle */
