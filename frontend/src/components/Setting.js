@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import axios from "axios";
+import axios, { spread } from "axios";
 import "./setting.css";
 import settingIcon from "../assets/settingIcon.svg";
 import cancelIcon from "../assets/cancelIcon.svg";
@@ -21,17 +21,19 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import { HOST } from "../utils/constants.js";
 import ColorPick from "./ColorPick.js";
-import useDrivePicker from 'react-google-drive-picker';
+import useDrivePicker from "react-google-drive-picker";
 import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
 import { ColorPicker } from "antd";
 import Loader from "./Loader";
-
+import { notifySuccess } from "../utils/notify.js";
 
 const AddData = ({ activateSave }) => {
-
   const dispatch = useDispatch();
   const settingData = useSelector((state) => state.setting.settings);
-  const tableSettings = settingData?.tableSettings?.length > 0 ? settingData.tableSettings[0] : null;
+  const tableSettings =
+    settingData?.tableSettings?.length > 0
+      ? settingData.tableSettings[0]
+      : null;
   const fontSizes = Array.from({ length: 15 }, (_, i) => i + 10);
   const fontFamilies = [
     { display: "Poppins", value: "Poppins" },
@@ -49,19 +51,19 @@ const AddData = ({ activateSave }) => {
     { display: "Gill Sans", value: "Gill Sans" },
     { display: "Palatino", value: "Palatino" },
     { display: "Arial Black", value: "Arial Black" },
-    { display: "Brush Script", value: "Brush Script MT" }
+    { display: "Brush Script", value: "Brush Script MT" },
   ];
 
   // Initial state to manage all inputs
   const [formData, setFormData] = useState({
-    headerBgColor: tableSettings?.headerBgColor || '#ffffff',
-    headerTextColor: tableSettings?.headerTextColor || '#000000',
-    headerFontSize: tableSettings?.headerFontSize || '14',
-    headerFontStyle: tableSettings?.headerFontStyle || 'Poppins',
-    bodyBgColor: tableSettings?.bodyBgColor || '#ffffff',
-    bodyTextColor: tableSettings?.bodyTextColor || '#000000',
-    bodyFontSize: tableSettings?.bodyFontSize || '11',
-    bodyFontStyle: tableSettings?.bodyFontStyle || 'Poppins',
+    headerBgColor: tableSettings?.headerBgColor || "#ffffff",
+    headerTextColor: tableSettings?.headerTextColor || "#000000",
+    headerFontSize: tableSettings?.headerFontSize || "14",
+    headerFontStyle: tableSettings?.headerFontStyle || "Poppins",
+    bodyBgColor: tableSettings?.bodyBgColor || "#ffffff",
+    bodyTextColor: tableSettings?.bodyTextColor || "#000000",
+    bodyFontSize: tableSettings?.bodyFontSize || "11",
+    bodyFontStyle: tableSettings?.bodyFontStyle || "Poppins",
   });
 
   const handleChange = (field, value) => {
@@ -82,9 +84,8 @@ const AddData = ({ activateSave }) => {
       return updatedFormData;
     });
 
-    activateSave();  // Save button activation
+    activateSave(); // Save button activation
   };
-
 
   return (
     <div className="w-[100%]">
@@ -97,36 +98,40 @@ const AddData = ({ activateSave }) => {
             </span>
           </div>
           <div className="flex justify-between items-center my-3">
-            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Background Color</span>
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
+              Background Color
+            </span>
             <ColorPicker
               value={formData.headerBgColor}
               onChange={(color) => {
                 if (color && color.toHexString()) {
-                  handleChange('headerBgColor', color.toHexString())
+                  handleChange("headerBgColor", color.toHexString());
                 }
               }}
             />
           </div>
           <div className="flex justify-between items-center my-3">
-            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Color</span>
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
+              Font Color
+            </span>
             <ColorPicker
-              value={formData.headerTextColor}  // value should come from the state
+              value={formData.headerTextColor} // value should come from the state
               onChange={(color) => {
-                console.log("Color object: ", color.toHexString());  // Log to verify the object
+                console.log("Color object: ", color.toHexString()); // Log to verify the object
                 if (color && color.toHexString()) {
-                  handleChange('headerTextColor', color.toHexString());
+                  handleChange("headerTextColor", color.toHexString());
                 }
               }}
             />
-
-
           </div>
           <div className="flex justify-between items-center my-3">
-            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Size</span>
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
+              Font Size
+            </span>
             <select
               className="bg-[#EDEDED] rounded-[4.789px]"
               value={formData.headerFontSize}
-              onChange={(e) => handleChange('headerFontSize', e.target.value)}
+              onChange={(e) => handleChange("headerFontSize", e.target.value)}
             >
               {fontSizes.map((size) => (
                 <option key={size} value={size}>
@@ -136,11 +141,13 @@ const AddData = ({ activateSave }) => {
             </select>
           </div>
           <div className="flex justify-between items-center my-3">
-            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Style</span>
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
+              Font Style
+            </span>
             <select
               className="bg-[#EDEDED] rounded-[4.789px]"
               value={formData.headerFontStyle}
-              onChange={(e) => handleChange('headerFontStyle', e.target.value)}
+              onChange={(e) => handleChange("headerFontStyle", e.target.value)}
             >
               {fontFamilies.map((font, index) => (
                 <option key={index} value={font.value}>
@@ -166,18 +173,24 @@ const AddData = ({ activateSave }) => {
             />
           </div> */}
           <div className="flex justify-between items-center my-3">
-            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Color</span>
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
+              Font Color
+            </span>
             <ColorPicker
               value={formData.bodyTextColor}
-              onChange={(color) => handleChange('bodyTextColor', color.toHexString())}
+              onChange={(color) =>
+                handleChange("bodyTextColor", color.toHexString())
+              }
             />
           </div>
           <div className="flex justify-between items-center my-3">
-            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Size</span>
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
+              Font Size
+            </span>
             <select
               className="bg-[#EDEDED] rounded-[4.789px]"
               value={formData.bodyFontSize}
-              onChange={(e) => handleChange('bodyFontSize', e.target.value)}
+              onChange={(e) => handleChange("bodyFontSize", e.target.value)}
             >
               {fontSizes.map((size) => (
                 <option key={size} value={size}>
@@ -187,11 +200,13 @@ const AddData = ({ activateSave }) => {
             </select>
           </div>
           <div className="flex justify-between items-center my-3">
-            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">Font Style</span>
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
+              Font Style
+            </span>
             <select
               className="bg-[#EDEDED] rounded-[4.789px]"
               value={formData.bodyFontStyle}
-              onChange={(e) => handleChange('bodyFontStyle', e.target.value)}
+              onChange={(e) => handleChange("bodyFontStyle", e.target.value)}
             >
               {fontFamilies.map((font, index) => (
                 <option key={index} value={font.value}>
@@ -210,28 +225,29 @@ const AddData = ({ activateSave }) => {
       </div> */}
     </div>
   );
-
 };
 
 const SpreadsheetSettings = ({ activateSave }) => {
-
   const dispatch = useDispatch();
   const settingData = useSelector((state) => state.setting.settings); // Get the current settings from Redux
 
-  const [selectedSheet, setSelectedSheet] = useState(settingData?.firstSheetName);
-  const [dataRange, setDataRange] = useState(settingData?.firstTabDataRange.split("!")[1]);
+  const [selectedSheet, setSelectedSheet] = useState(
+    settingData?.firstSheetName
+  );
+  const [dataRange, setDataRange] = useState(
+    settingData?.firstTabDataRange.split("!")[1]
+  );
+  const [loading, setLoading] = useState(false);
 
   const { token } = useContext(UserContext);
 
-  const clientId = CLIENTID
-  const developerKey = DEVELOPERKEY
-
-
+  const clientId = CLIENTID;
+  const developerKey = DEVELOPERKEY;
 
   const handleSheetChange = (e) => {
     setSelectedSheet(e.target.value);
     const updatedSettings = {
-      firstSheetName: e.target.value
+      firstSheetName: e.target.value,
     };
     dispatch(updateSetting(updatedSettings));
     activateSave();
@@ -259,45 +275,53 @@ const SpreadsheetSettings = ({ activateSave }) => {
     // Make the API call to update the settings in MongoDB
     try {
       // Make the API call to update the settings in MongoDB
-      const response = await axios.put(`${HOST}/spreadsheet/${settingData._id}`, updatedSpreadsheet, {
-        headers: {
-          authorization: "Bearer " + token,
-        },
-      });
+      const response = await axios.put(
+        `${HOST}/spreadsheet/${settingData._id}`,
+        updatedSpreadsheet,
+        {
+          headers: {
+            authorization: "Bearer " + token,
+          },
+        }
+      );
     } catch (error) {
       console.error("Error updating settings in DB:", error);
     }
   };
 
-
   const getSpreadsheetDetails = async (spreadSheetID) => {
-
     try {
-      const response = await axios.post(`${HOST}/getSpreadsheetDetails`,
-        { spreadSheetID },  // Request body
+      const response = await axios.post(
+        `${HOST}/getSpreadsheetDetails`,
+        { spreadSheetID }, // Request body
         {
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,  // Assuming you have the token for auth
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Assuming you have the token for auth
           },
         }
       );
       // setSelectSpreadsheet(response.data.data);
       const data = response.data.data;
+
+      console.log({ data });
+      console.log({ URL: data.sheetUrl });
       const updatedSettings = {
         sheetDetails: data.sheetDetails,
         firstSheetName: data.sheetDetails[0].name,
         firstTabDataRange: data.firstSheetDataRange,
         spreadsheetName: data.spreadsheetName,
-        sheetUrl: data.sheetUrl
+        sheetUrl: data.sheetUrl,
+        spreadsheetUrl: data.sheetUrl,
+        spreadsheetId: spreadSheetID,
       };
       // Dispatch action to update settings in Redux
       dispatch(updateSetting(updatedSettings));
+      notifySuccess("Spreadsheet selected successfully");
+      setLoading(false);
 
-      // You can now use the spreadsheet details (name, sheet names, URL)
-      const { spreadsheetName, sheetNames, sheetUrl } = response.data.data;
     } catch (error) {
-      console.error('Error fetching spreadsheet details:', error);
+      console.error("Error fetching spreadsheet details:", error);
     }
   };
 
@@ -305,7 +329,7 @@ const SpreadsheetSettings = ({ activateSave }) => {
 
   // Function to trigger the Google Drive Picker
   const handleOpenPicker = () => {
-    console.log("hello");
+    setLoading(true);
     openPicker({
       clientId,
       developerKey,
@@ -315,9 +339,10 @@ const SpreadsheetSettings = ({ activateSave }) => {
       supportDrives: true,
       multiselect: false, // Single file picker for spreadsheet
       callbackFunction: (data) => {
-        if (data.action === 'cancel') {
-          console.log('User clicked cancel/close button');
-        } else if (data.action === 'picked') {
+        if (data.action === "cancel") {
+          console.log("User clicked cancel/close button");
+          setLoading(false);
+        } else if (data.action === "picked") {
           const spreadSheetID = data.docs[0].id; // Extract Spreadsheet ID
           console.log(`Spreadsheet ID: ${spreadSheetID}`);
           getSpreadsheetDetails(spreadSheetID); // Call the API to get sheet details
@@ -327,22 +352,36 @@ const SpreadsheetSettings = ({ activateSave }) => {
     });
   };
 
+  console.log({ settingData });
+
   return (
     <div className="Spreadsheet_setting">
       <div className="sheet_link">
         <div className="sheet_link_header">
           <img src={sheetIcon} />
-          <span className="sheet_title" >{settingData.spreadsheetName}</span>
+          <span className="sheet_title">{settingData.spreadsheetName}</span>
         </div>
         <div className="sheet_btn">
-          <div >
-            <a className="sheet_btn_open" target="_blank" href={settingData.spreadsheetUrl}>
+          <div>
+            <a
+              className="sheet_btn_open"
+              target="_blank"
+              href={settingData.spreadsheetUrl}
+            >
               <img src={openIcon} />
-              <span className="sheet_btn_open_text" >Open</span>
+              <span className="sheet_btn_open_text">Open</span>
             </a>
           </div>
-          <button className="sheet_btn_select" onClick={() => handleOpenPicker()}>
-            <span className="sheet_btn_select_text">Select</span>
+          <button
+            className="sheet_btn_select w-[100px]"
+            onClick={() => handleOpenPicker()}
+            disabled={loading}
+          >
+            {loading ? (
+              <div className="loader" /> // Display loader during loading
+            ) : (
+              <span className="sheet_btn_select_text">Select</span>
+            )}
           </button>
         </div>
       </div>
@@ -361,7 +400,11 @@ const SpreadsheetSettings = ({ activateSave }) => {
             <span className="sheet_data_text">Select a Data Sheet</span>
           </div>
           <div className="sheet_data_select">
-            <select className="add_input" value={selectedSheet} onChange={handleSheetChange}>
+            <select
+              className="add_input"
+              value={selectedSheet}
+              onChange={handleSheetChange}
+            >
               {settingData.sheetDetails.map((sheet, index) => (
                 <option key={index} value={sheet.name}>
                   {sheet.name}
@@ -372,13 +415,15 @@ const SpreadsheetSettings = ({ activateSave }) => {
         </div>
         <div className="sheet_range">
           <div className="sheet_data_tabLabel">
-            <span className="sheet_data_text">Select a Data Sheet</span>
+            <span className="sheet_data_text">Add a Range</span>
           </div>
           <div className="sheet_data_select">
-            <input className="add_input"
+            <input
+              className="add_input"
               placeholder="Ex-A1:H"
-              value={dataRange}
-              onChange={handleRangeChange} />
+              value={settingData.firstTabDataRange?.split("!")[1]}
+              onChange={handleRangeChange}
+            />
           </div>
         </div>
       </div>
@@ -401,43 +446,33 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const nav = useNavigate();
   const { token } = useContext(UserContext);
 
-  // const handleLogout = () => {
-  //   console.log("logout clicked");
-  //   // Clear cookies
-  //   Cookies.remove("token");
-  //   Cookies.remove("profile");
-
-  //   // Clear user context
-  //   setToken(null);
-  //   setProfile(null);
-  //   closeDrawer();
-
-  //   // Redirect to login page
-  //   nav("/");
-  // };
-
   const settingData = useSelector((state) => state.setting.settings);
 
   const activateSave = () => {
     setIsSaveChanges(true);
-  }
+  };
 
-  // subscribing to  the store using Selector 
-  const setting = useSelector((store) => store.setting.settings)
+  // subscribing to  the store using Selector
+  const setting = useSelector((store) => store.setting.settings);
 
   const handleSaveChanges = async () => {
     setIsLoading(true);
     // Make the API call to update the settings in MongoDB
     try {
       // Make the API call to update the settings in MongoDB
-      const response = await axios.put(`${HOST}/spreadsheet/${settingData._id}`, settingData, {
-        headers: {
-          authorization: "Bearer " + token,
-        },
-      });
+      const response = await axios.put(
+        `${HOST}/spreadsheet/${settingData._id}`,
+        settingData,
+        {
+          headers: {
+            authorization: "Bearer " + token,
+          },
+        }
+      );
       console.log("Settings updated successfully:", response.data);
       setIsLoading(false);
       setIsSaveChanges(false);
+      notifySuccess("Settings updated successfully");
       closeDrawer();
     } catch (error) {
       console.error("Error updating settings in DB:", error);
@@ -460,7 +495,11 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               </div>
             </div>
             <div className="setting_icons_top_right">
-              <button className="submit_btn" onClick={handleSaveChanges} disabled={!isSaveChanges}>
+              <button
+                className="submit_btn"
+                onClick={handleSaveChanges}
+                disabled={!isSaveChanges}
+              >
                 {/* {isLoading ? (
                   <span className="span_btn">
                     <Loader textToDisplay="" />  
@@ -469,7 +508,8 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 <span className="span_btn">Save Changes</span>
                 {/* )} */}
               </button>
-              <div className="setting_icons_top_right_inner"
+              <div
+                className="setting_icons_top_right_inner"
                 onClick={() => handleToggleDrawer()}
               >
                 {/* <span>Cancel</span> */}
@@ -571,7 +611,6 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
             </div> */}
           </div>
           {addData && <AddData activateSave={activateSave} />}
-          {/* <ColorPick /> */}
         </div>
       </div>
     </div>

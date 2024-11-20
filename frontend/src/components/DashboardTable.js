@@ -143,6 +143,7 @@ const DashboardTable = () => {
           prevFilteredSheets.filter((sheet) => sheet._id !== sheetToDelete.id)
         );
         setConfirmModalOpen(false);
+        notifySuccess("Spreadsheet deleted successfully!");
       })
       .catch((err) => {
         console.log(err.message);

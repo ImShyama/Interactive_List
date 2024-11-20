@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import { HOST } from "../utils/constants.js";
 import InteractiveList from "./InteractiveList.js";
-
+import Loader from "./Loader.js";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
@@ -38,7 +38,11 @@ const Table = () => {
   }
 
   useEffect(() => {
-    if (!sheetdetails || !sheetdetails.spreadsheetId || !sheetdetails.firstTabDataRange) {
+    if (
+      !sheetdetails ||
+      !sheetdetails.spreadsheetId ||
+      !sheetdetails.firstTabDataRange
+    ) {
       return; // Do nothing if sheetdetails are incomplete
     }
 
@@ -47,17 +51,17 @@ const Table = () => {
       handleAddSetting(sheetdetails);
       setHasInitialized(true); // Ensure it's set only once
     }
-  }, [sheetdetails, hasInitialized, dispatch]); 
+  }, [sheetdetails, hasInitialized, dispatch]);
 
   useEffect(() => {
-    if (!id ) return;
+    if (!id) return;
 
     // Fetch sheet data
     axios
       .post(
         `${HOST}/getSheetDataWithID`,
         {
-          sheetID: id
+          sheetID: id,
         },
         {
           headers: {
@@ -72,11 +76,12 @@ const Table = () => {
           return;
         }
 
+        console.log({table_data:res.rows});
         const [header, ...dataRows] = res.rows;
         const permissions = res.permissions;
 
         console.log(res.permissions);
-        if(permissions.toLowerCase() == "view") {
+        if (permissions.toLowerCase() == "view") {
           navigate(`/${id}/view`);
         }
         setSheetData(res.rows);
@@ -86,15 +91,41 @@ const Table = () => {
       })
       .catch((err) => {
         console.log(err.message);
-        navigate(`/`)
+        navigate(`/`);
         setLoading(false);
       });
-  }, [sheetdetails, settings.spreadsheetId, settings.firstTabDataRange, token, navigate]);
-
-
+  }, [
+    sheetdetails,
+    settings.spreadsheetId,
+    settings.firstTabDataRange,
+    token,
+    navigate,
+    settings
+  ]);
 
   return (
-   <div> {tableHeader.length > 1 && <InteractiveList data={sheetData} headers={tableHeader} settings={sheetdetails} />}</div>
+    <div>
+      {/* Conditional rendering for InteractiveListPreview */}
+      {!loading && sheetData && tableHeader ? (
+        <div>
+          <div>
+            {" "}
+            {tableHeader.length > 1 && (
+              <InteractiveList
+                data={sheetData}
+                headers={tableHeader}
+                settings={sheetdetails}
+              />
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="flex justify-center items-center h-full">
+          <Loader textToDisplay={"Loading..."} />
+        </div>
+      )}
+      {/* <div> {tableHeader.length > 1 && <InteractiveList data={sheetData} headers={tableHeader} settings={sheetdetails} />}</div> */}
+    </div>
   );
 };
 

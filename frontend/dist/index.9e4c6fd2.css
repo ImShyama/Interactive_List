@@ -674,6 +674,10 @@ img, video {
   width: 100%;
 }
 
+.w-\[100px\] {
+  width: 100px;
+}
+
 .w-\[1114px\] {
   width: 1114px;
 }
@@ -1806,6 +1810,13 @@ img, video {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+:root {
+  --primary-color: #bad900;
+  --secondary-color: #2ecc71;
+  --text-color: #333;
+  --background-color: #fff;
 }
 
 label {

@@ -47,11 +47,47 @@ function GoogleSignin() {
     const tokenCookie = Cookies.get("token");
     const profileCookie = Cookies.get("profile");
 
-    console.log("token", tokenCookie, "profile", profileCookie);
+    console.log("Cookies:", { token: tokenCookie, profile: profileCookie });
+
+    // Redirect to login if either token or profile is missing
+    // if (!tokenCookie || !profileCookie) {
+    //   nav("/");
+    //   return;
+    // }
+
+    // try {
+    //   // Try parsing the profile cookie
+    //   const parsedProfile = JSON.parse(profileCookie);
+    //   setToken(tokenCookie);
+    //   setProfile(parsedProfile);
+    //   nav("/dashboard");
+    // } catch (error) {
+    //   console.error("Error parsing profileCookie:", error);
+    //   // Handle invalid profile cookie (e.g., remove it and redirect to login)
+    //   Cookies.remove("token");
+    //   Cookies.remove("profile");
+    //   nav("/");
+    // }
+
+    // console.log("token", tokenCookie, "profile", profileCookie);
 
     if (tokenCookie && profileCookie) {
       setToken(tokenCookie);
       setProfile(JSON.parse(profileCookie));
+      nav("/dashboard");
+      return;
+    }
+
+    if (tokenCookie && profileCookie) {
+      setToken(tokenCookie);
+      try {
+        setProfile(JSON.parse(profileCookie));
+      } catch (error) {
+        console.error("Error parsing profileCookie:", error);
+        // Handle the error or reset the profile cookie
+        Cookies.remove("profile");
+        setProfile(null);
+      }
       nav("/dashboard");
       return;
     }
@@ -61,7 +97,9 @@ function GoogleSignin() {
       const code = searchParams.get("code");
       if (code == null) return;
       axios
-        .get(`${HOST}/auth/google/callback?code=` + code,{ withCredentials: true })
+        .get(`${HOST}/auth/google/callback?code=` + code, {
+          withCredentials: true,
+        })
         .then(({ data: res }) => {
           if (res.error) {
             nav("/");
@@ -75,7 +113,7 @@ function GoogleSignin() {
           }
           // Save token and profile to cookies
           Cookies.set("token", res.token);
-          Cookies.set("profile", JSON.stringify(res.body));
+          // Cookies.set("profile", JSON.stringify(res.body));
           nav("/dashboard");
         });
     } catch (err) {

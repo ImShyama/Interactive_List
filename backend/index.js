@@ -71,6 +71,7 @@ app.post("/getSheetDataWithID", async (req, res) => {
   // }
   // const permissions = isValidUser.permission ;
 
+  
   const sheetOwner = await User.findById(sheetDetails.userId).lean();
   const spreadSheetID = sheetDetails.spreadsheetId;
   const spreadSheeSharedWith = sheetDetails.sharedWith;
@@ -598,6 +599,7 @@ app.post("/createNewSpreadsheet", async (req, res) => {
   const userId = req.user._id;
   const sheetName = req.body.sheetName;
   const appName = req.body.appName;
+  console.log({sheet_id, userId, sheetName, appName});  
 
   // Create an OAuth2 client with the given credentials
   const authClient = new google.auth.OAuth2(
@@ -614,6 +616,7 @@ app.post("/createNewSpreadsheet", async (req, res) => {
   try {
     const result = await addSpreadsheet(authClient, sheet_id, userId, sheetName, appName);
     res.status(200).json(result);
+    console.log({result});
   } catch (err) {
     console.log("error: ", err);
     res.status(500).json({ error: err.message });

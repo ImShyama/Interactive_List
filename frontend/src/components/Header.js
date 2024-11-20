@@ -6,7 +6,7 @@ import Setting from "./Setting";
 import Profile from "./Profile";
 // import settingsIcon from "../assets/settingIcon.svg";
 import settingsIcon1 from "../assets/settingIcon1.svg";
-import { SettingIcon } from "../assets/svgIcons";
+import { SettingIcon, SettingIcon1 } from "../assets/svgIcons";
 import dividerIcon from "../assets/dividerIcon.svg";
 import { UserContext } from "../context/UserContext";
 import { HOST } from "../utils/constants";
@@ -19,7 +19,7 @@ const Header = () => {
   const { token, setToken, setProfile } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const isEditMode = window.location.pathname.endsWith('/edit');
+  const isEditMode = window.location.pathname.endsWith("/edit");
 
   const profileRef = useRef(null); // Ref for the Profile component
   const profileImageRef = useRef(null); // Ref for the profile image
@@ -76,7 +76,6 @@ const Header = () => {
         // setToken(null);
         // setProfile(null);
         // navigate("/");
-        
       });
   }, [token]);
 
@@ -98,19 +97,28 @@ const Header = () => {
           </div>
           {token ? (
             <div className="right-panel">
-              {isEditMode && (<div className="right-panel-setting">
-                <img
-                  src={isDrawerOpen ? SettingIcon : settingsIcon1}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleDrawer();
-
-                  }}
-                  className={`cursor-pointer ${isDrawerOpen ? "" : "text-orange-500"
+              {isEditMode && (
+                <div className="right-panel-setting"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleDrawer();
+                }}
+                >
+                  {/* <img
+                    className={`cursor-pointer ${
+                      isDrawerOpen ? "" : "text-orange-500"
                     }`}
-                />
-              </div>)}
-              {isEditMode && (<img src={dividerIcon} />)}
+                    // src={isDrawerOpen ? SettingIcon : settingsIcon1}
+                    src={isDrawerOpen ? SettingIcon : settingsIcon1}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleDrawer();
+                    }}
+                  /> */}
+                  {isDrawerOpen ? <SettingIcon /> : <SettingIcon1 />}
+                </div>
+              )}
+              {isEditMode && <img src={dividerIcon} />}
               <div className="right-pannel-profil">
                 <img
                   ref={profileImageRef} // Added ref to the profile image
@@ -139,7 +147,12 @@ const Header = () => {
           )}
         </div>
 
-        {isDrawerOpen && <Setting closeDrawer={closeDrawer} handleToggleDrawer={handleToggleDrawer} />}
+        {isDrawerOpen && (
+          <Setting
+            closeDrawer={closeDrawer}
+            handleToggleDrawer={handleToggleDrawer}
+          />
+        )}
       </div>
       {isProfileVisible && (
         <div ref={profileRef} className="absolute right-[45px] mt-[-10px]">
