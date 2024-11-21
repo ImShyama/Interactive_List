@@ -54,8 +54,11 @@ const Table = () => {
   }, [sheetdetails, hasInitialized, dispatch]);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      console.log("No ID provided");
+      return};
 
+    console.log({ settingsascsdvf: settings });
     // Fetch sheet data
     axios
       .post(
@@ -72,18 +75,20 @@ const Table = () => {
       .then(({ data: res }) => {
         if (res.error) {
           alert(res.error);
-          navigate("/");
+          console.log({ error: res.error });
+          // navigate("/");
           return;
         }
 
         console.log({table_data:res.rows});
-        const [header, ...dataRows] = res.rows;
+        let [header, ...dataRows] = res.rows;
         const permissions = res.permissions;
 
         console.log(res.permissions);
         if (permissions.toLowerCase() == "view") {
           navigate(`/${id}/view`);
         }
+        header = header.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
         setSheetData(res.rows);
         setTableHeader(header);
         setTableData(dataRows);
@@ -91,7 +96,7 @@ const Table = () => {
       })
       .catch((err) => {
         console.log(err.message);
-        navigate(`/`);
+        // navigate(`/`);
         setLoading(false);
       });
   }, [
@@ -114,7 +119,7 @@ const Table = () => {
               <InteractiveList
                 data={sheetData}
                 headers={tableHeader}
-                settings={sheetdetails}
+                settings={settings}
               />
             )}
           </div>

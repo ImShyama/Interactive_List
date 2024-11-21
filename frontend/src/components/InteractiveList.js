@@ -1,4 +1,4 @@
-import { React, useEffect, useRef, useState, useContext } from 'react';
+import { React, useEffect, useRef, useState, useContext, useMemo } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Space, Table, Popover, Pagination } from 'antd';
 import Highlighter from 'react-highlight-words';
@@ -123,7 +123,9 @@ const convertArrayToJSON = (data) => {
 //   Cookies.set("cookiesName", JSON.stringify(columnWidths), { expires: 7 }); // Cookie expires in 7 days
 // };
 
-const InteractiveList = ({ data, headers }) => {
+const InteractiveList = ({ data, headers, settings }) => {
+
+  console.log({ data, headers, settings });
 
   const [filterInfo, setfilterInfo] = useState({})
   const [searchText, setSearchText] = useState('');
@@ -143,14 +145,25 @@ const InteractiveList = ({ data, headers }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  headers = headers.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
-  data = convertArrayToJSON(data);
-  const [filteredData, setFilteredData] = useState(data);
+  // headers = headers.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
+  // data = convertArrayToJSON(data);
+  const [filteredData, setFilteredData] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      // headers = headers.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
+      data = convertArrayToJSON(data);
+      setFilteredData(data);
+    }
+
+  }, [data])
+
+  console.log({ filteredData, headers })
   const { token } = useContext(UserContext);
   const clientId = CLIENTID
   const developerKey = DEVELOPERKEY
   const isEditMode = window.location.pathname.endsWith('/edit');
-  const settings = useSelector((state) => state?.setting?.settings);
+  // const settings = useSelector((state) => state?.setting?.settings);
 
   const loadColumnWidthsFromCookies = () => {
     const storageKey = settings?._id + settings?.firstSheetName;
@@ -761,40 +774,6 @@ const InteractiveList = ({ data, headers }) => {
           <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="bottom">
             <img src={label} alt="label" style={{ marginLeft: 8, cursor: 'pointer', height: '18px' }} />
           </Popover>
-          {/* <Popover
-            trigger="click"
-            placement="bottomRight"
-            content={
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-  
-                <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="right">
-                  <div style={{ cursor: 'pointer', color: 'blue' }}><LabelIcon /></div>
-                </Popover>
-
-                <Popover
-                content={({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-                  <ColumnFilter
-                    dataIndex={header}
-                    setSelectedKeys={setSelectedKeys}
-                    selectedKeys={selectedKeys}
-                    confirm={confirm}
-                    clearFilters={clearFilters}
-                  />
-                )}
-                trigger="click"
-                placement="right"
-              >
-                <div style={{ cursor: 'pointer', color: 'blue', display: 'flex', alignItems: 'center' }}>
-                  <FilterOutlined style={{ marginRight: 4 }} /> Filter
-                </div>
-              </Popover>
-              </div>
-            }
-          >
-            <div style={{ display: 'inline-flex', cursor: 'pointer' }}>
-              <VerticalEllipsis />
-            </div>
-          </Popover> */}
         </div>
       ),
       dataIndex: header,
@@ -878,7 +857,115 @@ const InteractiveList = ({ data, headers }) => {
       ]
       : []),
   ]);
+  
 
+  useEffect(()=>{
+    setColumns( [
+      ...headers.map((header, index) => ({
+        title: (
+          <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            {/* <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}> */}
+            <span
+              style={{
+                overflow: 'hidden',
+                whiteSpace: 'normal',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                maxWidth: 100, // Adjust the width to your preference
+              }}
+            >
+              {header.replace(/_/g, ' ').toUpperCase()}
+            </span>
+            {/* </Tooltip> */}
+            <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="bottom">
+              <img src={label} alt="label" style={{ marginLeft: 8, cursor: 'pointer', height: '18px' }} />
+            </Popover>
+          </div>
+        ),
+        dataIndex: header,
+        key: header,
+        width: 200,
+        ellipsis: true,
+        ...getColumnSearchProps(header),
+  
+        sorter: (a, b) => {
+          if (isNumeric(a[header]) && isNumeric(b[header])) {
+            return a[header] - b[header];
+          }
+          return a[header].toString().localeCompare(b[header].toString());
+        },
+        render: (text) => {
+          return isValidUrl(text) ? (
+            <a href={text} target="_blank" rel="noopener noreferrer" className="text-[#437FFF] font-poppins font-normal leading-[26.058px]">
+              Click here
+            </a>
+          ) : (
+            text
+          );
+        },
+        onHeaderCell: () => ({
+          style: {
+            backgroundColor: searchedColumns.includes(header) ? 'rgb(216 216 216)' : 'transparent',
+          },
+        }),
+        // Styling for the body cells
+        onCell: (record) => ({
+          style: {
+            // backgroundColor: bodyBgColor, // Body background color
+            color: bodyTextColor, // Body text color
+            fontFamily: bodyFontFamily, // Body font family
+            fontSize: `${bodyFontSize}px`, // Body font size
+          },
+        }),
+      })),
+  
+  
+      // Conditionally add the Action column if params includes 'edit'
+      ...(isEditMode
+        ? [
+          {
+            title: 'Action',
+            key: 'operation',
+            fixed: 'right', // Optional: This will fix the column on the right side of the table
+            width: 100,
+            render: (record) => (
+              <div className='flex gap-2'>
+                <button onClick={() => handleEdit(record)}>
+                  <div className="group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:stroke-orange-500">
+                      <g clipPath="url(#clip0_508_940)">
+                        <path d="M17.6462 5.67633C18.0868 5.23585 18.3344 4.63839 18.3345 4.01538C18.3346 3.39237 18.0871 2.79484 17.6467 2.35425C17.2062 1.91366 16.6087 1.66609 15.9857 1.66602C15.3627 1.66594 14.7652 1.91335 14.3246 2.35383L3.20291 13.478C3.00943 13.6709 2.86634 13.9084 2.78625 14.1697L1.68541 17.7963C1.66388 17.8684 1.66225 17.945 1.68071 18.0179C1.69916 18.0908 1.73701 18.1574 1.79024 18.2105C1.84347 18.2636 1.9101 18.3014 1.98305 18.3197C2.05599 18.3381 2.13255 18.3363 2.20458 18.3147L5.83208 17.2147C6.09306 17.1353 6.33056 16.9931 6.52375 16.8005L17.6462 5.67633Z" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M12.5 4.16602L15.8333 7.49935" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_508_940">
+                          <rect width="20" height="20" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </div>
+                </button>
+                <button onClick={() => handleDeleteClick(record)}>
+                  <div className="group">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:stroke-orange-500">
+                      <path d="M2.5 5H17.5" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M15.8346 5V16.6667C15.8346 17.5 15.0013 18.3333 14.168 18.3333H5.83464C5.0013 18.3333 4.16797 17.5 4.16797 16.6667V5" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M6.66797 4.99935V3.33268C6.66797 2.49935 7.5013 1.66602 8.33464 1.66602H11.668C12.5013 1.66602 13.3346 2.49935 13.3346 3.33268V4.99935" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M8.33203 9.16602V14.166" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M11.668 9.16602V14.166" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+                </button>
+  
+              </div>
+            ),
+          },
+        ]
+        : []),
+    ])
+  },[headers])
 
   useEffect(() => {
     const savedColumnWidths = loadColumnWidthsFromCookies();

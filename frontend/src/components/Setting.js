@@ -99,19 +99,6 @@ const AddData = ({ activateSave }) => {
           </div>
           <div className="flex justify-between items-center my-3">
             <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
-              Background Color
-            </span>
-            <ColorPicker
-              value={formData.headerBgColor}
-              onChange={(color) => {
-                if (color && color.toHexString()) {
-                  handleChange("headerBgColor", color.toHexString());
-                }
-              }}
-            />
-          </div>
-          <div className="flex justify-between items-center my-3">
-            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
               Font Color
             </span>
             <ColorPicker
@@ -155,6 +142,19 @@ const AddData = ({ activateSave }) => {
                 </option>
               ))}
             </select>
+          </div>
+          <div className="flex justify-between items-center my-3">
+            <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
+              Background Color
+            </span>
+            <ColorPicker
+              value={formData.headerBgColor}
+              onChange={(color) => {
+                if (color && color.toHexString()) {
+                  handleChange("headerBgColor", color.toHexString());
+                }
+              }}
+            />
           </div>
         </div>
 
@@ -445,6 +445,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const [isLoading, setIsLoading] = useState(false);
   const nav = useNavigate();
   const { token } = useContext(UserContext);
+  const dispatch = useDispatch();
 
   const settingData = useSelector((state) => state.setting.settings);
 
@@ -470,6 +471,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
         }
       );
       console.log("Settings updated successfully:", response.data);
+      dispatch(updateSetting(response.data));
       setIsLoading(false);
       setIsSaveChanges(false);
       notifySuccess("Settings updated successfully");
