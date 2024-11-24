@@ -32,7 +32,7 @@
 }
 
 .interact{
-    color: var(--black, #111);
+    color: var(--primary-color);
 font-family: Poppins;
 font-size: 24px;
 font-style: normal;
@@ -43,7 +43,7 @@ line-height: normal;
 .interactive-table{
     color: var(--text, #787D89);
 font-family: Poppins;
-font-size: 12px;
+font-size: 14px;
 font-style: normal;
 font-weight: 500;
 line-height: normal;

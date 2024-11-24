@@ -92,7 +92,7 @@ const AddData = ({ activateSave }) => {
       <div className="flex gap-5 px-2">
         {/* Header Settings */}
         <div className="w-[50%]">
-          <div className="inline-flex h-[30px] px-[16px] mb-2 flex-col justify-center items-start gap-[35.163px] flex-shrink-0 border-l-2 border-[#FFA500]">
+          <div className="inline-flex h-[30px] px-[16px] mb-2 flex-col justify-center items-start gap-[35.163px] flex-shrink-0 border-l-2 border-primary">
             <span className="text-[#111] font-poppins text-[16px] font-medium leading-normal">
               Header Settings
             </span>
@@ -160,7 +160,7 @@ const AddData = ({ activateSave }) => {
 
         {/* Body Settings */}
         <div className="w-[50%]">
-          <div className="inline-flex h-[30px] px-[16px] mb-2 flex-col justify-center items-start gap-[35.163px] flex-shrink-0 border-l-2 border-[#FFA500]">
+          <div className="inline-flex h-[30px] px-[16px] mb-2 flex-col justify-center items-start gap-[35.163px] flex-shrink-0 border-l-2 border-primary">
             <span className="text-[#111] font-poppins text-[16px] font-medium leading-normal">
               Body Settings
             </span>
@@ -172,7 +172,7 @@ const AddData = ({ activateSave }) => {
               onChange={(color) => handleChange('bodyBgColor', color.toHexString())}
             />
           </div> */}
-          <div className="flex justify-between items-center my-3">
+          <div className="flex justify-between items-center my-3 ml-2">
             <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
               Font Color
             </span>
@@ -183,7 +183,7 @@ const AddData = ({ activateSave }) => {
               }
             />
           </div>
-          <div className="flex justify-between items-center my-3">
+          <div className="flex justify-between items-center my-3 ml-2">
             <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
               Font Size
             </span>
@@ -199,7 +199,7 @@ const AddData = ({ activateSave }) => {
               ))}
             </select>
           </div>
-          <div className="flex justify-between items-center my-3">
+          <div className="flex justify-between items-center my-3 ml-2">
             <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
               Font Style
             </span>
@@ -518,56 +518,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 <img src={cancelIcon} />
               </div>
             </div>
-          </div>
-          {/* <div className="setting_icons_bottom">
-            <div className="setting_icons_bottom_1">
-              <div className="setting_icons_bottom_search">
-                <img
-                  className="setting_icons_bottom_searchIcon"
-                  src={searchIcon}
-                />
-                <span className="setting_icons_bottom_span">Search...</span>
-              </div>
-            </div>
-            <div className="setting_icons_bottom_2">
-              <div className="icon_outer">
-                <div className="icon_inner">
-                  <img className="icon" src={videoIcon} />
-                </div>
-              </div>
-              <div className="icon_outer">
-                <div className="icon_inner">
-                  <img className="icon" src={refreshIcon} />
-                </div>
-              </div>
-              <div className="icon_outer">
-                <div className="icon_inner">
-                  <img className="icon" src={helpIcon} />
-                </div>
-              </div>
-              <div className="icon_outer">
-                <div className="icon_inner">
-                  <img className="icon" src={copyIcon} />
-                </div>
-              </div>
-              <div className="icon_outer">
-                <div className="icon_inner">
-                  <img className="icon" src={shareIcon} />
-                </div>
-              </div>
-              <div className="icon_outer">
-                <div className="icon_inner">
-                  <img
-                    onClick={() => {
-                      handleLogout();
-                    }}
-                    className="icon"
-                    src={logoutIcon}
-                  />
-                </div>
-              </div>
-            </div>
-          </div> */}
+          </div>       
         </div>
         <div className="setting_filter">
           <div className="setting_filter_bottom">

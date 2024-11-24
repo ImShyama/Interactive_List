@@ -5,7 +5,7 @@ const Loader = ({ textToDisplay }) => {
             <div
                 className="w-16 h-16 border-4 border-solid rounded-full animate-spin mb-4"
                 style={{
-                    borderColor: "#FFA500", // Sets the border color to #FFA500
+                    borderColor: "var(--primary-color)", // Sets the border color to #FFA500
                     borderTopColor: "transparent" // Keeps the top border transparent for the spinning effect
                 }}
             ></div>

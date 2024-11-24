@@ -13,16 +13,13 @@ import { HOST } from '../utils/constants';
 import { UserContext } from "../context/UserContext";
 import { Resizable } from 'react-resizable';
 import './table.css';
-import bulkAdd from '../assets/bulkAdd.svg';
-import add from '../assets/addButton.svg';
-import reset from '../assets/reset.svg';
-import search from '../assets/search.svg';
-import cancel from '../assets/cancel.svg';
 import BulkAdd from './BulkAdd';
 import useDrivePicker from 'react-google-drive-picker';
 import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
 import styled from 'styled-components';
 import { notifySuccess, notifyError } from "../utils/notify";
+import { BackIcon, Cancel, Search, Reset, Add, BulkAdd } from '../assets/svgIcons';
+import { useNavigate } from 'react-router-dom';
 
 
 // Styled component for the Ant Table
@@ -110,22 +107,7 @@ const convertArrayToJSON = (data) => {
   return jsonData;
 };
 
-// const loadColumnWidthsFromCookies = () => {
-//   // const cookiesName = settings?._id + settings?.firstSheetName;
-//   // console.log("cookiesName", cookiesName);
-//   const savedWidths = Cookies.get("cookiesName");
-//   return savedWidths ? JSON.parse(savedWidths) : null;
-// };
-
-// const saveColumnWidthsToCookies = (columnWidths) => {
-//   // const cookiesName = settings?._id + settings?.firstSheetName;
-//   // console.log("cookiesName", cookiesName);
-//   Cookies.set("cookiesName", JSON.stringify(columnWidths), { expires: 7 }); // Cookie expires in 7 days
-// };
-
 const InteractiveList = ({ data, headers, settings }) => {
-
-  console.log({ data, headers, settings });
 
   const [filterInfo, setfilterInfo] = useState({})
   const [searchText, setSearchText] = useState('');
@@ -144,10 +126,8 @@ const InteractiveList = ({ data, headers, settings }) => {
   const [selectSpreadsheet, setSelectSpreadsheet] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  // headers = headers.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
-  // data = convertArrayToJSON(data);
   const [filteredData, setFilteredData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (data) {
@@ -233,17 +213,10 @@ const InteractiveList = ({ data, headers, settings }) => {
   }, [settings]);
 
 
-  // useEffect(() => {
-  //   // Only set filteredData if it's not already set or if data has changed
-  //   if (data && data.length > 0 && filteredData.length === 0) {
-  //     setFilteredData(data);
-  //   }
-  // }, [data, filteredData]);
-
-
   const handleGlobalSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchGlobal(value);
+    data = convertArrayToJSON(data);
 
     // Filter the data globally across all columns
     const filteredData = data.filter((record) => {
@@ -259,6 +232,7 @@ const InteractiveList = ({ data, headers, settings }) => {
   const handleGlobalReset = () => {
     setSearchGlobal('');
     setSearchText('');
+    data = convertArrayToJSON(data);
     setFilteredData(data);
     setSearchedColumns([]);
     setfilterInfo({});
@@ -320,8 +294,6 @@ const InteractiveList = ({ data, headers, settings }) => {
       return Array.isArray(prev) ? prev.filter(column => column !== dataIndex) : [];
     });
   };
-
-
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
@@ -857,10 +829,10 @@ const InteractiveList = ({ data, headers, settings }) => {
       ]
       : []),
   ]);
-  
 
-  useEffect(()=>{
-    setColumns( [
+
+  useEffect(() => {
+    setColumns([
       ...headers.map((header, index) => ({
         title: (
           <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
@@ -889,7 +861,7 @@ const InteractiveList = ({ data, headers, settings }) => {
         width: 200,
         ellipsis: true,
         ...getColumnSearchProps(header),
-  
+
         sorter: (a, b) => {
           if (isNumeric(a[header]) && isNumeric(b[header])) {
             return a[header] - b[header];
@@ -920,8 +892,8 @@ const InteractiveList = ({ data, headers, settings }) => {
           },
         }),
       })),
-  
-  
+
+
       // Conditionally add the Action column if params includes 'edit'
       ...(isEditMode
         ? [
@@ -958,14 +930,14 @@ const InteractiveList = ({ data, headers, settings }) => {
                     </svg>
                   </div>
                 </button>
-  
+
               </div>
             ),
           },
         ]
         : []),
     ])
-  },[headers])
+  }, [headers])
 
   useEffect(() => {
     const savedColumnWidths = loadColumnWidthsFromCookies();
@@ -1035,20 +1007,19 @@ const InteractiveList = ({ data, headers, settings }) => {
     handleGlobalReset();
   };
 
-
-
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-  // useEffect(() => {
-  //   // Function to handle pagination and slice the data
-  //   setPaginatedData(filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize))
-  // }, [filteredData]);
 
   return (
     <div>
       <div className='flex text-center justify-between items-center px-[50px]'>
+        <div className='flex align-center gap-[10px]'>
+          <button onClick={() => navigate(-1)}>
+            <BackIcon />
+          </button>
 
-        {settings && <EditableSpreadsheetName settings={settings} />}
+          {settings && <EditableSpreadsheetName settings={settings} />}
+        </div>
+
         {/* <div><span className="text-[#2A3C54] font-poppins text-[30px] font-medium">{settings.spreadsheetName}</span></div> */}
         <div className='flex justify-end items-center'>
 
@@ -1064,42 +1035,35 @@ const InteractiveList = ({ data, headers, settings }) => {
 
           {isSearchOpen && <button
             onClick={closeSearch}
-            className="bg-[#FFA500] rounded-[4px] p-1 mr-2"
-          // className="border border-[#FFA500] text-[#FFA500] px-4 py-1 rounded-md hover:bg-[#FFA500] hover:text-white transition-colors duration-200"
+            className="bg-primary rounded-[4px] p-1 mr-2"
           >
-            {/* <span>Reset</span> */}
-            <img src={cancel} alt="search" className="w-[18px] h-[18px]" />
+            <Cancel />
           </button>}
-
-
 
           {!isSearchOpen && <button
             onClick={openSearch}
-            className="bg-[#FFA500] rounded-[4px] p-1 mx-2"
-          // className="border border-[#FFA500] text-[#FFA500] px-4 py-1 rounded-md hover:bg-[#FFA500] hover:text-white transition-colors duration-200"
+            className="bg-primary rounded-[4px] p-1 mx-2"
           >
-            {/* <span>Reset</span> */}
-            <img src={search} alt="search" className="w-[18px] h-[18px]" />
+            <Search />
+            {/* <img src={search} alt="search" className="w-[18px] h-[18px]" /> */}
           </button>}
 
 
           <button
             onClick={handleGlobalReset}
-            className="bg-[#FFA500] rounded-[4px] p-1"
-          // className="border border-[#FFA500] text-[#FFA500] px-4 py-1 rounded-md hover:bg-[#FFA500] hover:text-white transition-colors duration-200"
+            className="bg-primary rounded-[4px] p-1"
           >
-            {/* <span>Reset</span> */}
-            <img src={reset} alt="reset" className="w-[18px] h-[18px]" />
+            <Reset />
+            {/* <img src={reset} alt="reset" className="w-[18px] h-[18px]" /> */}
           </button>
 
           {isEditMode && (
             <button
               onClick={handleAdd}
               className='mx-2'
-            // className="border border-[#FFA500] px-4 py-1 rounded-md bg-[#FFA500] text-white transition-colors duration-200"
             >
-              <img src={add} alt="add" className="w-[26px] h-[26px]" />
-              {/* <span>ADD +</span> */}
+              <Add />
+              {/* <img src={add} alt="add" className="w-[26px] h-[26px]" /> */}
             </button>
 
 
@@ -1109,17 +1073,11 @@ const InteractiveList = ({ data, headers, settings }) => {
           {isEditMode && (
             <button
               onClick={handleAddBukl}
-
-
-            // className="border border-[#FFA500] px-2 py-1 mx-2 rounded-md bg-[#FFA500] text-white transition-colors duration-200"
             >
-              {/* <span>Bulk +</span> */}
-              <img src={bulkAdd} alt="bulk" className="w-[30px] h-[30px]" />
+              <BulkAdd />
+              {/* <img src={bulkAdd} alt="bulk" className="w-[30px] h-[30px]" /> */}
             </button>
           )}
-
-
-
 
         </div>
       </div>

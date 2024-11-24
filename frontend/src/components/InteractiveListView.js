@@ -10,6 +10,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { Resizable } from 'react-resizable';
 import './table.css';
+import { BackIcon } from '../assets/svgIcons';
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
@@ -551,9 +552,14 @@ const InteractiveListView = () => {
     return (
         <div>
             <div className='flex text-center justify-between items-center px-[50px]'>
-                <div><span className="text-[#2A3C54] font-poppins text-[24px] font-medium">Interactive List</span></div>
+                <div className="flex items-center gap-[10px]">
+                    <button onClick={() => navigate(-1)}>
+                        <BackIcon />
+                    </button>
+                    <span className="text-[#2A3C54] font-poppins text-[21px] font-medium">Interactive List</span>
+                </div>
                 <div>
-                    <button className="flex py-[5px] px-[10px] justify-center items-center gap-[5px] flex-shrink-0 bg-[#FFB041] text-white rounded-md hover:bg-[#FFB041]"
+                    <button className="flex py-[5px] px-[10px] justify-center items-center gap-[5px] flex-shrink-0 bg-primary text-white rounded-md hover:bg-secondary"
                         onClick={handleOpenPicker}
                     >
                         <span className="text-white font-poppins text-[14px] font-bold leading-normal">+</span>

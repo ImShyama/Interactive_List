@@ -32,3 +32,58 @@ export const SettingIcon1 = () => (
         </g>
     </svg>
 )
+
+export const BackIcon = () => (
+    <svg width="37" height="37" viewBox="0 0 37 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="Frame">
+            <path id="Vector" d="M18.4997 29.2917L7.70801 18.5L18.4997 7.70837" stroke="black" stroke-width="3.08333" stroke-linecap="round" stroke-linejoin="round" />
+            <path id="Vector_2" d="M29.2913 18.5H7.70801" stroke="black" stroke-width="3.08333" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+    </svg>
+)
+
+export const Cancel = () => (
+    <svg width="18" height="18" viewBox="0 0 8 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path id="Vector" d="M7.00012 1.21289L1.00012 7.21288M0.999878 1.21265L7.00012 7.21288" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+)
+
+export const Search = () => (
+    <svg width="18" height="18" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="Frame">
+            <path id="Vector" d="M10.6549 18.1466C14.7595 18.1466 18.0871 14.8191 18.0871 10.7144C18.0871 6.60974 14.7595 3.28223 10.6549 3.28223C6.55017 3.28223 3.22266 6.60974 3.22266 10.7144C3.22266 14.8191 6.55017 18.1466 10.6549 18.1466Z" stroke="white" stroke-width="1.85805" stroke-linecap="round" stroke-linejoin="round" />
+            <path id="Vector_2" d="M19.944 20.0046L15.9492 16.0098" stroke="white" stroke-width="1.85805" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+    </svg>
+
+)
+
+export const Reset = () => (
+    <svg width="18" height="18" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="Frame">
+            <path id="Vector" d="M3.38281 11.6435C3.38281 13.2971 3.87319 14.9137 4.79193 16.2887C5.71068 17.6637 7.01652 18.7354 8.54434 19.3682C10.0721 20.0011 11.7533 20.1666 13.3752 19.844C14.9972 19.5214 16.487 18.7251 17.6563 17.5557C18.8257 16.3864 19.622 14.8966 19.9446 13.2746C20.2672 11.6527 20.1016 9.97156 19.4688 8.44375C18.836 6.91594 17.7643 5.61009 16.3893 4.69135C15.0143 3.7726 13.3977 3.28223 11.744 3.28223C9.40657 3.29102 7.16299 4.2031 5.48241 5.82775L3.38281 7.92735" stroke="white" stroke-width="2.1439" stroke-linecap="round" stroke-linejoin="round" />
+            <path id="Vector_2" d="M3.38281 3.28223V7.92735H8.02794" stroke="white" stroke-width="2.1439" stroke-linecap="round" stroke-linejoin="round" />
+        </g>
+    </svg>
+)
+
+export const Add = () => (
+    <svg width="25" height="25" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="Add button">
+            <rect id="Rectangle 70" x="0.125" y="0.0615234" width="41.163" height="41.163" rx="5.14537" fill="var(--primary-color)" stroke="var(--primary)" stroke-width="3.43025" />
+            <g id="Group 109">
+                <path id="Vector" d="M13.8477 20.6426H27.5686" stroke="#F8F8F9" stroke-width="3.43025" stroke-linecap="round" stroke-linejoin="round" />
+                <path id="Vector_2" d="M20.7109 13.7822V27.5032" stroke="#F8F8F9" stroke-width="3.43025" stroke-linecap="round" stroke-linejoin="round" />
+            </g>
+        </g>
+    </svg>
+)
+
+export const BulkAdd = () => (
+    <svg width="30" height="30" viewBox="0 0 52 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="Group 108">
+            <path id="Vector 55" d="M0.324219 36.4206V4.86591C0.324219 2.17854 2.50276 0 5.19013 0H19.9089C20.4459 0 20.9618 0.209241 21.347 0.583321L25.2638 4.38661C25.6285 4.74071 26.1189 4.93547 26.6271 4.92806L44.9877 4.66042C48.3607 4.61125 51.1213 7.33198 51.1213 10.7053V35.3884C51.1213 38.6458 48.4807 41.2865 45.2233 41.2865H5.19013C2.50276 41.2865 0.324219 39.1079 0.324219 36.4206Z" fill="var(--primary-color)" stroke="var(--primary)" />
+            <path id="Vector 56" d="M25.7567 13.5654L15.6562 23.7396H23.1763V34.2087H28.4108V23.7396H35.9309L25.7567 13.5654Z" fill="#F8F8F9" />
+        </g>
+    </svg>
+)

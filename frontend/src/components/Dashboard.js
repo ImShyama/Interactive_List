@@ -8,15 +8,10 @@ import DashboardTable from "./DashboardTable";
 import uparrow from "../assets/uparrow.svg";
 import downarrow from "../assets/downarrow.svg";
 import updownIcon from "../assets/updownIcon.svg";
-import refreshAccessToken from "../utils/refreshAccessToken";
 import { APPS, APPSNAME, CLIENTID, DEVELOPERKEY } from "../utils/constants";
 import { Input, Select } from "antd";
 import { BiSearch } from "react-icons/bi";
 import { HOST } from "../utils/constants";
-
-const { Search } = Input;
-// const clientId = '210551094674-r1bvcns06j8pj06bk8dnfhl3mh6feuag.apps.googleusercontent.com';
-// const developerKey = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ'; // Use correct developer key
 const clientId = CLIENTID;
 const developerKey = DEVELOPERKEY;
 
@@ -136,7 +131,7 @@ const Dashboard = () => {
       <div className="flex justify-between px-[50px] py-[5px]">
         <div className="flex justify-start items-center gap-2">
           <button
-            className="bg-[#FFA500] rounded-[8px] p-[10px] text-white text-[14px]"
+            className="bg-primary rounded-[8px] p-[10px] text-white text-[14px] hover:bg-secondary"
             onClick={openModal}
           >
             <span className="text-[var(--white,#FFF)] font-poppins text-[14px] font-normal leading-normal">
@@ -181,7 +176,7 @@ const Dashboard = () => {
             onClick={() => {
               setShowAppCard(!showAppCard);
             }}
-            className="w-[50px] h-[44px] flex justify-center items-center flex-shrink-0 rounded-[8px] bg-[#FFA500]"
+            className="w-[50px] h-[44px] flex justify-center items-center flex-shrink-0 rounded-[8px] bg-primary hover:bg-secondary"
           >
             <img src={showAppCard ? uparrow : downarrow} alt="Hide" />
           </button>

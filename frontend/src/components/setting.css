@@ -12,7 +12,7 @@
   right: 0;
   z-index: 1000;
   transform: translateX(0);
-  overflow-y: auto;
+  /* overflow-y: auto; */
 }
 
 .setting_icons {
@@ -23,20 +23,38 @@
   margin: 20px 30px;
 }
 
-.setting_icons_top {
+/* .setting_icons_top {
   display: flex;
   width: 450px;
   align-items: center;
+  justify-content: space-between;
   gap: 117px;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1000; /* Adjust z-index as needed to control layering */
-  background-color: white; /* Optional: Set a background color */
-  padding: 10px; /* Optional: Add some padding */
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for styling */
+  z-index: 1000; 
+  background-color: white; 
+  padding: 10px; 
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+} */
+
+.setting_icons_top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 117px;
+  position: fixed; /* Fixes the element at the top */
+  top: 0;
+  left: 0;
+  width: 100%; /* Covers the full width of the screen */
+  z-index: 1000; /* Brings it to the front */
+  background-color: white; /* Background color to avoid transparency */
+  padding: 10px 20px; /* Adds padding for spacing */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow */
+  border-bottom: 1px solid #ededf3; /* Optional bottom border */
 }
+
 
 .setting_icons_top_left {
   display: flex;
@@ -138,13 +156,28 @@
   gap: 8px;
 }
 
-.setting_filter {
+/* .setting_filter {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 28px;
   margin: 60px 30px;
+  overflow-y: auto;
+} */
+
+.setting_filter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 28px;
+  padding: 60px 30px;
+  overflow-y: auto; /* Allows vertical scrolling */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  /* width: 100%; Ensure it doesn't overflow the parent container */
+  box-sizing: border-box; /* Include padding and border in width calculation */
+  max-height: calc(100vh - 60px); /* Set a maximum height to prevent overflow */
 }
+
 
 .setting_filter_top {
   display: flex;
@@ -160,7 +193,7 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
-  border-left: 3px solid var(--brand-color-2, #ffa500);
+  border-left: 3px solid var(--primary-color);
   cursor: pointer;
 }
 
@@ -203,7 +236,7 @@
   justify-content: center;
   align-items: flex-start;
   gap: 26px;
-  border-left: 3px solid var(--brand-color-2, #ffa500);
+  border-left: 3px solid var(--primary-color);
 }
 
 .setting_filter_bottom_inner {
@@ -271,7 +304,7 @@
 }
 
 .add_input:focus {
-  border: 2px solid #ffa500;
+  border: 2px solid var(--primary-color)
 }
 
 .Spreadsheet_setting {
@@ -434,7 +467,7 @@ align-items: center;
 gap: 10px;
 border: none;
 border-radius: 82px;
-background: var(--brand-color-2, #FFA500);
+background: var(--primary-color);
 box-shadow: 6px 4px 24.5px 0px rgba(134, 138, 156, 0.25);
 cursor: pointer;
 }

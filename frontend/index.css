@@ -13,10 +13,10 @@
 }
 
 :root {
-  --primary-color: #BAD900;
-  --secondary-color: #2ecc71;
-  --text-color: #333333;
-  --background-color: #ffffff;
+  --primary-color: #598931;
+  --secondary-color: #bed900;
+  --text: #333333;
+  --background: #ffffff;
 }
 
 label {
@@ -191,13 +191,13 @@ span a {
 
 /* Change focus and hover colors to orange */
 .custom-input:hover, .custom-input:focus {
-  border-color: #FFA500 !important; /* Orange border on hover and focus */
+  border-color: var(--primary-color) !important; /* Orange border on hover and focus */
   box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2); /* Orange shadow */
 }
 
 /* Change the search icon color */
 .custom-input .ant-input-prefix {
-  color: #FFA500 !important; /* Orange search icon */
+  color: var(--primary-color) !important; /* Orange search icon */
 }
 
 
@@ -206,18 +206,18 @@ span a {
 .custom-select .ant-select-selector:focus,
 .custom-select .ant-select-selector:focus-visible,
 .custom-select .ant-select-selector:active {
-  border-color: #FFA500 !important; /* Orange border on hover, focus, and active */
+  border-color: var(--primary-color) !important; /* Orange border on hover, focus, and active */
   box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2) !important; /* Orange shadow */
 }
 
 /* Change the dropdown arrow color */
 .custom-select .ant-select-arrow {
-  color: #FFA500 !important; /* Orange arrow icon */
+  color: var(--primary-color) !important; /* Orange arrow icon */
 }
 
 /* Change selected option text and border color */
 .custom-select .ant-select-selection-item {
-  color: #FFA500 !important; /* Orange selected option text */
+  color: var(--primary-color) !important; /* Orange selected option text */
 }
 
 
@@ -242,12 +242,12 @@ span a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #FFA500; /* Set the color of the scrollbar */
+  background: var(--primary-color); /* Set the color of the scrollbar */
   border-radius: 10px; /* Optional: round edges of the scrollbar */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #FFA500; /* Optional: hover color for the scrollbar */
+  background: var(--primary-color); /* Optional: hover color for the scrollbar */
 }
 
 

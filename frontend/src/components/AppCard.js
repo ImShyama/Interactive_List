@@ -15,9 +15,7 @@ const AppCard = ({ appName, appView, appImg, description }) => {
 
 
   const handleCopy = () => {
-
     setLoading(true);
-
     axios
       .post(
         `${HOST}/copySpreadsheet`,
@@ -70,10 +68,10 @@ const AppCard = ({ appName, appView, appImg, description }) => {
         </span>
       </div>
       <div className="mx-[25px] flex justify-between items-center">
-        <button className="py-[11px] px-[16px] text-[15.07px] rounded-[13.989px] bg-[#FFA500] text-white"
+        <button className="py-[11px] px-[16px] text-[15.07px] rounded-[13.989px] bg-primary text-white hover:bg-secondary"
           onClick={() => navigate(`/interactivelistview`)}
         >
-          View
+          Preview
         </button>
 
         {loading &&
@@ -83,7 +81,7 @@ const AppCard = ({ appName, appView, appImg, description }) => {
             </div>
           </div>
         }
-        <button className="border border-[#FFA500] rounded-[13.99px] py-[10px] px-[15px] text-[15.07px] text-[#FFA500]" onClick={handleCopy}>
+        <button className="border border-primary rounded-[13.99px] py-[10px] px-[15px] text-[15.07px] text-primary" onClick={handleCopy}>
           Copy
         </button>
       </div>

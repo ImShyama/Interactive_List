@@ -75,7 +75,7 @@ const EditableSpreadsheetName = ({ settings }) => {
       {
         isEditMode ? (
           <div
-            className={`flex items-center border px-2 py-1 rounded-md ${isEditing ? 'border-[#FFA500]' : 'border-transparent hover:border-[#FFA500]'} `}
+            className={`flex items-star border px-2 py-1 rounded-md ${isEditing ? 'border-[#FFA500]' : 'border-transparent hover:border-[#FFA500]'} `}
             onClick={() => setIsEditing(true)}
             style={{ transition: 'border-color 0.2s ease' }} // Smooth border transition
           >

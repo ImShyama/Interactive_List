@@ -80,7 +80,7 @@ const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading }) => {
                   </div>
                   <div>
                     <input
-                      className="flex p-[10px] px-[16px] flex-col justify-center items-start gap-[27px] rounded-[8px] bg-[#F6F6F6] border border-transparent focus:outline-none focus:ring-2 focus:ring-[#FFA500] focus:border-[#FFA500]"
+                      className="flex p-[10px] px-[16px] flex-col justify-center items-start gap-[27px] rounded-[8px] bg-[#F6F6F6] border border-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
                       type="text"
                       value={editedRow[field] || ''}  // Populate the input with the corresponding row value
                       onChange={(e) => handleInputChange(field, e.target.value)}  // Update state on change
@@ -93,7 +93,7 @@ const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading }) => {
             {/* Save Button */}
             <div className="flex justify-center">
               <button
-                className="flex w-[148px] h-[46px] p-[10px] justify-center items-center gap-[10px] rounded-[82px] bg-[#FFA500] text-white flex-shrink-0"
+                className="flex w-[148px] h-[46px] p-[10px] justify-center items-center gap-[10px] rounded-[82px] bg-primary text-white flex-shrink-0"
                 onClick={() => onConfirm(editedRow)}  // Pass the edited row data back on confirm
                 disabled={isDisabled || loading}
               >

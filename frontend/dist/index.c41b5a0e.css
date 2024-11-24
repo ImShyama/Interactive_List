@@ -32,7 +32,7 @@
 }
 
 .interact {
-  color: var(--black, #111);
+  color: var(--primary-color);
   font-family: Poppins;
   font-size: 24px;
   font-style: normal;
@@ -43,7 +43,7 @@
 .interactive-table {
   color: var(--text, #787d89);
   font-family: Poppins;
-  font-size: 12px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 500;
   line-height: normal;
@@ -85,7 +85,6 @@
   position: fixed;
   top: 0;
   right: 0;
-  overflow-y: auto;
   transform: translateX(0);
   box-shadow: 20px 9px 71.3px #95a1b842;
 }
@@ -101,10 +100,12 @@
 .setting_icons_top {
   z-index: 1000;
   background-color: #fff;
+  border-bottom: 1px solid #ededf3;
+  justify-content: space-between;
   align-items: center;
   gap: 117px;
   width: 100%;
-  padding: 10px;
+  padding: 10px 20px;
   display: flex;
   position: fixed;
   top: 0;
@@ -207,11 +208,14 @@
 }
 
 .setting_filter {
+  box-sizing: border-box;
   flex-direction: column;
   align-items: flex-start;
   gap: 28px;
-  margin: 60px 30px;
+  max-height: calc(100vh - 60px);
+  padding: 60px 30px;
   display: flex;
+  overflow: hidden auto;
 }
 
 .setting_filter_top {
@@ -221,7 +225,7 @@
 }
 
 .setting_filter_top1 {
-  border-left: 3px solid var(--brand-color-2, orange);
+  border-left: 3px solid var(--primary-color);
   cursor: pointer;
   justify-content: center;
   align-items: center;
@@ -266,7 +270,7 @@
 }
 
 .setting_filter_bottom {
-  border-left: 3px solid var(--brand-color-2, orange);
+  border-left: 3px solid var(--primary-color);
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
@@ -338,7 +342,7 @@
 }
 
 .add_input:focus {
-  border: 2px solid orange;
+  border: 2px solid var(--primary-color);
 }
 
 .Spreadsheet_setting {
@@ -489,7 +493,7 @@
 }
 
 .submit_btn {
-  background: var(--brand-color-2, orange);
+  background: var(--primary-color);
   cursor: pointer;
   border: none;
   border-radius: 82px;

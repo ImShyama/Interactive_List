@@ -30,7 +30,7 @@ const Layout = () => {
         <ConfigProvider
           theme={{
             token: {
-              colorPrimary: '#FFA500', // Orange
+              colorPrimary: '#598931', // green
             },
           }}
         >
