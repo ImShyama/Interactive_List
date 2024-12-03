@@ -16,6 +16,8 @@ const SheetSchema = new mongoose.Schema({
     tableSettings: Array,
     access: String,
     lastUpdatedDate: String,
+    showInCard: Array,
+    showInProfile: Array
 });
 
 

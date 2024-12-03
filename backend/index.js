@@ -46,55 +46,96 @@ app.use("/", authRoute);
 
 app.use(authenticateToken);
 
+// app.post("/getSheetDataWithID", async (req, res) => {
+
+//   const { sheetID } = req.body;
+//   console.log("sheetID: ", sheetID);
+
+//   const sheetDetails = await Sheet.findById(sheetID).lean();
+
+//   const sheetOwner = await User.findById(sheetDetails.userId).lean();
+//   const spreadSheetID = sheetDetails.spreadsheetId;
+//   const spreadSheeSharedWith = sheetDetails.sharedWith;
+//   const range = sheetDetails.firstTabDataRange;
+
+//   const user = sheetOwner
+//   const refreshToken = user.googleRefreshToken;
+
+//   // Create an OAuth2 client with the given credentials
+//   const authClient = new google.auth.OAuth2(
+//     process.env.CLIENT_ID,
+//     process.env.CLIENT_SECRET,
+//     process.env.REDIRECT_URI
+//   );
+
+//   // Set the refresh token for the OAuth2 client
+//   authClient.setCredentials({
+//     refresh_token: refreshToken,
+//   });
+
+//   const sheets = google.sheets({ version: "v4", auth: authClient });
+
+//   try {
+//     const response = await sheets.spreadsheets.values.get({
+//       spreadsheetId: spreadSheetID,
+//       range: range,
+//     });
+
+//     const rows = response.data.values;
+//     console.log("rows: ", rows);
+//     if (!rows || rows.length === 0) {
+//       res.status(404).json({ error: "No data found." });
+//       return;
+//     }
+
+//     // Remove the second row and store it in `filterRow`
+//     const filterRow = rows.splice(1, 1)[0]; // Removes the second row and returns it
+
+//     console.log("filterRow: ", filterRow);
+//     console.log("Updated rows: ", rows);
+
+//     const jsonData = convertArrayToJSON(rows, filterRow);
+
+//     let permissions = "edit";
+
+//     if (sheetOwner?._id.toString() !== req?.user?._id.toString()) {
+//       const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
+//       permissions = tempAccess.permission
+//       res.status(200).json({ rows, permissions, jsonData, filterRow });
+//       return;
+//     }
+//     // const permissions = "view";
+
+//     return res.status(200).json({ rows, permissions, jsonData, filterRow });
+//   } catch (error) {
+//     console.error("Error fetching spreadsheet data:", error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
+
 app.post("/getSheetDataWithID", async (req, res) => {
-
-  // const authHeader = req?.headers?.authorization;
-  // const token = req.cookies.token || (authHeader && authHeader.split(' ')[1]);
-  // console.log("Token: ", token);
-  // jwt.verify(token, secret, async (err, decoded) => {
-  //   if (err) return;
-  //   const user = await UserModel.findById(decoded.id).lean();
-  //   if (!user) return;
-  //   req.user = user;
-  // });
-
-  // const user = req.userId;
-
   const { sheetID } = req.body;
 
-  const sheetDetails = await Sheet.findById(sheetID).lean();
-
-  // const isValidUser = sheetDetails.sharedWith.find(access => access.email === req.user.email);
-  // if (!isValidUser) {
-  //   res.status(401).json({ error: "Unauthorized access." });
-  //   return;
-  // }
-  // const permissions = isValidUser.permission ;
-
-  
-  const sheetOwner = await User.findById(sheetDetails.userId).lean();
-  const spreadSheetID = sheetDetails.spreadsheetId;
-  const spreadSheeSharedWith = sheetDetails.sharedWith;
-  const range = sheetDetails.firstTabDataRange;
-
-  const user = sheetOwner
-  const refreshToken = user.googleRefreshToken;
-
-  // Create an OAuth2 client with the given credentials
-  const authClient = new google.auth.OAuth2(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-    process.env.REDIRECT_URI
-  );
-
-  // Set the refresh token for the OAuth2 client
-  authClient.setCredentials({
-    refresh_token: refreshToken,
-  });
-
-  const sheets = google.sheets({ version: "v4", auth: authClient });
-
   try {
+    // Fetch sheet details and user information
+    const sheetDetails = await Sheet.findById(sheetID).lean();
+    const sheetOwner = await User.findById(sheetDetails.userId).lean();
+    const spreadSheetID = sheetDetails.spreadsheetId;
+    const spreadSheeSharedWith = sheetDetails.sharedWith;
+    const range = sheetDetails.firstTabDataRange;
+    const refreshToken = sheetOwner.googleRefreshToken;
+
+    // Initialize Google Sheets API client
+    const authClient = new google.auth.OAuth2(
+      process.env.CLIENT_ID,
+      process.env.CLIENT_SECRET,
+      process.env.REDIRECT_URI
+    );
+    authClient.setCredentials({ refresh_token: refreshToken });
+    const sheets = google.sheets({ version: "v4", auth: authClient });
+
+    // Fetch spreadsheet data
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: spreadSheetID,
       range: range,
@@ -106,22 +147,54 @@ app.post("/getSheetDataWithID", async (req, res) => {
       return;
     }
 
-    let permissions = "edit"
+    // Extract the filter row and update rows
+    const filterRow = rows.splice(1, 1)[0]; // Remove the second row (filterRow)
+    const freezeIndex = filterRow.findIndex((value) => value.toLowerCase().includes("freeze")) + 1;
+    // Remove hidden columns from filterRow and rows
+    const cleanData = (rows, filterRow) => {
+      // Identify indices with "hidden" (case-insensitive)
+      // const isHidden = filterRow.map((value) => value.toLowerCase() == "hidden");
+      const isHidden = filterRow.map((value) => value.toLowerCase().includes("hidden"));
+      // const freezeIndex = filterRow.findIndex((value) => value.toLowerCase().includes("freeze")) + 1;
 
+      // Filter out hidden columns
+      const cleanFilterRow = filterRow.filter((_, index) => !isHidden[index]);
+      const cleanRows = rows.map((row) => row.filter((_, index) => !isHidden[index]));
+    
+      return { cleanRows, cleanFilterRow };
+    };
+    
+    const { cleanRows, cleanFilterRow } = cleanData(rows, filterRow);
+
+    // Convert cleaned rows to JSON
+    const convertArrayToJSON = (data, filterRow) => {
+      const keys = data[0]; // The first row is used as keys
+      return data.slice(1).map((item, index) => {
+        const jsonObject = {};
+        keys.forEach((key, i) => {
+          jsonObject[key.replace(/\s+/g, "_").toLowerCase()] = item[i];
+        });
+        return { key_id: (index + 1).toString(), ...jsonObject }; // Add key_id
+      });
+    };
+
+    const jsonData = convertArrayToJSON(cleanRows, cleanRows[0]);
+
+    // Determine permissions
+    let permissions = "edit";
     if (sheetOwner?._id.toString() !== req?.user?._id.toString()) {
       const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
-      permissions = tempAccess.permission
-      res.status(200).json({ rows, permissions });
-      return;
+      permissions = tempAccess?.permission || permissions;
     }
-    // const permissions = "view";
 
-    res.status(200).json({ rows, permissions });
+    // Send the response
+    res.status(200).json({ data: jsonData, rows: cleanRows, permissions, filterRow: cleanFilterRow, freezeIndex });
   } catch (error) {
     console.error("Error fetching spreadsheet data:", error);
     res.status(500).json({ error: error.message });
   }
 });
+
 
 app.get("/getSheetDetails/:id", async (req, res) => {
   try {
@@ -145,6 +218,28 @@ app.get("/getSheetDetails/:id", async (req, res) => {
 app.get("/getUserData", (req, res) => {
   res.send(req.user);
 });
+
+const convertArrayToJSON = (data, filterRow) => {
+  // The first array contains the keys
+  const keys = data[0];
+
+  // Determine which columns should be hidden based on `filterRow`
+  const hiddenColumns = filterRow.map((value, index) => value === 'hidden');
+
+  // Map the rest of the arrays to JSON objects
+  const jsonData = data.slice(1).map((item, index) => {
+    const jsonObject = {};
+    keys.forEach((key, i) => {
+      if (!hiddenColumns[i]) { // Skip hidden columns
+        jsonObject[key.replace(/\s+/g, '_').toLowerCase()] = item[i]; // Replace spaces with underscores and make keys lowercase
+      }
+    });
+    return { key_id: (index + 1).toString(), ...jsonObject }; // Add key_id
+  });
+
+  return jsonData;
+};
+
 
 async function copySpreadsheet(authClient, sheet_id, userId, appName) {
   const sheets = google.sheets({ version: "v4", auth: authClient });
@@ -599,7 +694,7 @@ app.post("/createNewSpreadsheet", async (req, res) => {
   const userId = req.user._id;
   const sheetName = req.body.sheetName;
   const appName = req.body.appName;
-  console.log({sheet_id, userId, sheetName, appName});  
+  console.log({ sheet_id, userId, sheetName, appName });
 
   // Create an OAuth2 client with the given credentials
   const authClient = new google.auth.OAuth2(
@@ -616,7 +711,7 @@ app.post("/createNewSpreadsheet", async (req, res) => {
   try {
     const result = await addSpreadsheet(authClient, sheet_id, userId, sheetName, appName);
     res.status(200).json(result);
-    console.log({result});
+    console.log({ result });
   } catch (err) {
     console.log("error: ", err);
     res.status(500).json({ error: err.message });
@@ -813,7 +908,7 @@ app.post("/getSpreadSheets", async (req, res) => {
         access = "owner";
       } else {
         let tempSharedWith = sheet.sharedWith.find(access => access.email === emailID)
-        console.log({tempSharedWith});
+        console.log({ tempSharedWith });
         access = tempSharedWith.permission.toLowerCase();
       }
       return { ...sheet, access: access };
@@ -974,7 +1069,7 @@ async function getSheetDetails(authClient, spreadSheetID) {
       spreadsheetName,
       sheetDetails,
       sheetUrl,
-      firstSheetDataRange, 
+      firstSheetDataRange,
     };
   } catch (error) {
     console.error('Error fetching sheet details:', error);
@@ -1084,5 +1179,5 @@ app.post("/bulkCopyFromAnotherSheet", async (req, res) => {
 
 
 app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
+  res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
 });

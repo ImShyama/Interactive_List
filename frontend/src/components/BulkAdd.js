@@ -7,21 +7,21 @@ import "./setting.css";
 import axios from "axios";
 import { HOST } from "../utils/constants";
 import { useSelector } from "react-redux";
-import { notifySuccess } from "../utils/notify";
+import { notifyError, notifySuccess } from "../utils/notify";
 
 const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData, handleBuldData }) => {
-
     // State for selected sheet and data range
     const [selectedSheet, setSelectedSheet] = useState(spreadSheetData?.sheetDetails[0].name);
-    const [dataRange, setDataRange] = useState(spreadSheetData?.firstSheetDataRange);
+    const [dataRange, setDataRange] = useState("");
     const { token } = useContext(UserContext);
     const settings = useSelector((state) => state.setting.settings);
     const [loading, setLoading] = useState(false);
+    const [isRangeEmpty, setIsRangeEmpty] = useState(false);
     const spreadsheetId = spreadSheetData?.sheetUrl?.match(/[-\w]{25,}/);
 
     useEffect(() => {
         setSelectedSheet(spreadSheetData?.sheetDetails[0].name);
-        setDataRange(spreadSheetData?.firstSheetDataRange);
+        // setDataRange(spreadSheetData?.firstSheetDataRange);
     }, [spreadSheetData]);
 
     if (!isOpen) return null;
@@ -31,9 +31,22 @@ const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData, handleBuldData 
         setSelectedSheet(e.target.value);
     };
 
+    const isValidRange = (range) => {
+        // Regular expression to validate the range format (e.g., A1, A1:H10, A:H)
+        const rangeRegex = /^[A-Z]+[1-9]\d*(?::[A-Z]+[1-9]\d*|:[A-Z]+)?$/i;
+    
+        if (!range || typeof range !== "string") {
+            return false; // Return false if the range is empty or not a string
+        }
+    
+        return rangeRegex.test(range); // Test the range against the regex
+    };
+    
+    
     // Update the state when data range changes
     const handleRangeChange = (e) => {
         setDataRange(e.target.value);
+        setIsRangeEmpty(false);
     };
 
     const bulkCopyFromAnotherSheet = async () => {
@@ -55,15 +68,26 @@ const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData, handleBuldData 
             );
 
             handleBuldData(response.data.updatedData.values);
+            notifySuccess("Data imported successfully!");
             return response.updatedData;  // Return the response from the backend
         } catch (error) {
             console.error('Error adding bulk data:', error.response?.updatedData || error.message);
+            notifyError(error.response?.updatedData || error.message);
             throw error;
         }
     };
 
     // Function to handle the Save Changes button click
     const handleSaveChanges = async () => {
+        if(dataRange === "") {
+            setIsRangeEmpty(true);
+            return notifyError("Please select a data range");
+        }
+
+        console.log(isValidRange(dataRange));
+        if (!isValidRange(dataRange)) {
+            return notifyError("Invalid range format. Please enter a valid range (e.g., A1:H10).");
+        }
         setLoading(true);
         try {
             // Call the API to copy data from the bulk sheet to the original sheet
@@ -73,7 +97,7 @@ const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData, handleBuldData 
             console.error("Error copying data:", err);
         } finally {
             setLoading(false);
-            notifySuccess("Data imported successfully!");
+            setDataRange("")
         }
     };
 
@@ -178,10 +202,11 @@ const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData, handleBuldData 
                                             </div>
                                             <div className="sheet_data_select">
                                                 <input
-                                                    className="add_input"
+                                                    className={`add_input ${isRangeEmpty ? "input-error" : ""}`} // Add error class if range is empty
                                                     placeholder="Ex-A1:H"
-                                                    value={dataRange?.split("!")[1]}
+                                                    value={dataRange}
                                                     onChange={handleRangeChange}
+                                                    style={{  }}
                                                 />
                                             </div>
                                         </div>

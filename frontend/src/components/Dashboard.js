@@ -271,6 +271,8 @@ const Dashboard = () => {
             <AppCard
               key={index}
               appName={app.appName}
+              spreadSheetName={app.spreadSheetName}
+              spreadSheetID={app.appID}
               appView={app.appView}
               appImg={app.appImg}
               description={app.description}

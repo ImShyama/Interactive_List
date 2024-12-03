@@ -18,7 +18,7 @@ import useDrivePicker from 'react-google-drive-picker';
 import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
 import styled from 'styled-components';
 import { notifySuccess, notifyError } from "../utils/notify";
-import { BackIcon, Cancel, Search, Reset, Add, BulkAdd } from '../assets/svgIcons';
+import { Edit, Delete, BackIcon, Cancel, Search, Reset, Add, BulkAdds } from '../assets/svgIcons';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -107,7 +107,7 @@ const convertArrayToJSON = (data) => {
   return jsonData;
 };
 
-const InteractiveList = ({ data, headers, settings }) => {
+const InteractiveList = ({ data, headers, settings, freezeIndex }) => {
 
   const [filterInfo, setfilterInfo] = useState({})
   const [searchText, setSearchText] = useState('');
@@ -132,13 +132,12 @@ const InteractiveList = ({ data, headers, settings }) => {
   useEffect(() => {
     if (data) {
       // headers = headers.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
-      data = convertArrayToJSON(data);
+      // data = convertArrayToJSON(data);
       setFilteredData(data);
     }
 
   }, [data])
 
-  console.log({ filteredData, headers })
   const { token } = useContext(UserContext);
   const clientId = CLIENTID
   const developerKey = DEVELOPERKEY
@@ -216,7 +215,7 @@ const InteractiveList = ({ data, headers, settings }) => {
   const handleGlobalSearch = (e) => {
     const value = e.target.value.toLowerCase();
     setSearchGlobal(value);
-    data = convertArrayToJSON(data);
+    // data = convertArrayToJSON(data);
 
     // Filter the data globally across all columns
     const filteredData = data.filter((record) => {
@@ -232,7 +231,7 @@ const InteractiveList = ({ data, headers, settings }) => {
   const handleGlobalReset = () => {
     setSearchGlobal('');
     setSearchText('');
-    data = convertArrayToJSON(data);
+    // data = convertArrayToJSON(data);
     setFilteredData(data);
     setSearchedColumns([]);
     setfilterInfo({});
@@ -752,6 +751,7 @@ const InteractiveList = ({ data, headers, settings }) => {
       key: header,
       width: 200,
       ellipsis: true,
+      ...(index < freezeIndex ? { fixed: 'left' } : {}),
       ...getColumnSearchProps(header),
 
       sorter: (a, b) => {
@@ -797,32 +797,11 @@ const InteractiveList = ({ data, headers, settings }) => {
           render: (record) => (
             <div className='flex gap-2'>
               <button onClick={() => handleEdit(record)}>
-                <div className="group">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:stroke-orange-500">
-                    <g clipPath="url(#clip0_508_940)">
-                      <path d="M17.6462 5.67633C18.0868 5.23585 18.3344 4.63839 18.3345 4.01538C18.3346 3.39237 18.0871 2.79484 17.6467 2.35425C17.2062 1.91366 16.6087 1.66609 15.9857 1.66602C15.3627 1.66594 14.7652 1.91335 14.3246 2.35383L3.20291 13.478C3.00943 13.6709 2.86634 13.9084 2.78625 14.1697L1.68541 17.7963C1.66388 17.8684 1.66225 17.945 1.68071 18.0179C1.69916 18.0908 1.73701 18.1574 1.79024 18.2105C1.84347 18.2636 1.9101 18.3014 1.98305 18.3197C2.05599 18.3381 2.13255 18.3363 2.20458 18.3147L5.83208 17.2147C6.09306 17.1353 6.33056 16.9931 6.52375 16.8005L17.6462 5.67633Z" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M12.5 4.16602L15.8333 7.49935" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_508_940">
-                        <rect width="20" height="20" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                </div>
+                <Edit />
               </button>
               <button onClick={() => handleDeleteClick(record)}>
-                <div className="group">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:stroke-orange-500">
-                    <path d="M2.5 5H17.5" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M15.8346 5V16.6667C15.8346 17.5 15.0013 18.3333 14.168 18.3333H5.83464C5.0013 18.3333 4.16797 17.5 4.16797 16.6667V5" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M6.66797 4.99935V3.33268C6.66797 2.49935 7.5013 1.66602 8.33464 1.66602H11.668C12.5013 1.66602 13.3346 2.49935 13.3346 3.33268V4.99935" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M8.33203 9.16602V14.166" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M11.668 9.16602V14.166" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
+                <Delete />
               </button>
-
             </div>
           ),
         },
@@ -860,6 +839,7 @@ const InteractiveList = ({ data, headers, settings }) => {
         key: header,
         width: 200,
         ellipsis: true,
+        ...(index < freezeIndex ? { fixed: 'left' } : {}),
         ...getColumnSearchProps(header),
 
         sorter: (a, b) => {
@@ -905,7 +885,7 @@ const InteractiveList = ({ data, headers, settings }) => {
             render: (record) => (
               <div className='flex gap-2'>
                 <button onClick={() => handleEdit(record)}>
-                  <div className="group">
+                  {/* <div className="group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:stroke-orange-500">
                       <g clipPath="url(#clip0_508_940)">
                         <path d="M17.6462 5.67633C18.0868 5.23585 18.3344 4.63839 18.3345 4.01538C18.3346 3.39237 18.0871 2.79484 17.6467 2.35425C17.2062 1.91366 16.6087 1.66609 15.9857 1.66602C15.3627 1.66594 14.7652 1.91335 14.3246 2.35383L3.20291 13.478C3.00943 13.6709 2.86634 13.9084 2.78625 14.1697L1.68541 17.7963C1.66388 17.8684 1.66225 17.945 1.68071 18.0179C1.69916 18.0908 1.73701 18.1574 1.79024 18.2105C1.84347 18.2636 1.9101 18.3014 1.98305 18.3197C2.05599 18.3381 2.13255 18.3363 2.20458 18.3147L5.83208 17.2147C6.09306 17.1353 6.33056 16.9931 6.52375 16.8005L17.6462 5.67633Z" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
@@ -917,10 +897,11 @@ const InteractiveList = ({ data, headers, settings }) => {
                         </clipPath>
                       </defs>
                     </svg>
-                  </div>
+                  </div> */}
+                  <Edit />
                 </button>
                 <button onClick={() => handleDeleteClick(record)}>
-                  <div className="group">
+                  {/* <div className="group">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" className="group-hover:stroke-orange-500">
                       <path d="M2.5 5H17.5" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                       <path d="M15.8346 5V16.6667C15.8346 17.5 15.0013 18.3333 14.168 18.3333H5.83464C5.0013 18.3333 4.16797 17.5 4.16797 16.6667V5" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
@@ -928,7 +909,8 @@ const InteractiveList = ({ data, headers, settings }) => {
                       <path d="M8.33203 9.16602V14.166" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                       <path d="M11.668 9.16602V14.166" stroke="#919191" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                  </div>
+                  </div> */}
+                  <Delete />
                 </button>
 
               </div>
@@ -1063,19 +1045,14 @@ const InteractiveList = ({ data, headers, settings }) => {
               className='mx-2'
             >
               <Add />
-              {/* <img src={add} alt="add" className="w-[26px] h-[26px]" /> */}
             </button>
-
-
-
           )}
 
           {isEditMode && (
             <button
               onClick={handleAddBukl}
             >
-              <BulkAdd />
-              {/* <img src={bulkAdd} alt="bulk" className="w-[30px] h-[30px]" /> */}
+              <BulkAdds />
             </button>
           )}
 

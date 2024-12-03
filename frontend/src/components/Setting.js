@@ -25,15 +25,13 @@ import useDrivePicker from "react-google-drive-picker";
 import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
 import { ColorPicker } from "antd";
 import Loader from "./Loader";
-import { notifySuccess } from "../utils/notify.js";
+import { notifyError, notifySuccess } from "../utils/notify.js";
 
 const AddData = ({ activateSave }) => {
   const dispatch = useDispatch();
   const settingData = useSelector((state) => state.setting.settings);
-  const tableSettings =
-    settingData?.tableSettings?.length > 0
-      ? settingData.tableSettings[0]
-      : null;
+  const { token } = useContext(UserContext);
+  const tableSettings = settingData?.tableSettings?.length > 0 ? settingData.tableSettings[0] : null;
   const fontSizes = Array.from({ length: 15 }, (_, i) => i + 10);
   const fontFamilies = [
     { display: "Poppins", value: "Poppins" },
@@ -54,20 +52,69 @@ const AddData = ({ activateSave }) => {
     { display: "Brush Script", value: "Brush Script MT" },
   ];
 
+  const handleSaveChanges = async (updatedSettings) => {
+    try {
+      // Update the settings in the backend
+      const response = await axios.put(
+        `${HOST}/spreadsheet/${settingData._id}`,
+        { ...settingData, ...updatedSettings }, // Merge existing settings with updates
+        {
+          headers: {
+            authorization: "Bearer " + token,
+          },
+        }
+      );
+
+      console.log("Settings updated successfully:", response.data);
+
+      // Dispatch updated settings to Redux store
+      dispatch(updateSetting(response.data));
+
+      // setIsLoading(false);
+      // setIsSaveChanges(false);
+      // notifySuccess("Settings updated successfully");
+      // closeDrawer();
+    } catch (error) {
+      console.error("Error updating settings in DB:", error);
+      notifyError("Error updating settings in DB:", error);
+      // setIsLoading(false);
+      // setIsSaveChanges(false);
+    }
+  };
+
   // Initial state to manage all inputs
   const [formData, setFormData] = useState({
-    headerBgColor: tableSettings?.headerBgColor || "#ffffff",
+    headerBgColor: tableSettings?.headerBgColor || "#f1f1f1",
     headerTextColor: tableSettings?.headerTextColor || "#000000",
     headerFontSize: tableSettings?.headerFontSize || "14",
     headerFontStyle: tableSettings?.headerFontStyle || "Poppins",
     bodyBgColor: tableSettings?.bodyBgColor || "#ffffff",
     bodyTextColor: tableSettings?.bodyTextColor || "#000000",
-    bodyFontSize: tableSettings?.bodyFontSize || "11",
+    bodyFontSize: tableSettings?.bodyFontSize || "14",
     bodyFontStyle: tableSettings?.bodyFontStyle || "Poppins",
   });
 
+  // const handleChange = (field, value) => {
+  //   setFormData((prevFormData) => {
+  //     const updatedFormData = {
+  //       ...prevFormData,
+  //       [field]: value,
+  //     };
+
+  //     // Dispatch and log after the formData is updated
+  //     const updatedSettings = {
+  //       tableSettings: [updatedFormData],
+  //     };
+  //     dispatch(updateSetting(updatedSettings));
+  //     console.log("Updated settings:", settingData);
+
+  //     return updatedFormData;
+  //   });
+
+  //   activateSave(); // Save button activation
+  // };
+
   const handleChange = (field, value) => {
-    console.log("Field:", field, "Value:", value);
     setFormData((prevFormData) => {
       const updatedFormData = {
         ...prevFormData,
@@ -81,11 +128,15 @@ const AddData = ({ activateSave }) => {
       dispatch(updateSetting(updatedSettings));
       console.log("Updated settings:", settingData);
 
+      // Call the API to update the backend with the new settings
+      handleSaveChanges(updatedSettings);
+
       return updatedFormData;
     });
 
-    activateSave(); // Save button activation
+    // activateSave(); // Save button activation
   };
+
 
   return (
     <div className="w-[100%]">
@@ -518,7 +569,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 <img src={cancelIcon} />
               </div>
             </div>
-          </div>       
+          </div>
         </div>
         <div className="setting_filter">
           <div className="setting_filter_bottom">

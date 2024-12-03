@@ -5,7 +5,7 @@ import { UserContext } from "../context/UserContext";
 import Loader from "./Loader";
 import { HOST } from "../utils/constants";
 
-const AppCard = ({ appName, appView, appImg, description }) => {
+const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, description }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { token } = useContext(UserContext);
@@ -20,11 +20,11 @@ const AppCard = ({ appName, appView, appImg, description }) => {
       .post(
         `${HOST}/copySpreadsheet`,
         {
-          spreadSheetID:
+          spreadSheetID: spreadSheetID,
             // "1YW0WNJVnT4AU68wAmLbQjj5xbJluBwICMGLFAeY07Pc",
-            "1sMv_CvZMTaZo1u69xLxzrBrD54n2Ymykd3hvsgEe088",
-          spreadSheetName: "Data",
-          appName: "Interactive_List"
+            // "1sMv_CvZMTaZo1u69xLxzrBrD54n2Ymykd3hvsgEe088",
+          spreadSheetName: spreadSheetName,
+          appName: appName
         },
         {
           headers: {
@@ -45,7 +45,7 @@ const AppCard = ({ appName, appView, appImg, description }) => {
         console.log(err.message);
       })
       .finally(() => {
-        setLoading(false); // Hide the loader
+        setLoading(false); 
       });
   };
 
@@ -69,7 +69,7 @@ const AppCard = ({ appName, appView, appImg, description }) => {
       </div>
       <div className="mx-[25px] flex justify-between items-center">
         <button className="py-[11px] px-[16px] text-[15.07px] rounded-[13.989px] bg-primary text-white hover:bg-secondary"
-          onClick={() => navigate(`/interactivelistview`)}
+          onClick={() => navigate(`/${appView}`)}
         >
           Preview
         </button>

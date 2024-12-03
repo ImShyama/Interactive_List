@@ -4,13 +4,13 @@ import { useNavigate } from "react-router-dom";
 import "./header.css";
 import Setting from "./Setting";
 import Profile from "./Profile";
-// import settingsIcon from "../assets/settingIcon.svg";
 import settingsIcon1 from "../assets/settingIcon1.svg";
 import { SettingIcon, SettingIcon1 } from "../assets/svgIcons";
 import dividerIcon from "../assets/dividerIcon.svg";
 import { UserContext } from "../context/UserContext";
 import { HOST } from "../utils/constants";
 import Cookies from "js-cookie";
+import { useDispatch, useSelector } from "react-redux";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -18,11 +18,11 @@ const Header = () => {
   const [user, setUser] = useState(null);
   const { token, setToken, setProfile } = useContext(UserContext);
   const navigate = useNavigate();
-
   const isEditMode = window.location.pathname.endsWith("/edit");
-
   const profileRef = useRef(null); // Ref for the Profile component
   const profileImageRef = useRef(null); // Ref for the profile image
+
+  const settings = useSelector((state) => state.setting.settings);
 
   const closeDrawer = () => setIsDrawerOpen(false);
 
@@ -84,7 +84,8 @@ const Header = () => {
             </div>
             <div className="interact-parent">
               <div className="interact">Interact</div>
-              <div className="interactive-table">Interactive Table</div>
+              { settings?.appName &&  
+              (<div className="interactive-table">{settings?.appName}</div>)}
             </div>
           </div>
           {token ? (

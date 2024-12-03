@@ -3,6 +3,7 @@ import { UserContext } from "../context/UserContext";
 import { HOST } from '../utils/constants';
 import { useSelector, useDispatch } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
+import { notifySuccess } from '../utils/notify';
 
 const EditableSpreadsheetName = ({ settings }) => {
 
@@ -49,6 +50,7 @@ const EditableSpreadsheetName = ({ settings }) => {
         setEditedName(newname); // Update state with new name
         // Dispatch action to update settings in Redux
         dispatch(updateSetting(data.updatedSettings));
+        notifySuccess('Spreadsheet name updated successfully');
       } else {
         console.error('Error:', data.message || 'An error occurred');
         // Handle the error, e.g., show an error message
@@ -85,14 +87,14 @@ const EditableSpreadsheetName = ({ settings }) => {
               suppressContentEditableWarning={true}
               onBlur={handleBlur}
               onKeyDown={handleKeyDown}
-              className="text-[#2A3C54] font-poppins text-[24px] font-medium w-full outline-none"
+              className="text-[#2A3C54] font-poppins text-[21px] font-medium w-full outline-none"
               style={{ width: '100%', minWidth: '300px', whiteSpace: 'nowrap' }} // Ensure full width
             >
               {editedName}
             </span>
           </div>
         ) : (
-          <span className="text-[#2A3C54] font-poppins text-[30px] font-medium w-full">
+          <span className="text-[#2A3C54] font-poppins text-[21px] font-medium w-full">
             {editedName}
           </span>
         )

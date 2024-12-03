@@ -306,3 +306,21 @@ button:disabled {
 }
 
 
+.people_table tr:nth-child(even) {
+  background-color: #F3F4F6; /* Light green for even rows */
+}
+
+.people_table tr:nth-child(odd) {
+  background-color: #f9fff9; /* Lighter green for odd rows */
+}
+
+.people_table tr:hover {
+  background-color: #F1F1F1 !important; /* Slightly darker green on hover */
+}
+
+.tableTD {
+  height: 50px; /* Adjust height as needed */
+   /* white-space: nowrap;  */
+   overflow-y: auto !important;
+   /* border: 1px solid red !important; */
+} 

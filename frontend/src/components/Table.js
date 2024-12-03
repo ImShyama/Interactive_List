@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import { HOST } from "../utils/constants.js";
 import InteractiveList from "./InteractiveList.js";
+import PeopleTable from "./people_directory/PeopleTable.js";
 import Loader from "./Loader.js";
 
 const Table = () => {
@@ -22,6 +23,7 @@ const Table = () => {
   const [filter, setFilter] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [freezeIndex, setFreezeIndex] = useState(0);
   const { token } = useContext(UserContext);
   const navigate = useNavigate();
   const { id } = useParams();
@@ -36,6 +38,22 @@ const Table = () => {
   function handleAddSetting(sheetdetails) {
     dispatch(updateSetting(sheetdetails));
   }
+
+  const convertArrayToJSON = (data) => {
+    // The first array contains the keys
+    const keys = data[0];
+  
+    // Map the rest of the arrays to JSON objects
+    const jsonData = data.slice(1).map((item, index) => {
+      const jsonObject = {};
+      keys.forEach((key, i) => {
+        jsonObject[key.replace(/\s+/g, '_').toLowerCase()] = item[i]; // Replace spaces with underscores and make keys lowercase
+      });
+      return { key_id: (index + 1).toString(), ...jsonObject }; // Add key_id
+    });
+  
+    return jsonData;
+  };
 
   useEffect(() => {
     if (
@@ -54,11 +72,8 @@ const Table = () => {
   }, [sheetdetails, hasInitialized, dispatch]);
 
   useEffect(() => {
-    if (!id) {
-      console.log("No ID provided");
-      return};
+    if (!id) { return };
 
-    console.log({ settingsascsdvf: settings });
     // Fetch sheet data
     axios
       .post(
@@ -80,18 +95,17 @@ const Table = () => {
           return;
         }
 
-        console.log({table_data:res.rows});
         let [header, ...dataRows] = res.rows;
         const permissions = res.permissions;
 
-        console.log(res.permissions);
         if (permissions.toLowerCase() == "view") {
           navigate(`/${id}/view`);
         }
         header = header.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
-        setSheetData(res.rows);
+        setSheetData(convertArrayToJSON(res.rows));
         setTableHeader(header);
         setTableData(dataRows);
+        setFreezeIndex(res.freezeIndex)
         setLoading(false);
       })
       .catch((err) => {
@@ -113,8 +127,7 @@ const Table = () => {
       {/* Conditional rendering for InteractiveListPreview */}
       {!loading && sheetData && tableHeader ? (
         <div>
-          <div>
-            {" "}
+          {/* <div>
             {tableHeader.length > 1 && (
               <InteractiveList
                 data={sheetData}
@@ -122,15 +135,46 @@ const Table = () => {
                 settings={settings}
               />
             )}
+          </div> */}
+          <div>
+            {tableHeader.length > 1 && (
+              <>
+                {(() => {
+                  switch (settings.appName) {
+                    case "Interactive List":
+                      return (
+                        <InteractiveList
+                          data={sheetData}
+                          headers={tableHeader}
+                          settings={settings}
+                          freezeIndex={freezeIndex}
+                        />
+                      );
+                    case "People Directory":
+                      return (
+                        <PeopleTable
+                          data={sheetData}
+                          headers={tableHeader}
+                          settings={settings}
+                          freezeIndex={freezeIndex}
+                        />
+                      );
+                    default:
+                      // navigate("/dashboard");
+                      return null; // Optional: Handle default case
+                  }
+                })()}
+              </>
+            )}
           </div>
+
         </div>
       ) : (
         <div className="flex justify-center items-center h-full">
           <Loader textToDisplay={"Loading..."} />
         </div>
       )}
-      {/* <div> {tableHeader.length > 1 && <InteractiveList data={sheetData} headers={tableHeader} settings={sheetdetails} />}</div> */}
-    </div>
+     </div>
   );
 };
 
