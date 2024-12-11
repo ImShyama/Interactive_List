@@ -14,12 +14,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import { HOST } from "../utils/constants.js";
 import InteractiveList from "./InteractiveList.js";
+import IntractTable from "./IntractTable.js";
 import PeopleTable from "./people_directory/PeopleTable.js";
 import Loader from "./Loader.js";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
   const [tableHeader, setTableHeader] = useState([]);
+  const [filterHeader, setFilterHeader] = useState([]);
   const [filter, setFilter] = useState([]);
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,8 +104,13 @@ const Table = () => {
           navigate(`/${id}/view`);
         }
         header = header.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
-        setSheetData(convertArrayToJSON(res.rows));
+        const filteredHeader = header.filter((col) => !res.hiddenCol.includes(col));
+        console.log("data",res.jsonData);
+        console.log("header",header);
+        console.log("hiddenCol",res.hiddenCol);
+        setSheetData(res.jsonData);
         setTableHeader(header);
+        setFilterHeader(filteredHeader);
         setTableData(dataRows);
         setFreezeIndex(res.freezeIndex)
         setLoading(false);
@@ -143,20 +150,28 @@ const Table = () => {
                   switch (settings.appName) {
                     case "Interactive List":
                       return (
-                        <InteractiveList
-                          data={sheetData}
-                          headers={tableHeader}
-                          settings={settings}
-                          freezeIndex={freezeIndex}
+                        <IntractTable
+                        data={sheetData}
+                        headers={filterHeader}
+                        settings={settings}
+                        freezeIndex={freezeIndex}
+                        tempHeader={tableHeader}
                         />
+                        // <InteractiveList
+                        //   data={sheetData}
+                        //   headers={tableHeader}
+                        //   settings={settings}
+                        //   freezeIndex={freezeIndex}
+                        // />
                       );
                     case "People Directory":
                       return (
                         <PeopleTable
                           data={sheetData}
-                          headers={tableHeader}
+                          headers={filterHeader}
                           settings={settings}
                           freezeIndex={freezeIndex}
+                          tempHeader={tableHeader}
                         />
                       );
                     default:
