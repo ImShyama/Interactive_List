@@ -17,6 +17,8 @@ import InteractiveList from "./components/InteractiveList";
 import InteractiveListView from "./components/InteractiveListView";
 import PeopleTable from "./components/people_directory/PeopleTable";
 import PeopleDirectoryView from "./components/people_directory/PeopleDirectoryView";
+import ProfilePage from "./components/people_directory/ProfilePage";
+import VideoGalleryView from "./components/video_gallery/VideoGalleryView";
 import Testing from "./components/Testing";
 import { Provider } from "react-redux"
 import appStore from "./utils/appStore";
@@ -89,6 +91,15 @@ const appRouter = createBrowserRouter([
       {
         path: "/peopleDirectoryView",
         element: <PeopleDirectoryView />,
+      },
+      {
+        // Dynamic route for the profile page
+        path: "/profile/:id",
+        element: <ProfilePage />,
+      },
+      {
+        path: "/videoGalleryView", // Add the new route here
+        element: <VideoGalleryView />,
       },
       {
         path: "/testing1",

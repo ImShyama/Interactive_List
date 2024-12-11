@@ -144,8 +144,6 @@ span a {
   cursor: pointer;
 }
 
-
-
 /* Main container CSS */
 .main-container {
   display: flex;
@@ -188,10 +186,12 @@ span a {
   cursor: pointer;
 }
 
-
 /* Change focus and hover colors to orange */
-.custom-input:hover, .custom-input:focus {
-  border-color: var(--primary-color) !important; /* Orange border on hover and focus */
+.custom-input:hover,
+.custom-input:focus {
+  border-color: var(
+    --primary-color
+  ) !important; /* Orange border on hover and focus */
   box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2); /* Orange shadow */
 }
 
@@ -200,13 +200,14 @@ span a {
   color: var(--primary-color) !important; /* Orange search icon */
 }
 
-
 /* Change hover and focus colors to orange for Select component */
 .custom-select .ant-select-selector:hover,
 .custom-select .ant-select-selector:focus,
 .custom-select .ant-select-selector:focus-visible,
 .custom-select .ant-select-selector:active {
-  border-color: var(--primary-color) !important; /* Orange border on hover, focus, and active */
+  border-color: var(
+    --primary-color
+  ) !important; /* Orange border on hover, focus, and active */
   box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2) !important; /* Orange shadow */
 }
 
@@ -220,7 +221,6 @@ span a {
   color: var(--primary-color) !important; /* Orange selected option text */
 }
 
-
 /* styles.css */
 .custom-row {
   height: 22px; /* Adjust this value to your preference */
@@ -229,7 +229,6 @@ span a {
 .custom-row td {
   padding: 8px 16px; /* Adjust top/bottom and left/right padding as needed */
 }
-
 
 /* For Webkit browsers (Chrome, Safari, and Edge) */
 ::-webkit-scrollbar {
@@ -247,9 +246,10 @@ span a {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color); /* Optional: hover color for the scrollbar */
+  background: var(
+    --primary-color
+  ); /* Optional: hover color for the scrollbar */
 }
-
 
 .react-resizable {
   position: relative;
@@ -266,18 +266,17 @@ span a {
   cursor: col-resize;
 }
 
-
 /* button:disabled  */
 button:disabled {
   background: #cccccc; /* Disabled state background */
-  cursor: not-allowed;  /* Disabled state cursor */
-  box-shadow: none;     /* Remove shadow when disabled */
+  cursor: not-allowed; /* Disabled state cursor */
+  box-shadow: none; /* Remove shadow when disabled */
 }
 
 .icons:disabled {
   background: transparent; /* Disabled state background */
-  cursor: not-allowed;  /* Disabled state cursor */
-  box-shadow: none;     /* Remove shadow when disabled */
+  cursor: not-allowed; /* Disabled state cursor */
+  box-shadow: none; /* Remove shadow when disabled */
 }
 
 .icons svg {
@@ -287,8 +286,6 @@ button:disabled {
 .icons.disabled-svg {
   stroke: #d3d3d3; /* Lighter, disabled color */
 }
-
-
 
 /* loader inside a button */
 .loader {
@@ -301,13 +298,16 @@ button:disabled {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-
 .people_table tr:nth-child(even) {
-  background-color: #F3F4F6; /* Light green for even rows */
+  background-color: #f3f4f6; /* Light green for even rows */
 }
 
 .people_table tr:nth-child(odd) {
@@ -315,12 +315,18 @@ button:disabled {
 }
 
 .people_table tr:hover {
-  background-color: #F1F1F1 !important; /* Slightly darker green on hover */
+  background-color: #f1f1f1 !important; /* Slightly darker green on hover */
 }
 
 .tableTD {
   height: 50px; /* Adjust height as needed */
-   /* white-space: nowrap;  */
-   overflow-y: auto !important;
-   /* border: 1px solid red !important; */
-} 
+  /* white-space: nowrap;  */
+  overflow-y: auto !important;
+  /* border: 1px solid red !important; */
+}
+
+
+/* .icon::hover{
+    color: var(--primary-color--);
+}
+      */

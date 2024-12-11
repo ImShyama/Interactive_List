@@ -49,6 +49,12 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
+  // Added for video gallary view page navigation 
+  
+  const handleVideoGalleryClick = () => {
+    navigate("/videoGalleryView"); // Navigate to the new page
+  };
+  
   const [openPicker, authResponse] = useDrivePicker();
 
   const handleOpenPicker = () => {
@@ -126,7 +132,9 @@ const Dashboard = () => {
     console.log("onsearch");
   };
 
+     
   return (
+    
     <div>
       <div className="flex justify-between px-[50px] py-[5px]">
         <div className="flex justify-start items-center gap-2">
@@ -138,6 +146,7 @@ const Dashboard = () => {
               + Create app from zero
             </span>
           </button>
+          
         </div>
         <div className="flex justify-between gap-2">
           {showAppCard && (
@@ -163,6 +172,27 @@ const Dashboard = () => {
                   ]}
                 />
               </div>
+
+               {/* added card for video gallary view page  */}
+
+              <div className="fixed right-5 top-1/2 transform -translate-y-1/2">
+              {/* Video Gallery Card */}
+              {showAppCard && (
+                <div className="bg-gray-100 shadow-md rounded-lg text-center w-[300px] p-[10px]">
+                  <h3 className="text-lg font-bold">Video Gallery</h3>
+                  <p className="text-sm text-gray-600">
+                    Explore and manage video collections
+                  </p>
+                  <button
+                    className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                    onClick={handleVideoGalleryClick}
+                  >
+                    Go to Video Gallery
+                  </button>
+                </div>
+              )}
+            </div>
+
               {/* <button className="flex gap-[10px] justify-center items-center flex-shrink-0 text-center bg-[#FFA500] rounded-[8px] p-[5px] text-white text-[14px] h-[44px]">
                 <span className="text-[var(--white,#FFF)] font-poppins text-[14px] font-medium leading-normal">
                   More apps
