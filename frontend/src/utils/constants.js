@@ -23,6 +23,14 @@ export const APPS = [
       description: "List all contacts.",
       appID:"1X4urz9wKsAuWufXzy9UZKH3KIJmyFKDEM9O8aNied8c",
       spreadSheetName: "Data",
+    },
+    {
+      appName: "Video Gallary",
+      appView: "VideoGallaryView",
+      appImg: "https://i.ibb.co/N1c6Djj/Screenshot-2024-10-08-125436.png",
+      description: "List all videos.",
+      appID:"",
+      spreadSheetName: "Data",
     }
   ];
   // export const CLIENTID = '210551094674-r1bvcns06j8pj06bk8dnfhl3mh6feuag.apps.googleusercontent.com';

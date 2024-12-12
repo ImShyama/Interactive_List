@@ -8,7 +8,7 @@ import thumbnail6 from "../../assets/images/thumbnail6.png"
 import thumbnail7 from "../../assets/images/thumbnail7.png"
 import thumbnail8 from "../../assets/images/thumbnail8.png"
 import TitleBarVG from "./TitleBarVG";
-const VideoGalleryView = () => {
+const VideoGallaryView = () => {
    // Dummy data for video thumbnails
    const videos = [
     { id: 1, title: "Significance of Video Thumbnail", image: thumbnail1 },
@@ -59,4 +59,4 @@ const VideoGalleryView = () => {
   );
 };
 
-export default VideoGalleryView;
+export default VideoGallaryView;

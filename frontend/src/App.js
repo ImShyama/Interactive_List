@@ -18,7 +18,7 @@ import InteractiveListView from "./components/InteractiveListView";
 import PeopleTable from "./components/people_directory/PeopleTable";
 import PeopleDirectoryView from "./components/people_directory/PeopleDirectoryView";
 import ProfilePage from "./components/people_directory/ProfilePage";
-import VideoGalleryView from "./components/video_gallery/VideoGalleryView";
+import VideoGallaryView from "./components/video_gallary/VideoGallaryView";
 import Testing from "./components/Testing";
 import { Provider } from "react-redux"
 import appStore from "./utils/appStore";
@@ -98,8 +98,8 @@ const appRouter = createBrowserRouter([
         element: <ProfilePage />,
       },
       {
-        path: "/videoGalleryView", // Add the new route here
-        element: <VideoGalleryView />,
+        path: "/videoGallaryView", // Add the new route here
+        element: <VideoGallaryView />,
       },
       {
         path: "/testing1",

@@ -13,7 +13,6 @@ const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, des
 
 
 
-
   const handleCopy = () => {
     setLoading(true);
     axios
