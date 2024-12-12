@@ -4,11 +4,15 @@ import { UserContext } from "../context/UserContext";
 import { HOST } from "../utils/constants";
 import { Pagination, Input, Avatar, Popover, Checkbox, Space, Button, AutoComplete, Switch } from "antd";
 import { BiSearch } from "react-icons/bi";
+import { LuFilter } from "react-icons/lu";// added by me
+import { CiCalendar } from "react-icons/ci";// added
+import { Bs123 } from "react-icons/bs";//added
 import { Resizable } from "react-resizable";
 import "react-resizable/css/styles.css";
 import { Delete, Edit, BackIcon, Cancel, Dots, Search, Reset, Add, BulkAdds, Sort, Filter, Label } from "../assets/svgIcons";
 import { useNavigate } from "react-router-dom";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
+// import { FilterOutlined, UserOutlined } from "@ant-design/icons";
 import EditRow from "../components/EditRow";
 import DeleteAlert from "../components/DeleteAlert";
 import EditableSpreadsheetName from "../components/EditableSpreadsheetName";
@@ -41,6 +45,8 @@ const convertArrayToJSON = (data) => {
 
 const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isFilterOpen, setIsFilterOpen]=useState(false);
+    const toggleFilterBox = () => setIsFilterOpen(!isFilterOpen);
     const [rowToEdit, setRowToEdit] = useState(null);
     const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
     const [rowToDelete, setRowToDelete] = useState(null);
@@ -50,6 +56,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [selectSpreadsheet, setSelectSpreadsheet] = useState(null);
     const [loading, setLoading] = useState(false);
     const [searchGlobal, setSearchGlobal] = useState("");
+    const [FilterGlobal, setFilterGlobal]=  useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [filteredData, setFilteredData] = useState([]);
@@ -361,6 +368,24 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     }
 
+
+    // code added by naveen to add filter icon 
+    const handleGlobalFilter = (e) => {
+        const value = e.target.value.toLowerCase();
+        setFilterGlobal(value);
+        // data = convertArrayToJSON(data);
+
+        // Filter the data globally across all columns
+        const filteredData = data.filter((record) => {
+            return Object.keys(record).some((key) =>
+                record[key]?.toString().toLowerCase().includes(value)
+            );
+        });
+
+        // You can then set this filtered data to a state if needed
+        setFilteredData(filteredData);
+    };
+
     const handleGlobalSearch = (e) => {
         const value = e.target.value.toLowerCase();
         setSearchGlobal(value);
@@ -378,9 +403,19 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     };
 
 
+
     const handleGlobalReset = () => {
         setSearchGlobal("");
         setIsSearchOpen(false);
+        setFilteredData(data);
+    };
+    
+   
+    // i added
+    const openFilter = () => setIsFilterOpen(true);
+    const closeFilter = () => {
+        setIsFilterOpen(false);
+        handleGlobalReset();
         setFilteredData(data);
     };
     const openSearch = () => setIsSearchOpen(true);
@@ -457,6 +492,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             }
         };
 
+        // code added by naveen to handle filter 
+        
+
         const handleSearch = (searchText) => {
             // setSearchText(searchText);
             console.log(options);
@@ -473,6 +511,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         return (
             <div className="flex-row justify-between items-center" style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
                 <div className="flex justify-between">
+                    
                     <Button
                         type="primary"
                         // onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
@@ -667,7 +706,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                 placement="bottom"
                             >
                                 <button>
-                                    <Filter />
+                                    <Filter className="text-white"/>
                                 </button>
                             </Popover>
                             <button>
@@ -932,7 +971,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     };
     
-    
     const HeaderSwitch = () => {
         return (
             <div className="flex-row max-h-[300px] overflow-auto">
@@ -950,12 +988,64 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
+                    
                     <button onClick={() => navigate(-1)}>
                         <BackIcon />
                     </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
-                <div className="flex justify-end items-center">
+                {/* <div className="flex justify-end items-center relative"> */}
+                    {/* Filter Icon */}
+                    
+                    {/* {isFilterOpen && (
+                        <Input
+                            prefix={<LuFilter />}
+                            value={FilterGlobal}
+                            onChange={handleGlobalFilter}
+                            style={{ width: "200px" }}
+                            className="min-w-[150px] px-4 py-1 mx-2"
+                            placeholder="Filter"
+                        />
+                    )}
+                    {isFilterOpen && (
+                        <button onClick={closeFilter} className="bg-primary rounded-[4px] p-1 mr-2">
+                            <Cancel />
+                        </button>
+                    )}
+                    {!isFilterOpen && (
+                        <button onClick={openFilter} className="bg-primary rounded-[4px] p-1 mx-2">
+                            <LuFilter className="text-white"/>
+                        </button>
+                    )} */}
+
+                    <div className="flex justify-end items-center relative ">
+                    {/* Conditional Rendering of Filter Icon or Filter Box */}
+            {!isFilterOpen ? (
+                <button
+                    onClick={toggleFilterBox}
+                    className="bg-primary rounded-[4px] p-1 mx-2 border-2 border-white text-white focus:outline-none"
+                >
+                    <LuFilter className="text-white" size={20} />
+                </button>
+            ) : (
+                <div className="flex items-center space-x-1 bg-green-600 rounded-md px-2 py-1 border border-gray-300 shadow-lg">
+                    {/* Number Icon */}
+                    <button className="p-1 bg-green-100 rounded-md hover:bg-green-200 flex items-center justify-center">
+                        <Bs123 className="text-green-900" size={20} />
+                    </button>
+                    {/* Calendar Icon */}
+                    <button className="p-1 bg-green-100 rounded-md hover:bg-green-200 flex items-center justify-center">
+                        <CiCalendar className="text-green-900" size={20} />
+                    </button>
+                    {/* Cancel Icon */}
+                    <button
+                        onClick={toggleFilterBox}
+                        className="p-1 bg-green-100 rounded-md hover:bg-green-200 flex items-center justify-center"
+                    >
+                        <Cancel className="text-green-900" size={20} />
+                    </button>
+                </div>
+            )}
                     {isSearchOpen && (
                         <Input
                             prefix={<BiSearch />}
@@ -979,6 +1069,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     <button onClick={handleGlobalReset} className="bg-primary rounded-[4px] p-1">
                         <Reset />
                     </button>
+                    
                     <button onClick={handleAdd} className="mx-2">
                         <Add />
                     </button>
