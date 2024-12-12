@@ -17,7 +17,9 @@ const SheetSchema = new mongoose.Schema({
     access: String,
     lastUpdatedDate: String,
     showInCard: Array,
-    showInProfile: Array
+    showInProfile: Array,
+    freezeCol: String,
+    hiddenCol: Array,
 });
 
 
