@@ -35,7 +35,7 @@ const convertArrayToJSON = (data) => {
     const jsonData = data.slice(1).map((item, index) => {
         const jsonObject = {};
         keys.forEach((key, i) => {
-            jsonObject[key.replace(/\s+/g, '_').toLowerCase()] = item[i]; // Replace spaces with underscores and make keys lowercase
+            jsonObject[key.replace(/\s+/g, '_').toLowerCase()] = item[i]; // 
         });
         return { key_id: (index + 1).toString(), ...jsonObject }; // Add key_id
     });
