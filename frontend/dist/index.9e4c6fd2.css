@@ -371,6 +371,10 @@ img, video {
   top: 100%;
 }
 
+.right-0 {
+  right: 0;
+}
+
 .isolate {
   isolation: isolate;
 }
@@ -618,6 +622,10 @@ img, video {
 
 .mt-\[44px\] {
   margin-top: 44px;
+}
+
+.mt-\[80px\] {
+  margin-top: 80px;
 }
 
 .box-border {
