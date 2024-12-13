@@ -994,58 +994,38 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
-                {/* <div className="flex justify-end items-center relative"> */}
-                    {/* Filter Icon */}
-                    
-                    {/* {isFilterOpen && (
-                        <Input
-                            prefix={<LuFilter />}
-                            value={FilterGlobal}
-                            onChange={handleGlobalFilter}
-                            style={{ width: "200px" }}
-                            className="min-w-[150px] px-4 py-1 mx-2"
-                            placeholder="Filter"
-                        />
-                    )}
-                    {isFilterOpen && (
-                        <button onClick={closeFilter} className="bg-primary rounded-[4px] p-1 mr-2">
-                            <Cancel />
-                        </button>
-                    )}
-                    {!isFilterOpen && (
-                        <button onClick={openFilter} className="bg-primary rounded-[4px] p-1 mx-2">
-                            <LuFilter className="text-white"/>
-                        </button>
-                    )} */}
+                
+                  {/* Filter icon update */}
 
                     <div className="flex justify-end items-center relative ">
                     {/* Conditional Rendering of Filter Icon or Filter Box */}
-            {!isFilterOpen ? (
-                <button
-                    onClick={toggleFilterBox}
-                    className="bg-primary rounded-[4px] p-1 mx-2 border-2 border-white text-white focus:outline-none"
-                >
-                    <LuFilter className="text-white" size={20} />
-                </button>
-            ) : (
-                <div className="flex items-center space-x-1 bg-green-600 rounded-md px-2 py-1 border border-gray-300 shadow-lg">
-                    {/* Number Icon */}
-                    <button className="p-1 bg-green-100 rounded-md hover:bg-green-200 flex items-center justify-center">
-                        <Bs123 className="text-green-900" size={20} />
-                    </button>
-                    {/* Calendar Icon */}
-                    <button className="p-1 bg-green-100 rounded-md hover:bg-green-200 flex items-center justify-center">
-                        <CiCalendar className="text-green-900" size={20} />
-                    </button>
-                    {/* Cancel Icon */}
-                    <button
-                        onClick={toggleFilterBox}
-                        className="p-1 bg-green-100 rounded-md hover:bg-green-200 flex items-center justify-center"
-                    >
-                        <Cancel className="text-green-900" size={20} />
-                    </button>
-                </div>
-            )}
+                    {!isFilterOpen ? (
+                        <button
+                            onClick={toggleFilterBox}
+                            className="bg-primary rounded-[4px] p-1 mx-2 border-2 border-white text-white focus:outline-none"
+                        >
+                            <LuFilter className="text-white" size={18} />  
+                        </button>
+                    ) : (
+                        <div className="w-[155px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1  px-2 relative">
+                            {/* Number Icon */}
+                            <button className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center">
+                                <Bs123 className="text-green-900" size={20} />
+                            </button>
+                            {/* Calendar Icon */}
+                            <button className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center">
+                                <CiCalendar className="text-green-900" size={20} />
+                            </button>
+                            {/* Cancel Icon */}
+                            <button
+                                onClick={toggleFilterBox}
+                                className="p-1 bg-[#598931] rounded-md hover:bg-[#598931] flex items-center justify-center absolute right-2"
+                            >
+                                <Cancel className="text-green-900" size={20} />
+                            </button>
+                        </div>
+                    )}
+
                     {isSearchOpen && (
                         <Input
                             prefix={<BiSearch />}
