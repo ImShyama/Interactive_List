@@ -39,6 +39,66 @@ const convertArrayToJSON = (data) => {
     return jsonData;
 };
 
+const isNumber = (value) => {
+    return !isNaN(parseFloat(value)) && isFinite(value);
+};
+
+const isDate = (value) => {
+    if (!value || typeof value !== 'string') return false;
+
+    // Match common date patterns (YYYY-MM-DD, DD/MM/YYYY, etc.)
+    const datePatterns = [
+        /^\d{4}-\d{2}-\d{2}$/,             // YYYY-MM-DD
+        /^\d{2}\/\d{2}\/\d{4}$/,           // DD/MM/YYYY or MM/DD/YYYY
+        /^\d{2}-\d{2}-\d{4}$/,             // DD-MM-YYYY
+        /^\d{4}\/\d{2}\/\d{2}$/            // YYYY/MM/DD
+    ];
+
+    // Check if any pattern matches
+    if (datePatterns.some((pattern) => pattern.test(value))) {
+        const parsedDate = new Date(value);
+        return !isNaN(parsedDate.getTime());
+    }
+
+    return false;
+};
+
+function getHeadersWithDateAndNumbers(dataset) {
+    if (!Array.isArray(dataset) || dataset.length === 0) {
+        return { dateColumns: [], numberColumns: [] };
+    }
+
+    const headers = Object.keys(dataset[0]);
+    const result = {
+        dateColumns: [],
+        numberColumns: []
+    };
+
+    headers.forEach((header) => {
+        const columnValues = dataset.map((row) => row[header]);
+
+        // Debugging logs
+        console.log(`Checking column: ${header}`);
+        console.log(`Values:`, columnValues);
+
+        // Check for dates
+        const hasDates = columnValues.some((value) => isDate(value));
+        if (hasDates) {
+            result.dateColumns.push(header);
+        }
+
+        // Check for numbers
+        const hasNumbers = columnValues.some((value) => isNumber(value));
+        if (hasNumbers) {
+            result.numberColumns.push(header);
+        }
+    });
+
+    return result;
+}
+
+
+
 const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [rowToEdit, setRowToEdit] = useState(null);
@@ -70,6 +130,27 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [bodyFontSize, setBodyFontSize] = useState(tableSettings?.bodyFontSize || 12); // Default body font size
     const [bodyFontFamily, setBodyFontFamily] = useState(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
 
+    const [visiblePopover, setVisiblePopover] = useState({});
+
+    const result = getHeadersWithDateAndNumbers(data);
+    const [dateColumns, setdateColumns] = useState(result.dateColumns || []);
+    const [numberColumns, setnumberColumns] = useState(result.numberColumns || []);
+
+    console.log({ result, dateColumns, numberColumns });
+
+    const handlePopoverVisibility = (key, isVisible) => {
+        setVisiblePopover((prev) => ({
+            ...prev,
+            [key]: isVisible,
+        }));
+    };
+
+    const closePopover = (key) => {
+        setVisiblePopover((prev) => ({
+            ...prev,
+            [key]: false,
+        }));
+    };
 
     const handleSaveChanges = async (updatedSettings) => {
         try {
@@ -225,14 +306,14 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     };
 
-    useEffect(() => {
-        measureColumnWidths(); // Measure on mount
-        window.addEventListener("resize", measureColumnWidths); // Re-measure on window resize
+    // useEffect(() => {
+    //     measureColumnWidths(); // Measure on mount
+    //     window.addEventListener("resize", measureColumnWidths); // Re-measure on window resize
 
-        return () => {
-            window.removeEventListener("resize", measureColumnWidths);
-        };
-    }, []);
+    //     return () => {
+    //         window.removeEventListener("resize", measureColumnWidths);
+    //     };
+    // }, []);
 
     // Calculate minWidth dynamically based on columnWidths
     const minWidth = Object.values(columnWidths).reduce((sum, width) => sum + width, 0);
@@ -416,53 +497,73 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         setFilteredData(sorted);
     };
 
+    const filterList = () => {
 
-    const MultiSelectFilter = ({ columnKey }) => {
+    };
+
+    const [globalOption, setGlobalOption] = useState({});
+
+    const MultiSelectFilter = ({ columnKey, closePopover }) => {
         const [selectedValues, setSelectedValues] = useState([]);
-        const [searchText, setSearchText] = useState('');
 
-        console.log({filteredData,columnKey});
-        // const initialData = [
-        //     { label: 'Option 1', value: '1' },
-        //     { label: 'Option 2', value: '2' },
-        //     { label: 'Option 3', value: '3' },
-        //     { label: 'Option 4', value: '4' },
-        // ]
+        // Step 1: Create initialData with unique labels and counts
+        const initialData = Object.values(
+            filteredData.reduce((acc, data) => {
+                const label = data[columnKey];
+                const value = data[columnKey];
 
-        const initialData = filteredData.map((data) => ({
-            label: data[columnKey], // The value for the label comes from the columnKey in filteredData
-            value: data.key_id,     // Use key_id as the value for initialData
+                if (acc[label]) {
+                    acc[label].count += 1; // Increment the count if the label already exists
+                } else {
+                    acc[label] = { label, value, count: 1 }; // Add a new label with a count of 1
+                }
+
+                return acc;
+            }, {})
+        ).map((item) => ({
+            ...item,
+            label: `${item.label} (${item.count})`, // Add the count to the label
         }));
-        
-        console.log("Generated Initial Data:", initialData);
 
         const [options, setOptions] = useState(initialData);
 
         const handleSelectAll = () => {
-            if (selectedValues.length === options.length) {
+            let updatedOptions = globalOption[columnKey] || [];
+            if (globalOption[columnKey].length === options.length || selectedValues.length === options.length) {
                 setSelectedValues([]);
+                setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
                 return;
             } else {
                 setSelectedValues(options.map((option) => option.value));
+                setGlobalOption((prev) => ({ ...prev, [columnKey]: options.map((option) => option.value) }));
             }
-            // const selectedOptions = options.map((option) => option.value);
-            // setSelectedValues(selectedOptions);
         }
 
         const handleSelect = (value) => {
-            if (selectedValues.includes(value)) {
-                setSelectedValues(selectedValues.filter(item => item !== value));
+            let updatedOptions = globalOption[columnKey] || [];
+            if (globalOption[columnKey]?.includes(value) || selectedValues.includes(value)) {
+                setSelectedValues((prev) => {
+                    let updatedOption = prev.filter((item) => item !== value);
+                    updatedOptions = [...updatedOptions, ...updatedOption];
+                    return prev.filter((item) => item !== value);
+                });
             } else {
-                setSelectedValues([...selectedValues, value]);
+                setSelectedValues((prev) => {
+                    let updatedOption = [...prev, value];
+                    updatedOptions = [...updatedOptions, ...updatedOption];
+                    return [...prev, value]
+                });
             }
+
+            setGlobalOption((prev) => ({ ...prev, [columnKey]: updatedOptions }));
+
         };
 
+
         const handleSearch = (searchText) => {
-            // setSearchText(searchText);
-            console.log(options);
             if (searchText) {
                 const filteredOptions = initialData.filter(option =>
-                    option.label.toLowerCase().includes(searchText.toLowerCase())
+                    option.label?.toLowerCase().includes(searchText.toLowerCase())
                 );
                 setOptions(filteredOptions);
             } else {
@@ -470,12 +571,60 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             }
         };
 
+        const handleMultiSearch = () => {
+            if (selectedValues.length == 0) {
+                setFilteredData(data);
+                return;
+            }
+
+            const filteredDataTemp = filteredData.filter((item) => {
+                return globalOption[columnKey].includes(item[columnKey]) || selectedValues.includes(item[columnKey])
+            });
+            setFilteredData(filteredDataTemp);
+            // closePopover();
+        };
+
+        const handleReset = () => {
+            setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
+            const globalColumn = Object.keys(globalOption).map((key) => {
+                if (key == columnKey) {
+                    return null
+                } else {
+                    return key;
+                }
+            })
+
+            if (globalColumn.length == 0 || globalColumn.every((item) => item == null)) {
+                setFilteredData(data);
+                return;
+            }
+
+            let globalFilterData = [];
+            globalColumn.map((key) => {
+                let filteredDataTemp = data.filter((item) => {
+                    // console.log({ key, item });
+                    // console.log({ globalOption });
+                    if (key) {
+                        return globalOption[key].includes(item[key]);
+                    }
+
+                });
+                globalFilterData = [...globalFilterData, ...filteredDataTemp];
+            })
+            // const filteredDataTemp = data.filter((item) => {
+
+            // })
+            // setSelectedValues([]);
+            setFilteredData(globalFilterData);
+            // closePopover();
+        };
+
         return (
             <div className="flex-row justify-between items-center" style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
                 <div className="flex justify-between">
                     <Button
                         type="primary"
-                        // onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        onClick={() => handleMultiSearch()}
                         icon={<SearchOutlined />}
                         size="small"
                         style={{ width: 80 }}
@@ -483,12 +632,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                         Search
                     </Button>
                     <Button
-                        // onClick={() => {
-                        //     handleReset(clearFilters, dataIndex);
-                        //     confirm({ closeDropdown: false });
-                        //     setSearchText(selectedKeys[0]);
-                        //     setSearchedColumn(dataIndex);
-                        // }}
+                        onClick={() => {
+                            handleReset();
+                        }}
                         size="small"
                         style={{ width: 80 }}
                     >
@@ -497,18 +643,22 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     <Button
                         type="link"
                         size="small"
-                    // onClick={() => {
-                    //     close();
-                    // }}
+                        onClick={() => {
+                            closePopover();
+                        }}
                     >
                         close
                     </Button>
                 </div>
-                <div className="">
-                    <Checkbox className="mr-2 pl-1 border border-primary text-primary rounded-md" onChange={() => handleSelectAll()} checked={selectedValues.length === options.length} value="all">ALL</Checkbox>
+                <div className="pt-2">
+                    <Checkbox className="mr-2 text-primary rounded-md"
+                        style={{
+                            transform: "scale(1.4)", // Scale up the size of the checkbox
+                        }}
+                        onChange={() => handleSelectAll()} checked={globalOption[columnKey]?.length == options.length || selectedValues.length == options.length && options.length > 0} value="all"></Checkbox>
                     <AutoComplete
                         style={{
-                            paddingTop: 8,
+                            // paddingTop: 8,
                             width: 200,
                         }}
                         // onSearch={handleSearch}
@@ -519,7 +669,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                         onSearch={handleSearch}
                     >
                         {options.map((option) => (
-                            <AutoComplete.Option key={option.value}><Checkbox onChange={() => handleSelect(option.value)} checked={selectedValues.includes(option.value)} value={option.value}>{option.label}</Checkbox></AutoComplete.Option>
+                            <AutoComplete.Option key={option.value}><Checkbox onChange={() => handleSelect(option.value)} checked={globalOption[columnKey]?.includes(option.value) || selectedValues.includes(option.value)} value={option.value}>{option.label}</Checkbox></AutoComplete.Option>
                         ))}
                     </AutoComplete>
                 </div>
@@ -613,13 +763,147 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     // );
 
     // let leftOffset = 60
+
+    // const MultiSelectFilter = ({ columnKey, closePopover, filteredData, setFilteredData, originalData }) => {
+    //     const [selectedValues, setSelectedValues] = useState([]);
+    //     const [searchText, setSearchText] = useState('');
+
+    //     // Step 1: Create initialData with unique labels and counts
+    //     const initialData = Object.values(
+    //         originalData.reduce((acc, data) => {
+    //             const label = data[columnKey];
+    //             const value = label; // Use the column value as the unique value
+
+    //             if (acc[label]) {
+    //                 acc[label].count += 1; // Increment the count if the label already exists
+    //             } else {
+    //                 acc[label] = { label, value, count: 1 }; // Add a new label with a count of 1
+    //             }
+
+    //             return acc;
+    //         }, {})
+    //     ).map((item) => ({
+    //         ...item,
+    //         label: `${item.label} (${item.count})`, // Add the count to the label
+    //     }));
+
+    //     const [options, setOptions] = useState(initialData);
+
+    //     const handleSelectAll = () => {
+    //         if (selectedValues.length === options.length) {
+    //             setSelectedValues([]);
+    //         } else {
+    //             setSelectedValues(options.map((option) => option.value));
+    //         }
+    //     };
+
+    //     const handleSelect = (value) => {
+    //         if (selectedValues.includes(value)) {
+    //             setSelectedValues(selectedValues.filter(item => item !== value));
+    //         } else {
+    //             setSelectedValues([...selectedValues, value]);
+    //         }
+    //     };
+
+    //     const handleSearch = (searchText) => {
+    //         if (searchText) {
+    //             const filteredOptions = initialData.filter(option =>
+    //                 option.label?.toLowerCase().includes(searchText.toLowerCase())
+    //             );
+    //             setOptions(filteredOptions);
+    //         } else {
+    //             setOptions(initialData);
+    //         }
+    //     };
+
+    //     const handleMultiSearch = () => {
+    //         // Filter `filteredData` based on selected values for this column only
+    //         const updatedFilteredData = filteredData.filter(item =>
+    //             selectedValues.includes(item[columnKey])
+    //         );
+    //         setFilteredData(updatedFilteredData); // Update filtered data state
+    //         closePopover(); // Close popover
+    //         console.log({ selectedValues, updatedFilteredData });
+    //     };
+
+    //     const handleReset = () => {
+    //         // Reset only the data for this specific column to its original state
+    //         const resetData = originalData.filter(item =>
+    //             !filteredData.some(filteredItem => filteredItem.key_id === item.key_id) ||
+    //             item[columnKey] !== undefined
+    //         );
+    //         setSelectedValues([]); // Clear the selected values for this column
+    //         setFilteredData(resetData); // Restore original data for this column
+    //         closePopover(); // Close popover
+    //         console.log('Reset for column:', columnKey, resetData);
+    //     };
+
+    //     return (
+    //         <div className="flex-row justify-between items-center" style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+    //             <div className="flex justify-between">
+    //                 <Button
+    //                     type="primary"
+    //                     onClick={() => handleMultiSearch()}
+    //                     icon={<SearchOutlined />}
+    //                     size="small"
+    //                     style={{ width: 80 }}
+    //                 >
+    //                     Search
+    //                 </Button>
+    //                 <Button
+    //                     onClick={() => handleReset()}
+    //                     size="small"
+    //                     style={{ width: 80 }}
+    //                 >
+    //                     Reset
+    //                 </Button>
+    //                 <Button
+    //                     type="link"
+    //                     size="small"
+    //                     onClick={() => closePopover()}
+    //                 >
+    //                     Close
+    //                 </Button>
+    //             </div>
+    //             <div className="pt-2">
+    //                 <Checkbox
+    //                     className="mr-2 text-primary rounded-md"
+    //                     style={{ transform: "scale(1.4)" }}
+    //                     onChange={() => handleSelectAll()}
+    //                     checked={selectedValues.length === options.length && options.length > 0}
+    //                     value="all"
+    //                 />
+    //                 <AutoComplete
+    //                     style={{ width: 200 }}
+    //                     placeholder="Input here"
+    //                     filterOption={false}
+    //                     onSearch={handleSearch}
+    //                 >
+    //                     {options.map((option) => (
+    //                         <AutoComplete.Option key={option.value}>
+    //                             <Checkbox
+    //                                 onChange={() => handleSelect(option.value)}
+    //                                 checked={selectedValues.includes(option.value)}
+    //                                 value={option.value}
+    //                             >
+    //                                 {option.label}
+    //                             </Checkbox>
+    //                         </AutoComplete.Option>
+    //                     ))}
+    //                 </AutoComplete>
+    //             </div>
+    //         </div>
+    //     );
+    // };
+
+
     const renderResizableHeader = (title, columnKey, index) => {
         const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
         const leftOffset =
-            (index === 0 ? 100 : 0) + // Add 60px only for the first column
+            (index === 0 ? 100 : 0) +
             headers
-                .slice(0, index) // Get all columns before the current one
-                .reduce((sum, key) => sum + columnWidths[key], 0); // Sum the widths of previous columns
+                .slice(0, index)
+                .reduce((sum, key) => sum + columnWidths[key], 0);
 
         return (
             <Resizable
@@ -660,25 +944,30 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
                             <Popover
                                 content={
-                                    <MultiSelectFilter columnKey={columnKey} />
+                                    <MultiSelectFilter
+                                        columnKey={columnKey}
+                                        closePopover={() => closePopover(index)}
+                                    />
                                 }
 
                                 trigger="click"
                                 placement="bottom"
+                                visible={visiblePopover[index] || false}
+                                onVisibleChange={(isVisible) => handlePopoverVisibility(index, isVisible)}
                             >
                                 <button>
                                     <Filter />
                                 </button>
                             </Popover>
-                            <button>
+                            <button title="Labels">
                                 <Label />
                             </button>
                             {freezeCol.includes(columnKey) ? (
-                                <button>
+                                <button title="Freezed Column">
                                     <BsPinAngleFill />
                                 </button>
                             ) : (
-                                <button onClick={(e) => handleFreezeColumn(columnKey, "showInProfile", e)}>
+                                <button title="Freeze Column" onClick={(e) => handleFreezeColumn(columnKey, "showInProfile", e)}>
                                     <BsPin />
                                 </button>
                             )}
@@ -849,90 +1138,58 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
     const [hiddenCol, setHiddenCol] = useState(settings.hiddenCol || []);
 
-    // const handleHeaderSwitch = async(checked, header) => {
-    //     if (checked) {
-    //         setHiddenCol([...hiddenCol, header]);
-    //     } else {
-    //         setHiddenCol(hiddenCol.filter((col) => col !== header));
-    //     }
-
-    //     const updatedSettings = {
-    //         hiddenCol: hiddenCol
-    //     };
-
-    //     // Dispatch with updated state
-    //     dispatch(updateSetting(updatedSettings));
-
-    //     try {
-    //         // Update the settings in the backend
-    //         const response = await axios.put(
-    //             `${HOST}/spreadsheet/${settings._id}`,
-    //             { ...settings, ...updatedSettings }, // Merge existing settings with updates
-    //             {
-    //                 headers: {
-    //                     authorization: "Bearer " + token,
-    //                 },
-    //             }
-    //         );
-
-    //         console.log("Settings updated successfully:", response.data);
-
-    //         // Dispatch updated settings to Redux store
-    //         dispatch(updateSetting(response.data));
-    //         notifySuccess("Hidden Column updated successfully");
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error("Error updating settings in DB:", error);
-    //         notifyError("Error updating settings in DB:", error);
-    //     }
-    // };
-
     const handleHeaderSwitch = async (checked, header) => {
-        let updatedHiddenCol;
-    
+        console.log({ checked, header, hiddenCol });
+
+        let updatedHiddenCol = [];
+
         // Update the hiddenCol state using its previous value
         setHiddenCol((prevHiddenCol) => {
             if (checked) {
-                updatedHiddenCol = [...prevHiddenCol, header];
+                updatedHiddenCol = [...prevHiddenCol, header]; // Add header if checked
             } else {
-                updatedHiddenCol = prevHiddenCol.filter((col) => col !== header);
+                updatedHiddenCol = prevHiddenCol.filter((col) => col !== header); // Remove header if unchecked
             }
-            return updatedHiddenCol;
+            console.log("Inside setHiddenCol Callback:", updatedHiddenCol);
+            return updatedHiddenCol; // Return the new array for state update
         });
-    
-        // Use the updatedHiddenCol value to ensure consistency
-        const updatedSettings = {
-            hiddenCol: updatedHiddenCol,
-        };
-    
-        // Dispatch with updated state
-        dispatch(updateSetting(updatedSettings));
-    
-        try {
-            // Update the settings in the backend
-            const response = await axios.put(
-                `${HOST}/spreadsheet/${settings._id}`,
-                { ...settings, ...updatedSettings }, // Merge existing settings with updates
-                {
-                    headers: {
-                        authorization: "Bearer " + token,
-                    },
-                }
-            );
-    
-            console.log("Settings updated successfully:", response.data);
-    
-            // Dispatch updated settings to Redux store
-            dispatch(updateSetting(response.data));
-            notifySuccess("Hidden Column updated successfully");
-            return response.data;
-        } catch (error) {
-            console.error("Error updating settings in DB:", error);
-            notifyError("Error updating settings in DB:", error);
-        }
+
+        // Delay usage of updatedHiddenCol to ensure state updates
+        setTimeout(async () => {
+            console.log("Updated Hidden Columns after state change:", updatedHiddenCol);
+
+            const updatedSettings = {
+                hiddenCol: updatedHiddenCol,
+            };
+
+            // Dispatch with updated state
+            dispatch(updateSetting(updatedSettings));
+
+            try {
+                // Update the settings in the backend
+                const response = await axios.put(
+                    `${HOST}/spreadsheet/${settings._id}`,
+                    { ...settings, ...updatedSettings }, // Merge existing settings with updates
+                    {
+                        headers: {
+                            authorization: "Bearer " + token,
+                        },
+                    }
+                );
+
+                console.log("Settings updated successfully:", response.data);
+
+                // Dispatch updated settings to Redux store
+                dispatch(updateSetting(response.data));
+                notifySuccess("Hidden Column updated successfully");
+                return response.data;
+            } catch (error) {
+                console.error("Error updating settings in DB:", error);
+                notifyError("Error updating settings in DB:", error);
+            }
+        }, 0);
     };
-    
-    
+
     const HeaderSwitch = () => {
         return (
             <div className="flex-row max-h-[300px] overflow-auto">
@@ -955,7 +1212,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
+                <div></div>
                 <div className="flex justify-end items-center">
+
                     {isSearchOpen && (
                         <Input
                             prefix={<BiSearch />}
@@ -1022,9 +1281,10 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                             left: 0,
                                             background: "#fff",
                                             // width: `${columnWidths.actions}px`,
-                                            // position: "sticky",
+                                            position: "sticky",
                                             // left: 0,
-                                            // zIndex: 1000,
+                                            zIndex: 1000,
+                                            // borderRight: "1px solid #ccc",
                                             // backgroundColor: headerBgColor,  // Background color logic
                                             // color: headerTextColor, // Text color logic
                                             // fontFamily: headerFontFamily, // Add the font family
@@ -1046,7 +1306,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                                 position: "sticky",
                                                 left: 0,
                                                 background: "#fff",
-
+                                                zIndex: 100,
                                             }}
                                         >
                                             <div className="flex gap-[10px] align-center">

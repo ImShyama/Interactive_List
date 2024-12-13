@@ -127,7 +127,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
+    <div className="mt-[80px]">
       <div className="flex justify-between px-[50px] py-[5px]">
         <div className="flex justify-start items-center gap-2">
           <button

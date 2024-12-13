@@ -104,7 +104,7 @@ const Table = () => {
           navigate(`/${id}/view`);
         }
         header = header.map((r) => { return r.replace(/ /g, '_').toLowerCase() })
-        const filteredHeader = header.filter((col) => !res.hiddenCol.includes(col));
+        const filteredHeader = header.filter((col) => !res?.hiddenCol?.includes(col));
         console.log("data",res.jsonData);
         console.log("header",header);
         console.log("hiddenCol",res.hiddenCol);
@@ -130,7 +130,7 @@ const Table = () => {
   ]);
 
   return (
-    <div>
+    <div className="mt-[80px]">
       {/* Conditional rendering for InteractiveListPreview */}
       {!loading && sheetData && tableHeader ? (
         <div>
