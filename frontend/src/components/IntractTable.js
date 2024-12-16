@@ -77,7 +77,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [bodyFontSize, setBodyFontSize] = useState(tableSettings?.bodyFontSize || 12); // Default body font size
     const [bodyFontFamily, setBodyFontFamily] = useState(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
 
-
+    const[numberfiltercolumn, setNumberFilterColumn]= useState(["frequency_(in_days)"])
     const handleSaveChanges = async (updatedSettings) => {
         try {
             // Update the settings in the backend
