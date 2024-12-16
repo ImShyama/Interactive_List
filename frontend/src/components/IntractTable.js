@@ -5,7 +5,7 @@ import { HOST } from "../utils/constants";
 import { Pagination, Input, Avatar, Popover, Checkbox, Space, Button, AutoComplete, Switch } from "antd";
 import { BiSearch } from "react-icons/bi";
 import { LuFilter } from "react-icons/lu";// added by me
-import { CiCalendar } from "react-icons/ci";// added
+import { CiCalendarDate } from "react-icons/ci";// added
 import { Bs123 } from "react-icons/bs";//added
 import { Resizable } from "react-resizable";
 import "react-resizable/css/styles.css";
@@ -46,7 +46,20 @@ const convertArrayToJSON = (data) => {
 const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isFilterOpen, setIsFilterOpen]=useState(false);
-    const toggleFilterBox = () => setIsFilterOpen(!isFilterOpen);
+    // const toggleFilterBox = () => setIsFilterOpen(!isFilterOpen);
+    const toggleFilterBox = () => {
+        setIsFilterOpen(!isFilterOpen);
+        setIsNumberDropdownOpen(false);
+        setIsDateDropdownOpen(false);
+      };
+      const toggleNumberDropdown = () => {
+        setIsNumberDropdownOpen(!isNumberDropdownOpen);
+        setIsDateDropdownOpen(false); // Close date dropdown
+      };
+      const toggleDateDropdown = () => {
+        setIsDateDropdownOpen(!isDateDropdownOpen);
+        setIsNumberDropdownOpen(false); // Close number dropdown
+      };
     const [rowToEdit, setRowToEdit] = useState(null);
     const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
     const [rowToDelete, setRowToDelete] = useState(null);
@@ -77,7 +90,11 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [bodyFontSize, setBodyFontSize] = useState(tableSettings?.bodyFontSize || 12); // Default body font size
     const [bodyFontFamily, setBodyFontFamily] = useState(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
 
-    const[numberfiltercolumn, setNumberFilterColumn]= useState(["frequency_(in_days)"])
+    const [isNumberDropdownOpen, setIsNumberDropdownOpen] = useState(false);
+    const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+    const [numberFilterColumn, setNumberFilterColumn] = useState(["frequency_(in_days)"]);
+    const [dateFilterColumn, setDateFilterColumn] = useState([]);
+  
     const handleSaveChanges = async (updatedSettings) => {
         try {
             // Update the settings in the backend
@@ -999,23 +1016,65 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
                     <div className="flex justify-end items-center relative ">
                     {/* Conditional Rendering of Filter Icon or Filter Box */}
-                    {!isFilterOpen ? (
-                        <button
+                         {!isFilterOpen ? (
+                            <button
                             onClick={toggleFilterBox}
                             className="bg-primary rounded-[4px] p-1 mx-2 border-2 border-white text-white focus:outline-none"
-                        >
-                            <LuFilter className="text-white" size={18} />  
-                        </button>
-                    ) : (
-                        <div className="w-[155px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1  px-2 relative">
+                            >
+                            <LuFilter className="text-white" size={18} />
+                            </button>
+                        ) : (
+                            <div className="w-[115px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1 px-2 relative">
                             {/* Number Icon */}
-                            <button className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center">
+                            <button
+                                className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center"
+                                onClick={toggleNumberDropdown}
+                            >
                                 <Bs123 className="text-green-900" size={20} />
                             </button>
-                            {/* Calendar Icon */}
-                            <button className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center">
-                                <CiCalendar className="text-green-900" size={20} />
+                            {/* Dropdown for Number */}
+                            {isNumberDropdownOpen && (
+                                <div className="absolute top-[50px] left-0 w-[150px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-10">
+                                {numberFilterColumn.length > 0 ? (
+                                    numberFilterColumn.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="p-2 hover:bg-gray-100 rounded cursor-pointer"
+                                    >
+                                        {item}
+                                    </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500">Loading...</p>
+                                )}
+                                </div>
+                            )}
+
+                            {/* Date Icon */}
+                            <button
+                                className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center"
+                                onClick={toggleDateDropdown}
+                            >
+                                <CiCalendarDate className="text-green-900" size={20} />
                             </button>
+                            {/* Dropdown for Date */}
+                            {isDateDropdownOpen && (
+                                <div className="absolute top-[50px] right-0 w-[150px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-10">
+                                {dateFilterColumn.length > 0 ? (
+                                    dateFilterColumn.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="p-2 hover:bg-gray-100 rounded cursor-pointer"
+                                    >
+                                        {item}
+                                    </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500">Loading...</p>
+                                )}
+                                </div>
+                            )}
+
                             {/* Cancel Icon */}
                             <button
                                 onClick={toggleFilterBox}
@@ -1023,9 +1082,8 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             >
                                 <Cancel className="text-green-900" size={20} />
                             </button>
-                        </div>
-                    )}
-
+                            </div>
+                        )}
                     {isSearchOpen && (
                         <Input
                             prefix={<BiSearch />}

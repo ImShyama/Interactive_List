@@ -315,6 +315,10 @@ img, video {
   bottom: 1rem;
 }
 
+.left-0 {
+  left: 0;
+}
+
 .left-\[10px\] {
   left: 10px;
 }
@@ -361,6 +365,14 @@ img, video {
 
 .top-\[25px\] {
   top: 25px;
+}
+
+.top-\[50px\] {
+  top: 50px;
+}
+
+.right-0 {
+  right: 0;
 }
 
 .isolate {
@@ -856,8 +868,16 @@ img, video {
   width: 100px;
 }
 
+.w-\[110px\] {
+  width: 110px;
+}
+
 .w-\[1114px\] {
   width: 1114px;
+}
+
+.w-\[115px\] {
+  width: 115px;
 }
 
 .w-\[1357px\] {
@@ -874,10 +894,6 @@ img, video {
 
 .w-\[150px\] {
   width: 150px;
-}
-
-.w-\[155px\] {
-  width: 155px;
 }
 
 .w-\[18px\] {
@@ -1074,6 +1090,10 @@ img, video {
 
 .w-full {
   width: 100%;
+}
+
+.w-\[155px\] {
+  width: 155px;
 }
 
 .min-w-\[150px\] {
@@ -1294,6 +1314,12 @@ img, video {
   --tw-space-x-reverse: 0;
   margin-right: calc(.25rem * var(--tw-space-x-reverse));
   margin-left: calc(.25rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.space-x-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(.5rem * calc(1 - var(--tw-space-x-reverse)));
 }
 
 .space-x-4 > :not([hidden]) ~ :not([hidden]) {
@@ -2705,6 +2731,11 @@ button:disabled {
 
 .hover\:bg-secondary:hover {
   background-color: var(--secondary-color);
+}
+
+.hover\:bg-gray-100:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(243 244 246 / var(--tw-bg-opacity));
 }
 
 .hover\:text-\[\#497626\]:hover {
