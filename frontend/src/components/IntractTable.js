@@ -92,8 +92,8 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
     const [isNumberDropdownOpen, setIsNumberDropdownOpen] = useState(false);
     const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
-    const [numberFilterColumn, setNumberFilterColumn] = useState(["frequency_(in_days)"]);
-    const [dateFilterColumn, setDateFilterColumn] = useState([]);
+    const [numberFilterColumn, setNumberFilterColumn] = useState(["frequency_(in_days)","mobile","key_id","remaining_credits"]);
+    const [dateFilterColumn, setDateFilterColumn] = useState(["start_date","end_date"]);
   
     const handleSaveChanges = async (updatedSettings) => {
         try {
@@ -160,56 +160,135 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     };
 
+    // const handleCheckboxChange = async (columnKey, option, event) => {
+    //     const isChecked = event.target.checked;
+    //     // new added
+
+    //     setNumberFilterColumn((prevSelection) => {
+    //         if (prevSelection.includes(value)) {
+    //             return prevSelection.filter((item) => item !== value); // Remove if already selected
+    //         } else {
+    //             return [...prevSelection, value]; // Add if not selected
+    //         }
+    //     });
+
+    //     setDateFilterColumn((prevSelection) => {
+    //         if (prevSelection.includes(value)) {
+    //             return prevSelection.filter((item) => item !== value); // Remove if already selected
+    //         } else {
+    //             return [...prevSelection, value]; // Add if not selected
+    //         }
+    //     });
+
+    //     let updatedSettings = {};  // Declare the updatedSettings variable
+
+    //     if (option === 'showInCard') {
+    //         setShowInCard((prevState) => {
+    //             const updatedState = isChecked
+    //                 ? [...prevState, columnKey] // Add columnKey if checked
+    //                 : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
+
+    //             updatedSettings = {
+    //                 showInCard: updatedState,
+    //                 showInProfile,  // Assuming this is being set somewhere else in your state
+    //             };
+
+    //             // Dispatch with updated state
+    //             dispatch(updateSetting(updatedSettings));
+    //             // console.log({ updatedSettings });
+
+    //             return updatedState;
+    //         });
+    //     } else if (option === 'showInProfileView') {
+    //         setShowInProfile((prevState) => {
+    //             const updatedState = isChecked
+    //                 ? [...prevState, columnKey] // Add columnKey if checked
+    //                 : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
+
+    //             updatedSettings = {
+    //                 showInCard,  // Assuming this is being set somewhere else in your state
+    //                 showInProfile: updatedState,
+    //             };
+
+    //             // Dispatch with updated state
+    //             dispatch(updateSetting(updatedSettings));
+    //             // console.log({ updatedSettings });
+
+    //             return updatedState;
+    //         });
+    //     }
+
+    //     // console.log({ updatedSettings });
+    //     // // Now call handleSaveChanges with the updatedSettings
+    //     // const response = await handleSaveChanges(settings, token, dispatch,updatedSettings);
+    //     // console.log({ response });
+    //     const response = await handleSaveChanges(updatedSettings);
+    //     console.log({ response });
+    // };
+
+    
+
     const handleCheckboxChange = async (columnKey, option, event) => {
         const isChecked = event.target.checked;
-
-        let updatedSettings = {};  // Declare the updatedSettings variable
-
-        if (option === 'showInCard') {
+    
+        // Local state for updated settings
+        let updatedSettings = {};
+    
+        // Update the appropriate state and settings
+        if (option === 'numberFilter') {
+            setNumberFilterColumn((prevSelection) => {
+                const updatedSelection = isChecked
+                    ? [...prevSelection, columnKey] // Add if checked
+                    : prevSelection.filter((item) => item !== columnKey); // Remove if unchecked
+    
+                return updatedSelection;
+            });
+        } else if (option === 'dateFilter') {
+            setDateFilterColumn((prevSelection) => {
+                const updatedSelection = isChecked
+                    ? [...prevSelection, columnKey] // Add if checked
+                    : prevSelection.filter((item) => item !== columnKey); // Remove if unchecked
+    
+                return updatedSelection;
+            });
+        } else if (option === 'showInCard') {
             setShowInCard((prevState) => {
                 const updatedState = isChecked
-                    ? [...prevState, columnKey] // Add columnKey if checked
-                    : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-
-                updatedSettings = {
-                    showInCard: updatedState,
-                    showInProfile,  // Assuming this is being set somewhere else in your state
-                };
-
-                // Dispatch with updated state
+                    ? [...prevState, columnKey]
+                    : prevState.filter((item) => item !== columnKey);
+    
+                updatedSettings = { showInCard: updatedState, showInProfile };
                 dispatch(updateSetting(updatedSettings));
-                // console.log({ updatedSettings });
-
                 return updatedState;
             });
         } else if (option === 'showInProfileView') {
             setShowInProfile((prevState) => {
                 const updatedState = isChecked
-                    ? [...prevState, columnKey] // Add columnKey if checked
-                    : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-
-                updatedSettings = {
-                    showInCard,  // Assuming this is being set somewhere else in your state
-                    showInProfile: updatedState,
-                };
-
-                // Dispatch with updated state
+                    ? [...prevState, columnKey]
+                    : prevState.filter((item) => item !== columnKey);
+    
+                updatedSettings = { showInCard, showInProfile: updatedState };
                 dispatch(updateSetting(updatedSettings));
-                // console.log({ updatedSettings });
-
                 return updatedState;
             });
         }
-
-        // console.log({ updatedSettings });
-        // // Now call handleSaveChanges with the updatedSettings
-        // const response = await handleSaveChanges(settings, token, dispatch,updatedSettings);
-        // console.log({ response });
-        const response = await handleSaveChanges(updatedSettings);
-        console.log({ response });
+    
+        // Update backend settings
+        try {
+            updatedSettings = {
+                ...updatedSettings,
+                [option]: isChecked
+                    ? [...(settings[option] || []), columnKey]
+                    : settings[option].filter((item) => item !== columnKey),
+            };
+    
+            const response = await handleSaveChanges(updatedSettings);
+            console.log("Settings updated:", response);
+        } catch (error) {
+            console.error("Error saving settings:", error);
+        }
     };
-
-
+    
     useEffect(() => {
         const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
         setHeaderBgColor(tableSettings?.headerBgColor); // Default header background color
@@ -669,8 +748,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     // );
 
     // let leftOffset = 60
-
-    // i typed in  new branch
     const renderResizableHeader = (title, columnKey, index) => {
         const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
         const leftOffset =
@@ -1018,74 +1095,94 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
                     <div className="flex justify-end items-center relative ">
                     {/* Conditional Rendering of Filter Icon or Filter Box */}
-                         {!isFilterOpen ? (
-                            <button
-                            onClick={toggleFilterBox}
-                            className="bg-primary rounded-[4px] p-1 mx-2 border-2 border-white text-white focus:outline-none"
+                         
+        
+                    {!isFilterOpen ? (
+                        <button
+                        onClick={toggleFilterBox}
+                        className="bg-primary rounded-[4px] p-1 mx-2 border-2 border-white text-white focus:outline-none"
+                        >
+                        <LuFilter className="text-white" size={18} />
+                        </button>
+                    ) : (
+                        <div className="w-[115px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1 px-2 relative">
+                        {/* Number Icon */}
+                        <button
+                            className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
+                            onClick={toggleNumberDropdown}
+                        >
+                            <Bs123 className="text-green-900" size={20} />
+                        </button>
+                        {/* Dropdown for Number */}
+                        {isNumberDropdownOpen && (
+                            <div
+                            className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto"
                             >
-                            <LuFilter className="text-white" size={18} />
-                            </button>
-                        ) : (
-                            <div className="w-[115px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1 px-2 relative">
-                            {/* Number Icon */}
-                            <button
-                                className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center"
-                                onClick={toggleNumberDropdown}
-                            >
-                                <Bs123 className="text-green-900" size={20} />
-                            </button>
-                            {/* Dropdown for Number */}
-                            {isNumberDropdownOpen && (
-                                <div className="absolute top-[50px] left-0 w-[150px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-10">
-                                {numberFilterColumn.length > 0 ? (
-                                    numberFilterColumn.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className="p-2 hover:bg-gray-100 rounded cursor-pointer"
-                                    >
-                                        {item}
-                                    </div>
-                                    ))
-                                ) : (
-                                    <p className="text-gray-500">Loading...</p>
-                                )}
-                                </div>
+                            <p className="text-sm font-medium text-gray-700 mb-2">Number Options</p>
+                            {numberFilterColumn.length > 0 ? (
+                                numberFilterColumn.map((item, index) => (
+                                <label
+                                    key={index}
+                                    className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+                                >
+                                    <input
+                                    type="checkbox"
+                                    className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
+                                    onChange={() => handleCheckboxChange(item)}
+                                    />
+                                    <span className="text-gray-800">{item}</span>
+                                </label>
+                                ))
+                            ) : (
+                                <p className="text-gray-500">No options available</p>
                             )}
-
-                            {/* Date Icon */}
-                            <button
-                                className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center"
-                                onClick={toggleDateDropdown}
-                            >
-                                <CiCalendarDate className="text-green-900" size={20} />
-                            </button>
-                            {/* Dropdown for Date */}
-                            {isDateDropdownOpen && (
-                                <div className="absolute top-[50px] right-0 w-[150px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-10">
-                                {dateFilterColumn.length > 0 ? (
-                                    dateFilterColumn.map((item, index) => (
-                                    <div
-                                        key={index}
-                                        className="p-2 hover:bg-gray-100 rounded cursor-pointer"
-                                    >
-                                        {item}
-                                    </div>
-                                    ))
-                                ) : (
-                                    <p className="text-gray-500">Loading...</p>
-                                )}
-                                </div>
-                            )}
-
-                            {/* Cancel Icon */}
-                            <button
-                                onClick={toggleFilterBox}
-                                className="p-1 bg-[#598931] rounded-md hover:bg-[#598931] flex items-center justify-center absolute right-2"
-                            >
-                                <Cancel className="text-green-900" size={20} />
-                            </button>
                             </div>
                         )}
+
+                        {/* Date Icon */}
+                        <button
+                            className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
+                            onClick={toggleDateDropdown}
+                        >
+                            <CiCalendarDate className="text-green-900" size={20} />
+                        </button>
+                        {/* Dropdown for Date */}
+                        {isDateDropdownOpen && (
+                            <div
+                            className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto"
+                            >
+                            <p className="text-sm font-medium text-gray-700 mb-2">Date Options</p>
+                            {dateFilterColumn.length > 0 ? (
+                                dateFilterColumn.map((item, index) => (
+                                <label
+                                    key={index}
+                                    className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+                                >
+                                    <input
+                                    type="checkbox"
+                                    className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
+                                    onChange={() => handleCheckboxChange(item)}
+                                    />
+                                    <span className="text-gray-800">{item}</span>
+                                </label>
+                                ))
+                            ) : (
+                                <p className="text-gray-500">No options available</p>
+                            )}
+                            </div>
+                        )}
+
+                        {/* Cancel Icon */}
+                        <button
+                            onClick={toggleFilterBox}
+                            className="p-1 bg-[#598931] rounded-md hover:bg-[#598931] flex items-center justify-center absolute right-2"
+                        >
+                            <Cancel className="text-green-900" size={20} />
+                        </button>
+                        </div>
+                    )}
+
+
                     {isSearchOpen && (
                         <Input
                             prefix={<BiSearch />}
