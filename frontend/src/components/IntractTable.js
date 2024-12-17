@@ -669,6 +669,8 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     // );
 
     // let leftOffset = 60
+
+    // i typed in  new branch
     const renderResizableHeader = (title, columnKey, index) => {
         const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
         const leftOffset =
