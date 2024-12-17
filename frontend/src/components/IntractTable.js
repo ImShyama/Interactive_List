@@ -20,7 +20,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import { BsPin, BsPinAngleFill, BsPinFill } from "react-icons/bs";
 import { BiSolidHide } from "react-icons/bi";
-
+import { MdEdit, MdDelete, MdOutlineSave } from "react-icons/md";
+import { IoSaveSharp } from "react-icons/io5";
+import { editMultipleRows, deleteMultiple } from "../APIs/index";
 
 
 const convertArrayToJSON = (data) => {
@@ -76,10 +78,6 @@ function getHeadersWithDateAndNumbers(dataset) {
 
     headers.forEach((header) => {
         const columnValues = dataset.map((row) => row[header]);
-
-        // Debugging logs
-        console.log(`Checking column: ${header}`);
-        console.log(`Values:`, columnValues);
 
         // Check for dates
         const hasDates = columnValues.some((value) => isDate(value));
@@ -137,6 +135,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [numberColumns, setnumberColumns] = useState(result.numberColumns || []);
 
     console.log({ result, dateColumns, numberColumns });
+    console.log({ settings });
 
     const handlePopoverVisibility = (key, isVisible) => {
         setVisiblePopover((prev) => ({
@@ -281,9 +280,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
     const [columnWidths, setColumnWidths] = useState(
         headers.reduce((acc, header) => {
-            acc[header] = header.toLowerCase() === 'picture' ? 80 : 200; // Set 80px for "picture", 200px otherwise
+            acc[header] = header.toLowerCase() === 'picture' ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
             return acc;
-        }, { actions: 100 }) // Default action column width
+        }, { actions: '125px' }) // Default action column width
     );
 
 
@@ -1203,6 +1202,103 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         )
     }
 
+    const [ischecked, setIschecked] = useState([]);
+    const [isedit, setIsedit] = useState(false);
+    const [EditData, setEditData] = useState([]);
+
+    const handleBulkEdit = () => {
+        if (ischecked.length > 0) {
+            if (isedit) {
+                setIsedit(!isedit);
+            } else {
+                setIsedit(!isedit);
+            }
+        } else {
+            notifyError("Please select at least one row to edit");
+        }
+    }
+
+    const handleBulkSave = async () => {
+
+        try {
+            // Call the backend API to update rows in Google Sheets
+            const spreadSheetID = settings.spreadsheetId;
+            const sheetName = settings.firstSheetName;
+            const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, EditData);
+
+            console.log("Updated sheet data:", updatedSheetData);
+
+            // Update the filtered data in the frontend after successful API call
+            setFilteredData((prev) => {
+                return prev.map((item) => {
+                    if (ischecked.includes(item.key_id)) {
+                        return EditData.find((editItem) => editItem.key_id === item.key_id);
+                    }
+                    return item;
+                });
+            });
+
+            notifySuccess("Rows updated successfully!");
+
+        } catch (err) {
+            console.error("Error updating rows:", err.message);
+            notifyError(err.message);
+        } finally {
+            // Reset edit and selection state
+            setIsedit(!isedit);
+            setIschecked([]);
+            setEditData([]);
+        }
+    };
+
+    const handleBulkDelete = () => {
+        if (ischecked.length > 0) {
+            setConfirmModalOpen(true); // Show confirmation modal
+        } else {
+            notifyError("Please select at least one row to delete");
+        }
+    };
+
+    const handleConfirmDelete = async () => {
+        try {
+            // Close the confirmation modal
+            setConfirmModalOpen(false);
+
+            const spreadSheetID = settings.spreadsheetId;
+            const sheetName = settings.firstSheetName;
+            // Prepare payload for API
+            const rowsToDelete = EditData.map((key_id) => ({ key_id: key_id.key_id }));
+
+            // Call the API
+            const response = await deleteMultiple(spreadSheetID, sheetName, rowsToDelete);
+
+            // Update the filtered data in the frontend after successful API call
+            setFilteredData((prev) => {
+                return prev.filter((item) => !ischecked.includes(item.key_id));
+            });
+
+            // Handle success
+            notifySuccess("Rows deleted successfully");
+            setIschecked([]);
+            setEditData([]);
+        } catch (error) {
+            // Handle error
+            console.error("Error during bulk delete:", error);
+            notifyError(error.message || "An error occurred while deleting rows");
+        }
+    };
+
+    const handleStatusChanges = (checked, header) => {
+        if (checked) {
+            setIschecked([...ischecked, header.key_id]);
+            setEditData((prev) => [...prev, header]);
+        } else {
+            setIschecked(ischecked.filter((item) => item !== header.key_id));
+            setEditData((prev) => prev.filter((item) => item.key_id !== header.key_id));
+        }
+    }
+
+
     return (
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
@@ -1243,6 +1339,17 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     </button>
                     <button onClick={handleAddBukl}>
                         <BulkAdds />
+                    </button>
+                    {isedit ?
+                        <button onClick={handleBulkSave} className="bg-primary rounded-[4px] p-1 mx-2">
+                            <IoSaveSharp color="white" />
+                        </button>
+                        :
+                        <button onClick={handleBulkEdit} className="bg-primary rounded-[4px] p-1 mx-2">
+                            <MdEdit color="white" />
+                        </button>}
+                    <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-1">
+                        <MdDelete color="white" />
                     </button>
 
                     <Popover content={<HeaderSwitch />} title="Hide Columns" trigger="click" placement="bottomRight">
@@ -1310,6 +1417,8 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                             }}
                                         >
                                             <div className="flex gap-[10px] align-center">
+                                                <Checkbox checked={ischecked.includes(item.key_id)} onChange={(e) => handleStatusChanges(e.target.checked, item)} value={item.key_id} />
+
                                                 <button
                                                     className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
                                                     onClick={() => handleEdit(item.key_id)}
@@ -1328,12 +1437,12 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                             const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(header);
                                             // const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
                                             const leftOffset =
-                                                (index === 0 ? 100 : 0) + // Add 60px only for the first column
+                                                (index === 0 ? 125 : 0) + // Add 60px only for the first column
                                                 headers
                                                     .slice(0, index) // Get all columns before the current one
                                                     .reduce((sum, key) => sum + columnWidths[key], 0); // Sum the widths of previous columns
 
-
+                                            
                                             return (
                                                 <td
                                                     key={header}
@@ -1356,29 +1465,69 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                                         fontSize: `${headerFontSize}px`, // Font size
                                                     }}
                                                 >
-                                                    <div className="tableTD w-full h-full flex items-center"
-                                                        style={{
-                                                            zIndex: isPinned ? 100 : "inherit", // Ensure child elements respect z-index
-                                                            position: "relative", // Keep elements aligned
-                                                        }}
-                                                    >
-                                                        {header.toLowerCase() === "picture" ? (
-                                                            <div className="w-full h-full flex justify-center items-center">
-                                                                {isValidUrl(item[header]) ? (
-                                                                    <img
-                                                                        src={item[header]}
-                                                                        alt="profile"
-                                                                        className="w-12 h-12 rounded-full border-[1px] border-[#D3CBCB] object-cover"
-                                                                    />
-                                                                ) : (
-                                                                    <Avatar size={48} icon={<UserOutlined />} alt="User" />
-                                                                )}
-                                                            </div>
-                                                        ) : (
-                                                            item[header] || "N/A"
-                                                        )}
-                                                    </div>
+                                                    {isedit && ischecked.includes(item.key_id) ?
+                                                        <div className="tableTD w-full h-full flex items-center"
+                                                            style={{
+                                                                zIndex: isPinned ? 100 : "inherit", // Ensure child elements respect z-index
+                                                                position: "relative", // Keep elements aligned
+                                                            }}
+                                                        >
+                                                            {/* <input className="w-full h-full border-b-2 border-gray-300 border-primary" value={item[header]} onChange={(e)=>{
+                                                            // let editData = EditData.find((data) => data.key_id === item.key_id)[header] = event.target.value
+                                                            setEditData((prev)=>{
+                                                                let editData = prev.map((el,i)=>{
+                                                                  if(el?.key_id == item.key_id){
+                                                                    return el.key_id[header] = e?.target.value
+                                                                  }else{
+                                                                    return el
+                                                                  }
+                                                                })
+                                                                console.log({editData})
+                                                                return editData
+                                                              })
+                                                        }}/> */}
+                                                            <input
+                                                                className="w-full h-full border-b-2 border-gray-300 border-primary"
+                                                                value={EditData.find((data) => data.key_id === item.key_id)?.[header] || ""}
+                                                                onChange={(e) => {
+                                                                    const newValue = e.target.value;
+                                                                    setEditData((prev) =>
+                                                                        prev.map((data) =>
+                                                                            data.key_id === item.key_id
+                                                                                ? { ...data, [header]: newValue } // Update only the target field
+                                                                                : data
+                                                                        )
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        :
+                                                        <div className="tableTD w-full h-full flex items-center"
+                                                            style={{
+                                                                zIndex: isPinned ? 100 : "inherit", // Ensure child elements respect z-index
+                                                                position: "relative", // Keep elements aligned
+                                                            }}
+                                                        >
+                                                            {header.toLowerCase() === "picture" ? (
+                                                                <div className="w-full h-full flex justify-center items-center">
+                                                                    {isValidUrl(item[header]) ? (
+                                                                        <img
+                                                                            src={item[header]}
+                                                                            alt="profile"
+                                                                            className="w-12 h-12 rounded-full border-[1px] border-[#D3CBCB] object-cover"
+                                                                        />
+                                                                    ) : (
+                                                                        <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                                                                    )}
+                                                                </div>
+                                                            ) : (
+                                                                item[header] || "N/A"
+                                                            )}
+                                                        </div>
+
+                                                    }
                                                 </td>
+
                                             )
                                         })}
                                     </tr>
@@ -1409,7 +1558,14 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 isOpen={confirmModalOpen}
                 onClose={handleDeleteCancel}
                 onConfirm={handleDeleteRow}
-                sheetName="this row"
+                sheetName={"Are you sure you want to delete this row permanently. "}
+            />
+            {/* Confirmation modal */}
+            <DeleteAlert
+                isOpen={confirmModalOpen}
+                onClose={() => setConfirmModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                sheetName={"Are you sure you want to delete selected rows permanently."} // Optional: Provide a dynamic name
             />
             <EditRow
                 isOpen={confirmAddModalOpen}

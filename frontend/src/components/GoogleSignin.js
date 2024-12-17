@@ -49,28 +49,6 @@ function GoogleSignin() {
 
     console.log("Cookies:", { token: tokenCookie, profile: profileCookie });
 
-    // Redirect to login if either token or profile is missing
-    // if (!tokenCookie || !profileCookie) {
-    //   nav("/");
-    //   return;
-    // }
-
-    // try {
-    //   // Try parsing the profile cookie
-    //   const parsedProfile = JSON.parse(profileCookie);
-    //   setToken(tokenCookie);
-    //   setProfile(parsedProfile);
-    //   nav("/dashboard");
-    // } catch (error) {
-    //   console.error("Error parsing profileCookie:", error);
-    //   // Handle invalid profile cookie (e.g., remove it and redirect to login)
-    //   Cookies.remove("token");
-    //   Cookies.remove("profile");
-    //   nav("/");
-    // }
-
-    // console.log("token", tokenCookie, "profile", profileCookie);
-
     if (tokenCookie && profileCookie) {
       setToken(tokenCookie);
       setProfile(JSON.parse(profileCookie));
@@ -112,7 +90,7 @@ function GoogleSignin() {
             setProfile(res.body);
           }
           // Save token and profile to cookies
-          Cookies.set("token", res.token);
+          Cookies.set("token", res.token, { expires: 6 });
           // Cookies.set("profile", JSON.stringify(res.body));
           nav("/dashboard");
         });

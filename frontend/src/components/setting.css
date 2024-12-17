@@ -181,8 +181,9 @@
 
 .setting_filter_top {
   display: flex;
-  align-items: flex-start;
-  gap: 145px;
+  justify-content: space-between;
+  align-items: center;
+  gap: 225px;
 }
 
 .setting_filter_top1 {

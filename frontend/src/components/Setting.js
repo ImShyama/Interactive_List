@@ -26,8 +26,11 @@ import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
 import { ColorPicker } from "antd";
 import Loader from "./Loader";
 import { notifyError, notifySuccess } from "../utils/notify.js";
+import { Reset } from "../assets/svgIcons.js";
+import DeleteAlert from "./DeleteAlert.js";
 
 const AddData = ({ activateSave }) => {
+  
   const dispatch = useDispatch();
   const settingData = useSelector((state) => state.setting.settings);
   const { token } = useContext(UserContext);
@@ -94,25 +97,6 @@ const AddData = ({ activateSave }) => {
     bodyFontStyle: tableSettings?.bodyFontStyle || "Poppins",
   });
 
-  // const handleChange = (field, value) => {
-  //   setFormData((prevFormData) => {
-  //     const updatedFormData = {
-  //       ...prevFormData,
-  //       [field]: value,
-  //     };
-
-  //     // Dispatch and log after the formData is updated
-  //     const updatedSettings = {
-  //       tableSettings: [updatedFormData],
-  //     };
-  //     dispatch(updateSetting(updatedSettings));
-  //     console.log("Updated settings:", settingData);
-
-  //     return updatedFormData;
-  //   });
-
-  //   activateSave(); // Save button activation
-  // };
 
   const handleChange = (field, value) => {
     setFormData((prevFormData) => {
@@ -134,9 +118,11 @@ const AddData = ({ activateSave }) => {
       return updatedFormData;
     });
 
-    // activateSave(); // Save button activation
   };
 
+  
+
+  
 
   return (
     <div className="w-[100%]">
@@ -274,6 +260,8 @@ const AddData = ({ activateSave }) => {
           <span className="span_btn">Save Changes</span>
         </button>
       </div> */}
+
+      
     </div>
   );
 };
@@ -494,6 +482,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const [addSheet, setAddSheet] = useState(false);
   const [isSaveChanges, setIsSaveChanges] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const nav = useNavigate();
   const { token } = useContext(UserContext);
   const dispatch = useDispatch();
@@ -504,28 +493,27 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     setIsSaveChanges(true);
   };
 
-  // subscribing to  the store using Selector
-  const setting = useSelector((store) => store.setting.settings);
-
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = async (updatedSetting) => {
     setIsLoading(true);
-    // Make the API call to update the settings in MongoDB
     try {
-      // Make the API call to update the settings in MongoDB
+      // Use the passed settings or fallback to the Redux state
+      const settingsToSave = updatedSetting || settingData;
+  
       const response = await axios.put(
         `${HOST}/spreadsheet/${settingData._id}`,
-        settingData,
+        settingsToSave,
         {
           headers: {
             authorization: "Bearer " + token,
           },
         }
       );
+  
       console.log("Settings updated successfully:", response.data);
       dispatch(updateSetting(response.data));
       setIsLoading(false);
       setIsSaveChanges(false);
-      notifySuccess("Settings updated successfully");
+      notifySuccess("Table Style Reset successfully");
       closeDrawer();
     } catch (error) {
       console.error("Error updating settings in DB:", error);
@@ -533,6 +521,35 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
       setIsSaveChanges(false);
     }
   };
+  
+  const handleReset = () => {
+    setConfirmModalOpen(true);
+  }
+
+  const handleResetChange = async () => {
+    // Define the updated settings
+    const updatedSetting = {
+      tableSettings: [
+        {
+          headerBgColor: "#f1f1f1",
+          headerTextColor: "#000000",
+          headerFontSize: "14",
+          headerFontStyle: "Poppins",
+          bodyBgColor: "#ffffff",
+          bodyTextColor: "#000000",
+          bodyFontSize: "14",
+          bodyFontStyle: "Poppins",
+        },
+      ],
+    };
+  
+    // Dispatch the settings to update Redux state
+    dispatch(updateSetting(updatedSetting));
+  
+    // Directly pass the updated settings to handleSaveChanges
+    await handleSaveChanges(updatedSetting);
+  };
+  
 
   return (
     <div>
@@ -606,6 +623,11 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               <span className="setting_filter_top1_text">Table Settings</span>
               <img className="setting_filter_top1_img" src={downIcon} />
             </div>
+            {addData && 
+            <button onClick={handleResetChange} className="bg-primary rounded-[4px] p-1" title="Reset">
+              <Reset />
+            </button>
+            }
             {/* <div className="setting_filter_top2">
               <div className="setting_filter_top2_inner">
                 <img src={filterIcon} />
@@ -617,6 +639,12 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           {addData && <AddData activateSave={activateSave} />}
         </div>
       </div>
+      <DeleteAlert
+        isOpen={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        onConfirm={handleResetChange}
+        sheetName={"Are you sure you want to reset table styling."} // Optional: Provide a dynamic name
+      />
     </div>
   );
 };
