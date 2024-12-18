@@ -77,7 +77,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     setIsDateDropdownOpen(false);
   };
 
-  const [selectedSliders, setSelectedSliders] = useState([]);
+  const [selectedNumbers, setSelectedNumbers] = useState([]);
   const [selectedDates,setSelectedDates]=useState([]);
   const toggleNumberDropdown = () => {
     setIsNumberDropdownOpen(!isNumberDropdownOpen);
@@ -89,10 +89,10 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
   };
 
 //   const handleDateCheckboxChange = (item) => {
-//     setSelectedSliders((prev) => {
+//     setSelectedNumbers((prev) => {
 //       const existingSlider = prev.find((slider) => slider.column === item);
 //       if (existingSlider) {
-//         // Remove the item if it's already in selectedSliders
+//         // Remove the item if it's already in selectedNumbers
 //         return prev.filter((slider) => slider.column !== item);
 //       } else {
 //         // Add the item with a default date range if not already present
@@ -1214,9 +1214,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
           {/* Conditional Rendering of Filter Icon or Filter Box */}
              
                {/* Dynamically Render Sliders for Selected Checkboxes */}
-                {selectedSliders.length > 0 && (
+                {selectedNumbers.length > 0 && (
                 <div className="flex flex-wrap gap-x-4 flex-row-reverse">
-                    {selectedSliders.map((slider, index) => (
+                    {selectedNumbers.map((slider, index) => (
                     <div key={index} className="flex flex-col items-center">
                         {/* Column Label (Above Slider, Centered) */}
                         <span className="font-medium text-gray-700 mb-2">{slider.column}</span>
@@ -1229,7 +1229,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             defaultValue={slider.range}
                             onChange={(value) => {
                             // Update the range for the respective slider
-                            setSelectedSliders((prev) =>
+                            setSelectedNumbers((prev) =>
                                 prev.map((s) =>
                                 s.column === slider.column ? { ...s, range: value } : s
                                 )
@@ -1352,13 +1352,13 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                           onChange={(e) => {
                             if (e.target.checked) {
                               // Add the item with a default range when checked
-                              setSelectedSliders((prev) => [
+                              setSelectedNumbers((prev) => [
                                 ...prev,
                                 { column: item, range: [0, 100] },
                               ]);
                             } else {
                               // Remove the item when unchecked
-                              setSelectedSliders((prev) =>
+                              setSelectedNumbers((prev) =>
                                 prev.filter((slider) => slider.column !== item)
                               );
                             }
@@ -1378,7 +1378,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
                 onClick={() => {
                     toggleDateDropdown();
-                    setSelectedSliders([]); // Clear number sliders
+                    setSelectedNumbers([]); // Clear number sliders
                 }}
                 >
                 <CiCalendarDate className="text-green-900" size={20} />
@@ -1428,6 +1428,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
               <button
                 onClick={toggleFilterBox}
                 className="p-1 bg-[#598931] rounded-md hover:bg-[#598931] flex items-center justify-center absolute right-2"
+                
               >
                 <Cancel className="text-green-900" size={20} />
               </button>
