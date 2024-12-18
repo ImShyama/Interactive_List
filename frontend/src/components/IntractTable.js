@@ -70,15 +70,83 @@ const convertArrayToJSON = (data) => {
 const IntractTable = ({ data, headers, settings, tempHeader }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  // const toggleFilterBox = () => setIsFilterOpen(!isFilterOpen);
   const toggleFilterBox = () => {
     setIsFilterOpen(!isFilterOpen);
     setIsNumberDropdownOpen(false);
     setIsDateDropdownOpen(false);
+    setSelectedNumbers([]); // Clear selected number filters
+    setSelectedDates([]); // Clear selected date filters
+    localStorage.removeItem("selectedNumbers");
+    localStorage.removeItem("selectedDates");
   };
 
-  const [selectedNumbers, setSelectedNumbers] = useState([]);
-  const [selectedDates,setSelectedDates]=useState([]);
+  //added latest
+  const [selectedNumbers, setSelectedNumbers] = useState(
+    JSON.parse(localStorage.getItem("selectedNumbers")) || []
+  );
+  const [selectedDates, setSelectedDates] = useState(
+    JSON.parse(localStorage.getItem("selectedDates")) || []
+  );
+
+  // Handle number checkbox selection
+  const handleNumberCheckboxChange = (e, item) => {
+    if (e.target.checked) {
+      setSelectedNumbers((prev) => {
+        const updatedSelectedNumbers = [
+          ...prev,
+          { column: item, range: [0, 1000] },
+        ];
+        localStorage.setItem(
+          "selectedNumbers",
+          JSON.stringify(updatedSelectedNumbers)
+        );
+        return updatedSelectedNumbers;
+      });
+    } else {
+      setSelectedNumbers((prev) => {
+        const updatedSelectedNumbers = prev.filter(
+          (slider) => slider.column !== item
+        );
+        localStorage.setItem(
+          "selectedNumbers",
+          JSON.stringify(updatedSelectedNumbers)
+        );
+        return updatedSelectedNumbers;
+      });
+    }
+  };
+
+  // Handle date checkbox selection
+  const handleDateCheckboxChange = (e, item) => {
+    if (e.target.checked) {
+      setSelectedDates((prev) => {
+        const updatedSelectedDates = [
+          ...prev,
+          {
+            column: item,
+            range: [new Date("2000-01-01").getTime(), new Date().getTime()],
+          },
+        ];
+        localStorage.setItem(
+          "selectedDates",
+          JSON.stringify(updatedSelectedDates)
+        );
+        return updatedSelectedDates;
+      });
+    } else {
+      setSelectedDates((prev) => {
+        const updatedSelectedDates = prev.filter(
+          (slider) => slider.column !== item
+        );
+        localStorage.setItem(
+          "selectedDates",
+          JSON.stringify(updatedSelectedDates)
+        );
+        return updatedSelectedDates;
+      });
+    }
+  };
+
   const toggleNumberDropdown = () => {
     setIsNumberDropdownOpen(!isNumberDropdownOpen);
     setIsDateDropdownOpen(false); // Close date dropdown
@@ -88,21 +156,21 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     setIsNumberDropdownOpen(false); // Close number dropdown
   };
 
-//   const handleDateCheckboxChange = (item) => {
-//     setSelectedNumbers((prev) => {
-//       const existingSlider = prev.find((slider) => slider.column === item);
-//       if (existingSlider) {
-//         // Remove the item if it's already in selectedNumbers
-//         return prev.filter((slider) => slider.column !== item);
-//       } else {
-//         // Add the item with a default date range if not already present
-//         return [
-//           ...prev,
-//           { column: item, range: ["2024-01-01", "2024-12-31"] }, // You can change the range based on your logic
-//         ];
-//       }
-//     });
-//   };
+  //   const handleDateCheckboxChange = (item) => {
+  //     setSelectedNumbers((prev) => {
+  //       const existingSlider = prev.find((slider) => slider.column === item);
+  //       if (existingSlider) {
+  //         // Remove the item if it's already in selectedNumbers
+  //         return prev.filter((slider) => slider.column !== item);
+  //       } else {
+  //         // Add the item with a default date range if not already present
+  //         return [
+  //           ...prev,
+  //           { column: item, range: ["2024-01-01", "2024-12-31"] }, // You can change the range based on your logic
+  //         ];
+  //       }
+  //     });
+  //   };
 
   const [rowToEdit, setRowToEdit] = useState(null);
   const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
@@ -1198,6 +1266,74 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     );
   };
 
+  // const calculate_min_max=(key) => {
+
+  // }
+  //   const calculate_min_max = (data, key) => {
+  //     if (!data || data.length === 0) {
+  //         return { min: null, max: null };
+  //     }
+
+  //     let min = null;
+  //     let max = null;
+
+  //     data.forEach(item => {
+  //         const value = item[key];
+  //         if (value) { // Skip empty strings or null values
+  //             if (min === null || value < min) min = value;
+  //             if (max === null || value > max) max = value;
+  //         }
+  //     });
+
+  //     return { min, max };
+  // };
+
+  const calculate_number_min_max = (data, key) => {
+    if (!data || data.length === 0) {
+      return { min: null, max: null };
+    }
+  
+    let min = null;
+    let max = null;
+  
+    data.forEach((item) => {
+      const value = parseFloat(item[key]); // Ensure the value is a number
+      if (!isNaN(value)) {
+        if (min === null || value < min) min = value;
+        if (max === null || value > max) max = value;
+      }
+    });
+  
+    return {
+      min: min !== null ? min : 0,
+      max: max !== null ? max : 1000,
+    };
+  };
+  const calculate_min_max = (data, key) => {
+    console.log({ data, key });
+    if (!data || data.length === 0) {
+      return { min: null, max: null };
+    }
+
+    let min = null;
+    let max = null;
+
+    data.forEach((item) => {
+      const value = new Date(item[key]).getTime(); // Convert value to timestamp
+      if (!isNaN(value)) {
+        // Check if it's a valid date
+        if (min === null || value < min) min = value;
+        if (max === null || value > max) max = value;
+      }
+    });
+
+    // Return min and max in ISO string format for better use
+    return {
+      min: min ? new Date(min).toISOString() : null,
+      max: max ? new Date(max).toISOString() : null,
+    };
+  };
+
   return (
     <div>
       <div className="flex text-center justify-between items-center px-[50px]">
@@ -1212,103 +1348,139 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
         <div className="flex justify-end items-center relative space-x-4">
           {/* Conditional Rendering of Filter Icon or Filter Box */}
-             
-               {/* Dynamically Render Sliders for Selected Checkboxes */}
-                {selectedNumbers.length > 0 && (
-                <div className="flex flex-wrap gap-x-4 flex-row-reverse">
-                    {selectedNumbers.map((slider, index) => (
-                    <div key={index} className="flex flex-col items-center">
-                        {/* Column Label (Above Slider, Centered) */}
-                        <span className="font-medium text-gray-700 mb-2">{slider.column}</span>
 
-                        {/* Range Slider with Values */}
-                        <div className="flex flex-col items-center w-[200px] relative"> {/* No box around the slider */}
-                        {/* Slider Component */}
-                        <Slider
-                            range
-                            defaultValue={slider.range}
-                            onChange={(value) => {
-                            // Update the range for the respective slider
-                            setSelectedNumbers((prev) =>
-                                prev.map((s) =>
-                                s.column === slider.column ? { ...s, range: value } : s
-                                )
-                            );
-                            }}
-                            min={0}
-                            max={1000}
-                            style={{
-                            width: "100%", // Full width
-                            height: "4px", // Track height same as date slider
-                            }}
-                            trackStyle={{ height: "4px" }} // Uniform track height
-                            handleStyle={{
-                            height: "14px", // Same handle size as date slider
-                            width: "14px",
-                            border: "2px solid #598931",
-                            }}
-                        />
+          {/* Dynamically Render Sliders for Selected Checkboxes */}
+          {selectedNumbers.length > 0 && (
+            <div className="flex flex-wrap gap-x-4 flex-row-reverse">
+              {selectedNumbers.map((slider, index) => (
+                <div key={index} className="flex flex-col items-center">
+                  {/* Column Label (Above Slider, Centered) */}
+                  <span className="font-medium text-gray-700 mb-2">
+                    {slider.column}
+                  </span>
 
-                        {/* Display Range Values (Below Slider, Centered) */}
-                        <div className="flex justify-between w-full text-sm text-gray-700 mt-2">
-                            <span>{slider.range[0]}</span>
-                            <span>{slider.range[1]}</span>
-                        </div>
-                        </div>
+                  {/* Range Slider with Values */}
+                  <div className="flex flex-col items-center w-[200px] relative">
+                    {" "}
+                    {/* No box around the slider */}
+                    {/* Slider Component */}
+                    <Slider
+                      range
+                      // defaultValue={slider.range}
+                      onChange={(value) => {
+                        // Update the range for the respective slider
+                        setSelectedNumbers((prev) =>
+                          prev.map((s) =>
+                            s.column === slider.column
+                              ? { ...s, range: value }
+                              : s
+                          )
+                        );
+                      }}
+                      min={0}
+                      max={1000}
+                      value={slider.range}
+                      style={{
+                        width: "100%", // Full width
+                        height: "4px", // Track height same as date slider
+                      }}
+                      trackStyle={{ height: "4px" }} // Uniform track height
+                      handleStyle={{
+                        height: "14px", // Same handle size as date slider
+                        width: "14px",
+                        border: "2px solid #598931",
+                      }}
+                    />
+                    {/* Display Range Values (Below Slider, Centered) */}
+                    <div className="flex justify-between w-full text-sm text-gray-700 mt-2">
+                      <span>{slider.range[0]}</span>
+                      <span>{slider.range[1]}</span>
                     </div>
-                    ))}
+                  </div>
                 </div>
-                )}
+              ))}
+            </div>
+          )}
 
-                {/* Dynamically Render Sliders for Selected Date Checkbox */}
-                {selectedDates.length > 0 && (
-                <div className="flex items-center gap-x-4 flex-row-reverse">
-                    {selectedDates.map((slider, index) => (
-                    <div key={index} className="flex flex-col items-center">
-                        {/* Column Label (Above Slider) */}
-                        <span className="font-medium text-gray-700 mb-2">{slider.column}</span>
+          {/* Dynamically Render Sliders for Selected Date Checkbox */}
+          {selectedDates.length > 0 && (
+            <div className="flex items-center gap-x-4 flex-row-reverse">
+              {selectedDates.map((slider, index) => {
+                const { min, max } = calculate_min_max(
+                  filteredData,
+                  slider.column
+                );
+                const minDate = new Date(min).getTime();
+                const maxDate = new Date(max).getTime();
+                console.log({ minDate, maxDate });
+                return (
+                  <div key={index} className="flex flex-col items-center">
+                    {/* Column Label (Above Slider) */}
+                    <span className="font-medium text-gray-700 mb-2">
+                      {slider.column}
+                    </span>
 
-                        {/* Range Slider */}
-                        <div className="flex flex-col items-center w-[200px] relative"> {/* Increased width */}
-                        {/* Slider Component */}
-                        <Slider
-                            range
-                            defaultValue={slider.range.map((date) => new Date(date).getTime())}
-                            onChange={(value) => {
-                            // Update the range for the respective slider
-                            setSelectedDates((prev) =>
-                                prev.map((s) =>
-                                s.column === slider.column
-                                    ? { ...s, range: value.map((ts) => new Date(ts).toISOString()) }
-                                    : s
-                                )
-                            );
-                            }}
-                            min={new Date("2000-01-01").getTime()} // Minimum date
-                            max={new Date().getTime()} // Maximum date (today)
-                            step={24 * 60 * 60 * 1000} // Step is one day
-                            style={{
-                            width: "100%", // Full width
-                            height: "4px", // Reduced height
-                            }}
-                            trackStyle={{ height: "4px" }} // Track height
-                            handleStyle={{
-                            height: "14px", // Adjust handle size
-                            width: "14px",
-                            border: "2px solid #598931",
-                            }}
-                        />
-
-                        {/* Display Range Values (Below Slider, Same Line) */}
-                        <div className="flex justify-between w-full text-sm text-gray-700 mt-2">
-                            <span>{new Date(slider.range[0]).toLocaleDateString()}</span>
-                            <span>{new Date(slider.range[1]).toLocaleDateString()}</span>
-                        </div>
-                        </div>
+                    {/* Range Slider */}
+                    <div className="flex flex-col items-center w-[200px] relative">
+                      {" "}
+                      {/* Increased width */}
+                      {/* Slider Component */}
+                      <Slider
+                        range
+                        value={
+                          slider.range
+                            ? slider.range.map((date) =>
+                                new Date(date).getTime()
+                              )
+                            : [
+                                new Date("2000-01-01").getTime(),
+                                new Date().getTime(),
+                              ]
+                        }
+                        // Convert date range to timestamps if slider.range exists, otherwise default to Jan 1, 2000, to today
+                        onChange={(value) => {
+                          setSelectedDates((prev) =>
+                            prev.map((s) =>
+                              s.column === slider.column
+                                ? {
+                                    ...s,
+                                    range: value.map((ts) =>
+                                      new Date(ts).toISOString()
+                                    ),
+                                  } // Convert timestamps back to ISO string
+                                : s
+                            )
+                          );
+                        }}
+                        min={new Date("2000-01-01").getTime()} // Set min date to 1/1/2000
+                        max={new Date().getTime()} // Set max date to today's date
+                        step={24 * 60 * 60 * 1000} // Step is 1 day (in milliseconds)
+                        style={{
+                          width: "100%", // Full width
+                          height: "4px", // Track height
+                        }}
+                        trackStyle={{ height: "4px" }} // Track height
+                        handleStyle={{
+                          height: "14px", // Handle size
+                          width: "14px",
+                          border: "2px solid #598931",
+                        }}
+                      />
+                      {/* Display Range Values (Below Slider, Same Line) */}
+                      <div className="flex justify-between w-full text-sm text-gray-700 mt-2">
+                        <span>
+                          {new Date(slider.range[0]).toLocaleDateString()}
+                        </span>
+                        <span>
+                          {new Date(slider.range[1]).toLocaleDateString()}
+                        </span>
+                      </div>
                     </div>
-                    ))}
-                </div>
-                )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {!isFilterOpen ? (
             <button
@@ -1324,9 +1496,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
                 //  onClick={toggleNumberDropdown}
                 onClick={() => {
-                    toggleNumberDropdown();
-                    setSelectedDates([]); // Clear date sliders
-                  }}
+                  toggleNumberDropdown();
+                  // setSelectedDates([]); // Clear date sliders
+                }}
               >
                 <Bs123 className="text-green-900" size={20} />
               </button>
@@ -1338,97 +1510,104 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     Number Options
                   </p>
 
+                  {/* code before */}
                   {/* Render checkboxes dynamically */}
                   {numberFilterColumn.length > 0 ? (
-                    numberFilterColumn.map((item, index) => (
-                      <label
-                        key={index}
-                        className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
-                      >
-                        {/* Checkbox to toggle range slider */}
-                        <input
-                          type="checkbox"
-                          className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              // Add the item with a default range when checked
-                              setSelectedNumbers((prev) => [
-                                ...prev,
-                                { column: item, range: [0, 100] },
-                              ]);
-                            } else {
-                              // Remove the item when unchecked
-                              setSelectedNumbers((prev) =>
-                                prev.filter((slider) => slider.column !== item)
-                              );
-                            }
-                          }}
-                        />
-                        <span className="text-gray-800">{item}</span>
-                      </label>
-                    ))
+                    numberFilterColumn.map((item, index) => {
+                      // Determine if the current item is already selected
+                      const isChecked = selectedNumbers.some(
+                        (slider) => slider.column === item
+                      );
+
+                      return (
+                        <label
+                          key={index}
+                          className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+                        >
+                          {/* Checkbox to toggle range slider */}
+                          <input
+                            type="checkbox"
+                            className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
+                            checked={isChecked} // Bind the checkbox state to the selectedNumbers
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                // Add the item with a default range when checked
+                                setSelectedNumbers((prev) => [
+                                  ...prev,
+                                  { column: item, range: [0, 1000] },
+                                ]);
+                              } else {
+                                // Remove the item when unchecked
+                                setSelectedNumbers((prev) =>
+                                  prev.filter(
+                                    (slider) => slider.column !== item
+                                  )
+                                );
+                              }
+                            }}
+                          />
+                          <span className="text-gray-800">{item}</span>
+                        </label>
+                      );
+                    })
                   ) : (
                     <p className="text-gray-500">No options available</p>
                   )}
                 </div>
               )}
 
-             {/* Date Icon */}
-                <button
+              {/* Date Icon */}
+              <button
                 className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
                 onClick={() => {
-                    toggleDateDropdown();
-                    setSelectedNumbers([]); // Clear number sliders
+                  toggleDateDropdown();
+                  // setSelectedNumbers([]); // Clear number sliders
                 }}
-                >
+              >
                 <CiCalendarDate className="text-green-900" size={20} />
-                </button>
+              </button>
 
-                {/* Dropdown for Date */}
-                {isDateDropdownOpen && (
+              {/* Dropdown for Date */}
+              {isDateDropdownOpen && (
                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Date Options</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    Date Options
+                  </p>
 
-                    {/* Render checkboxes dynamically */}
-                    {dateFilterColumn.length > 0 ? (
-                    dateFilterColumn.map((item, index) => (
+                  {/* Render checkboxes dynamically */}
+                  {dateFilterColumn.length > 0 ? (
+                    dateFilterColumn.map((item, index) => {
+                      // Determine if the current item is already selected
+                      const isChecked = selectedDates.some(
+                        (slider) => slider.column === item
+                      );
+
+                      return (
                         <label
-                        key={index}
-                        className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+                          key={index}
+                          className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
                         >
-                        {/* Checkbox to toggle range sliders for dates */}
-                        <input
+                          {/* Checkbox to toggle range sliders for dates */}
+                          <input
                             type="checkbox"
                             className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
-                            onChange={(e) => {
-                            if (e.target.checked) {
-                                // Add the item with a default range when checked
-                                setSelectedDates((prev) => [
-                                ...prev,
-                                { column: item, range: [new Date().toISOString(), new Date().toISOString()] },
-                                ]);
-                            } else {
-                                // Remove the item when unchecked
-                                setSelectedDates((prev) =>
-                                prev.filter((slider) => slider.column !== item)
-                                );
-                            }
-                            }}
-                        />
-                        <span className="text-gray-800">{item}</span>
+                            checked={isChecked} // Bind the checkbox state to selectedDates
+                            onChange={(e) => handleDateCheckboxChange(e, item)}
+                          />
+                          <span className="text-gray-800">{item}</span>
                         </label>
-                    ))
-                    ) : (
+                      );
+                    })
+                  ) : (
                     <p className="text-gray-500">No options available</p>
-                    )}
+                  )}
                 </div>
-                )}
+              )}
 
               {/* Cancel Icon */}
               <button
                 onClick={toggleFilterBox}
                 className="p-1 bg-[#598931] rounded-md hover:bg-[#598931] flex items-center justify-center absolute right-2"
-                
               >
                 <Cancel className="text-green-900" size={20} />
               </button>
