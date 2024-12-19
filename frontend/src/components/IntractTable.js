@@ -96,8 +96,6 @@ function getHeadersWithDateAndNumbers(dataset) {
     return result;
 }
 
-
-
 const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [rowToEdit, setRowToEdit] = useState(null);
@@ -141,9 +139,11 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
 
     const loadColumnWidthsFromCookies = () => {
-        const storageKey = settings?._id + settings?.firstSheetName;
+        const storageKey = `${settings._id}_${settings.firstSheetName}`;
         const savedWidths = localStorage.getItem(storageKey);
+        console.log("loading column width: ", JSON.parse(savedWidths));
         return savedWidths ? JSON.parse(savedWidths) : null;
+        
     };
 
     // useEffect(() => {
@@ -165,7 +165,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     // };
     // console.log({columnWidths});
 
-    const saveColumnWidthsToCookies = (columnWidths) => {
+    const saveColumnWidthsToCookies = (columnWidthsTemp) => {
         if (!settings || !settings._id || !settings.firstSheetName) {
             console.warn("Missing settings for generating the storage key.");
             return;
@@ -173,10 +173,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
         const storageKey = `${settings._id}_${settings.firstSheetName}`; // Construct the storage key
         try {
-            const WidthJSON = JSON.stringify(columnWidths);
+            const WidthJSON = JSON.stringify(columnWidthsTemp);
             localStorage.setItem(storageKey, WidthJSON); // Save to localStorage
-            console.log(`Column widths saved under key: ${storageKey}`, columnWidths);
-            console.log({ WidthJSON })
+            console.log(`Column widths saved under key: ${storageKey}`, columnWidthsTemp);
         } catch (error) {
             console.error("Error saving column widths to localStorage:", error);
         }
@@ -346,15 +345,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     };
 
-    // useEffect(() => {
-    //     measureColumnWidths(); // Measure on mount
-    //     window.addEventListener("resize", measureColumnWidths); // Re-measure on window resize
-
-    //     return () => {
-    //         window.removeEventListener("resize", measureColumnWidths);
-    //     };
-    // }, []);
-
     // Calculate minWidth dynamically based on columnWidths
     const minWidth = Object.values(columnWidths).reduce((sum, width) => sum + width, 0);
 
@@ -372,19 +362,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         setRowsPerPage(pageSize);
     };
 
-    // const handleResize = (column) => (e, { size }) => {
-    //     setColumnWidths((prev) => ({
-    //         ...prev,
-    //         [column]: size.width,
-    //     }));
-
-    //     const columnWidths = { ...columnWidths };
-    //     columnWidths[column] = size.width;
-    //     saveColumnWidthsToCookies(columnWidths);
-
-    //     console.log({ columnWidths})
-    // };
-
     const handleResize = (column) => (e, { size }) => {
         setColumnWidths((prev) => {
             const updatedWidths = {
@@ -398,7 +375,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             return updatedWidths; // Return updated state
         });
     };
-
 
     // Function to handle row edit
     const handleEdit = (record) => {
@@ -734,226 +710,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         )
     };
 
-    // const renderResizableHeader = (title, columnKey) => (
-    //     <Resizable
-    //         width={columnWidths[columnKey]}
-    //         height={0}
-    //         onResize={handleResize(columnKey)}
-    //         draggableOpts={{ enableUserSelectHack: false }}
-    //     >
-    //         <th
-    //             className="px-4 py-4 border-r border-gray-300"
-    //             style={{
-    //                 width: `${columnWidths[columnKey]}px`,
-    //                 minWidth: `${columnWidths[columnKey]}px`,
-    //                 zIndex: 10,
-    //                 whiteSpace: "nowrap",
-    //                 backgroundColor: headerBgColor,  // Background color logic
-    //                 color: headerTextColor, // Text color logic
-    //                 fontFamily: headerFontFamily, // Add the font family
-    //                 fontSize: `${headerFontSize}px`, // Add the font size and ensure it's in 'px' or another unit
-
-    //             }}
-    //         >
-    //             <div className="flex justify-between items-center gap-3">
-    //                 <div><span>{title.replace(/_/g, " ").toUpperCase()}</span></div>
-    //                 <div className="flex items-center gap-1">
-    //                     <button onClick={() => handleSort(columnKey)}>
-    //                         <Sort />
-    //                     </button>
-
-    //                     <button >
-    //                         <Filter />
-    //                     </button>
-
-    //                     <button>
-    //                         <Label />
-    //                     </button>
-
-    //                     {
-    //                         freezeCol.includes(columnKey) ?
-    //                             <button >
-    //                                 <BsPinAngleFill />
-    //                             </button>
-    //                             :
-    //                             <button onClick={(e) => handleFreezeColumn(columnKey, 'showInProfile', e)}>
-    //                                 <BsPin />
-    //                             </button>
-    //                     }
-
-    //                     {/* Dots Button with Popover */}
-    //                     <Popover content={
-    //                         <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-    //                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-    //                                 {freezeCol.includes(columnKey) ?
-    //                                     <BsPinAngleFill />
-    //                                     :
-    //                                     <button onClick={(e) => handleFreezeColumn(columnKey, 'showInCard', e)}>
-    //                                         <BsPin />
-    //                                     </button>
-    //                                     // <BsPin onChange={(e) => handleFreezeColumn(columnKey, 'showInCard', e)} />
-    //                                 }
-
-
-    //                                 {/* <Checkbox checked={showInCard.includes(columnKey)} onChange={(e) => handleFreezeColumn(columnKey,'showInCard', e)} /> */}
-    //                                 <span>Freeze Column</span>
-    //                             </div>
-    //                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-    //                                 <Checkbox checked={showInProfile.includes(columnKey)} onChange={(e) => handleCheckboxChange(columnKey, 'showInProfileView', e)} />
-    //                                 <span>Hide Column</span>
-    //                             </div>
-    //                         </div>
-    //                     } title="More Actions" trigger="click" placement="bottom">
-    //                         <button>
-    //                             <Dots />
-    //                         </button>
-    //                     </Popover>
-    //                 </div>
-
-
-    //             </div>
-    //             {/* <div className="flex justify-between items-center">
-    //                 <span>{title.replace(/_/g, " ").toUpperCase()}</span>
-    //             </div> */}
-    //         </th>
-    //     </Resizable>
-    // );
-
-    // let leftOffset = 60
-
-    // const MultiSelectFilter = ({ columnKey, closePopover, filteredData, setFilteredData, originalData }) => {
-    //     const [selectedValues, setSelectedValues] = useState([]);
-    //     const [searchText, setSearchText] = useState('');
-
-    //     // Step 1: Create initialData with unique labels and counts
-    //     const initialData = Object.values(
-    //         originalData.reduce((acc, data) => {
-    //             const label = data[columnKey];
-    //             const value = label; // Use the column value as the unique value
-
-    //             if (acc[label]) {
-    //                 acc[label].count += 1; // Increment the count if the label already exists
-    //             } else {
-    //                 acc[label] = { label, value, count: 1 }; // Add a new label with a count of 1
-    //             }
-
-    //             return acc;
-    //         }, {})
-    //     ).map((item) => ({
-    //         ...item,
-    //         label: `${item.label} (${item.count})`, // Add the count to the label
-    //     }));
-
-    //     const [options, setOptions] = useState(initialData);
-
-    //     const handleSelectAll = () => {
-    //         if (selectedValues.length === options.length) {
-    //             setSelectedValues([]);
-    //         } else {
-    //             setSelectedValues(options.map((option) => option.value));
-    //         }
-    //     };
-
-    //     const handleSelect = (value) => {
-    //         if (selectedValues.includes(value)) {
-    //             setSelectedValues(selectedValues.filter(item => item !== value));
-    //         } else {
-    //             setSelectedValues([...selectedValues, value]);
-    //         }
-    //     };
-
-    //     const handleSearch = (searchText) => {
-    //         if (searchText) {
-    //             const filteredOptions = initialData.filter(option =>
-    //                 option.label?.toLowerCase().includes(searchText.toLowerCase())
-    //             );
-    //             setOptions(filteredOptions);
-    //         } else {
-    //             setOptions(initialData);
-    //         }
-    //     };
-
-    //     const handleMultiSearch = () => {
-    //         // Filter `filteredData` based on selected values for this column only
-    //         const updatedFilteredData = filteredData.filter(item =>
-    //             selectedValues.includes(item[columnKey])
-    //         );
-    //         setFilteredData(updatedFilteredData); // Update filtered data state
-    //         closePopover(); // Close popover
-    //         console.log({ selectedValues, updatedFilteredData });
-    //     };
-
-    //     const handleReset = () => {
-    //         // Reset only the data for this specific column to its original state
-    //         const resetData = originalData.filter(item =>
-    //             !filteredData.some(filteredItem => filteredItem.key_id === item.key_id) ||
-    //             item[columnKey] !== undefined
-    //         );
-    //         setSelectedValues([]); // Clear the selected values for this column
-    //         setFilteredData(resetData); // Restore original data for this column
-    //         closePopover(); // Close popover
-    //         console.log('Reset for column:', columnKey, resetData);
-    //     };
-
-    //     return (
-    //         <div className="flex-row justify-between items-center" style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-    //             <div className="flex justify-between">
-    //                 <Button
-    //                     type="primary"
-    //                     onClick={() => handleMultiSearch()}
-    //                     icon={<SearchOutlined />}
-    //                     size="small"
-    //                     style={{ width: 80 }}
-    //                 >
-    //                     Search
-    //                 </Button>
-    //                 <Button
-    //                     onClick={() => handleReset()}
-    //                     size="small"
-    //                     style={{ width: 80 }}
-    //                 >
-    //                     Reset
-    //                 </Button>
-    //                 <Button
-    //                     type="link"
-    //                     size="small"
-    //                     onClick={() => closePopover()}
-    //                 >
-    //                     Close
-    //                 </Button>
-    //             </div>
-    //             <div className="pt-2">
-    //                 <Checkbox
-    //                     className="mr-2 text-primary rounded-md"
-    //                     style={{ transform: "scale(1.4)" }}
-    //                     onChange={() => handleSelectAll()}
-    //                     checked={selectedValues.length === options.length && options.length > 0}
-    //                     value="all"
-    //                 />
-    //                 <AutoComplete
-    //                     style={{ width: 200 }}
-    //                     placeholder="Input here"
-    //                     filterOption={false}
-    //                     onSearch={handleSearch}
-    //                 >
-    //                     {options.map((option) => (
-    //                         <AutoComplete.Option key={option.value}>
-    //                             <Checkbox
-    //                                 onChange={() => handleSelect(option.value)}
-    //                                 checked={selectedValues.includes(option.value)}
-    //                                 value={option.value}
-    //                             >
-    //                                 {option.label}
-    //                             </Checkbox>
-    //                         </AutoComplete.Option>
-    //                     ))}
-    //                 </AutoComplete>
-    //             </div>
-    //         </div>
-    //     );
-    // };
-
-
     const renderResizableHeader = (title, columnKey, index) => {
         const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
         const firstColWidth = isEditMode ? 125 : 0; // Adjust the first column width if in edit mode
@@ -984,7 +740,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                         whiteSpace: "nowrap",
                         fontFamily: headerFontFamily, // Font family
                         fontSize: `${headerFontSize}px`, // Font size
-                        borderRight: "1px solid #ccc !important",
+                        borderRight: isPinned && `4px solid #bed900`,
                     }}
                 >
                     <div
@@ -1056,11 +812,11 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     }
 
-    // Update column widths after the table is loaded
+    // // Update column widths after the table is loaded
     // useEffect(() => {
     //     const updatedWidths = { ...columnWidths };
     //     headers.forEach((header, index) => {
-    //         const elementId = `header${index}`; // Generate the ID for each column header
+    //         const elementId = header${index}; // Generate the ID for each column header
     //         const actualWidth = getElementWidthById(elementId);
     //         if (actualWidth) {
     //             updatedWidths[header] = actualWidth; // Update with the actual width
@@ -1087,7 +843,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
         setColumnWidths(updatedWidths); // Update the state with new widths
     }, [headers]); // Dependency ensures this runs when headers change
-
 
     const isValidUrl = (url) => {
         try {
@@ -1402,9 +1157,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         return sum;
     };
 
-
-
-    // {header.replace(/_/g, ' ').toUpperCase()}
     const calculateAverage = (dataIndex) => {
         const sum = calculateSum(dataIndex);
         const avg = sum / filteredData.filter((record) => isNumeric(record[dataIndex])).length;
@@ -1426,7 +1178,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             </div>
         );
     };
-
 
     return (
         <div>
@@ -1592,11 +1343,14 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                                         zIndex: isPinned ? 100 : 10, // Adjust z-index for proper stacking
                                                         position: isPinned ? "sticky" : "relative", // Sticky only if pinned
                                                         left: isPinned ? `${leftOffset}px` : "auto", // Offset only if pinned
-                                                        backgroundColor: isPinned ? '#fff' : null, // Solid background for pinned headers
+                                                        // backgroundColor: isPinned ? '#fff' : null, // Solid background for pinned headers
                                                         color: bodyTextColor, // Text color
                                                         whiteSpace: "nowrap",
                                                         fontFamily: bodyFontFamily, // Font family
                                                         fontSize: `${bodyFontSize}px`, // Font size
+                                                        borderRight: isPinned ? "4px solid #bed900" : "none",
+                                                        // boxShadow: isPinned && `4px solid #bed900`,
+                                                        boxShadow: isPinned ? "3px 0px 5px rgba(0, 0, 0, 0.1)" : "none", // Fallback shadow
                                                     }}
                                                 >
                                                     {isedit && ischecked.includes(item.key_id) ?

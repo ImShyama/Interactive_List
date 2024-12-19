@@ -310,11 +310,22 @@ button:disabled {
   background-color: #F3F4F6 !important; /* Light green for even rows */
 }
 
+.people_table tr:nth-child(even) td {
+  background-color: #F3F4F6 !important; /* Light green for even rows */
+}
+
 .people_table tr:nth-child(odd) {
   background-color: #f9fff9 !important; /* Lighter green for odd rows */
 }
 
+.people_table tr:nth-child(odd) td {
+  background-color: #f9fff9 !important; /* Lighter green for odd rows */
+}
+
 .people_table tr:hover {
+  background-color: #F1F1F1 !important; /* Slightly darker green on hover */
+}
+.people_table tr:hover td{
   background-color: #F1F1F1 !important; /* Slightly darker green on hover */
 }
 
