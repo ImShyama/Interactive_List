@@ -291,6 +291,10 @@ img, video {
   visibility: visible;
 }
 
+.collapse {
+  visibility: collapse;
+}
+
 .fixed {
   position: fixed;
 }
@@ -1466,6 +1470,11 @@ img, video {
   border-right-width: 1px;
 }
 
+.border-y {
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+
 .border-b-2 {
   border-bottom-width: 2px;
 }
@@ -1480,6 +1489,10 @@ img, video {
 
 .border-r {
   border-right-width: 1px;
+}
+
+.border-b {
+  border-bottom-width: 1px;
 }
 
 .border-solid {
@@ -2632,11 +2645,11 @@ button:disabled {
 }
 
 .people_table tr:nth-child(2n) {
-  background-color: #f3f4f6;
+  background-color: #f3f4f6 !important;
 }
 
 .people_table tr:nth-child(odd) {
-  background-color: #f9fff9;
+  background-color: #f9fff9 !important;
 }
 
 .people_table tr:hover {

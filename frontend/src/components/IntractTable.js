@@ -20,8 +20,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import { BsPin, BsPinAngleFill, BsPinFill } from "react-icons/bs";
 import { BiSolidHide } from "react-icons/bi";
-import { MdEdit, MdDelete, MdOutlineSave } from "react-icons/md";
-import { IoSaveSharp } from "react-icons/io5";
+import { MdEdit, MdDelete, MdOutlineLabel } from "react-icons/md";
+import { IoSaveSharp, IoSearchOutline } from "react-icons/io5";
+import { FaSort } from "react-icons/fa";
 import { editMultipleRows, deleteMultiple } from "../APIs/index";
 
 
@@ -119,7 +120,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const dispatch = useDispatch();
     const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
     const tableRef = useRef(null);
-
     const [headerBgColor, setHeaderBgColor] = useState(tableSettings?.headerBgColor || '#000000'); // Default header background color
     const [headerTextColor, setHeaderTextColor] = useState(tableSettings?.headerTextColor || '#ffffff'); // Default header text color
     const [headerFontSize, setHeaderFontSize] = useState(tableSettings?.headerFontSize || 14); // Default header font size
@@ -127,15 +127,61 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [bodyTextColor, setBodyTextColor] = useState(tableSettings?.bodyTextColor || '#000000'); // Default body text color
     const [bodyFontSize, setBodyFontSize] = useState(tableSettings?.bodyFontSize || 12); // Default body font size
     const [bodyFontFamily, setBodyFontFamily] = useState(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
-
     const [visiblePopover, setVisiblePopover] = useState({});
-
     const result = getHeadersWithDateAndNumbers(data);
     const [dateColumns, setdateColumns] = useState(result.dateColumns || []);
     const [numberColumns, setnumberColumns] = useState(result.numberColumns || []);
+    const isEditMode = window.location.pathname.endsWith('/edit');
+    const [columnWidths, setColumnWidths] = useState(
+        headers.reduce((acc, header) => {
+            acc[header] = header.toLowerCase() === 'picture' ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
+            return acc;
+        }, { actions: '125px' }) // Default action column width
+    );
 
-    console.log({ result, dateColumns, numberColumns });
-    console.log({ settings });
+
+    const loadColumnWidthsFromCookies = () => {
+        const storageKey = settings?._id + settings?.firstSheetName;
+        const savedWidths = localStorage.getItem(storageKey);
+        return savedWidths ? JSON.parse(savedWidths) : null;
+    };
+
+    // useEffect(() => {
+    //     const savedColumnWidths = loadColumnWidthsFromCookies();
+    //     if (savedColumnWidths) {
+    //         const newColumns = columnWidths.map((col, index) => ({
+    //             ...col,
+    //             width: savedColumnWidths[index] || col.width, // Use saved width or fallback to default width
+    //         }));
+
+    //         setColumnWidths(newColumns);
+    //     }
+    // }, []);
+
+    // const saveColumnWidthsToCookies = (columnWidths) => {
+    //     console.log(columnWidths);
+    //     const storageKey = settings?._id + settings?.firstSheetName;
+    //     localStorage.setItem(storageKey, JSON.stringify(columnWidths));
+    // };
+    // console.log({columnWidths});
+
+    const saveColumnWidthsToCookies = (columnWidths) => {
+        if (!settings || !settings._id || !settings.firstSheetName) {
+            console.warn("Missing settings for generating the storage key.");
+            return;
+        }
+
+        const storageKey = `${settings._id}_${settings.firstSheetName}`; // Construct the storage key
+        try {
+            const WidthJSON = JSON.stringify(columnWidths);
+            localStorage.setItem(storageKey, WidthJSON); // Save to localStorage
+            console.log(`Column widths saved under key: ${storageKey}`, columnWidths);
+            console.log({ WidthJSON })
+        } catch (error) {
+            console.error("Error saving column widths to localStorage:", error);
+        }
+    };
+
 
     const handlePopoverVisibility = (key, isVisible) => {
         setVisiblePopover((prev) => ({
@@ -184,6 +230,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const handleFreezeColumn = async (columnKey, option, event) => {
         const isChecked = event.target.checked;
 
+        if (option == 'removeFreezeCol') {
+            columnKey = "";
+        }
         setFreezeCol(columnKey);
         const updatedSettings = {
             freezeCol: columnKey
@@ -265,7 +314,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         console.log({ response });
     };
 
-
     useEffect(() => {
         const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
         setHeaderBgColor(tableSettings?.headerBgColor); // Default header background color
@@ -277,13 +325,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         setBodyFontFamily(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
     }, [settings]);
 
-
-    const [columnWidths, setColumnWidths] = useState(
-        headers.reduce((acc, header) => {
-            acc[header] = header.toLowerCase() === 'picture' ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
-            return acc;
-        }, { actions: '125px' }) // Default action column width
-    );
 
 
     const measureColumnWidths = () => {
@@ -317,7 +358,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     // Calculate minWidth dynamically based on columnWidths
     const minWidth = Object.values(columnWidths).reduce((sum, width) => sum + width, 0);
 
-
     useEffect(() => {
         if (data) {
             setFilteredData(data);
@@ -332,12 +372,33 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         setRowsPerPage(pageSize);
     };
 
+    // const handleResize = (column) => (e, { size }) => {
+    //     setColumnWidths((prev) => ({
+    //         ...prev,
+    //         [column]: size.width,
+    //     }));
+
+    //     const columnWidths = { ...columnWidths };
+    //     columnWidths[column] = size.width;
+    //     saveColumnWidthsToCookies(columnWidths);
+
+    //     console.log({ columnWidths})
+    // };
+
     const handleResize = (column) => (e, { size }) => {
-        setColumnWidths((prev) => ({
-            ...prev,
-            [column]: size.width,
-        }));
+        setColumnWidths((prev) => {
+            const updatedWidths = {
+                ...prev,
+                [column]: size.width,
+            };
+
+            saveColumnWidthsToCookies(updatedWidths); // Save the updated widths
+            console.log({ updatedWidths });
+
+            return updatedWidths; // Return updated state
+        });
     };
+
 
     // Function to handle row edit
     const handleEdit = (record) => {
@@ -457,7 +518,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         setFilteredData(filteredData);
     };
 
-
     const handleGlobalReset = () => {
         setSearchGlobal("");
         setIsSearchOpen(false);
@@ -553,9 +613,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     return [...prev, value]
                 });
             }
-
             setGlobalOption((prev) => ({ ...prev, [columnKey]: updatedOptions }));
-
         };
 
 
@@ -571,7 +629,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         };
 
         const handleMultiSearch = () => {
-            if (selectedValues.length == 0) {
+            if (selectedValues.length == 0 && globalOption[columnKey].length == 0) {
                 setFilteredData(data);
                 return;
             }
@@ -646,7 +704,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             closePopover();
                         }}
                     >
-                        close
+                        Close
                     </Button>
                 </div>
                 <div className="pt-2">
@@ -898,12 +956,12 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
     const renderResizableHeader = (title, columnKey, index) => {
         const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
+        const firstColWidth = isEditMode ? 125 : 0; // Adjust the first column width if in edit mode
         const leftOffset =
-            (index === 0 ? 100 : 0) +
+            (index === 0 ? firstColWidth : firstColWidth) +
             headers
                 .slice(0, index)
                 .reduce((sum, key) => sum + columnWidths[key], 0);
-
         return (
             <Resizable
                 width={columnWidths[columnKey]}
@@ -912,24 +970,27 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 draggableOpts={{ enableUserSelectHack: false }}
             >
                 <th
-                    className="px-4 py-4 border-r border-gray-300"
+                    className="px-4 py-4 border-b border-gray-300"
+                    id={`header${index}`}
                     style={{
                         width: `${columnWidths[columnKey]}px`,
                         minWidth: `${columnWidths[columnKey]}px`,
-                        zIndex: isPinned ? 100 : 10, // Adjust z-index for proper stacking
+                        zIndex: isPinned ? 1000 : 10, // Adjust z-index for proper stacking
                         position: isPinned ? "sticky" : "relative", // Sticky only if pinned
                         left: isPinned ? `${leftOffset}px` : "auto", // Offset only if pinned
-                        backgroundColor: isPinned ? "#fff" : headerBgColor, // Solid background for pinned headers
-                        color: isPinned ? "#000" : headerTextColor, // Text color
+                        top: 0,
+                        backgroundColor: headerBgColor, // Solid background for pinned headers
+                        color: headerTextColor, // Text color
                         whiteSpace: "nowrap",
                         fontFamily: headerFontFamily, // Font family
                         fontSize: `${headerFontSize}px`, // Font size
+                        borderRight: "1px solid #ccc !important",
                     }}
                 >
                     <div
                         className="flex justify-between items-center gap-3"
                         style={{
-                            zIndex: isPinned ? 100 : "inherit", // Ensure child elements respect z-index
+                            zIndex: isPinned ? 1000 : "inherit", // Ensure child elements respect z-index
                             position: "relative", // Keep elements aligned
                         }}
                     >
@@ -938,7 +999,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                         </div>
                         <div className="flex items-center gap-1">
                             <button onClick={() => handleSort(columnKey)}>
-                                <Sort />
+                                <FaSort />
                             </button>
 
                             <Popover
@@ -955,54 +1016,77 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                 onVisibleChange={(isVisible) => handlePopoverVisibility(index, isVisible)}
                             >
                                 <button>
-                                    <Filter />
+                                    <IoSearchOutline />
                                 </button>
                             </Popover>
-                            <button title="Labels">
-                                <Label />
-                            </button>
-                            {freezeCol.includes(columnKey) ? (
-                                <button title="Freezed Column">
-                                    <BsPinAngleFill />
+                            <Popover content={getAggregatePopoverContent(columnKey)} trigger="click" placement="bottom">
+                                <button title="Labels">
+                                    <MdOutlineLabel />
                                 </button>
-                            ) : (
-                                <button title="Freeze Column" onClick={(e) => handleFreezeColumn(columnKey, "showInProfile", e)}>
-                                    <BsPin />
-                                </button>
-                            )}
-                            {/* <Popover
-                                content={
-                                    <div style={{ padding: "8px", display: "flex", flexDirection: "column", gap: "8px" }}>
-                                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                            <Checkbox
-                                                checked={showInCard.includes(columnKey)}
-                                                onChange={(e) => handleCheckboxChange(columnKey, "showInCard", e)}
-                                            />
-                                            <span>Show in Card</span>
-                                        </div>
-                                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                            <Checkbox
-                                                checked={showInProfile.includes(columnKey)}
-                                                onChange={(e) => handleCheckboxChange(columnKey, "showInProfileView", e)}
-                                            />
-                                            <span>Show in Profile</span>
-                                        </div>
-                                    </div>
-                                }
-                                title="More Actions"
-                                trigger="click"
-                                placement="bottom"
-                            >
-                                <button>
-                                    <Dots />
-                                </button>
-                            </Popover> */}
+                            </Popover>
+
+                            {isEditMode &&
+                                (freezeCol.includes(columnKey) ? (
+                                    <button title="Freezed Column" onClick={(e) => handleFreezeColumn(columnKey, "removeFreezeCol", e)}>
+                                        <BsPinAngleFill />
+                                    </button>
+                                ) : (
+                                    <button title="Freeze Column" onClick={(e) => handleFreezeColumn(columnKey, "showInProfile", e)}>
+                                        <BsPin />
+                                    </button>
+                                ))
+                            }
+
                         </div>
                     </div>
                 </th>
             </Resizable>
         );
     };
+
+
+    function getElementWidthById(elementId) {
+        const element = document.getElementById(elementId);
+
+        if (element) {
+            return element.offsetWidth; // Returns the width of the element, including padding but excluding margins
+        } else {
+            console.warn(`Element with ID ${elementId} not found.`);
+            return null; // Returns null if element is not found
+        }
+    }
+
+    // Update column widths after the table is loaded
+    // useEffect(() => {
+    //     const updatedWidths = { ...columnWidths };
+    //     headers.forEach((header, index) => {
+    //         const elementId = `header${index}`; // Generate the ID for each column header
+    //         const actualWidth = getElementWidthById(elementId);
+    //         if (actualWidth) {
+    //             updatedWidths[header] = actualWidth; // Update with the actual width
+    //         }
+    //     });
+
+    //     setColumnWidths(updatedWidths); // Update the state with new widths
+    // }, [headers]); // Dependency ensures this runs when headers change
+
+    useEffect(() => {
+        // Load column widths from cookies
+        const savedColumnWidths = loadColumnWidthsFromCookies();
+        console.log({ savedColumnWidths });
+        let updatedWidths = savedColumnWidths || { ...columnWidths };
+
+        // Update column widths after the table is loaded
+        headers.forEach((header, index) => {
+            const elementId = `header${index}`; // Generate the ID for each column header
+            const actualWidth = getElementWidthById(elementId);
+            if (actualWidth) {
+                updatedWidths[header] = actualWidth; // Update with the actual width
+            }
+        });
+
+        setColumnWidths(updatedWidths); // Update the state with new widths
+    }, [headers]); // Dependency ensures this runs when headers change
 
 
     const isValidUrl = (url) => {
@@ -1087,7 +1171,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         setConfirmBulkAddModalOpen(false);
         setSelectSpreadsheet(null);
     }
-
 
     const [openPicker, authResponse] = useDrivePicker();
 
@@ -1298,6 +1381,52 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     }
 
+    const handleDoubleClick = (e, key_id, header) => {
+        console.log({ e, key_id, header });
+        setIschecked([...ischecked, key_id]);
+        setEditData((prev) => [...prev, header]);
+        setIsedit(true);
+    }
+
+    const isNumeric = (value) => !isNaN(parseFloat(value)) && isFinite(value);
+
+    const calculateSum = (dataIndex) => {
+        const sum = filteredData.reduce((total, record) => {
+            const value = parseFloat(record[dataIndex]);
+            if (!isNaN(value)) {
+                return total + value;
+            }
+            return total;
+        }, 0);
+
+        return sum;
+    };
+
+
+
+    // {header.replace(/_/g, ' ').toUpperCase()}
+    const calculateAverage = (dataIndex) => {
+        const sum = calculateSum(dataIndex);
+        const avg = sum / filteredData.filter((record) => isNumeric(record[dataIndex])).length;
+        return avg.toFixed(2);
+    };
+
+    const calculateCount = () => {
+        return filteredData.length;
+    };
+
+    const getAggregatePopoverContent = (dataIndex) => {
+        const isNumberColumn = data.some((record) => isNumeric(record[dataIndex]));
+
+        return (
+            <div>
+                <p>Σ Sum: {isNumberColumn ? calculateSum(dataIndex) : 'NA'}</p>
+                <p>% Average: {isNumberColumn ? calculateAverage(dataIndex) : 'NA'}</p>
+                <p># Count: {calculateCount(dataIndex)}</p>
+            </div>
+        );
+    };
+
 
     return (
         <div>
@@ -1334,37 +1463,41 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     <button onClick={handleGlobalReset} className="bg-primary rounded-[4px] p-1">
                         <Reset />
                     </button>
-                    <button onClick={handleAdd} className="mx-2">
-                        <Add />
-                    </button>
-                    <button onClick={handleAddBukl}>
-                        <BulkAdds />
-                    </button>
-                    {isedit ?
-                        <button onClick={handleBulkSave} className="bg-primary rounded-[4px] p-1 mx-2">
-                            <IoSaveSharp color="white" />
-                        </button>
-                        :
-                        <button onClick={handleBulkEdit} className="bg-primary rounded-[4px] p-1 mx-2">
-                            <MdEdit color="white" />
-                        </button>}
-                    <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-1">
-                        <MdDelete color="white" />
-                    </button>
 
-                    <Popover content={<HeaderSwitch />} title="Hide Columns" trigger="click" placement="bottomRight">
-                        <button className="mx-2" >
-                            <div className="bg-primary rounded-[4px] p-1">
-                                <BiSolidHide color="white" size={17} />
-                            </div>
+                    {isEditMode && <div className="flex items-center">
+                        <button onClick={handleAdd} className="mx-2">
+                            <Add />
                         </button>
-                    </Popover>
+                        <button onClick={handleAddBukl}>
+                            <BulkAdds />
+                        </button>
+
+                        {isedit ?
+                            <button onClick={handleBulkSave} className="bg-primary rounded-[4px] p-1 mx-2">
+                                <IoSaveSharp color="white" />
+                            </button>
+                            :
+                            <button onClick={handleBulkEdit} className="bg-primary rounded-[4px] p-1 mx-2">
+                                <MdEdit color="white" />
+                            </button>}
+                        <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-1">
+                            <MdDelete color="white" />
+                        </button>
+
+                        <Popover content={<HeaderSwitch />} title="Hide Columns" trigger="click" placement="bottomRight">
+                            <button className="mx-2" >
+                                <div className="bg-primary rounded-[4px] p-1">
+                                    <BiSolidHide color="white" size={17} />
+                                </div>
+                            </button>
+                        </Popover>
+                    </div>}
                 </div>
             </div>
             <div className="px-[50px] py-[10px]">
                 <div className="overflow-x-auto">
                     <div
-                        className="min-w-full relative"
+                        className="min-w-full relative border border-gray-300 rounded-t-lg bg-white"
                         style={{
                             maxHeight: "500px",
                             overflowY: "auto",
@@ -1376,93 +1509,94 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                 tableLayout: "auto",
                                 minWidth: { minWidth },
                                 width: "100%",
+                                border: "1px solid #ccc",
+                                borderCollapse: "collapse",
                             }}
                         >
                             <thead className="sticky top-0 bg-gray-100 z-20">
                                 <tr className="text-gray-700 text-left">
-                                    <th
-                                        className="px-4 py-4 border-r border-gray-300"
-                                        style={{
-                                            width: `${columnWidths.actions}px`,
-                                            position: "sticky",
-                                            left: 0,
-                                            background: "#fff",
-                                            // width: `${columnWidths.actions}px`,
-                                            position: "sticky",
-                                            // left: 0,
-                                            zIndex: 1000,
-                                            // borderRight: "1px solid #ccc",
-                                            // backgroundColor: headerBgColor,  // Background color logic
-                                            // color: headerTextColor, // Text color logic
-                                            // fontFamily: headerFontFamily, // Add the font family
-                                            // fontSize: `${headerFontSize}px`, // Add the font size and ensure it's in 'px' or another unit
-                                        }}
-                                    >
-                                        Actions
-                                    </th>
+                                    {isEditMode &&
+                                        <th
+                                            className="px-4 py-4 border-b border-gray-300"
+                                            style={{
+                                                width: `${columnWidths.actions}px`,
+                                                position: "sticky",
+                                                left: 0,
+                                                background: "#fff",
+                                                width: `${columnWidths.actions}px`,
+                                                position: "sticky",
+                                                left: 0,
+                                                zIndex: 100,
+                                                // borderRight: "1px solid #ccc",
+                                                backgroundColor: headerBgColor,
+                                                color: headerTextColor,
+                                                whiteSpace: "nowrap",
+                                                fontFamily: headerFontFamily,
+                                                fontSize: `${headerFontSize}px`,
+                                            }}
+                                        >
+                                            ACTIONS
+                                        </th>
+                                    }
                                     {headers.map((header, index) => renderResizableHeader(header, header, index))}
                                 </tr>
                             </thead>
                             <tbody className="people_table">
                                 {paginatedData.map((item) => (
                                     <tr key={item.key_id} className="hover:bg-gray-50">
-                                        <td
-                                            className="px-4 py-2 border-x border-gray-300"
-                                            style={{
-                                                width: `${columnWidths.actions}px`,
-                                                position: "sticky",
-                                                left: 0,
-                                                background: "#fff",
-                                                zIndex: 100,
-                                            }}
-                                        >
-                                            <div className="flex gap-[10px] align-center">
-                                                <Checkbox checked={ischecked.includes(item.key_id)} onChange={(e) => handleStatusChanges(e.target.checked, item)} value={item.key_id} />
+                                        {isEditMode &&
+                                            <td
+                                                className="px-4 py-2 border-y border-gray-300"
+                                                style={{
+                                                    width: `${columnWidths.actions}px`,
+                                                    position: "sticky",
+                                                    left: 0,
+                                                    background: "#fff",
+                                                    zIndex: 100,
+                                                }}
+                                            >
+                                                <div className="flex gap-[10px] align-center">
+                                                    <Checkbox checked={ischecked.includes(item.key_id)} onChange={(e) => handleStatusChanges(e.target.checked, item)} value={item.key_id} />
 
-                                                <button
-                                                    className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
-                                                    onClick={() => handleEdit(item.key_id)}
-                                                >
-                                                    <Edit />
-                                                </button>
-                                                <button
-                                                    className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
-                                                    onClick={() => handleDelete(item.key_id)}
-                                                >
-                                                    <Delete />
-                                                </button>
-                                            </div>
-                                        </td>
+                                                    <button
+                                                        className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
+                                                        onClick={() => handleEdit(item.key_id)}
+                                                    >
+                                                        <Edit />
+                                                    </button>
+                                                    <button
+                                                        className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
+                                                        onClick={() => handleDelete(item.key_id)}
+                                                    >
+                                                        <Delete />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        }
                                         {headers.map((header, index) => {
                                             const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(header);
-                                            // const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
+                                            const firstColWidth = isEditMode ? 125 : 0;
                                             const leftOffset =
-                                                (index === 0 ? 125 : 0) + // Add 60px only for the first column
+                                                (index === 0 ? firstColWidth : firstColWidth) +
                                                 headers
-                                                    .slice(0, index) // Get all columns before the current one
-                                                    .reduce((sum, key) => sum + columnWidths[key], 0); // Sum the widths of previous columns
+                                                    .slice(0, index)
+                                                    .reduce((sum, key) => sum + columnWidths[key], 0);
 
-                                            
                                             return (
                                                 <td
                                                     key={header}
-                                                    className="px-4 py-2 border-r border-gray-300"
+                                                    className="px-4 py-2 border-b border-gray-300"
                                                     style={{
-                                                        // width: `${columnWidths[header]}px`,
-                                                        // position: isPinned ? "sticky" : "relative",
-                                                        // left: isPinned ? `${leftOffset}px` : "auto",
-                                                        // background: isPinned ? "#fff" : "transparent", // Keep pinned columns white
-
                                                         width: `${columnWidths[header]}px`,
                                                         minWidth: `${columnWidths[header]}px`,
                                                         zIndex: isPinned ? 100 : 10, // Adjust z-index for proper stacking
                                                         position: isPinned ? "sticky" : "relative", // Sticky only if pinned
                                                         left: isPinned ? `${leftOffset}px` : "auto", // Offset only if pinned
-                                                        backgroundColor: isPinned ? "#fff" : null, // Solid background for pinned headers
-                                                        color: isPinned ? "#000" : bodyTextColor, // Text color
+                                                        backgroundColor: isPinned ? '#fff' : null, // Solid background for pinned headers
+                                                        color: bodyTextColor, // Text color
                                                         whiteSpace: "nowrap",
                                                         fontFamily: bodyFontFamily, // Font family
-                                                        fontSize: `${headerFontSize}px`, // Font size
+                                                        fontSize: `${bodyFontSize}px`, // Font size
                                                     }}
                                                 >
                                                     {isedit && ischecked.includes(item.key_id) ?
@@ -1472,20 +1606,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                                                 position: "relative", // Keep elements aligned
                                                             }}
                                                         >
-                                                            {/* <input className="w-full h-full border-b-2 border-gray-300 border-primary" value={item[header]} onChange={(e)=>{
-                                                            // let editData = EditData.find((data) => data.key_id === item.key_id)[header] = event.target.value
-                                                            setEditData((prev)=>{
-                                                                let editData = prev.map((el,i)=>{
-                                                                  if(el?.key_id == item.key_id){
-                                                                    return el.key_id[header] = e?.target.value
-                                                                  }else{
-                                                                    return el
-                                                                  }
-                                                                })
-                                                                console.log({editData})
-                                                                return editData
-                                                              })
-                                                        }}/> */}
                                                             <input
                                                                 className="w-full h-full border-b-2 border-gray-300 border-primary"
                                                                 value={EditData.find((data) => data.key_id === item.key_id)?.[header] || ""}
@@ -1507,6 +1627,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                                                 zIndex: isPinned ? 100 : "inherit", // Ensure child elements respect z-index
                                                                 position: "relative", // Keep elements aligned
                                                             }}
+                                                            onDoubleClick={(e) => isEditMode && handleDoubleClick(e, item.key_id, item)}
                                                         >
                                                             {header.toLowerCase() === "picture" ? (
                                                                 <div className="w-full h-full flex justify-center items-center">

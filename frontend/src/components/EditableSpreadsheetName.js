@@ -77,9 +77,10 @@ const EditableSpreadsheetName = ({ settings }) => {
       {
         isEditMode ? (
           <div
-            className={`flex items-star border px-2 py-1 rounded-md ${isEditing ? 'border-[#FFA500]' : 'border-transparent hover:border-[#FFA500]'} `}
+            className={`flex justify-start items-center border px-2 py-1 rounded-md ${isEditing ? 'border-[#FFA500]' : 'border-transparent hover:border-[#FFA500]'} `}
             onClick={() => setIsEditing(true)}
             style={{ transition: 'border-color 0.2s ease' }} // Smooth border transition
+            title='Rename'
           >
             <span
               ref={spanRef}
@@ -94,9 +95,14 @@ const EditableSpreadsheetName = ({ settings }) => {
             </span>
           </div>
         ) : (
-          <span className="text-[#2A3C54] font-poppins text-[21px] font-medium w-full">
+          <div
+            className={`flex justify-start items-center px-2 py-1  `}
+            title='Sheet Name'
+          >
+          <span className="text-[#2A3C54] font-poppins text-[21px] font-medium w-full" >
             {editedName}
           </span>
+          </div>
         )
       }
     </div>
