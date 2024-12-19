@@ -886,6 +886,142 @@ app.post("/editRow", async (req, res) => {
   }
 });
 
+app.post("/editMultipleRows", async (req, res) => {
+  const { spreadSheetID, sheetName, rowsToUpdate } = req.body; 
+  // `rowsToUpdate` is an array of objects like:
+  // [{ key_id: '1', user_name: 'Ravi', email_address: 'RaviUdyogAccounts@gmail.com', ... }, ...]
+
+  const authClient = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  authClient.setCredentials({
+    refresh_token: req.user.googleRefreshToken,
+  });
+
+  try {
+    // Process the rows to create batch update data
+    const updateRequests = rowsToUpdate.map((row) => {
+      const { key_id, ...rowData } = row; // Extract key_id and the rest of the data
+      const rowIndex = parseInt(key_id) + 1; // Compute row index (key_id + 1)
+
+      // Map rowData into an array of values for the row
+      const newData = Object.values(rowData);
+
+      // Define the range for this row update
+      const range = `${sheetName}!A${rowIndex}:${String.fromCharCode(64 + newData.length)}${rowIndex}`;
+      return {
+        range: range,
+        values: [newData],
+      };
+    });
+
+    // Execute batch update
+    const sheets = google.sheets({ version: 'v4', auth: authClient });
+    const batchUpdateRequest = {
+      spreadsheetId: spreadSheetID,
+      resource: {
+        data: updateRequests,
+        valueInputOption: "RAW",
+      },
+    };
+
+    await sheets.spreadsheets.values.batchUpdate(batchUpdateRequest);
+
+    // Fetch the updated sheet data after updates
+    const getRequest = {
+      spreadsheetId: spreadSheetID,
+      range: `${sheetName}`, // Get all data from the sheet
+    };
+    const getResponse = await sheets.spreadsheets.values.get(getRequest);
+
+    res.status(200).json({
+      message: "Rows updated successfully",
+      updatedSheetData: getResponse.data,
+    });
+  } catch (err) {
+    console.error("Error updating multiple rows:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/deleteMultipleRows', async (req, res) => {
+  console.log("Received request to delete multiple rows");
+  const { spreadSheetID, sheetName, rowsToDelete } = req.body;
+
+  if (!spreadSheetID || !sheetName || !rowsToDelete) {
+    return res.status(400).json({ error: "Invalid request payload" });
+  }
+
+  // Create an OAuth2 client with the given credentials
+  const authClient = new google.auth.OAuth2(
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
+  );
+
+  // Set the refresh token for the OAuth2 client
+  authClient.setCredentials({
+    refresh_token: req.user.googleRefreshToken,
+  });
+
+  try {
+    // Sort rows by key_id to ensure we delete them from bottom to top
+    rowsToDelete.sort((a, b) => b.key_id - a.key_id);
+
+    const sheets = google.sheets({ version: 'v4', auth: authClient });
+
+    for (const row of rowsToDelete) {
+      const rowIndex = parseInt(row.key_id) + 1; // Convert key_id to rowIndex (1-based)
+      
+      await deleteRowFromSpreadsheet(sheets, spreadSheetID, sheetName, rowIndex);
+    }
+
+    res.status(200).json({ message: 'Rows deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting rows:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+async function deleteRowFromSpreadsheet(sheets, spreadSheetID, sheetName, rowIndex) {
+  try {
+    const requests = [
+      {
+        deleteDimension: {
+          range: {
+            sheetId: await getSheetIdByName(sheets, spreadSheetID, sheetName),
+            dimension: 'ROWS',
+            startIndex: rowIndex - 1, // 0-based index
+            endIndex: rowIndex, // 0-based index
+          },
+        },
+      },
+    ];
+
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: spreadSheetID,
+      resource: { requests },
+    });
+  } catch (error) {
+    console.error('Error deleting row:', error);
+    throw new Error('Failed to delete row');
+  }
+}
+
+async function getSheetIdByName(sheets, spreadSheetID, sheetName) {
+  const response = await sheets.spreadsheets.get({ spreadsheetId: spreadSheetID });
+  const sheet = response.data.sheets.find((sheet) => sheet.properties.title === sheetName);
+
+  if (!sheet) {
+    throw new Error(`Sheet "${sheetName}" not found`);
+  }
+
+  return sheet.properties.sheetId;
+}
+
 // Define the API endpoint
 app.post("/addRow", async (req, res) => {
   const spreadSheetID = req.body.spreadSheetID;

@@ -26,8 +26,11 @@ import { ConfigProvider } from "antd";
 import Testing1 from "./components/Testing1";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+import ProfilePage from "./components/people_directory/ProfilePage";
+import { useEffect } from "react";
 
 const Layout = () => {
+
   return (
     <Provider store={appStore}>
       <>
@@ -40,7 +43,10 @@ const Layout = () => {
         >
           <Header />
           <ToastContainer position="top-right" autoClose={3000} />
-          <Outlet />
+          <div className="mt-[80px]">
+            <Outlet />
+          </div>
+
         </ConfigProvider>
       </>
     </Provider>
@@ -105,6 +111,10 @@ const appRouter = createBrowserRouter([
         path: "/testing1",
         element: <Testing1 />,
       },
+      {
+        path: "/profile/:id",
+        element: <ProfilePage />,
+      }
 
     ],
 

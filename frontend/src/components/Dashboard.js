@@ -128,8 +128,12 @@ const Dashboard = () => {
 
      
   return (
+<<<<<<< HEAD
     
     <div>
+=======
+    <div className="mt-[80px]">
+>>>>>>> c01412bd1a96d4b0e905869a64c9d45bf25f3d15
       <div className="flex justify-between px-[50px] py-[5px]">
         <div className="flex justify-start items-center gap-2">
           <button

@@ -52,27 +52,59 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // useEffect(() => {
+  //   axios
+  //     .get(`${HOST}/getuser`, {
+  //       headers: {
+  //         authorization: "Bearer " + token,
+  //       },
+  //     })
+  //     .then(({ data: res }) => {
+  //       if (res.error) {
+  //         alert(res.error);
+  //         return;
+  //       }
+  //       setUser(res);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.message);
+  //     });
+  // }, [token]);
+
   useEffect(() => {
     axios
       .get(`${HOST}/getuser`, {
         headers: {
-          authorization: "Bearer " + token,
+          authorization: `Bearer ${token}`, // Include the token in the authorization header
         },
+        withCredentials: true, // Include cookies if needed
       })
       .then(({ data: res }) => {
         if (res.error) {
+          // Handle server-sent error messages
           alert(res.error);
+          if (res.error === "Token expired. Please log in again.") {
+            // Clear token and redirect to login if the token has expired
+            localStorage.removeItem("token"); // Assuming token is stored in localStorage
+            navigate("/"); // Redirect to login page
+          }
           return;
         }
-        setUser(res);
+        setUser(res); // Set user data if successful
       })
       .catch((err) => {
-        console.log(err.message);
+        // Handle network or unexpected errors
+        console.error("Error fetching user data:", err?.response?.data?.error);
+        if(err?.response?.data?.error === "Token expired. Please log in again."){
+          Cookies.remove("token");
+          navigate("/") // Redirect to login page
+        }
       });
   }, [token]);
 
+  
   return (
-    <>
+    <div className="fixed top-0 left-0 right-0 z-50">
       <div className={`main-container ${isDrawerOpen ? "drawer-open" : ""}`}>
         <div className="header_main left-content">
           <div className="left-panel">
@@ -156,7 +188,7 @@ const Header = () => {
           />
         </div>
       )}
-    </>
+    </div>
   );
 };
 

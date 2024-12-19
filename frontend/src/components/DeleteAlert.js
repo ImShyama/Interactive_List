@@ -17,7 +17,7 @@ const DeleteAlert = ({ isOpen, onClose, onConfirm, sheetName }) => {
                     Are You Sure?
                   </span>
                   <span className="w-[248px] text-[#2A3C54] font-poppins text-[14px] font-medium leading-normal">
-                    Are you sure you want to delete {sheetName} permanently.
+                    {sheetName} 
                   </span>
                 </div>
               </div>

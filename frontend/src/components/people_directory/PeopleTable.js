@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext, useEffect } from "react";
+import React, { useState, useMemo, useContext, useEffect, useRef } from "react";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
 import { HOST } from "../../utils/constants";
@@ -92,18 +92,18 @@ const PeopleTable = ({ data, headers, settings }) => {
     //       console.log({ showInCard, showInProfile });
     //       console.log("Updated settings:", settings);
     // };
-    
+
     // const handleCheckboxChange = async(columnKey, option, event) => {
     //     const isChecked = event.target.checked;
-    
+
     //     console.log(`Column Key: ${columnKey}, Option: ${option}, Checked: ${isChecked}`);
-    
+
     //     if (option === 'showInCard') {
     //         setShowInCard((prevState) => {
     //             const updatedState = isChecked
     //                 ? [...prevState, columnKey] // Add columnKey if checked
     //                 : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-    
+
     //             // Dispatch with updated state
     //             const updatedSettings = {
     //                 showInCard: updatedState,
@@ -113,7 +113,7 @@ const PeopleTable = ({ data, headers, settings }) => {
     //             console.log({ updatedSettings });
 
     //             // await handleSaveChanges(updatedSettings);
-    
+
     //             return updatedState;
     //         });
     //     } else if (option === 'showInProfileView') {
@@ -121,7 +121,7 @@ const PeopleTable = ({ data, headers, settings }) => {
     //             const updatedState = isChecked
     //                 ? [...prevState, columnKey] // Add columnKey if checked
     //                 : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-    
+
     //             // Dispatch with updated state
     //             const updatedSettings = {
     //                 showInCard,
@@ -131,7 +131,7 @@ const PeopleTable = ({ data, headers, settings }) => {
     //             console.log({ updatedSettings });
 
     //             // await handleSaveChanges(updatedSettings);
-    
+
     //             return updatedState;
     //         });
     //     }
@@ -139,58 +139,60 @@ const PeopleTable = ({ data, headers, settings }) => {
     //     await handleSaveChanges(updatedSettings);
     // };
 
+    
+
     const handleSaveChanges = async (updatedSettings) => {
         try {
-          // Update the settings in the backend
-          const response = await axios.put(
-            `${HOST}/spreadsheet/${settings._id}`,
-            { ...settings, ...updatedSettings }, // Merge existing settings with updates
-            {
-              headers: {
-                authorization: "Bearer " + token,
-              },
-            }
-          );
-    
-          console.log("Settings updated successfully:", response.data);
-    
-          // Dispatch updated settings to Redux store
-          dispatch(updateSetting(response.data));
-          return response.data;
-          // setIsLoading(false);
-          // setIsSaveChanges(false);
-          // notifySuccess("Settings updated successfully");
-          // closeDrawer();
+            // Update the settings in the backend
+            const response = await axios.put(
+                `${HOST}/spreadsheet/${settings._id}`,
+                { ...settings, ...updatedSettings }, // Merge existing settings with updates
+                {
+                    headers: {
+                        authorization: "Bearer " + token,
+                    },
+                }
+            );
+
+            console.log("Settings updated successfully:", response.data);
+
+            // Dispatch updated settings to Redux store
+            dispatch(updateSetting(response.data));
+            return response.data;
+            // setIsLoading(false);
+            // setIsSaveChanges(false);
+            // notifySuccess("Settings updated successfully");
+            // closeDrawer();
         } catch (error) {
-          console.error("Error updating settings in DB:", error);
-          notifyError("Error updating settings in DB:", error);
-          // setIsLoading(false);
-          // setIsSaveChanges(false);
+            console.error("Error updating settings in DB:", error);
+            notifyError("Error updating settings in DB:", error);
+            // setIsLoading(false);
+            // setIsSaveChanges(false);
         }
-      };
-    
+    };
+
     const handleCheckboxChange = async (columnKey, option, event) => {
         const isChecked = event.target.checked;
-    
+
         console.log(`Column Key: ${columnKey}, Option: ${option}, Checked: ${isChecked}`);
-    
+
         let updatedSettings = {};  // Declare the updatedSettings variable
-    
+
         if (option === 'showInCard') {
             setShowInCard((prevState) => {
                 const updatedState = isChecked
                     ? [...prevState, columnKey] // Add columnKey if checked
                     : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-    
+
                 updatedSettings = {
                     showInCard: updatedState,
                     showInProfile,  // Assuming this is being set somewhere else in your state
                 };
-    
+
                 // Dispatch with updated state
                 dispatch(updateSetting(updatedSettings));
                 // console.log({ updatedSettings });
-    
+
                 return updatedState;
             });
         } else if (option === 'showInProfileView') {
@@ -198,20 +200,20 @@ const PeopleTable = ({ data, headers, settings }) => {
                 const updatedState = isChecked
                     ? [...prevState, columnKey] // Add columnKey if checked
                     : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-    
+
                 updatedSettings = {
                     showInCard,  // Assuming this is being set somewhere else in your state
                     showInProfile: updatedState,
                 };
-    
+
                 // Dispatch with updated state
                 dispatch(updateSetting(updatedSettings));
                 // console.log({ updatedSettings });
-    
+
                 return updatedState;
             });
         }
-    
+
         // console.log({ updatedSettings });
         // // Now call handleSaveChanges with the updatedSettings
         // const response = await handleSaveChanges(settings, token, dispatch,updatedSettings);
@@ -219,7 +221,7 @@ const PeopleTable = ({ data, headers, settings }) => {
         const response = await handleSaveChanges(updatedSettings);
         console.log({ response });
     };
-    
+
 
     useEffect(() => {
         console.log("Settings:", settings);
@@ -459,11 +461,11 @@ const PeopleTable = ({ data, headers, settings }) => {
                         <Popover content={
                             <div style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Checkbox checked={showInCard.includes(columnKey)} onChange={(e) => handleCheckboxChange(columnKey,'showInCard', e)} />
+                                    <Checkbox checked={showInCard.includes(columnKey)} onChange={(e) => handleCheckboxChange(columnKey, 'showInCard', e)} />
                                     <span>Show in Card</span>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <Checkbox checked={showInProfile.includes(columnKey)} onChange={(e) => handleCheckboxChange(columnKey,'showInProfileView', e)} />
+                                    <Checkbox checked={showInProfile.includes(columnKey)} onChange={(e) => handleCheckboxChange(columnKey, 'showInProfileView', e)} />
                                     <span>Show in Profile View</span>
                                 </div>
                             </div>
@@ -614,7 +616,7 @@ const PeopleTable = ({ data, headers, settings }) => {
     };
 
     return (
-        <div>
+        <div >
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
                     <button onClick={() => navigate(-1)}>

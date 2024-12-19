@@ -307,11 +307,15 @@ button:disabled {
 }
 
 .people_table tr:nth-child(even) {
+<<<<<<< HEAD
   background-color: #f3f4f6; /* Light green for even rows */
+=======
+  background-color: #F3F4F6 !important; /* Light green for even rows */
+>>>>>>> c01412bd1a96d4b0e905869a64c9d45bf25f3d15
 }
 
 .people_table tr:nth-child(odd) {
-  background-color: #f9fff9; /* Lighter green for odd rows */
+  background-color: #f9fff9 !important; /* Lighter green for odd rows */
 }
 
 .people_table tr:hover {
