@@ -17,6 +17,7 @@ import { BiSearch } from "react-icons/bi";
 import { LuFilter } from "react-icons/lu"; // added by me
 import { CiCalendarDate } from "react-icons/ci"; // added
 import { Bs123 } from "react-icons/bs"; //added
+import { ImCancelCircle } from "react-icons/im";
 import { Resizable } from "react-resizable";
 import "react-resizable/css/styles.css";
 import {
@@ -35,7 +36,6 @@ import {
 } from "../assets/svgIcons";
 import { useNavigate } from "react-router-dom";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
-// import { FilterOutlined, UserOutlined } from "@ant-design/icons";
 import EditRow from "../components/EditRow";
 import DeleteAlert from "../components/DeleteAlert";
 import EditableSpreadsheetName from "../components/EditableSpreadsheetName";
@@ -297,72 +297,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
       notifyError("Error updating settings in DB:", error);
     }
   };
-
-  // const handleCheckboxChange = async (columnKey, option, event) => {
-  //     const isChecked = event.target.checked;
-  //     // new added
-
-  //     setNumberFilterColumn((prevSelection) => {
-  //         if (prevSelection.includes(value)) {
-  //             return prevSelection.filter((item) => item !== value); // Remove if already selected
-  //         } else {
-  //             return [...prevSelection, value]; // Add if not selected
-  //         }
-  //     });
-
-  //     setDateFilterColumn((prevSelection) => {
-  //         if (prevSelection.includes(value)) {
-  //             return prevSelection.filter((item) => item !== value); // Remove if already selected
-  //         } else {
-  //             return [...prevSelection, value]; // Add if not selected
-  //         }
-  //     });
-
-  //     let updatedSettings = {};  // Declare the updatedSettings variable
-
-  //     if (option === 'showInCard') {
-  //         setShowInCard((prevState) => {
-  //             const updatedState = isChecked
-  //                 ? [...prevState, columnKey] // Add columnKey if checked
-  //                 : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-
-  //             updatedSettings = {
-  //                 showInCard: updatedState,
-  //                 showInProfile,  // Assuming this is being set somewhere else in your state
-  //             };
-
-  //             // Dispatch with updated state
-  //             dispatch(updateSetting(updatedSettings));
-  //             // console.log({ updatedSettings });
-
-  //             return updatedState;
-  //         });
-  //     } else if (option === 'showInProfileView') {
-  //         setShowInProfile((prevState) => {
-  //             const updatedState = isChecked
-  //                 ? [...prevState, columnKey] // Add columnKey if checked
-  //                 : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-
-  //             updatedSettings = {
-  //                 showInCard,  // Assuming this is being set somewhere else in your state
-  //                 showInProfile: updatedState,
-  //             };
-
-  //             // Dispatch with updated state
-  //             dispatch(updateSetting(updatedSettings));
-  //             // console.log({ updatedSettings });
-
-  //             return updatedState;
-  //         });
-  //     }
-
-  //     // console.log({ updatedSettings });
-  //     // // Now call handleSaveChanges with the updatedSettings
-  //     // const response = await handleSaveChanges(settings, token, dispatch,updatedSettings);
-  //     // console.log({ response });
-  //     const response = await handleSaveChanges(updatedSettings);
-  //     console.log({ response });
-  // };
 
   const handleCheckboxChange = async (columnKey, option, event) => {
     const isChecked = event.target.checked;
@@ -1266,28 +1200,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     );
   };
 
-  // const calculate_min_max=(key) => {
-
-  // }
-  //   const calculate_min_max = (data, key) => {
-  //     if (!data || data.length === 0) {
-  //         return { min: null, max: null };
-  //     }
-
-  //     let min = null;
-  //     let max = null;
-
-  //     data.forEach(item => {
-  //         const value = item[key];
-  //         if (value) { // Skip empty strings or null values
-  //             if (min === null || value < min) min = value;
-  //             if (max === null || value > max) max = value;
-  //         }
-  //     });
-
-  //     return { min, max };
-  // };
-
   const calculate_number_min_max = (data, key) => {
     if (!data || data.length === 0) {
       return { min: null, max: null };
@@ -1334,6 +1246,33 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     };
   };
 
+  const updatefilterdata = (column, range) => {
+    const filteredDatatemp = data.filter((item) => {
+      const itemValue = item[column];
+      if (itemValue !== null && itemValue !== undefined) {
+        return itemValue >= range[0] && itemValue <= range[1];
+      }
+      return true;
+    });
+    setFilteredData(filteredDatatemp);
+  };
+
+  const updateDateFilterData = (column, value) => {
+    // Convert timestamp values back to ISO date strings
+    const [startDateTimestamp, endDateTimestamp] = value;
+    const startDate = new Date(startDateTimestamp).toISOString();
+    const endDate = new Date(endDateTimestamp).toISOString();
+
+    // Create the updated range object
+    const range = {
+      min: startDate,
+      max: endDate,
+    };
+
+    // Now call the updatefilterdata function with the updated range (converted back to date strings)
+    updatefilterdata(column, range);
+  };
+
   return (
     <div>
       <div className="flex text-center justify-between items-center px-[50px]">
@@ -1363,7 +1302,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                   <div key={index} className="flex flex-col items-center">
                     {/* Column Label (Above Slider, Centered) */}
                     <span className="font-medium text-gray-700 mb-2">
-                      {slider.column}
+                      {slider.column.split("_").join(" ").toUpperCase()}
                     </span>
 
                     {/* Range Slider with Values */}
@@ -1381,12 +1320,15 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                 : s
                             )
                           );
+                          console.log({ value, slider, selectedNumbers });
+                          console.log(slider.column, value);
+                          updatefilterdata(slider.column, value);
                         }}
                         min={min} // Dynamically calculated min
                         max={max} // Dynamically calculated max
                         style={{
                           width: "100%", // Full width
-                          height: "4px", // Track height same as date slider
+                          height: "4px",
                         }}
                         trackStyle={{ height: "4px" }} // Uniform track height
                         handleStyle={{
@@ -1455,6 +1397,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                 : s
                             )
                           );
+                          console.log({ value, slider, selectedDates });
+                          console.log(slider.column, value);
+                          // updateDateFilterData(slider.column, value);
                         }}
                         min={minDate} // Dynamically calculated min
                         max={maxDate} // Dynamically calculated max
@@ -1470,20 +1415,24 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                           border: "2px solid #598931",
                         }}
                       />
-                      {/* Display Range Values (Below Slider) */}
+                      {/* Display Range Values (Below Slider, Centered) */}
                       <div className="flex justify-between w-full text-sm text-gray-700 mt-2">
                         <span>
                           {slider.range
-                            ? new Date(slider.range[0]).toLocaleDateString()
+                            ? new Date(slider.range[0]).toLocaleDateString(
+                                "en-GB"
+                              ) // Format as dd-mm-yyyy
                             : min
-                            ? new Date(min).toLocaleDateString()
+                            ? new Date(min).toLocaleDateString("en-GB") // Format as dd-mm-yyyy
                             : ""}
                         </span>
                         <span>
                           {slider.range
-                            ? new Date(slider.range[1]).toLocaleDateString()
+                            ? new Date(slider.range[1]).toLocaleDateString(
+                                "en-GB"
+                              ) // Format as dd-mm-yyyy
                             : max
-                            ? new Date(max).toLocaleDateString()
+                            ? new Date(max).toLocaleDateString("en-GB") // Format as dd-mm-yyyy
                             : ""}
                         </span>
                       </div>
@@ -1518,10 +1467,17 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
               {/* Dropdown for Number */}
               {isNumberDropdownOpen && (
                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
-                    Number Options
-                  </p>
-
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-700 text-center w-full">
+                      Number Options
+                    </p>
+                    <button
+                      onClick={() => setIsNumberDropdownOpen(false)}
+                      className="text-gray-500 hover:text-gray-800 focus:outline-none"
+                    >
+                      <ImCancelCircle />
+                    </button>
+                  </div>
                   {/* Render checkboxes dynamically */}
                   {numberFilterColumn.length > 0 ? (
                     numberFilterColumn.map((item, index) => {
@@ -1561,7 +1517,20 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                               }
                             }}
                           />
-                          <span className="text-gray-800">{item}</span>
+                          {/* <span className="text-gray-800 ">{item.replace(/_/g, " ").toUpperCase()}</span> */}
+                          <span
+                            className="text-gray-800 truncate"
+                            style={{
+                              maxWidth: "250px",
+                              display: "inline-block",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                            title={item.replace(/_/g, " ").toUpperCase()} // Full text displayed on hover
+                          >
+                            {item.replace(/_/g, " ").toUpperCase()}
+                          </span>
                         </label>
                       );
                     })
@@ -1585,10 +1554,17 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
               {/* Dropdown for Date */}
               {isDateDropdownOpen && (
                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
-                  <p className="text-sm font-medium text-gray-700 mb-2">
-                    Date Options
-                  </p>
-
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium text-gray-700 text-center w-full">
+                      Date Options
+                    </p>
+                    <button
+                      onClick={() => setIsDateDropdownOpen(false)}
+                      className="text-gray-500 hover:text-gray-800 focus:outline-none"
+                    >
+                      <ImCancelCircle />
+                    </button>
+                  </div>
                   {/* Render checkboxes dynamically */}
                   {dateFilterColumn.length > 0 ? (
                     dateFilterColumn.map((item, index) => {
@@ -1627,7 +1603,20 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                               }
                             }}
                           />
-                          <span className="text-gray-800">{item}</span>
+                          {/* <span className="text-gray-800">{item.replace(/_/g, " ").toUpperCase()}</span> */}
+                          <span
+                            className="text-gray-800 truncate"
+                            style={{
+                              maxWidth: "250px",
+                              display: "inline-block",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                            title={item.replace(/_/g, " ").toUpperCase()} // Full text displayed on hover
+                          >
+                            {item.replace(/_/g, " ").toUpperCase()}
+                          </span>
                         </label>
                       );
                     })
