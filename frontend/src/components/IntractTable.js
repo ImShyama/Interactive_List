@@ -1411,13 +1411,18 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
           {selectedDates.length > 0 && (
             <div className="flex items-center gap-x-4 flex-row-reverse">
               {selectedDates.map((slider, index) => {
+                // Dynamically calculate min and max values for each slider
                 const { min, max } = calculate_min_max(
                   filteredData,
                   slider.column
                 );
-                const minDate = new Date(min).getTime();
-                const maxDate = new Date(max).getTime();
-                console.log({ minDate, maxDate });
+                const minDate = min
+                  ? new Date(min).getTime()
+                  : new Date("2000-01-01").getTime();
+                const maxDate = max
+                  ? new Date(max).getTime()
+                  : new Date().getTime();
+
                 return (
                   <div key={index} className="flex flex-col items-center">
                     {/* Column Label (Above Slider) */}
@@ -1427,8 +1432,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
                     {/* Range Slider */}
                     <div className="flex flex-col items-center w-[200px] relative">
-                      {" "}
-                      {/* Increased width */}
                       {/* Slider Component */}
                       <Slider
                         range
@@ -1437,12 +1440,8 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             ? slider.range.map((date) =>
                                 new Date(date).getTime()
                               )
-                            : [
-                                new Date("2000-01-01").getTime(),
-                                new Date().getTime(),
-                              ]
+                            : [minDate, maxDate] // Default to dynamically calculated min and max
                         }
-                        // Convert date range to timestamps if slider.range exists, otherwise default to Jan 1, 2000, to today
                         onChange={(value) => {
                           setSelectedDates((prev) =>
                             prev.map((s) =>
@@ -1452,13 +1451,13 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                     range: value.map((ts) =>
                                       new Date(ts).toISOString()
                                     ),
-                                  } // Convert timestamps back to ISO string
+                                  }
                                 : s
                             )
                           );
                         }}
-                        min={new Date("2000-01-01").getTime()} // Set min date to 1/1/2000
-                        max={new Date().getTime()} // Set max date to today's date
+                        min={minDate} // Dynamically calculated min
+                        max={maxDate} // Dynamically calculated max
                         step={24 * 60 * 60 * 1000} // Step is 1 day (in milliseconds)
                         style={{
                           width: "100%", // Full width
@@ -1471,13 +1470,21 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                           border: "2px solid #598931",
                         }}
                       />
-                      {/* Display Range Values (Below Slider, Same Line) */}
+                      {/* Display Range Values (Below Slider) */}
                       <div className="flex justify-between w-full text-sm text-gray-700 mt-2">
                         <span>
-                          {new Date(slider.range[0]).toLocaleDateString()}
+                          {slider.range
+                            ? new Date(slider.range[0]).toLocaleDateString()
+                            : min
+                            ? new Date(min).toLocaleDateString()
+                            : ""}
                         </span>
                         <span>
-                          {new Date(slider.range[1]).toLocaleDateString()}
+                          {slider.range
+                            ? new Date(slider.range[1]).toLocaleDateString()
+                            : max
+                            ? new Date(max).toLocaleDateString()
+                            : ""}
                         </span>
                       </div>
                     </div>
@@ -1585,7 +1592,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                   {/* Render checkboxes dynamically */}
                   {dateFilterColumn.length > 0 ? (
                     dateFilterColumn.map((item, index) => {
-                      // Determine if the current item is already selected
                       const isChecked = selectedDates.some(
                         (slider) => slider.column === item
                       );
@@ -1599,8 +1605,27 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                           <input
                             type="checkbox"
                             className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
-                            checked={isChecked} // Bind the checkbox state to selectedDates
-                            onChange={(e) => handleDateCheckboxChange(e, item)}
+                            checked={isChecked}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                // Add the item with dynamically calculated range
+                                const { min, max } = calculate_min_max(
+                                  filteredData,
+                                  item
+                                );
+                                setSelectedDates((prev) => [
+                                  ...prev,
+                                  { column: item, range: [min, max] },
+                                ]);
+                              } else {
+                                // Remove the item when unchecked
+                                setSelectedDates((prev) =>
+                                  prev.filter(
+                                    (slider) => slider.column !== item
+                                  )
+                                );
+                              }
+                            }}
                           />
                           <span className="text-gray-800">{item}</span>
                         </label>
