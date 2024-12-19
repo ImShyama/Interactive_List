@@ -1292,10 +1292,10 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     if (!data || data.length === 0) {
       return { min: null, max: null };
     }
-  
+
     let min = null;
     let max = null;
-  
+
     data.forEach((item) => {
       const value = parseFloat(item[key]); // Ensure the value is a number
       if (!isNaN(value)) {
@@ -1303,7 +1303,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         if (max === null || value > max) max = value;
       }
     });
-  
+
     return {
       min: min !== null ? min : 0,
       max: max !== null ? max : 1000,
@@ -1352,53 +1352,58 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
           {/* Dynamically Render Sliders for Selected Checkboxes */}
           {selectedNumbers.length > 0 && (
             <div className="flex flex-wrap gap-x-4 flex-row-reverse">
-              {selectedNumbers.map((slider, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  {/* Column Label (Above Slider, Centered) */}
-                  <span className="font-medium text-gray-700 mb-2">
-                    {slider.column}
-                  </span>
+              {selectedNumbers.map((slider, index) => {
+                // Dynamically calculate min and max values for each slider
+                const { min, max } = calculate_number_min_max(
+                  data,
+                  slider.column
+                );
+                console.log({ min, max });
+                return (
+                  <div key={index} className="flex flex-col items-center">
+                    {/* Column Label (Above Slider, Centered) */}
+                    <span className="font-medium text-gray-700 mb-2">
+                      {slider.column}
+                    </span>
 
-                  {/* Range Slider with Values */}
-                  <div className="flex flex-col items-center w-[200px] relative">
-                    {" "}
-                    {/* No box around the slider */}
-                    {/* Slider Component */}
-                    <Slider
-                      range
-                      // defaultValue={slider.range}
-                      onChange={(value) => {
-                        // Update the range for the respective slider
-                        setSelectedNumbers((prev) =>
-                          prev.map((s) =>
-                            s.column === slider.column
-                              ? { ...s, range: value }
-                              : s
-                          )
-                        );
-                      }}
-                      min={0}
-                      max={1000}
-                      value={slider.range}
-                      style={{
-                        width: "100%", // Full width
-                        height: "4px", // Track height same as date slider
-                      }}
-                      trackStyle={{ height: "4px" }} // Uniform track height
-                      handleStyle={{
-                        height: "14px", // Same handle size as date slider
-                        width: "14px",
-                        border: "2px solid #598931",
-                      }}
-                    />
-                    {/* Display Range Values (Below Slider, Centered) */}
-                    <div className="flex justify-between w-full text-sm text-gray-700 mt-2">
-                      <span>{slider.range[0]}</span>
-                      <span>{slider.range[1]}</span>
+                    {/* Range Slider with Values */}
+                    <div className="flex flex-col items-center w-[200px] relative">
+                      {/* Slider Component */}
+                      <Slider
+                        range
+                        value={slider.range || [min, max]} // Use calculated min and max if range is not defined
+                        onChange={(value) => {
+                          // Update the range for the respective slider
+                          setSelectedNumbers((prev) =>
+                            prev.map((s) =>
+                              s.column === slider.column
+                                ? { ...s, range: value }
+                                : s
+                            )
+                          );
+                        }}
+                        min={min} // Dynamically calculated min
+                        max={max} // Dynamically calculated max
+                        style={{
+                          width: "100%", // Full width
+                          height: "4px", // Track height same as date slider
+                        }}
+                        trackStyle={{ height: "4px" }} // Uniform track height
+                        handleStyle={{
+                          height: "14px", // Same handle size as date slider
+                          width: "14px",
+                          border: "2px solid #598931",
+                        }}
+                      />
+                      {/* Display Range Values (Below Slider, Centered) */}
+                      <div className="flex justify-between w-full text-sm text-gray-700 mt-2">
+                        <span>{slider.range ? slider.range[0] : min}</span>
+                        <span>{slider.range ? slider.range[1] : max}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
@@ -1510,7 +1515,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     Number Options
                   </p>
 
-                  {/* code before */}
                   {/* Render checkboxes dynamically */}
                   {numberFilterColumn.length > 0 ? (
                     numberFilterColumn.map((item, index) => {
@@ -1531,10 +1535,14 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             checked={isChecked} // Bind the checkbox state to the selectedNumbers
                             onChange={(e) => {
                               if (e.target.checked) {
-                                // Add the item with a default range when checked
+                                // Add the item with dynamically calculated range
+                                const { min, max } = calculate_number_min_max(
+                                  data,
+                                  item
+                                );
                                 setSelectedNumbers((prev) => [
                                   ...prev,
-                                  { column: item, range: [0, 1000] },
+                                  { column: item, range: [min, max] },
                                 ]);
                               } else {
                                 // Remove the item when unchecked
