@@ -526,6 +526,159 @@ const Testing1 = () => {
                     />
                 </div>
             </div>
+            {/* Dynamically Render Sliders for Selected Checkboxes */}
+                                {selectedNumbers.length > 0 && (
+                                    <div className="flex flex-wrap">
+                                        {selectedNumbers.map((slider, index) => {
+                                            const { min, max } = calculate_number_min_max(
+                                                data,
+                                                slider.column
+                                            );
+                                            console.log({ min, max });
+                                            return (
+                                                <div key={index} className="flex flex-col items-center mx-2">
+                                                    {/* Column Label (Above Slider, Centered) */}
+                                                    <span className="font-medium text-gray-700 mb-1">
+                                                        {slider.column.split("_").join(" ").toUpperCase()}
+                                                    </span>
+            
+                                                    {/* Range Slider with Values */}
+                                                    <div className="flex flex-col items-center w-[200px] relative">
+                                                        {/* Slider Component */}
+                                                        <Slider
+                                                            range
+                                                            value={slider.range || [min, max]} // Use calculated min and max if range is not defined
+                                                            onChange={(value) => {
+                                                                // Update the range for the respective slider
+                                                                setSelectedNumbers((prev) =>
+                                                                    prev.map((s) =>
+                                                                        s.column === slider.column
+                                                                            ? { ...s, range: value }
+                                                                            : s
+                                                                    )
+                                                                );
+                                                                console.log({ value, slider, selectedNumbers });
+                                                                console.log(slider.column, value);
+                                                                updatefilterdata(slider.column, value);
+                                                            }}
+                                                            min={min} // Dynamically calculated min
+                                                            max={max} // Dynamically calculated max
+                                                            style={{
+                                                                width: "100%", // Full width
+                                                                height: "4px",
+                                                            }}
+                                                            trackStyle={{ height: "4px" }} // Uniform track height
+                                                            handleStyle={{
+                                                                height: "14px", // Same handle size as date slider
+                                                                width: "14px",
+                                                                border: "2px solid #598931",
+                                                            }}
+                                                        />
+                                                        {/* Display Range Values (Below Slider, Centered) */}
+                                                        <div className="flex justify-between w-full text-sm text-gray-700 mt-1">
+                                                            <span>{slider.range ? slider.range[0] : min}</span>
+                                                            <span>{slider.range ? slider.range[1] : max}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+            
+                                {/* Dynamically Render Sliders for Selected Date Checkbox */}
+                                {selectedDates.length > 0 && (
+                                    <div className="flex flex-wrap">
+                                        {selectedDates.map((slider, index) => {
+                                            // Dynamically calculate min and max values for each slider
+                                            const { min, max } = calculate_min_max(
+                                                filteredData,
+                                                slider.column
+                                            );
+                                            const minDate = min
+                                                ? new Date(min).getTime()
+                                                : new Date("2000-01-01").getTime();
+                                            const maxDate = max
+                                                ? new Date(max).getTime()
+                                                : new Date().getTime();
+            
+                                            return (
+                                                <div key={index} className="flex flex-col items-center mx-2">
+                                                    {/* Column Label (Above Slider) */}
+                                                    <span className="font-medium text-gray-700 mb-2">
+                                                        {slider.column.split("_").join(" ").toUpperCase()}
+                                                    </span>
+            
+                                                    {/* Range Slider */}
+                                                    <div className="flex flex-col items-center w-[200px] relative">
+                                                        {/* Slider Component */}
+                                                        <Slider
+                                                            range
+                                                            value={
+                                                                slider.range
+                                                                    ? slider.range.map((date) =>
+                                                                        new Date(date).getTime()
+                                                                    )
+                                                                    : [minDate, maxDate] // Default to dynamically calculated min and max
+                                                            }
+                                                            onChange={(value) => {
+                                                                setSelectedDates((prev) =>
+                                                                    prev.map((s) =>
+                                                                        s.column === slider.column
+                                                                            ? {
+                                                                                ...s,
+                                                                                range: value.map((ts) =>
+                                                                                    new Date(ts).toISOString()
+                                                                                ),
+                                                                            }
+                                                                            : s
+                                                                    )
+                                                                );
+                                                                console.log({ value, slider, selectedDates });
+                                                                console.log(slider.column, value);
+                                                                // updateDateFilterData(slider.column, value);
+                                                            }}
+                                                            min={minDate} // Dynamically calculated min
+                                                            max={maxDate} // Dynamically calculated max
+                                                            step={24 * 60 * 60 * 1000} // Step is 1 day (in milliseconds)
+                                                            style={{
+                                                                width: "100%", // Full width
+                                                                height: "4px", // Track height
+                                                            }}
+                                                            trackStyle={{ height: "4px" }} // Track height
+                                                            handleStyle={{
+                                                                height: "14px", // Handle size
+                                                                width: "14px",
+                                                                border: "2px solid #598931",
+                                                            }}
+                                                        />
+                                                        {/* Display Range Values (Below Slider, Centered) */}
+                                                        <div className="flex justify-between w-full text-sm text-gray-700 mt-1">
+                                                            <span>
+                                                                {slider.range
+                                                                    ? new Date(slider.range[0]).toLocaleDateString(
+                                                                        "en-GB"
+                                                                    ) // Format as dd-mm-yyyy
+                                                                    : min
+                                                                        ? new Date(min).toLocaleDateString("en-GB") // Format as dd-mm-yyyy
+                                                                        : ""}
+                                                            </span>
+                                                            <span>
+                                                                {slider.range
+                                                                    ? new Date(slider.range[1]).toLocaleDateString(
+                                                                        "en-GB"
+                                                                    ) // Format as dd-mm-yyyy
+                                                                    : max
+                                                                        ? new Date(max).toLocaleDateString("en-GB") // Format as dd-mm-yyyy
+                                                                        : ""}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
         </div>
     )
 };
