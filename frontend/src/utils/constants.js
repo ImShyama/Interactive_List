@@ -1,8 +1,8 @@
 export const CLIENT_ID = "733145859090-a841efgntmtqmpqn8u08oiulimf0leeu.apps.googleusercontent.com";
-export const HOST = "http://localhost:4000"
-export const FRONTENDHOST = "http://localhost:1234"
-// export const HOST = ""
-// export const FRONTENDHOST = "https://interact.ceoitbox.com"
+// export const HOST = "http://localhost:4000"
+// export const FRONTENDHOST = "http://localhost:1234"
+export const HOST = ""
+export const FRONTENDHOST = "https://interact.ceoitbox.com"
 // export const FRONTENDHOST = "https://interactive-list.onrender.com"
 export const APPSNAME = ["Interactive List",
   //  "People Directory"

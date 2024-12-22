@@ -1,6 +1,0 @@
-<svg width="11" height="18" viewBox="0 0 11 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="Group 35">
-<path id="Polygon 1" d="M5.5 0.5L10.2631 6.5H0.73686L5.5 0.5Z" fill="#111111"></path>
-<path id="Polygon 2" d="M5.5 17.5L10.2631 11.5H0.73686L5.5 17.5Z" fill="#111111"></path>
-</g>
-</svg>
