@@ -159,7 +159,7 @@ const Header = () => {
           ) : (
             <div>
               <button
-                className="flex w-[140px] p-[10px] justify-center items-center gap-[10px] rounded-[14px] bg-[var(--brand-color-2,#FFA500)]"
+                className="flex w-[140px] p-[10px] justify-center items-center gap-[10px] rounded-[14px] bg-[var(--primary,#BED900)]"
                 onClick={(e) => {
                   navigate("/");
                 }}

@@ -101,13 +101,6 @@ function GoogleSignin() {
 
   return (
     <div className="flex justify-center h-[90vh]">
-      {/* <div className="form_container">
-      <h2>Signin With Google</h2>
-      <button onClick={() => {
-        window.location.href = "http://localhost:4000/auth/google"
-      }}>Sign in with Google 🚀 </button>
-
-    </div> */}
       <Sigin />
     </div>
   );

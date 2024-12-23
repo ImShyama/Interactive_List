@@ -24,6 +24,14 @@ import { MdEdit, MdDelete, MdOutlineLabel } from "react-icons/md";
 import { IoSaveSharp, IoSearchOutline } from "react-icons/io5";
 import { FaSort } from "react-icons/fa";
 import { editMultipleRows, deleteMultiple } from "../APIs/index";
+import { LuFilter } from "react-icons/lu"; // added by me
+import { CiCalendarDate } from "react-icons/ci"; // added
+import { Bs123 } from "react-icons/bs"; //added
+import { ImCancelCircle } from "react-icons/im";
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css"; // Import slider styles
+import { RxDividerVertical } from "react-icons/rx";
+import _, { debounce } from "lodash";
 
 
 const convertArrayToJSON = (data) => {
@@ -118,7 +126,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const dispatch = useDispatch();
     const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
     const tableRef = useRef(null);
-    const [headerBgColor, setHeaderBgColor] = useState(tableSettings?.headerBgColor || '#000000'); // Default header background color
+    const [headerBgColor, setHeaderBgColor] = useState(tableSettings?.headerBgColor || '#F3F4F6'); // Default header background color
     const [headerTextColor, setHeaderTextColor] = useState(tableSettings?.headerTextColor || '#ffffff'); // Default header text color
     const [headerFontSize, setHeaderFontSize] = useState(tableSettings?.headerFontSize || 14); // Default header font size
     const [headerFontFamily, setHeaderFontFamily] = useState(tableSettings?.headerFontStyle || 'Poppins'); // Default header font family
@@ -143,27 +151,8 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         const savedWidths = localStorage.getItem(storageKey);
         console.log("loading column width: ", JSON.parse(savedWidths));
         return savedWidths ? JSON.parse(savedWidths) : null;
-        
+
     };
-
-    // useEffect(() => {
-    //     const savedColumnWidths = loadColumnWidthsFromCookies();
-    //     if (savedColumnWidths) {
-    //         const newColumns = columnWidths.map((col, index) => ({
-    //             ...col,
-    //             width: savedColumnWidths[index] || col.width, // Use saved width or fallback to default width
-    //         }));
-
-    //         setColumnWidths(newColumns);
-    //     }
-    // }, []);
-
-    // const saveColumnWidthsToCookies = (columnWidths) => {
-    //     console.log(columnWidths);
-    //     const storageKey = settings?._id + settings?.firstSheetName;
-    //     localStorage.setItem(storageKey, JSON.stringify(columnWidths));
-    // };
-    // console.log({columnWidths});
 
     const saveColumnWidthsToCookies = (columnWidthsTemp) => {
         if (!settings || !settings._id || !settings.firstSheetName) {
@@ -362,19 +351,71 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         setRowsPerPage(pageSize);
     };
 
-    const handleResize = (column) => (e, { size }) => {
-        setColumnWidths((prev) => {
-            const updatedWidths = {
-                ...prev,
-                [column]: size.width,
-            };
+    // const handleResize = (column) => (e, { size }) => {
+    //     setColumnWidths((prev) => {
+    //         const updatedWidths = {
+    //             ...prev,
+    //             [column]: size.width,
+    //         };
 
-            saveColumnWidthsToCookies(updatedWidths); // Save the updated widths
-            console.log({ updatedWidths });
+    //         saveColumnWidthsToCookies(updatedWidths); // Save the updated widths
+    //         console.log({ updatedWidths });
 
-            return updatedWidths; // Return updated state
-        });
-    };
+    //         return updatedWidths; // Return updated state
+    //     });
+    // };
+
+    const handleResize = (column) =>
+        _.throttle((e, { size }) => {
+            setColumnWidths((prev) => {
+                const updatedWidths = {
+                    ...prev,
+                    [column]: size.width,
+                };
+
+                debounce(() => saveColumnWidthsToCookies(updatedWidths), 500); // Save after resizing stops
+
+                return updatedWidths;
+            });
+        }, 10); // Throttle updates to ensure responsiveness
+
+
+    // Optimize resizing for smooth updates
+    // Real-time DOM update handler
+    // const handleResize = (columnKey) => {
+    //     let animationFrameId = null;
+
+    //     return (e, { size }) => {
+    //         if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+    //         animationFrameId = requestAnimationFrame(() => {
+    //             const headerElement = document.getElementById(`header${headers.indexOf(columnKey)}`);
+    //             if (headerElement) {
+    //                 headerElement.style.width = `${size.width}px`;
+    //                 headerElement.style.minWidth = `${size.width}px`;
+    //             }
+    //         });
+    //     };
+    // };
+
+    // // State update handler after resizing stops
+    // const handleResizeStop = (columnKey) => (e, { size }) => {
+    //     setColumnWidths((prev) => {
+    //         const updatedWidths = {
+    //             ...prev,
+    //             [columnKey]: size.width,
+    //         };
+
+    //         saveColumnWidthsToCookies(updatedWidths); // Persist updated widths
+    //         console.log("Column widths saved under key:", updatedWidths);
+
+    //         return updatedWidths; // Return updated state
+    //     });
+    // };
+
+
+
+
 
     // Function to handle row edit
     const handleEdit = (record) => {
@@ -652,6 +693,12 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             // closePopover();
         };
 
+        // const filteredOptions = searchText
+        // ? initialData.filter((option) =>
+        //       option.label.toLowerCase().includes(searchText.toLowerCase())
+        //   )
+        // : initialData;
+
         return (
             <div className="flex-row justify-between items-center" style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
                 <div className="flex justify-between">
@@ -702,9 +749,37 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                         onSearch={handleSearch}
                     >
                         {options.map((option) => (
-                            <AutoComplete.Option key={option.value}><Checkbox onChange={() => handleSelect(option.value)} checked={globalOption[columnKey]?.includes(option.value) || selectedValues.includes(option.value)} value={option.value}>{option.label}</Checkbox></AutoComplete.Option>
+                            <AutoComplete.Option key={option.value}><Checkbox onChange={(e) => {
+                                handleSelect(option.value);
+                            }} checked={globalOption[columnKey]?.includes(option.value) || selectedValues.includes(option.value)} value={option.value}>{option.label}</Checkbox></AutoComplete.Option>
                         ))}
                     </AutoComplete>
+
+                    {/* <AutoComplete
+                        style={{ width: 200 }}
+                        placeholder="Select options"
+                        filterOption={false}
+                        onSearch={handleSearch}
+                        open // Force the dropdown to remain open
+                        dropdownClassName="custom-dropdown" // Add custom class for dropdown if needed
+                    >
+                        {options.map((option) => (
+                            <AutoComplete.Option key={option.value}>
+                                <div
+                                    onMouseDown={(e) => e.preventDefault()} // Prevent dropdown from closing
+                                    style={{ display: "flex", alignItems: "center" }}
+                                >
+                                    <Checkbox
+                                        onChange={() => handleSelect(option.value)}
+                                        checked={selectedValues.includes(option.value)}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </Checkbox>
+                                </div>
+                            </AutoComplete.Option>
+                        ))}
+                    </AutoComplete> */}
                 </div>
             </div>
         )
@@ -722,8 +797,30 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             <Resizable
                 width={columnWidths[columnKey]}
                 height={0}
-                onResize={handleResize(columnKey)}
+                onResize={handleResize(columnKey)} // Immediate DOM updates
+                // onResizeStop={handleResizeStop(columnKey)} // Final state update
                 draggableOpts={{ enableUserSelectHack: false }}
+                handle={
+                    <div
+                        style={{
+                            position: "absolute",
+                            right: 0,
+                            bottom: 0,
+                            cursor: "col-resize", // Keeps the resizing cursor
+                            zIndex: 10, // Ensure it stays above other elements
+                            display: "flex", // Allows icon alignment
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: "15px", // Adjust based on the size of your icon
+                            height: "100%",
+                        }}
+                    >
+                        <RxDividerVertical style={{ color: "gray", fontSize: "32px" }} /> {/* Replace with your preferred icon */}
+                    </div>
+                }
+                style={{
+                    backgroundColor: headerBgColor,
+                }}
             >
                 <th
                     className="px-4 py-4 border-b border-gray-300"
@@ -740,7 +837,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                         whiteSpace: "nowrap",
                         fontFamily: headerFontFamily, // Font family
                         fontSize: `${headerFontSize}px`, // Font size
-                        borderRight: isPinned && `4px solid #bed900`,
+                        // borderRight: isPinned && `4px solid #bed900`,
                     }}
                 >
                     <div
@@ -1136,8 +1233,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     }
 
-    const handleDoubleClick = (e, key_id, header) => {
-        console.log({ e, key_id, header });
+    const handleDoubleClick = (key_id, header) => {
         setIschecked([...ischecked, key_id]);
         setEditData((prev) => [...prev, header]);
         setIsedit(true);
@@ -1179,6 +1275,123 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         );
     };
 
+
+    {/* Dynamically Render Sliders for Selected Checkboxes */ }
+    // const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const toggleFilterBox = () => {
+        setIsFilterOpen(!isFilterOpen);
+        setIsNumberDropdownOpen(false);
+        setIsDateDropdownOpen(false);
+        setSelectedNumbers([]); // Clear selected number filters
+        setSelectedDates([]); // Clear selected date filters
+        localStorage.removeItem("selectedNumbers");
+        localStorage.removeItem("selectedDates");
+    };
+
+    //added latest
+    const [selectedNumbers, setSelectedNumbers] = useState(
+        JSON.parse(localStorage.getItem("selectedNumbers")) || []
+    );
+    const [selectedDates, setSelectedDates] = useState(
+        JSON.parse(localStorage.getItem("selectedDates")) || []
+    );
+    const toggleNumberDropdown = () => {
+        setIsNumberDropdownOpen(!isNumberDropdownOpen);
+        setIsDateDropdownOpen(false); // Close date dropdown
+    };
+    const toggleDateDropdown = () => {
+        setIsDateDropdownOpen(!isDateDropdownOpen);
+        setIsNumberDropdownOpen(false); // Close number dropdown
+    };
+
+
+    const [isNumberDropdownOpen, setIsNumberDropdownOpen] = useState(false);
+    const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+    const [numberFilterColumn, setNumberFilterColumn] = useState(getHeadersWithDateAndNumbers(data).numberColumns);
+    const [dateFilterColumn, setDateFilterColumn] = useState(getHeadersWithDateAndNumbers(data).dateColumns);
+
+
+    const calculate_number_min_max = (data, key) => {
+        if (!data || data.length === 0) {
+            return { min: null, max: null };
+        }
+
+        let min = null;
+        let max = null;
+
+        data.forEach((item) => {
+            const value = parseFloat(item[key]); // Ensure the value is a number
+            if (!isNaN(value)) {
+                if (min === null || value < min) min = value;
+                if (max === null || value > max) max = value;
+            }
+        });
+
+        return {
+            min: min !== null ? min : 0,
+            max: max !== null ? max : 1000,
+        };
+    };
+    const calculate_min_max = (data, key) => {
+        console.log({ data, key });
+        if (!data || data.length === 0) {
+            return { min: null, max: null };
+        }
+
+        let min = null;
+        let max = null;
+
+        data.forEach((item) => {
+            const value = new Date(item[key]).getTime(); // Convert value to timestamp
+            if (!isNaN(value)) {
+                // Check if it's a valid date
+                if (min === null || value < min) min = value;
+                if (max === null || value > max) max = value;
+            }
+        });
+
+        // Return min and max in ISO string format for better use
+        return {
+            min: min ? new Date(min).toISOString() : null,
+            max: max ? new Date(max).toISOString() : null,
+        };
+    };
+
+    const updatefilterdata = (column, range) => {
+        const filteredDatatemp = data.filter((item) => {
+            const itemValue = item[column];
+            if (itemValue !== null && itemValue !== undefined) {
+                return itemValue >= range[0] && itemValue <= range[1];
+            }
+            return true;
+        });
+        setFilteredData(filteredDatatemp);
+    };
+
+    const updateDateFilterData = (column, value) => {
+        // Convert timestamp values back to ISO date strings
+        const [startDateTimestamp, endDateTimestamp] = value;
+        const startDate = new Date(startDateTimestamp).toISOString();
+        const endDate = new Date(endDateTimestamp).toISOString();
+
+        // Create the updated range object
+        const range = {
+            min: startDate,
+            max: endDate,
+        };
+
+        // Now call the updatefilterdata function with the updated range (converted back to date strings)
+        updatefilterdata(column, range);
+    };
+
+    useEffect(() => {
+        if (ischecked.length < 1) {
+            setIsedit(false);
+        }
+    }, [ischecked])
+
+
     return (
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
@@ -1188,8 +1401,318 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
-                <div></div>
+                <div className="flex ">
+                    {selectedNumbers.length > 0 && (
+                        <div className="flex flex-wrap gap-4 justify-center">
+                            {selectedNumbers.map((slider, index) => {
+                                const { min, max } = calculate_number_min_max(data, slider.column);
+                                return (
+                                    <div key={index} className="flex flex-col items-center w-[240px]">
+                                        <span className="font-medium text-gray-700 mb-2 text-center text-[14px]">
+                                            {slider.column.split("_").join(" ").toUpperCase()}
+                                        </span>
+                                        <div className="flex flex-col items-center w-full relative">
+                                            <Slider
+                                                range
+                                                value={slider.range || [min, max]}
+                                                onChange={(value) => {
+                                                    setSelectedNumbers((prev) =>
+                                                        prev.map((s) =>
+                                                            s.column === slider.column
+                                                                ? { ...s, range: value }
+                                                                : s
+                                                        )
+                                                    );
+                                                    updatefilterdata(slider.column, value);
+                                                }}
+                                                min={min}
+                                                max={max}
+                                                style={{ width: "100%" }}
+                                                trackStyle={{ height: "4px" }}
+                                                handleStyle={{
+                                                    height: "14px",
+                                                    width: "14px",
+                                                    border: "2px solid #598931",
+                                                }}
+                                            />
+                                            <div className="flex justify-between w-full text-sm text-gray-700 mt-1 ">
+                                                <span className="text-[14px]">{slider.range ? slider.range[0] : min}</span>
+                                                <span className="text-[14px]">{slider.range ? slider.range[1] : max}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {selectedDates.length > 0 && (
+                        <div className="flex flex-wrap gap-4 justify-center">
+                            {selectedDates.map((slider, index) => {
+                                const { min, max } = calculate_min_max(filteredData, slider.column);
+                                const minDate = min
+                                    ? new Date(min).getTime()
+                                    : new Date("2000-01-01").getTime();
+                                const maxDate = max
+                                    ? new Date(max).getTime()
+                                    : new Date().getTime();
+
+                                return (
+                                    <div key={index} className="flex flex-col items-center w-[240px]">
+                                        <span className="font-medium text-gray-700 mb-2 text-center text-[14px]">
+                                            {slider.column.split("_").join(" ").toUpperCase()}
+                                        </span>
+                                        <div className="flex flex-col items-center w-full relative">
+                                            <Slider
+                                                range
+                                                value={
+                                                    slider.range
+                                                        ? slider.range.map((date) => new Date(date).getTime())
+                                                        : [minDate, maxDate]
+                                                }
+                                                onChange={(value) => {
+                                                    setSelectedDates((prev) =>
+                                                        prev.map((s) =>
+                                                            s.column === slider.column
+                                                                ? {
+                                                                    ...s,
+                                                                    range: value.map((ts) =>
+                                                                        new Date(ts).toISOString()
+                                                                    ),
+                                                                }
+                                                                : s
+                                                        )
+                                                    );
+                                                }}
+                                                min={minDate}
+                                                max={maxDate}
+                                                step={24 * 60 * 60 * 1000}
+                                                style={{ width: "100%" }}
+                                                trackStyle={{ height: "4px" }}
+                                                handleStyle={{
+                                                    height: "14px",
+                                                    width: "14px",
+                                                    border: "2px solid #598931",
+                                                }}
+                                            />
+                                            <div className="flex justify-between w-full text-sm text-gray-700 mt-1">
+                                                <span className="text-[14px]">
+                                                    {slider.range
+                                                        ? new Date(slider.range[0]).toLocaleDateString("en-GB")
+                                                        : min
+                                                            ? new Date(min).toLocaleDateString("en-GB")
+                                                            : ""}
+                                                </span>
+                                                <span className="text-[14px]">
+                                                    {slider.range
+                                                        ? new Date(slider.range[1]).toLocaleDateString("en-GB")
+                                                        : max
+                                                            ? new Date(max).toLocaleDateString("en-GB")
+                                                            : ""}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                </div>
                 <div className="flex justify-end items-center">
+
+                    {!isFilterOpen ? (
+                        <button
+                            onClick={toggleFilterBox}
+                            className="bg-primary rounded-[4px] p-1 border-2 border-white text-white focus:outline-none"
+                        >
+                            <LuFilter className="text-white" size={18} />
+                        </button>
+                    ) : (
+                        <div className="w-[115px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1 px-2 relative">
+                            {/* Number Icon */}
+                            <button
+                                className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
+                                //  onClick={toggleNumberDropdown}
+                                onClick={() => {
+                                    toggleNumberDropdown();
+                                    // setSelectedDates([]); // Clear date sliders
+                                }}
+                            >
+                                <Bs123 className="text-green-900" size={20} />
+                            </button>
+
+                            {/* Dropdown for Number */}
+                            {isNumberDropdownOpen && (
+                                <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm font-medium text-gray-700 text-center w-full">
+                                            Number Options
+                                        </p>
+                                        <button
+                                            onClick={() => setIsNumberDropdownOpen(false)}
+                                            className="text-gray-500 hover:text-gray-800 focus:outline-none"
+                                        >
+                                            <ImCancelCircle />
+                                        </button>
+                                    </div>
+                                    {/* Render checkboxes dynamically */}
+                                    {numberFilterColumn.length > 0 ? (
+                                        numberFilterColumn.map((item, index) => {
+                                            // Determine if the current item is already selected
+                                            const isChecked = selectedNumbers.some(
+                                                (slider) => slider.column === item
+                                            );
+
+                                            return (
+                                                <label
+                                                    key={index}
+                                                    className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+                                                >
+                                                    {/* Checkbox to toggle range slider */}
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
+                                                        checked={isChecked} // Bind the checkbox state to the selectedNumbers
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                // Add the item with dynamically calculated range
+                                                                const { min, max } = calculate_number_min_max(
+                                                                    data,
+                                                                    item
+                                                                );
+                                                                setSelectedNumbers((prev) => [
+                                                                    ...prev,
+                                                                    { column: item, range: [min, max] },
+                                                                ]);
+                                                            } else {
+                                                                // Remove the item when unchecked
+                                                                setSelectedNumbers((prev) =>
+                                                                    prev.filter(
+                                                                        (slider) => slider.column !== item
+                                                                    )
+                                                                );
+                                                            }
+                                                        }}
+                                                    />
+                                                    {/* <span className="text-gray-800 ">{item.replace(/_/g, " ").toUpperCase()}</span> */}
+                                                    <span
+                                                        className="text-gray-800 truncate"
+                                                        style={{
+                                                            maxWidth: "250px",
+                                                            display: "inline-block",
+                                                            whiteSpace: "nowrap",
+                                                            overflow: "hidden",
+                                                            textOverflow: "ellipsis",
+                                                        }}
+                                                        title={item.replace(/_/g, " ").toUpperCase()} // Full text displayed on hover
+                                                    >
+                                                        {item.replace(/_/g, " ").toUpperCase()}
+                                                    </span>
+                                                </label>
+                                            );
+                                        })
+                                    ) : (
+                                        <p className="text-gray-500">No options available</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Date Icon */}
+                            <button
+                                className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
+                                onClick={() => {
+                                    toggleDateDropdown();
+                                    // setSelectedNumbers([]); // Clear number sliders
+                                }}
+                            >
+                                <CiCalendarDate className="text-green-900" size={20} />
+                            </button>
+
+                            {/* Dropdown for Date */}
+                            {isDateDropdownOpen && (
+                                <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-sm font-medium text-gray-700 text-center w-full">
+                                            Date Options
+                                        </p>
+                                        <button
+                                            onClick={() => setIsDateDropdownOpen(false)}
+                                            className="text-gray-500 hover:text-gray-800 focus:outline-none"
+                                        >
+                                            <ImCancelCircle />
+                                        </button>
+                                    </div>
+                                    {/* Render checkboxes dynamically */}
+                                    {dateFilterColumn.length > 0 ? (
+                                        dateFilterColumn.map((item, index) => {
+                                            const isChecked = selectedDates.some(
+                                                (slider) => slider.column === item
+                                            );
+
+                                            return (
+                                                <label
+                                                    key={index}
+                                                    className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
+                                                >
+                                                    {/* Checkbox to toggle range sliders for dates */}
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
+                                                        checked={isChecked}
+                                                        onChange={(e) => {
+                                                            if (e.target.checked) {
+                                                                // Add the item with dynamically calculated range
+                                                                const { min, max } = calculate_min_max(
+                                                                    filteredData,
+                                                                    item
+                                                                );
+                                                                setSelectedDates((prev) => [
+                                                                    ...prev,
+                                                                    { column: item, range: [min, max] },
+                                                                ]);
+                                                            } else {
+                                                                // Remove the item when unchecked
+                                                                setSelectedDates((prev) =>
+                                                                    prev.filter(
+                                                                        (slider) => slider.column !== item
+                                                                    )
+                                                                );
+                                                            }
+                                                        }}
+                                                    />
+                                                    {/* <span className="text-gray-800">{item.replace(/_/g, " ").toUpperCase()}</span> */}
+                                                    <span
+                                                        className="text-gray-800 truncate"
+                                                        style={{
+                                                            maxWidth: "250px",
+                                                            display: "inline-block",
+                                                            whiteSpace: "nowrap",
+                                                            overflow: "hidden",
+                                                            textOverflow: "ellipsis",
+                                                        }}
+                                                        title={item.replace(/_/g, " ").toUpperCase()} // Full text displayed on hover
+                                                    >
+                                                        {item.replace(/_/g, " ").toUpperCase()}
+                                                    </span>
+                                                </label>
+                                            );
+                                        })
+                                    ) : (
+                                        <p className="text-gray-500">No options available</p>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Cancel Icon */}
+                            <button
+                                onClick={toggleFilterBox}
+                                className="p-1 bg-[#598931] rounded-md hover:bg-[#598931] flex items-center justify-center absolute right-2"
+                            >
+                                <Cancel className="text-green-900" size={20} />
+                            </button>
+                        </div>
+                    )}
 
                     {isSearchOpen && (
                         <Input
@@ -1211,6 +1734,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             <Search />
                         </button>
                     )}
+
                     <button onClick={handleGlobalReset} className="bg-primary rounded-[4px] p-1">
                         <Reset />
                     </button>
@@ -1265,7 +1789,8 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             }}
                         >
                             <thead className="sticky top-0 bg-gray-100 z-20">
-                                <tr className="text-gray-700 text-left">
+                                <tr className="text-gray-700 text-left"
+                                    style={{ backgroundColor: headerBgColor, color: headerTextColor }}>
                                     {isEditMode &&
                                         <th
                                             className="px-4 py-4 border-b border-gray-300"
@@ -1311,13 +1836,29 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
                                                     <button
                                                         className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
-                                                        onClick={() => handleEdit(item.key_id)}
+                                                        onClick={() => {
+                                                            if (ischecked.length > 0) {
+                                                                if (isEditMode) {
+                                                                    handleDoubleClick(item.key_id, item);
+                                                                }
+                                                            } else {
+                                                                handleEdit(item.key_id);
+                                                            }
+                                                        }}
                                                     >
                                                         <Edit />
                                                     </button>
                                                     <button
                                                         className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
-                                                        onClick={() => handleDelete(item.key_id)}
+                                                        onClick={() => {
+                                                            if (ischecked.length > 0) {
+                                                                if (isEditMode) {
+                                                                    handleBulkDelete();
+                                                                }
+                                                            } else {
+                                                                handleDelete(item.key_id)
+                                                            }
+                                                        }}
                                                     >
                                                         <Delete />
                                                     </button>
@@ -1348,7 +1889,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                                         whiteSpace: "nowrap",
                                                         fontFamily: bodyFontFamily, // Font family
                                                         fontSize: `${bodyFontSize}px`, // Font size
-                                                        borderRight: isPinned ? "4px solid #bed900" : "none",
+                                                        // borderRight: isPinned ? "4px solid #bed900" : "none",
                                                         // boxShadow: isPinned && `4px solid #bed900`,
                                                         boxShadow: isPinned ? "3px 0px 5px rgba(0, 0, 0, 0.1)" : "none", // Fallback shadow
                                                     }}
@@ -1381,7 +1922,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                                                 zIndex: isPinned ? 100 : "inherit", // Ensure child elements respect z-index
                                                                 position: "relative", // Keep elements aligned
                                                             }}
-                                                            onDoubleClick={(e) => isEditMode && handleDoubleClick(e, item.key_id, item)}
+                                                            onDoubleClick={(e) => isEditMode && handleDoubleClick(item.key_id, item)}
                                                         >
                                                             {header.toLowerCase() === "picture" ? (
                                                                 <div className="w-full h-full flex justify-center items-center">
@@ -1411,7 +1952,12 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                         </table>
                     </div>
                 </div>
-                <div className="flex justify-end mt-4">
+                <div className="flex justify-between items-center mt-4">
+                    <div>
+                        <span>Total Rows: </span>
+                        <span>{filteredData.length}</span>
+                    </div>
+
                     <Pagination
                         current={currentPage}
                         total={filteredData.length}
