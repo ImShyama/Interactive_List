@@ -44,9 +44,9 @@ app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 app.use("/", authRoute);
 
-app.use(authenticateToken);
+// app.use(authenticateToken);
 
-app.post("/getSheetDataWithID", async (req, res) => {
+app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
 
   const { sheetID } = req.body;
   const sheetDetails = await Sheet.findById(sheetID).lean();
@@ -256,7 +256,7 @@ app.post("/getSheetDataWithID", async (req, res) => {
 // });
 
 
-app.get("/getSheetDetails/:id", async (req, res) => {
+app.get("/getSheetDetails/:id", authenticateToken, async (req, res) => {
   try {
     const sheetId = req.params.id;
     const sheet = await Sheet.findById(sheetId);
@@ -272,7 +272,7 @@ app.get("/getSheetDetails/:id", async (req, res) => {
   }
 });
 
-app.get("/getUserData", (req, res) => {
+app.get("/getUserData", authenticateToken, (req, res) => {
   res.send(req.user);
 });
 
@@ -299,8 +299,6 @@ const convertArrayToJSON = (data, hiddenCol) => {
 
   return jsonData;
 };
-
-
 
 async function copySpreadsheet(authClient, sheet_id, userId, appName) {
   const sheets = google.sheets({ version: "v4", auth: authClient });
@@ -722,7 +720,7 @@ async function addRowToSpreadsheet(authClient, spreadSheetID, sheetName, rowData
   }
 }
 
-app.post("/copySpreadsheet", async (req, res) => {
+app.post("/copySpreadsheet",authenticateToken, async (req, res) => {
 
   const sheet_id = req.body.spreadSheetID;
   const userId = req.user._id;
@@ -749,7 +747,7 @@ app.post("/copySpreadsheet", async (req, res) => {
   }
 });
 
-app.post("/createNewSpreadsheet", async (req, res) => {
+app.post("/createNewSpreadsheet",authenticateToken, async (req, res) => {
 
   const sheet_id = req.body.spreadSheetID;
   const userId = req.user._id;
@@ -780,7 +778,7 @@ app.post("/createNewSpreadsheet", async (req, res) => {
 });
 
 // Define the API endpoint
-app.post("/renameSpreadsheet/:id", async (req, res) => {
+app.post("/renameSpreadsheet/:id",authenticateToken, async (req, res) => {
 
   const spreadSheetID = req.params.id;
   const newName = req.body.newname;
@@ -827,7 +825,7 @@ app.post("/renameSpreadsheet/:id", async (req, res) => {
 });
 
 // Define the API endpoint
-app.post("/deleteRow", async (req, res) => {
+app.post("/deleteRow",authenticateToken, async (req, res) => {
   const spreadSheetID = req.body.spreadSheetID;
   const sheetName = req.body.sheetName;
   const rowIndex = req.body.rowIndex;  // This should be the row number you want to delete (1-based index)
@@ -855,7 +853,7 @@ app.post("/deleteRow", async (req, res) => {
 });
 
 // Define the API endpoint
-app.post("/editRow", async (req, res) => {
+app.post("/editRow",authenticateToken, async (req, res) => {
   const spreadSheetID = req.body.spreadSheetID;
   const sheetName = req.body.sheetName;
   const rowIndex = req.body.rowIndex;  // Row number to edit (1-based index)
@@ -886,7 +884,7 @@ app.post("/editRow", async (req, res) => {
   }
 });
 
-app.post("/editMultipleRows", async (req, res) => {
+app.post("/editMultipleRows",authenticateToken, async (req, res) => {
   const { spreadSheetID, sheetName, rowsToUpdate } = req.body; 
   // `rowsToUpdate` is an array of objects like:
   // [{ key_id: '1', user_name: 'Ravi', email_address: 'RaviUdyogAccounts@gmail.com', ... }, ...]
@@ -947,7 +945,7 @@ app.post("/editMultipleRows", async (req, res) => {
   }
 });
 
-app.post('/deleteMultipleRows', async (req, res) => {
+app.post('/deleteMultipleRows',authenticateToken, async (req, res) => {
   console.log("Received request to delete multiple rows");
   const { spreadSheetID, sheetName, rowsToDelete } = req.body;
 
@@ -1023,7 +1021,7 @@ async function getSheetIdByName(sheets, spreadSheetID, sheetName) {
 }
 
 // Define the API endpoint
-app.post("/addRow", async (req, res) => {
+app.post("/addRow",authenticateToken, async (req, res) => {
   const spreadSheetID = req.body.spreadSheetID;
   const sheetName = req.body.sheetName;
   const rowData = req.body.rowData;  // Array of new row data (e.g., ["Name", "Age", "Country"])
@@ -1053,7 +1051,7 @@ app.post("/addRow", async (req, res) => {
   }
 });
 
-app.post("/getSheetData", async (req, res) => {
+app.post("/getSheetData",authenticateToken, async (req, res) => {
   const { spreadSheetID, range } = req.body;
   const user = req.user; // Assuming you have middleware to set req.user
   const refreshToken = req.user.googleRefreshToken;
@@ -1094,7 +1092,7 @@ app.post("/getSheetData", async (req, res) => {
 
 
 // Route to get all spreadsheets for a user
-app.post("/getSpreadSheets", async (req, res) => {
+app.post("/getSpreadSheets",authenticateToken, async (req, res) => {
   const userId = req.user._id;
   const emailID = req.user.email;
   try {
@@ -1118,7 +1116,7 @@ app.post("/getSpreadSheets", async (req, res) => {
 });
 
 // Route to get all spreadsheets for a user
-app.get("/getuser", async (req, res) => {
+app.get("/getuser",authenticateToken, async (req, res) => {
   try {
     const userDetails = req.user;
     res.status(200).json(userDetails);
@@ -1129,7 +1127,7 @@ app.get("/getuser", async (req, res) => {
 });
 
 // route for refreshing the token
-app.post("/refresh-token", async (req, res) => {
+app.post("/refresh-token",authenticateToken, async (req, res) => {
   const refreshToken = req.body.refreshToken;
 
   const authClient = new google.auth.OAuth2(
@@ -1154,7 +1152,7 @@ app.post("/refresh-token", async (req, res) => {
 });
 
 // delete spreadsheet from sheet collection
-app.delete("/deleteSpreadsheet/:id", async (req, res) => {
+app.delete("/deleteSpreadsheet/:id",authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user._id;
@@ -1181,7 +1179,7 @@ app.listen(PORT, () => {
 
 
 // Update sheet details route (PUT request)
-app.put('/spreadsheet/:id', async (req, res) => {
+app.put('/spreadsheet/:id',authenticateToken, async (req, res) => {
   try {
     const SheetId = req.params.id; // Get the ID from the request params
     const updatedSpreadsheet = req.body; // Get the updated settings from the request body
@@ -1201,7 +1199,7 @@ app.put('/spreadsheet/:id', async (req, res) => {
 });
 
 
-app.post('/addEmails/:id', async (req, res) => {
+app.post('/addEmails/:id',authenticateToken, async (req, res) => {
   try {
     const { emails } = req.body;
     const SheetId = req.params.id; // Get the ID from the request params
@@ -1275,7 +1273,7 @@ async function getSheetDetails(authClient, spreadSheetID) {
 }
 
 // Define the API endpoint
-app.post("/getSpreadsheetDetails", async (req, res) => {
+app.post("/getSpreadsheetDetails",authenticateToken, async (req, res) => {
   const spreadSheetID = req.body.spreadSheetID;  // Spreadsheet ID from client
 
   // Create an OAuth2 client with the given credentials
@@ -1330,7 +1328,7 @@ async function appendBulkDataAndGetUpdatedData(authClient, originalSheetId, orig
 }
 
 // Define the API endpoint
-app.post("/bulkCopyFromAnotherSheet", async (req, res) => {
+app.post("/bulkCopyFromAnotherSheet", authenticateToken, async (req, res) => {
   const { originalSheetID, originalSheetName, bulkSheetID, bulkSheetName, bulkSheetRange } = req.body;
 
   // Create an OAuth2 client with the given credentials
