@@ -1,0 +1,219 @@
+.customTable {
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+  width: 100%;
+  overflow: auto;
+  border: 1px solid var(--table-border-color);
+  border-radius: 7px;
+}
+
+.customTable * {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  transition: 0.3s background;
+}
+
+.customTable .actions {
+  display: none;
+}
+
+.customTable .th:hover .actions {
+  display: flex;
+}
+
+.customTable .thead {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid hsl(var(--border));
+  /* background-color: var(--scrollbar-color); */
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
+  height: 40px !important;
+}
+
+.customTable .th {
+  color: var(--text-color) !important;
+  font-weight: 600 !important;
+  font-size: 14px;
+  padding: 0 10px !important;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  display: flex;
+  align-items: center;
+}
+
+.customTable .td {
+  color: var(--text-color) !important;
+  padding: 0 10px !important;
+  font-size: 13px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  display: flex;
+  align-items: center;
+}
+
+.customTable .td input {
+  padding: 0 5px;
+  font-size: 13px;
+  height: 85%;
+  flex: 1;
+}
+
+.customTable .td .autoCompleteTableDropdown {
+  padding: 0 5px;
+  font-size: 13px;
+  height: 85%;
+  flex: 1;
+  transform: translateX(-5px);
+}
+
+.customTable .td .date-picker {
+  transform: translate(-5px);
+  font-size: 13px;
+}
+
+.customTable .td .date-picker .popover-content {
+  z-index: 999;
+}
+
+.customTable .td .date-picker * {
+  font-size: 13px;
+}
+
+.customTable .tr {
+  display: flex;
+  min-width: fit-content;
+  height: 40px !important;
+  align-items: center;
+  flex: 1;
+}
+
+.customTable .td .date-picker,
+.customTable .td input {
+  background-color: var(--inputbg-color);
+}
+
+.customTable .tr:nth-child(even) {
+  background-color: var(--row-odd-color);
+}
+
+.customTable .tr:nth-child(even)>.th {
+  background-color: var(--row-odd-color);
+}
+
+.customTable .tr:nth-child(even)>.td {
+  background-color: var(--row-odd-color);
+}
+
+
+.customTable .tr:nth-child(odd) {
+  background-color: var(--row-even-color);
+}
+
+.customTable .tr:nth-child(odd)>.th {
+  background-color: var(--row-even-color);
+}
+
+.customTable .tr:nth-child(odd)>.td {
+  background-color: var(--row-even-color);
+}
+
+/* .customTable .tr:nth-child(odd) svg {
+    background-color: var(--row-even-color);
+} */
+
+.customTable .tr:hover {
+  background-color: var(--row-hover-color);
+}
+
+.customTable .tr:hover .actions {
+  background-color: var(--row-hover-color);
+}
+
+.customTable .tr:hover .icon {
+  background-color: var(--row-hover-color);
+}
+
+.customTable .tr:hover .resize-handle {
+  background-color: var(--row-hover-color);
+}
+
+.customTable .tr:hover .th {
+  background-color: var(--row-hover-color);
+}
+
+.customTable .tr:hover .td {
+  background-color: var(--row-hover-color);
+}
+
+/* .customTable .tr:hover svg {
+    background-color: var(--row-hover-color);
+} */
+
+.customTable .th {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  height: 40px !important;
+}
+
+.customTable .td {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+  height: 40px !important;
+}
+
+
+.default > path{
+  stroke: #b4b4b4;
+}
+.default:hover > path{
+  stroke: #626262;
+}
+
+.DESC>path:nth-child(1) {
+  stroke: black;
+}
+
+.DESC>path:nth-child(2) {
+  stroke: black;
+}
+
+.ASC>path:nth-child(3) {
+  stroke: black;
+}
+
+.ASC>path:nth-child(4) {
+  stroke: black;
+}
+
+/* pinActive
+pinInactive
+pinIcon */
+.pinIcon > path{
+  stroke: #8d8d8d;
+}
+.pinIcon:hover > path{
+  stroke: #626262;
+}
+.pinActive:hover > path{
+  stroke: black;
+}
+
+.pinActive > path{
+  stroke: black;
+}

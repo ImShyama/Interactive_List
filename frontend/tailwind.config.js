@@ -1,20 +1,8 @@
-// /** @type {import('tailwindcss').Config} */
-// module.exports = {
-//   content: [
-//     "./src/**/*.{html,js,ts,jsx,tsx}",
-//   ],
-//   theme: {
-//     extend: {},
-//   },
-//   plugins: [],
-// }
-
-// tailwind.config.js
-const plugin = require('tailwindcss/plugin');
-
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
   content: [
-    "./src/**/*.{html,js,jsx,ts,tsx}", // Adjust based on your project structure
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -25,14 +13,5 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    plugin(function({ addBase }) {
-      addBase({
-        ':root': {
-          '--primary-color': '#3498db',
-          '--text-color': '#ffffff',
-        },
-      });
-    }),
-  ],
-};
+  plugins: [],
+}
