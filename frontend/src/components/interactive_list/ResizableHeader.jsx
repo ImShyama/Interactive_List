@@ -1,13 +1,14 @@
 import { RxDividerVertical } from "react-icons/rx";
 import { Resizable } from "react-resizable";
 import "react-resizable/css/styles.css";
-import React ,{ memo, useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState, useMemo } from "react";
 import { FaSort } from "react-icons/fa";
 import { MdOutlineLabel } from "react-icons/md";
 import { Popover } from "antd";
 import Freeze from "./Freeze";
 import MultiSelectFilter from "./MultiSelectFilter";
 import { IoSearchOutline } from "react-icons/io5";
+// import { Resizable } from 're-resizable';
 
 const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFreezeCol, freezeCol, columnKey, index, headers, columnWidths, headerBgColor, headerTextColor, headerFontFamily, headerFontSize, isEditMode, handleResize,
     settings, getAggregatePopoverContent, globalOption, setGlobalOption
@@ -26,12 +27,23 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
     //         .slice(0, index)
     //         .reduce((sum, key) => sum + columnWidths[key], 0);
 
-    const leftOffset =
-        (index === 0 ? firstColWidth : firstColWidth) +
-        headers.slice(0, index).reduce((sum, key) => {
-            const width = parseInt(columnWidths[key], 10); // Parse columnWidths[key] as an integer
-            return sum + (isNaN(width) ? 0 : width); // Handle non-numeric widths gracefully
-        }, 0);
+    // const leftOffset =
+    //     (index === 0 ? firstColWidth : firstColWidth) +
+    //     headers.slice(0, index).reduce((sum, key) => {
+    //         const width = parseInt(columnWidths[key], 10); // Parse columnWidths[key] as an integer
+    //         return sum + (isNaN(width) ? 0 : width); // Handle non-numeric widths gracefully
+    //     }, 0);
+
+    const leftOffset = useMemo(() => {
+        return (
+            (index === 0 ? firstColWidth : firstColWidth) +
+            headers.slice(0, index).reduce((sum, key) => {
+                const width = parseInt(columnWidths[key], 10);
+                return sum + (isNaN(width) ? 0 : width);
+            }, 0)
+        );
+    }, [index, firstColWidth, headers, columnWidths]);
+
 
     const handlePopoverVisibility = (key, isVisible) => {
         setVisiblePopover((prev) => ({
@@ -47,14 +59,34 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
         }));
     };
 
+    const handleSort = useCallback(() => {
+        const sorted = Array.isArray(filteredData)
+            ? [...filteredData].sort((a, b) => {
+                const valueA = isNaN(a[columnKey]) ? a[columnKey]?.toString() : Number(a[columnKey]);
+                const valueB = isNaN(b[columnKey]) ? b[columnKey]?.toString() : Number(b[columnKey]);
+    
+                if (typeof valueA === 'number' && typeof valueB === 'number') {
+                    return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+                } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+                    return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+                }
+                return 0;
+            })
+            : [];
+    
+        setFilteredData(sorted);
+    }, [filteredData, columnKey, sortOrder]);
+    
+
 
     console.log({ columnKey, title, isPinned, firstColWidth, index, leftOffset });
     return (
         <Resizable
+        
             width={columnWidths[columnKey]}
             height={0}
             onResize={handleResize(columnKey)} // Immediate DOM updates
-            // onResizeStop={handleResizeStop(columnKey)} // Final state update
+            // onResizeStop={handleResize(columnKey)}
             draggableOpts={{ enableUserSelectHack: false }}
             handle={
                 <div
@@ -109,36 +141,36 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                     </div>
                     <div className="flex items-center gap-1">
                         <button
-                            onClick={() => {
-                                const newSortOrder =
-                                    sortColumn === columnKey ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
+                            onClick={() => {    handleSort();
+                                // const newSortOrder =
+                                //     sortColumn === columnKey ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
 
-                                setSortColumn(columnKey);
-                                setSortOrder(newSortOrder);
+                                // setSortColumn(columnKey);
+                                // setSortOrder(newSortOrder);
 
-                                const sorted = Array.isArray(filteredData)
-                                    ? [...filteredData].sort((a, b) => {
-                                        const valueA = isNaN(a[columnKey]) ? a[columnKey]?.toString() : Number(a[columnKey]);
-                                        const valueB = isNaN(b[columnKey]) ? b[columnKey]?.toString() : Number(b[columnKey]);
+                                // const sorted = Array.isArray(filteredData)
+                                //     ? [...filteredData].sort((a, b) => {
+                                //         const valueA = isNaN(a[columnKey]) ? a[columnKey]?.toString() : Number(a[columnKey]);
+                                //         const valueB = isNaN(b[columnKey]) ? b[columnKey]?.toString() : Number(b[columnKey]);
 
-                                        if (typeof valueA === 'number' && typeof valueB === 'number') {
-                                            // Numeric sorting
-                                            return newSortOrder === 'asc'
-                                                ? valueA - valueB
-                                                : valueB - valueA;
-                                        } else if (typeof valueA === 'string' && typeof valueB === 'string') {
-                                            // String sorting
-                                            return newSortOrder === 'asc'
-                                                ? valueA.localeCompare(valueB)
-                                                : valueB.localeCompare(valueA);
-                                        } else {
-                                            // Fallback for mixed types (e.g., number vs. string)
-                                            return 0;
-                                        }
-                                    })
-                                    : [];
+                                //         if (typeof valueA === 'number' && typeof valueB === 'number') {
+                                //             // Numeric sorting
+                                //             return newSortOrder === 'asc'
+                                //                 ? valueA - valueB
+                                //                 : valueB - valueA;
+                                //         } else if (typeof valueA === 'string' && typeof valueB === 'string') {
+                                //             // String sorting
+                                //             return newSortOrder === 'asc'
+                                //                 ? valueA.localeCompare(valueB)
+                                //                 : valueB.localeCompare(valueA);
+                                //         } else {
+                                //             // Fallback for mixed types (e.g., number vs. string)
+                                //             return 0;
+                                //         }
+                                //     })
+                                //     : [];
 
-                                setFilteredData(sorted);
+                                // setFilteredData(sorted);
                             }}
                             title="Sort"
                         >

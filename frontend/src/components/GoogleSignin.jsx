@@ -42,62 +42,62 @@ function GoogleSignin() {
   const { token, setToken, setProfile, profile } = useContext(UserContext);
   const nav = useNavigate();
 
-  useEffect(() => {
-    // Check for token in cookies
-    const tokenCookie = Cookies.get("token");
-    const profileCookie = Cookies.get("profile");
+  // useEffect(() => {
+  //   // Check for token in cookies
+  //   const tokenCookie = Cookies.get("token");
+  //   const profileCookie = Cookies.get("profile");
 
-    console.log("Cookies:", { token: tokenCookie, profile: profileCookie });
+  //   console.log("Cookies:", { token: tokenCookie, profile: profileCookie });
 
-    if (tokenCookie && profileCookie) {
-      setToken(tokenCookie);
-      setProfile(JSON.parse(profileCookie));
-      nav("/dashboard");
-      return;
-    }
+  //   if (tokenCookie && profileCookie) {
+  //     setToken(tokenCookie);
+  //     setProfile(JSON.parse(profileCookie));
+  //     nav("/dashboard");
+  //     return;
+  //   }
 
-    if (tokenCookie && profileCookie) {
-      setToken(tokenCookie);
-      try {
-        setProfile(JSON.parse(profileCookie));
-      } catch (error) {
-        console.error("Error parsing profileCookie:", error);
-        // Handle the error or reset the profile cookie
-        Cookies.remove("profile");
-        setProfile(null);
-      }
-      nav("/dashboard");
-      return;
-    }
+  //   if (tokenCookie && profileCookie) {
+  //     setToken(tokenCookie);
+  //     try {
+  //       setProfile(JSON.parse(profileCookie));
+  //     } catch (error) {
+  //       console.error("Error parsing profileCookie:", error);
+  //       // Handle the error or reset the profile cookie
+  //       Cookies.remove("profile");
+  //       setProfile(null);
+  //     }
+  //     nav("/dashboard");
+  //     return;
+  //   }
 
-    try {
-      const searchParams = new URLSearchParams(location.search);
-      const code = searchParams.get("code");
-      if (code == null) return;
-      axios
-        .get(`${HOST}/auth/google/callback?code=` + code, {
-          withCredentials: true,
-        })
-        .then(({ data: res }) => {
-          if (res.error) {
-            nav("/");
-            alert(res.error);
-            return;
-          }
-          console.log("res", res);
-          if (!token && !profile) {
-            setToken(res.token);
-            setProfile(res.body);
-          }
-          // Save token and profile to cookies
-          Cookies.set("token", res.token, { expires: 6 });
-          // Cookies.set("profile", JSON.stringify(res.body));
-          nav("/dashboard");
-        });
-    } catch (err) {
-      console.log(err.message);
-    }
-  }, []);
+  //   try {
+  //     const searchParams = new URLSearchParams(location.search);
+  //     const code = searchParams.get("code");
+  //     if (code == null) return;
+  //     axios
+  //       .get(`${HOST}/auth/google/callback?code=` + code, {
+  //         withCredentials: true,
+  //       })
+  //       .then(({ data: res }) => {
+  //         if (res.error) {
+  //           nav("/");
+  //           alert(res.error);
+  //           return;
+  //         }
+  //         console.log("res", res);
+  //         if (!token && !profile) {
+  //           setToken(res.token);
+  //           setProfile(res.body);
+  //         }
+  //         // Save token and profile to cookies
+  //         Cookies.set("token", res.token, { expires: 6 });
+  //         // Cookies.set("profile", JSON.stringify(res.body));
+  //         nav("/dashboard");
+  //       });
+  //   } catch (err) {
+  //     console.log(err.message);
+  //   }
+  // }, []);
 
   return (
     <div className="flex justify-center h-[90vh]">

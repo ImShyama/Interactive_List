@@ -1,11 +1,11 @@
-import React from "react";
+import React, {useContext} from "react";
 import {
   createBrowserRouter,
   RouterProvider,
   Outlet,
 } from "react-router-dom";
 import GoogleSignin from "./components/GoogleSignin";
-import { UserProvider } from "./context/UserContext";
+import { UserProvider, UserContext } from "./context/UserContext";
 import Header from "./components/Header";
 import Table from "./components/Table";
 import Setting from "./components/Setting";
@@ -23,6 +23,8 @@ import { ConfigProvider } from "antd";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProfilePage from "./components/people_directory/ProfilePage";
+import Home from "./components/Home";
+
 
 // Layout Component
 const Layout = () => (
@@ -48,7 +50,8 @@ const appRouter = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      { path: "/", element: <GoogleSignin /> },
+      { path: "/", element: <Home /> },
+      { path: "/signin", element: <GoogleSignin /> },
       { path: "/:id/edit", element: <Table /> },
       { path: "/:id/view", element: <Table /> },
       { path: "/setting", element: <Setting /> },
@@ -66,10 +69,12 @@ const appRouter = createBrowserRouter([
 ]);
 
 // App Component
-const App = () => (
-  <UserProvider>
-    <RouterProvider router={appRouter} />
-  </UserProvider>
-);
+const App = () => {
+
+
+  return (
+      <RouterProvider router={appRouter} />
+  )
+};
 
 export default App;

@@ -33,7 +33,6 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         const savedWidths = localStorage.getItem(storageKey);
         console.log("loading column width: ", JSON.parse(savedWidths));
         return savedWidths ? JSON.parse(savedWidths) : null;
-
     };
 
     // const handleCheckboxChange = async (columnKey, option, event) => {
@@ -169,6 +168,9 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         );
     };
 
+    const saveColumnWidthsDebounced = _.debounce((columnWidths) => {
+        saveColumnWidthsToCookies(columnWidths); // Save widths to localStorage
+    }, 500);
 
     const handleResize = (column) =>
         _.throttle((e, { size }) => {
@@ -178,54 +180,48 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                     [column]: size.width,
                 };
 
-                debounce(() => saveColumnWidthsToCookies(updatedWidths), 500); // Save after resizing stops
+                // debounce(() => saveColumnWidthsToCookies(updatedWidths), 500); // Save after resizing stops
+                saveColumnWidthsDebounced(updatedWidths);
 
                 return updatedWidths;
             });
-        }, 10); // Throttle updates to ensure responsiveness
+        }, 30); // Throttle updates to ensure responsiveness
+   
 
 
-    // useEffect(() => {
-    //     // Load column widths from cookies
-    //     const savedColumnWidths = loadColumnWidthsFromCookies();
-    //     console.log({ savedColumnWidths, headers });
-    //     let updatedWidths = savedColumnWidths || { ...columnWidths };
+    useEffect(() => {
+        // Load saved widths from localStorage
+        const savedColumnWidths = loadColumnWidthsFromCookies() || {};
+    
+        // Prepare an updated widths object
+        let updatedWidths = { ...savedColumnWidths };
+    
+        headers.forEach((header, index) => {
+            const elementId = `header${index}`; // Generate the ID for each column header
+            
+            // Skip calculating width if saved width already exists
+            if (!updatedWidths[header]) {
+                const actualWidth = getElementWidthById(elementId);
+    
+                if (actualWidth) {
+                    // If actual width exists, update it
+                    updatedWidths[header] = actualWidth;
+                } else {
+                    // If no saved width and actual width, set a default
+                    updatedWidths[header] = 150; // Default column width
+                }
+            }
+        });
+    
+        // Update column widths state
+        setColumnWidths(updatedWidths);
+    
+        // Save the merged widths back to localStorage
+        saveColumnWidthsToCookies(updatedWidths);
+    }, [headers]); // Runs whenever headers change
+    
+    
 
-    //     // Update column widths after the table is loaded
-    //     headers.forEach((header, index) => {
-    //         const elementId = `header${index}`; // Generate the ID for each column header
-    //         const actualWidth = getElementWidthById(elementId);
-    //         if (actualWidth) {
-    //             updatedWidths[header] = actualWidth; // Update with the actual width
-    //         }
-    //     });
-
-    //     setColumnWidths(updatedWidths); // Update the state with new widths
-    // }, [headers]); // Dependency ensures this runs when headers change
-
-    // useEffect(() => {
-    //     // Load column widths from cookies
-    //     const savedColumnWidths = loadColumnWidthsFromCookies();
-    //     console.log({ savedColumnWidths, headers });
-
-    //     let updatedWidths = savedColumnWidths || { ...columnWidths };
-
-    //     // Update column widths only if headers have valid IDs and widths are not already set
-    //     let needsUpdate = false;
-
-    //     headers.forEach((header, index) => {
-    //         const elementId = `header${index}`; // Generate the ID for each column header
-    //         const actualWidth = getElementWidthById(elementId);
-    //         if (actualWidth && updatedWidths[header] !== actualWidth) {
-    //             updatedWidths[header] = actualWidth; // Update with the actual width
-    //             needsUpdate = true;
-    //         }
-    //     });
-
-    //     if (needsUpdate) {
-    //         setColumnWidths(updatedWidths); // Update the state with new widths
-    //     }
-    // }, [headers, columnWidths]);
 
 
     useEffect(() => {
@@ -324,6 +320,17 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                         return sum + (isNaN(width) ? 0 : width); // Handle non-numeric widths gracefully
                     }, 0);
 
+                    // const leftOffset = useMemo(() => {
+                    //     return (
+                    //         (index === 0 ? firstColWidth : firstColWidth) +
+                    //         headers.slice(0, index).reduce((sum, key) => {
+                    //             const width = parseInt(columnWidths[key], 10);
+                    //             return sum + (isNaN(width) ? 0 : width);
+                    //         }, 0)
+                    //     );
+                    // }, [index, firstColWidth, headers, columnWidths]);
+
+                    
                     return (
                         <td
                             key={header}

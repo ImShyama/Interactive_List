@@ -1,0 +1,85 @@
+
+/* Left section slide-in animation */
+.left-section {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+  
+.slide-in.left-section {
+    animation: slideInLeft 1s ease-out forwards;
+}
+  
+
+/* Right section fade-in with delay */
+.right-section {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+/* When fade-in class is added, make it fully visible */
+.right-section.fade-in {
+    opacity: 1;
+}
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Seat Image Partwise Reveal (Five Parts) */
+.seat-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.seat-image {
+    width: 100%;
+    height: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    clip-path: inset(100% 0 0 100%);  /* Initially hidden */
+}
+
+/* Part 1: Bottom-left (Google Sheet Section) */
+.seat-image.part-1 {
+    clip-path: polygon(0% 100%, 0% 65%, 40% 65%, 40% 100%); 
+}
+
+
+/* Part 2: Bottom-left + Middle (Excludes right section) */
+.seat-image.part-2 {
+    clip-path: polygon(0% 100%, 0% 55%, 40% 55%, 40% 100%);
+}
+
+/* Part 3: Bottom-left + Middle + Up to Circle */
+.seat-image.part-3 {
+    clip-path: polygon(0% 100%, 0% 25%, 30% 25%, 29% 60%, 40% 60%, 40% 100%);
+}
+
+
+
+/* .seat-image.part-4 {
+    clip-path: polygon(
+        0% 97%,         
+        0% 7%,          
+        30% 7%,        
+        50% 25%,        
+        67% 34%,        
+        63% 90%,        
+        40% 98%,        
+        0% 98%          
+    );
+} */
+
+
+/* Part 5: Fully Reveal the Image */
+.seat-image.part-5 {
+    clip-path: polygon(0% 100%, 0% 0%, 100% 0%, 100% 100%);  /* Fully revealed */
+}

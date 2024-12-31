@@ -28,6 +28,7 @@ import Loader from "./Loader";
 import { notifyError, notifySuccess } from "../utils/notify.jsx";
 import { Reset } from "../assets/svgIcons.jsx";
 import DeleteAlert from "./DeleteAlert.jsx";
+import { set } from "lodash";
 
 const AddData = ({ activateSave }) => {
   
@@ -493,11 +494,13 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     setIsSaveChanges(true);
   };
 
-  const handleSaveChanges = async (updatedSetting) => {
+  const handleSaveChanges = async (updatedSetting,message) => {
     setIsLoading(true);
     try {
+      console.log({ updatedSetting, settingData });
       // Use the passed settings or fallback to the Redux state
       const settingsToSave = updatedSetting || settingData;
+      console.log({settingsToSave})
   
       const response = await axios.put(
         `${HOST}/spreadsheet/${settingData._id}`,
@@ -513,7 +516,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
       dispatch(updateSetting(response.data));
       setIsLoading(false);
       setIsSaveChanges(false);
-      notifySuccess("Table Style Reset successfully");
+      notifySuccess(message);
       closeDrawer();
     } catch (error) {
       console.error("Error updating settings in DB:", error);
@@ -521,6 +524,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
       setIsSaveChanges(false);
     }
   };
+  
   
   const handleReset = () => {
     setConfirmModalOpen(true);
@@ -547,7 +551,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     dispatch(updateSetting(updatedSetting));
   
     // Directly pass the updated settings to handleSaveChanges
-    await handleSaveChanges(updatedSetting);
+    await handleSaveChanges(updatedSetting,"Table Style Reset successfully");
   };
   
 
@@ -567,7 +571,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
             <div className="setting_icons_top_right">
               <button
                 className="submit_btn"
-                onClick={handleSaveChanges}
+                onClick={() => handleSaveChanges(settingData,"Settings saved successfully, please refresh the page")}
                 disabled={!isSaveChanges}
               >
                 {/* {isLoading ? (

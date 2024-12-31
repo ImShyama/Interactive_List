@@ -86,7 +86,7 @@ const Header = () => {
           if (res.error === "Token expired. Please log in again.") {
             // Clear token and redirect to login if the token has expired
             localStorage.removeItem("token"); // Assuming token is stored in localStorage
-            navigate("/"); // Redirect to login page
+            navigate("/signin"); // Redirect to login page
           }
           return;
         }
@@ -97,7 +97,7 @@ const Header = () => {
         console.error("Error fetching user data:", err?.response?.data?.error);
         if(err?.response?.data?.error === "Token expired. Please log in again."){
           Cookies.remove("token");
-          navigate("/") // Redirect to login page
+          navigate("/signin") // Redirect to login page
         }
       });
   }, [token]);
@@ -159,9 +159,9 @@ const Header = () => {
           ) : (
             <div>
               <button
-                className="flex w-[140px] p-[10px] justify-center items-center gap-[10px] rounded-[14px] bg-[var(--primary,#598931)]"
+                className="flex w-[140px] p-[10px] justify-center items-center gap-[10px] rounded-[14px] bg-[#598931]"
                 onClick={(e) => {
-                  navigate("/");
+                  navigate("/signin");
                 }}
               >
                 <span className="text-[#F5F6F7] font-poppins text-[16px] font-medium leading-normal">
