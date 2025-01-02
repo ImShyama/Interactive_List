@@ -40,14 +40,22 @@ app.use(cookieParser());
 
 app.use(express.json());
 
-// app.use(express.static(path.join(__dirname, "../frontend/dist")));
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 // app.use(express.static("../frontend/dist"));
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
+// Serve static files from the "public" directory
+// app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('../frontend/dist/index.html', (req, res) => {
-  res.setHeader('Content-Type', 'application/javascript');
-  res.sendFile(path.join(__dirname, 'public', '../frontend/dist/index.html'));
-});
+// // Serve the frontend's index.html file for all routes
+// app.get('*', (req, res) => {
+//   res.setHeader('Content-Type', 'text/html');
+//   res.sendFile(path.resolve(__dirname, '../frontend/dist/index.html'));
+// });
+
+// app.use((req, res) => {
+//   res.setHeader('Content-Type', 'text/html');
+//   res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+// });
+
 
 
 app.use("/", authRoute);
