@@ -40,7 +40,7 @@ app.use(cookieParser());
 
 app.use(express.json());
 
-app.use(express.static(path.join(__dirname, "../frontend/dist")));
+// app.use(express.static(path.join(__dirname, "../frontend/dist")));
 // app.use(express.static("../frontend/dist"));
 // Serve static files from the "public" directory
 // app.use(express.static(path.join(__dirname, 'public')));
@@ -53,9 +53,17 @@ app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 // app.use((req, res) => {
 //   res.setHeader('Content-Type', 'text/html');
-//   res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
+//   res.sendFile(path.join(__dirname, '../frontend/dist'));
 // });
 
+
+// Serve static files from the frontend's "dist" directory
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// Catch-all handler to serve the React app for all other routes
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+});
 
 
 app.use("/", authRoute);
