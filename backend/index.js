@@ -20,11 +20,8 @@ const secret = process.env.TOKEN_KEY;
 const redirect_uri = process.env.REDIRECT_URI;
 
 mongoose
-  .connect(MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB is  connected successfully"))
+  .connect(MONGO_URL)
+  .then(() => console.log("MongoDB is connected successfully"))
   .catch((err) => console.error(err));
 
 app.use(
@@ -40,33 +37,16 @@ app.use(cookieParser());
 
 app.use(express.json());
 
-// app.use(express.static(path.join(__dirname, "../frontend/dist")));
-// app.use(express.static("../frontend/dist"));
-// Serve static files from the "public" directory
-// app.use(express.static(path.join(__dirname, 'public')));
-
-// // Serve the frontend's index.html file for all routes
-// app.get('*', (req, res) => {
-//   res.setHeader('Content-Type', 'text/html');
-//   res.sendFile(path.resolve(__dirname, '../frontend/dist/index.html'));
-// });
-
-// app.use((req, res) => {
-//   res.setHeader('Content-Type', 'text/html');
-//   res.sendFile(path.join(__dirname, '../frontend/dist'));
-// });
-
-
 // Serve static files from the frontend's "dist" directory
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 // Catch-all handler to serve the React app for all other routes
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-});
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+// });
 
 
-app.use("/", authRoute);
+app.use("/" ,authRoute);
 
 // app.use(authenticateToken);
 
