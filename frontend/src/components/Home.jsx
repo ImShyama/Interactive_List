@@ -14,6 +14,9 @@ const Home = () => {
   const [showParts, setShowParts] = useState([false, false, false, false, false]); // Five parts
 
   useEffect(() => {
+     // Prevent scrolling
+     document.documentElement.style.overflow = "hidden";
+     document.body.style.overflow = "hidden";
     // Slide in the left section after 500ms
     const sectionTimer = setTimeout(() => {
       setShowSections(true);
@@ -101,37 +104,50 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="w-[1920px] h-[1080px] flex items-center justify-center bg-[#FFF] overflow-hidden">
-      {/* Left Section - Text and Button */}
-      <div className={`left-section flex flex-col items-start gap-[72.47px] w-[808.493px] -mt-[350px] ${showSections ? 'slide-in' : ''}`}>
-        <p className="text-[47.558px] font-medium text-black font-[Poppins] leading-normal">
-          Connect your business data to Google Sheets for a seamless website
-          display.
-        </p>
-        <button
-          className="flex w-[308px] h-[109px] p-[16px] justify-center items-center gap-[16px] rounded-[80px] bg-[#598931]"
-          onClick={() => alert("Get Started Clicked!")}
-        >
-          <span className="text-white font-poppins text-[35.109px] font-medium leading-normal">
-            Get Started
-          </span>
-        </button>
-      </div>
+    <div className=" w-[100vw] h-[100vh] flex overflow-hidden bg-[#FFF] ">
+    {/* Left Section - Text and Button */}
+    <div
+      className={`left-section w-[40%] flex flex-col items-start justify-center pl-[76px] mt-[-181px] ${
+        showSections ? "slide-in" : ""
+      }`}
+    >
+      <p className="text-[2vw] font-medium text-black font-[Poppins] leading-[1.4]">
+        Connect your business data to Google Sheets for a seamless website
+        display.
+      </p>
+      <button
+        className="mt-[72.47px] w-[16vw] h-[6vw] flex justify-center items-center gap-[16px] rounded-[4vw] bg-[#598931]"
+        onClick={() => alert("Get Started Clicked!")}
+      >
+        <span className="text-white font-poppins text-[35.109px] font-medium leading-normal">
+          Get Started
+        </span>
+      </button>
+    </div>
 
-      {/* Right Section - Circle with Seat Image Reveal */}
-      <div className={`right-section w-[949.511px] ${showCircle ? 'fade-in' : ''}`}>
-        <div className="w-[849.511px] h-[849.511px] rounded-full bg-[#F1FDE7] shadow-lg ml-[50px] pt-[86px] -mt-[100px]">
-          <div className="seat-wrapper">
-            <img
-              src={seatimage}
-              alt="Seat Image"
-              className={`seat-image ${showParts[0] ? 'part-1' : ''} ${showParts[1] ? 'part-2' : ''} ${showParts[2] ? 'part-3' : ''} ${showParts[3] ? 'part-4' : ''} ${showParts[4] ? 'part-5' : ''}`}
-            />
-          </div>
+    {/* Right Section - Circle with Seat Image Reveal */}
+    <div
+      className={`right-section w-[60%] flex justify-center items-center mt-[-70px] ${
+        showCircle ? "fade-in" : ""
+      }`}
+    >
+      <div className="w-[38vw] h-[38vw] rounded-full bg-[#F1FDE7] shadow-lg ">
+        <div className="seat-wrapper abosolute w-[100%] h-[100%] flex justify-center items-center">
+          <img
+            src={seatimage}
+            alt="Seat Image"
+            className={`seat-image  scale-[1.2] translate-y-[80px] ${
+              showParts[0] ? "part-1" : ""
+            } ${showParts[1] ? "part-2" : ""} ${
+              showParts[2] ? "part-3" : ""
+            } ${showParts[3] ? "part-4" : ""} ${
+              showParts[4] ? "part-5" : ""
+            }`}
+          />
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
-
 export default Home;
