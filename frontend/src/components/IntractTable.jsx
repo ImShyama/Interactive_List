@@ -15,7 +15,7 @@ import EditableSpreadsheetName from "../components/EditableSpreadsheetName";
 import { notifySuccess, notifyError } from "../utils/notify";
 import BulkAdd from '../components/BulkAdd';
 import useDrivePicker from 'react-google-drive-picker';
-import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
+import { CLIENTID, DEVELOPERKEY } from "../utils/constants.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import { BsPin, BsPinAngleFill, BsPinFill } from "react-icons/bs";

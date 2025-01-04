@@ -12,11 +12,11 @@ import "react-loading-skeleton/dist/skeleton.css";
 import useSpreadSheetDetails from "../utils/useSpreadSheetDetails";
 import { useDispatch, useSelector } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
-import { HOST } from "../utils/constants.js";
-import InteractiveList from "./InteractiveList.js";
-import IntractTable from "./IntractTable.js";
-import PeopleTable from "./people_directory/PeopleTable.js";
-import Loader from "./Loader.js";
+import { HOST } from "../utils/constants.jsx";
+import InteractiveList from "./InteractiveList.jsx";
+import IntractTable from "./IntractTable.jsx";
+import PeopleTable from "./people_directory/PeopleTable.jsx";
+import Loader from "./Loader.jsx";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
