@@ -11,6 +11,7 @@ import Cookies from 'js-cookie';
 import { Resizable } from 'react-resizable';
 import './table.css';
 import { BackIcon } from '../assets/svgIcons';
+import { headers, data } from '../utils/InetractiveList_DumyData';
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
@@ -72,128 +73,128 @@ const InteractiveListView = () => {
         return sum;
     };
 
-    const headers = [
-        "manager_name",
-        "employee_name",
-        "employee_e-mail_id",
-        "feedback_month",
-        "site_timings",
-        "total_score_(in_100)",
-        "year"
-    ]
+    // const headers = [
+    //     "manager_name",
+    //     "employee_name",
+    //     "employee_e-mail_id",
+    //     "feedback_month",
+    //     "site_timings",
+    //     "total_score_(in_100)",
+    //     "year"
+    // ]
 
-    const data = [
-        {
-            "key_id": "1",
-            "manager_name": "Shubham Khanna",
-            "employee_name": "Nisha",
-            "employee_e-mail_id": "sus@tnspll.in",
-            "feedback_month": "January",
-            "site_timings": "7",
-            "total_score_(in_100)": "69",
-            "year": "2020"
-        },
-        {
-            "key_id": "2",
-            "manager_name": "Shubham Khanna",
-            "employee_name": "Mukesh Prajapati",
-            "employee_e-mail_id": "sus@tnspll.in",
-            "feedback_month": "January",
-            "site_timings": "3",
-            "total_score_(in_100)": "34",
-            "year": "2020"
-        },
-        {
-            "key_id": "3",
-            "manager_name": "Shubham Khanna",
-            "employee_name": "Sushil",
-            "employee_e-mail_id": "sus@tnspll.in",
-            "feedback_month": "January",
-            "site_timings": "3",
-            "total_score_(in_100)": "48",
-            "year": "2020"
-        },
-        {
-            "key_id": "4",
-            "manager_name": "Shubham Khanna",
-            "employee_name": "Gaurav",
-            "employee_e-mail_id": "kul@tnspll.in",
-            "feedback_month": "January",
-            "site_timings": "5",
-            "total_score_(in_100)": "33",
-            "year": "2020"
-        },
-        {
-            "key_id": "5",
-            "manager_name": "Shubham Khanna",
-            "employee_name": "Kuldeep",
-            "employee_e-mail_id": "kul@tnspll.in",
-            "feedback_month": "January",
-            "site_timings": "0",
-            "total_score_(in_100)": "37",
-            "year": "2020"
-        },
-        {
-            "key_id": "6",
-            "manager_name": "Shubham Khanna",
-            "employee_name": "Phool Babu",
-            "employee_e-mail_id": "pb@tnspll.in",
-            "feedback_month": "January",
-            "site_timings": "1",
-            "total_score_(in_100)": "53",
-            "year": "2020"
-        },
-        {
-            "key_id": "7",
-            "manager_name": "Shubham Khanna",
-            "employee_name": "Avesh",
-            "employee_e-mail_id": "av@tnspll.in",
-            "feedback_month": "February",
-            "site_timings": "5",
-            "total_score_(in_100)": "70",
-            "year": "2020"
-        },
-        {
-            "key_id": "8",
-            "manager_name": "Kusum",
-            "employee_name": "Manoj",
-            "employee_e-mail_id": "mn@tnspll.in",
-            "feedback_month": "February",
-            "site_timings": "8",
-            "total_score_(in_100)": "77",
-            "year": "2020"
-        },
-        {
-            "key_id": "9",
-            "manager_name": "Kusum",
-            "employee_name": "Dharamveer",
-            "employee_e-mail_id": "dh@tnspll.in",
-            "feedback_month": "February",
-            "site_timings": "2",
-            "total_score_(in_100)": "53",
-            "year": "2020"
-        },
-        {
-            "key_id": "10",
-            "manager_name": "Kusum",
-            "employee_name": "Akhlesh",
-            "employee_e-mail_id": "ak@tnspll.in",
-            "feedback_month": "February",
-            "site_timings": "5",
-            "total_score_(in_100)": "50",
-            "year": "2020"
-        },
-        {
-            "key_id": "11",
-            "manager_name": "Amit Sharma",
-            "employee_name": "Dubey",
-            "employee_e-mail_id": "du@tnspll.in",
-            "feedback_month": "September",
-            "site_timings": "7",
-            "total_score_(in_100)": "42",
-            "year": "2020"
-        }
-    ]
+    // const data = [
+    //     {
+    //         "key_id": "1",
+    //         "manager_name": "Shubham Khanna",
+    //         "employee_name": "Nisha",
+    //         "employee_e-mail_id": "sus@tnspll.in",
+    //         "feedback_month": "January",
+    //         "site_timings": "7",
+    //         "total_score_(in_100)": "69",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "2",
+    //         "manager_name": "Shubham Khanna",
+    //         "employee_name": "Mukesh Prajapati",
+    //         "employee_e-mail_id": "sus@tnspll.in",
+    //         "feedback_month": "January",
+    //         "site_timings": "3",
+    //         "total_score_(in_100)": "34",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "3",
+    //         "manager_name": "Shubham Khanna",
+    //         "employee_name": "Sushil",
+    //         "employee_e-mail_id": "sus@tnspll.in",
+    //         "feedback_month": "January",
+    //         "site_timings": "3",
+    //         "total_score_(in_100)": "48",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "4",
+    //         "manager_name": "Shubham Khanna",
+    //         "employee_name": "Gaurav",
+    //         "employee_e-mail_id": "kul@tnspll.in",
+    //         "feedback_month": "January",
+    //         "site_timings": "5",
+    //         "total_score_(in_100)": "33",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "5",
+    //         "manager_name": "Shubham Khanna",
+    //         "employee_name": "Kuldeep",
+    //         "employee_e-mail_id": "kul@tnspll.in",
+    //         "feedback_month": "January",
+    //         "site_timings": "0",
+    //         "total_score_(in_100)": "37",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "6",
+    //         "manager_name": "Shubham Khanna",
+    //         "employee_name": "Phool Babu",
+    //         "employee_e-mail_id": "pb@tnspll.in",
+    //         "feedback_month": "January",
+    //         "site_timings": "1",
+    //         "total_score_(in_100)": "53",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "7",
+    //         "manager_name": "Shubham Khanna",
+    //         "employee_name": "Avesh",
+    //         "employee_e-mail_id": "av@tnspll.in",
+    //         "feedback_month": "February",
+    //         "site_timings": "5",
+    //         "total_score_(in_100)": "70",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "8",
+    //         "manager_name": "Kusum",
+    //         "employee_name": "Manoj",
+    //         "employee_e-mail_id": "mn@tnspll.in",
+    //         "feedback_month": "February",
+    //         "site_timings": "8",
+    //         "total_score_(in_100)": "77",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "9",
+    //         "manager_name": "Kusum",
+    //         "employee_name": "Dharamveer",
+    //         "employee_e-mail_id": "dh@tnspll.in",
+    //         "feedback_month": "February",
+    //         "site_timings": "2",
+    //         "total_score_(in_100)": "53",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "10",
+    //         "manager_name": "Kusum",
+    //         "employee_name": "Akhlesh",
+    //         "employee_e-mail_id": "ak@tnspll.in",
+    //         "feedback_month": "February",
+    //         "site_timings": "5",
+    //         "total_score_(in_100)": "50",
+    //         "year": "2020"
+    //     },
+    //     {
+    //         "key_id": "11",
+    //         "manager_name": "Amit Sharma",
+    //         "employee_name": "Dubey",
+    //         "employee_e-mail_id": "du@tnspll.in",
+    //         "feedback_month": "September",
+    //         "site_timings": "7",
+    //         "total_score_(in_100)": "42",
+    //         "year": "2020"
+    //     }
+    // ]
 
     // Set filtered data to the full data initially
     useEffect(() => {

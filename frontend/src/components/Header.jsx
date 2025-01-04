@@ -107,8 +107,10 @@ const Header = () => {
     <div className="fixed top-0 left-0 right-0 " style={{ zIndex: 999 }}>
       <div className={`main-container ${isDrawerOpen ? "drawer-open" : ""}`}>
         <div className="header_main left-content">
-          <div className="left-panel">
-            <div className="left-panel-svg">
+          <div className="left-panel"
+            onClick={() => navigate("/")} style={{ cursor: "pointer" } }
+          >
+            <div className="left-panel-svg" >
               <img
                 className="logo_img"
                 src="https://i.ibb.co/sbwvB0L/logo-png-1-1.webp"

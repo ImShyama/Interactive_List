@@ -1,44 +1,4 @@
 
-/* .left-section {
-    opacity: 0;
-    transform: translateX(-100%);
-}
-
-.right-section {
-    opacity: 1; 
-    transform: translateX(0);  
-}
-
-.slide-in.left-section {
-    animation: slideInLeft 1s ease-out forwards;
-}
-
-.fade-in {
-    animation: fadeIn 1s ease-out forwards;
-}
-
-@keyframes slideInLeft {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-} */
-
-
-
 /* Left section slide-in animation */
 .left-section {
     opacity: 0;
@@ -50,7 +10,7 @@
 }
   
 
-/* Right section fade-in with delay (No Scale) */
+/* Right section fade-in with delay */
 .right-section {
     opacity: 0;
     transition: opacity 1s ease-in-out;
@@ -89,13 +49,13 @@
 
 /* Part 1: Bottom-left (Google Sheet Section) */
 .seat-image.part-1 {
-    clip-path: polygon(0% 100%, 0% 65%, 40% 65%, 40% 100%);  /* Adjusted for bottom-left Google Sheet area */
+    clip-path: polygon(0% 100%, 0% 65%, 40% 65%, 40% 100%); 
 }
 
 
 /* Part 2: Bottom-left + Middle (Excludes right section) */
 .seat-image.part-2 {
-    clip-path: polygon(0% 100%, 0% 55%, 40% 55%, 40% 100%);  /* Adjust clip path for part 2 */
+    clip-path: polygon(0% 100%, 0% 55%, 40% 55%, 40% 100%);
 }
 
 /* Part 3: Bottom-left + Middle + Up to Circle */

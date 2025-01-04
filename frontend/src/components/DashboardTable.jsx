@@ -252,7 +252,7 @@ const DashboardTable = () => {
                   <td className="px-4 py-2">
                     <a
                       onClick={() => handleEdit(sheet._id, sheet.access)}
-                      class="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline cursor-pointer"
+                      className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline cursor-pointer"
                     >
                       {sheet.spreadsheetName || sheet.firstSheetName}
                     </a>
@@ -266,28 +266,28 @@ const DashboardTable = () => {
                       onClick={() => openModal(sheet)}
                       className="relative"
                     >
-                      <div class="group">
+                      <div className="group">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           width="20"
                           height="20"
                           viewBox="0 0 20 20"
                           fill="none"
-                          class="stroke-current group-hover:stroke-orange-500"
+                          className="stroke-current group-hover:stroke-orange-500"
                         >
                           <path
                             d="M1.71615 10.2898C1.6467 10.1027 1.6467 9.89691 1.71615 9.70981C2.39257 8.06969 3.54075 6.66735 5.01513 5.68056C6.48951 4.69378 8.22369 4.16699 9.99782 4.16699C11.7719 4.16699 13.5061 4.69378 14.9805 5.68056C16.4549 6.66735 17.6031 8.06969 18.2795 9.70981C18.3489 9.89691 18.3489 10.1027 18.2795 10.2898C17.6031 11.9299 16.4549 13.3323 14.9805 14.3191C13.5061 15.3058 11.7719 15.8326 9.99782 15.8326C8.22369 15.8326 6.48951 15.3058 5.01513 14.3191C3.54075 13.3323 2.39257 11.9299 1.71615 10.2898Z"
                             stroke="#919191"
-                            stroke-width="1.66667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z"
                             stroke="#919191"
-                            stroke-width="1.66667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                         </svg>
                       </div>
@@ -299,7 +299,7 @@ const DashboardTable = () => {
                         onClick={() => handleCopy(sheet._id, sheet.access)}
                         // disabled={sheet.access == "view"}
                       >
-                        <div class="group">
+                        <div className="group">
                           <svg
                             width="18"
                             height="18"
@@ -312,17 +312,17 @@ const DashboardTable = () => {
                                 id="Vector"
                                 d="M14.9567 6.31592H7.71525C6.91539 6.31592 6.26697 6.96434 6.26697 7.7642V15.0056C6.26697 15.8055 6.91539 16.4539 7.71525 16.4539H14.9567C15.7566 16.4539 16.405 15.8055 16.405 15.0056V7.7642C16.405 6.96434 15.7566 6.31592 14.9567 6.31592Z"
                                 stroke="#919191"
-                                stroke-width="1.66667"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="1.66667"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                               />
                               <path
                                 id="Vector_2"
                                 d="M3.37041 12.1092C2.57385 12.1092 1.92212 11.4575 1.92212 10.6609V3.41948C1.92212 2.62292 2.57385 1.97119 3.37041 1.97119H10.6118C11.4084 1.97119 12.0601 2.62292 12.0601 3.41948"
                                 stroke="#919191"
-                                stroke-width="1.66667"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="1.66667"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                               />
                             </g>
                           </svg>
@@ -336,29 +336,29 @@ const DashboardTable = () => {
                         onClick={() => handleEdit(sheet._id, sheet.access)}
                         disabled={sheet.access == "view"}
                       >
-                        <div class="group">
+                        <div className="group">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
                             height="20"
                             viewBox="0 0 20 20"
                             fill="none"
-                            class="group-hover:stroke-orange-500"
+                            className="group-hover:stroke-orange-500"
                           >
-                            <g clip-path="url(#clip0_508_940)">
+                            <g clipPath="url(#clip0_508_940)">
                               <path
                                 d="M17.6462 5.67633C18.0868 5.23585 18.3344 4.63839 18.3345 4.01538C18.3346 3.39237 18.0871 2.79484 17.6467 2.35425C17.2062 1.91366 16.6087 1.66609 15.9857 1.66602C15.3627 1.66594 14.7652 1.91335 14.3246 2.35383L3.20291 13.478C3.00943 13.6709 2.86634 13.9084 2.78625 14.1697L1.68541 17.7963C1.66388 17.8684 1.66225 17.945 1.68071 18.0179C1.69916 18.0908 1.73701 18.1574 1.79024 18.2105C1.84347 18.2636 1.9101 18.3014 1.98305 18.3197C2.05599 18.3381 2.13255 18.3363 2.20458 18.3147L5.83208 17.2147C6.09306 17.1353 6.33056 16.9931 6.52375 16.8005L17.6462 5.67633Z"
                                 stroke="#919191"
-                                stroke-width="1.66667"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="1.66667"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                               />
                               <path
                                 d="M12.5 4.16602L15.8333 7.49935"
                                 stroke="#919191"
-                                stroke-width="1.66667"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
+                                strokeWidth="1.66667"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                               />
                             </g>
                             <defs>
@@ -382,49 +382,49 @@ const DashboardTable = () => {
                         }
                         disabled={sheet.access == "view"}
                       >
-                        <div class="group">
+                        <div className="group">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
                             height="20"
                             viewBox="0 0 20 20"
                             fill="none"
-                            class="group-hover:stroke-orange-500"
+                            className="group-hover:stroke-orange-500"
                           >
                             <path
                               d="M2.5 5H17.5"
                               stroke="#919191"
-                              stroke-width="1.66667"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                             <path
                               d="M15.8346 5V16.6667C15.8346 17.5 15.0013 18.3333 14.168 18.3333H5.83464C5.0013 18.3333 4.16797 17.5 4.16797 16.6667V5"
                               stroke="#919191"
-                              stroke-width="1.66667"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                             <path
                               d="M6.66797 4.99935V3.33268C6.66797 2.49935 7.5013 1.66602 8.33464 1.66602H11.668C12.5013 1.66602 13.3346 2.49935 13.3346 3.33268V4.99935"
                               stroke="#919191"
-                              stroke-width="1.66667"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                             <path
                               d="M8.33203 9.16602V14.166"
                               stroke="#919191"
-                              stroke-width="1.66667"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                             <path
                               d="M11.668 9.16602V14.166"
                               stroke="#919191"
-                              stroke-width="1.66667"
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                             />
                           </svg>
                         </div>
@@ -443,7 +443,7 @@ const DashboardTable = () => {
                           height="20"
                           viewBox="0 0 20 20"
                           fill="none"
-                          // class="group-hover:stroke-orange-500"
+                          // className="group-hover:stroke-orange-500"
                           className={`group-hover:stroke-orange-500 ${
                             sheet.access === "view" ? "disabled-svg" : ""
                           }`}
@@ -451,37 +451,37 @@ const DashboardTable = () => {
                           <path
                             d="M15 6.66602C16.3807 6.66602 17.5 5.54673 17.5 4.16602C17.5 2.7853 16.3807 1.66602 15 1.66602C13.6193 1.66602 12.5 2.7853 12.5 4.16602C12.5 5.54673 13.6193 6.66602 15 6.66602Z"
                             stroke="#919191"
-                            stroke-width="1.66667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M5 12.5C6.38071 12.5 7.5 11.3807 7.5 10C7.5 8.61929 6.38071 7.5 5 7.5C3.61929 7.5 2.5 8.61929 2.5 10C2.5 11.3807 3.61929 12.5 5 12.5Z"
                             stroke="#919191"
-                            stroke-width="1.66667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M15 18.333C16.3807 18.333 17.5 17.2137 17.5 15.833C17.5 14.4523 16.3807 13.333 15 13.333C13.6193 13.333 12.5 14.4523 12.5 15.833C12.5 17.2137 13.6193 18.333 15 18.333Z"
                             stroke="#919191"
-                            stroke-width="1.66667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M7.15625 11.2578L12.8479 14.5745"
                             stroke="#919191"
-                            stroke-width="1.66667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                           <path
                             d="M12.8396 5.4248L7.15625 8.74147"
                             stroke="#919191"
-                            stroke-width="1.66667"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                            strokeWidth="1.66667"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                           />
                         </svg>
                       </button>

@@ -13,7 +13,6 @@ import { IoSearchOutline } from "react-icons/io5";
 const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFreezeCol, freezeCol, columnKey, index, headers, columnWidths, headerBgColor, headerTextColor, headerFontFamily, headerFontSize, isEditMode, handleResize,
     settings, getAggregatePopoverContent, globalOption, setGlobalOption
 }) => {
-    console.log({ freezeCol, headers, columnWidths, headerBgColor, headerTextColor, headerFontFamily, headerFontSize, isEditMode });
 
     const [sortColumn, setSortColumn] = useState(null);
     const [visiblePopover, setVisiblePopover] = useState({});
@@ -21,18 +20,6 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
     const title = columnKey.replace(/_/g, " ");
     const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
     const firstColWidth = isEditMode ? 125 : 0; // Adjust the first column width if in edit mode
-    // const leftOffset =
-    //     (index === 0 ? firstColWidth : firstColWidth) +
-    //     headers
-    //         .slice(0, index)
-    //         .reduce((sum, key) => sum + columnWidths[key], 0);
-
-    // const leftOffset =
-    //     (index === 0 ? firstColWidth : firstColWidth) +
-    //     headers.slice(0, index).reduce((sum, key) => {
-    //         const width = parseInt(columnWidths[key], 10); // Parse columnWidths[key] as an integer
-    //         return sum + (isNaN(width) ? 0 : width); // Handle non-numeric widths gracefully
-    //     }, 0);
 
     const leftOffset = useMemo(() => {
         return (
@@ -59,34 +46,73 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
         }));
     };
 
-    const handleSort = useCallback(() => {
-        const sorted = Array.isArray(filteredData)
-            ? [...filteredData].sort((a, b) => {
-                const valueA = isNaN(a[columnKey]) ? a[columnKey]?.toString() : Number(a[columnKey]);
-                const valueB = isNaN(b[columnKey]) ? b[columnKey]?.toString() : Number(b[columnKey]);
-    
-                if (typeof valueA === 'number' && typeof valueB === 'number') {
-                    return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
-                } else if (typeof valueA === 'string' && typeof valueB === 'string') {
-                    return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
-                }
-                return 0;
-            })
-            : [];
-    
+    const handleSort = useCallback((columnKey) => {
+        const newSortOrder =
+            sortColumn === columnKey ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
+
+        setSortColumn(columnKey);
+        setSortOrder(newSortOrder);
+
+        const sorted = [...filteredData].sort((a, b) => {
+            const valueA = a[columnKey];
+            const valueB = b[columnKey];
+
+            // Handle empty/null/undefined values
+            if (valueA == null || valueB == null) {
+                return valueA == null ? 1 : -1; // Null/undefined values go to the end
+            }
+
+            // Check if both values are numbers
+            const isNumericA = typeof valueA === 'number' || !isNaN(Number(valueA));
+            const isNumericB = typeof valueB === 'number' || !isNaN(Number(valueB));
+
+            if (isNumericA && isNumericB) {
+                return newSortOrder === 'asc'
+                    ? Number(valueA) - Number(valueB)
+                    : Number(valueB) - Number(valueA);
+            }
+
+            // Check if values are dates
+            const dateA = new Date(valueA);
+            const dateB = new Date(valueB);
+            const isDateA = !isNaN(dateA.getTime());
+            const isDateB = !isNaN(dateB.getTime());
+
+            if (isDateA && isDateB) {
+                return newSortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+            }
+
+            // Check if both values are alphanumeric
+            const alphanumericRegex = /\d+/;
+            const isAlphaNumericA = typeof valueA === 'string' && alphanumericRegex.test(valueA);
+            const isAlphaNumericB = typeof valueB === 'string' && alphanumericRegex.test(valueB);
+
+            if (isAlphaNumericA && isAlphaNumericB) {
+                // Extract the numeric part from alphanumeric strings
+                const numericA = parseInt(valueA.match(alphanumericRegex)?.[0] || '0', 10);
+                const numericB = parseInt(valueB.match(alphanumericRegex)?.[0] || '0', 10);
+
+                return newSortOrder === 'asc' ? numericA - numericB : numericB - numericA;
+            }
+
+            // Fallback: String comparison
+            const strA = valueA?.toString() || '';
+            const strB = valueB?.toString() || '';
+            return newSortOrder === 'asc'
+                ? strA.localeCompare(strB, undefined, { sensitivity: 'base' })
+                : strB.localeCompare(strA, undefined, { sensitivity: 'base' });
+        });
+
         setFilteredData(sorted);
-    }, [filteredData, columnKey, sortOrder]);
-    
+    }, [filteredData, sortColumn, sortOrder]);
 
 
-    console.log({ columnKey, title, isPinned, firstColWidth, index, leftOffset });
     return (
         <Resizable
-        
+
             width={columnWidths[columnKey]}
             height={0}
             onResize={handleResize(columnKey)} // Immediate DOM updates
-            // onResizeStop={handleResize(columnKey)}
             draggableOpts={{ enableUserSelectHack: false }}
             handle={
                 <div
@@ -137,46 +163,17 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                     }}
                 >
                     <div title={title.replace(/_/g, " ")}>
-                        <span>{title.replace(/_/g, " ")}</span>
+                        <span style={{ fontFamily: headerFontFamily, fontSize: `${headerFontSize}px` }}>{title.replace(/_/g, " ")}</span>
                     </div>
                     <div className="flex items-center gap-1">
                         <button
-                            onClick={() => {    handleSort();
-                                // const newSortOrder =
-                                //     sortColumn === columnKey ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
-
-                                // setSortColumn(columnKey);
-                                // setSortOrder(newSortOrder);
-
-                                // const sorted = Array.isArray(filteredData)
-                                //     ? [...filteredData].sort((a, b) => {
-                                //         const valueA = isNaN(a[columnKey]) ? a[columnKey]?.toString() : Number(a[columnKey]);
-                                //         const valueB = isNaN(b[columnKey]) ? b[columnKey]?.toString() : Number(b[columnKey]);
-
-                                //         if (typeof valueA === 'number' && typeof valueB === 'number') {
-                                //             // Numeric sorting
-                                //             return newSortOrder === 'asc'
-                                //                 ? valueA - valueB
-                                //                 : valueB - valueA;
-                                //         } else if (typeof valueA === 'string' && typeof valueB === 'string') {
-                                //             // String sorting
-                                //             return newSortOrder === 'asc'
-                                //                 ? valueA.localeCompare(valueB)
-                                //                 : valueB.localeCompare(valueA);
-                                //         } else {
-                                //             // Fallback for mixed types (e.g., number vs. string)
-                                //             return 0;
-                                //         }
-                                //     })
-                                //     : [];
-
-                                // setFilteredData(sorted);
+                            onClick={() => {
+                                handleSort(columnKey);
                             }}
                             title="Sort"
                         >
                             <FaSort />
                         </button>
-
                         {/* <MultiSelectFilter
                             data={data}
                             filteredData={filteredData}

@@ -8,14 +8,14 @@ import ResizableHeader from "./ResizableHeader";
 import _, { debounce } from "lodash";
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
-    headerBgColor, headerTextColor, headerFontSize, headerFontFamily,
+    handleDelete, handleEdit, handleBulkDelete, ischecked, setIschecked, EditData, setEditData, headerBgColor, headerTextColor, headerFontSize, headerFontFamily,
     bodyTextColor, bodyFontSize, bodyFontFamily, isEditMode, minWidth
 }) => {
 
-    const [ischecked, setIschecked] = useState([]);
+    // const [ischecked, setIschecked] = useState([]);
     const [globalOption, setGlobalOption] = useState({});
     const [visiblePopover, setVisiblePopover] = useState({});
-    const [EditData, setEditData] = useState([]);
+    // const [EditData, setEditData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const startIndex = (currentPage - 1) * rowsPerPage;
@@ -251,6 +251,10 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 setGlobalOption={setGlobalOption}
                 visiblePopover={visiblePopover}
                 setVisiblePopover={setVisiblePopover}
+                headerFontFamily={headerFontFamily}
+                headerFontSize={headerFontSize}
+                headerTextColor={headerTextColor}
+                headerBgColor={headerBgColor}
             />
         ))
     ), [
@@ -320,16 +324,6 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                         return sum + (isNaN(width) ? 0 : width); // Handle non-numeric widths gracefully
                     }, 0);
 
-                    // const leftOffset = useMemo(() => {
-                    //     return (
-                    //         (index === 0 ? firstColWidth : firstColWidth) +
-                    //         headers.slice(0, index).reduce((sum, key) => {
-                    //             const width = parseInt(columnWidths[key], 10);
-                    //             return sum + (isNaN(width) ? 0 : width);
-                    //         }, 0)
-                    //     );
-                    // }, [index, firstColWidth, headers, columnWidths]);
-
                     
                     return (
                         <td
@@ -349,6 +343,13 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             }}
                         >
                             {isedit && ischecked.includes(item.key_id) ? (
+                                <div
+                                className="tableTD w-full h-full flex items-center"
+                                style={{
+                                    zIndex: isPinned ? 10 : "inherit",
+                                    position: "relative",
+                                }}
+                            >
                                 <input
                                     className="w-full h-full border-b-2 border-gray-300 border-primary"
                                     value={EditData.find((data) => data.key_id === item.key_id)?.[header] || ""}
@@ -363,6 +364,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                         );
                                     }}
                                 />
+                                </div>
                             ) : (
                                 <div
                                     className="tableTD w-full h-full flex items-center"
@@ -385,7 +387,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                             )}
                                         </div>
                                     ) : (
-                                        item[header] || "N/A"
+                                        <spna style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header] || "N/A"}</spna>
                                     )}
                                 </div>
                             )}
@@ -403,7 +405,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 <div
                     className="min-w-full relative border border-gray-300 rounded-t-lg bg-white"
                     style={{
-                        maxHeight: "500px",
+                        maxHeight: "75vh",
                         overflowY: "auto",
                     }}
                 >

@@ -87,6 +87,8 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [bodyFontSize, setBodyFontSize] = useState(tableSettings?.bodyFontSize || 12); // Default body font size
     const [bodyFontFamily, setBodyFontFamily] = useState(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
     const [globalOption, setGlobalOption] = useState({});
+    const [ischecked, setIschecked] = useState([]);
+    const [EditData, setEditData] = useState([]);
     const isEditMode = window.location.pathname.endsWith('/edit');
     const [isedit, setIsedit] = useState(false);
     const [columnWidths, setColumnWidths] = useState(
@@ -120,7 +122,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             console.error("Error saving column widths to localStorage:", error);
         }
     };
-
 
     const isNumber = (value) => {
         return !isNaN(parseFloat(value)) && isFinite(value);
@@ -176,9 +177,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         return result;
     }
 
-
-
-
     const handlePopoverVisibility = (key, isVisible) => {
         setVisiblePopover((prev) => ({
             ...prev,
@@ -223,46 +221,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     };
 
-    // const handleFreezeColumn = useCallback(async (columnKey, option, event) => {
-    //     const isChecked = event.target.checked;
-
-    //     if (option == 'removeFreezeCol') {
-    //         columnKey = "";
-    //     }
-    //     setFreezeCol(columnKey);
-    //     const updatedSettings = {
-    //         freezeCol: columnKey
-    //     };
-
-    //     // Dispatch with updated state
-    //     dispatch(updateSetting(updatedSettings));
-
-    //     try {
-    //         // Update the settings in the backend
-    //         const response = await axios.put(
-    //             `${HOST}/spreadsheet/${settings._id}`,
-    //             { ...settings, ...updatedSettings }, // Merge existing settings with updates
-    //             {
-    //                 headers: {
-    //                     authorization: "Bearer " + token,
-    //                 },
-    //             }
-    //         );
-
-    //         console.log("Settings updated successfully:", response.data);
-
-    //         // Dispatch updated settings to Redux store
-    //         dispatch(updateSetting(response.data));
-    //         notifySuccess("Freeze Column updated successfully");
-    //         return response.data;
-    //     } catch (error) {
-    //         console.error("Error updating settings in DB:", error);
-    //         notifyError("Error updating settings in DB:", error);
-    //     }
-    // }, []);
-
-
-
     useEffect(() => {
         const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
         setHeaderBgColor(tableSettings?.headerBgColor); // Default header background color
@@ -273,8 +231,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         setBodyFontSize(tableSettings?.bodyFontSize || 12); // Default body font size
         setBodyFontFamily(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
     }, [settings]);
-
-
 
     const measureColumnWidths = () => {
         if (tableRef.current) {
@@ -308,21 +264,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const paginatedData = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
 
-
-    // const handleResize = (column) => (e, { size }) => {
-    //     setColumnWidths((prev) => {
-    //         const updatedWidths = {
-    //             ...prev,
-    //             [column]: size.width,
-    //         };
-
-    //         saveColumnWidthsToCookies(updatedWidths); // Save the updated widths
-    //         console.log({ updatedWidths });
-
-    //         return updatedWidths; // Return updated state
-    //     });
-    // };
-
     const handleResize = (column) =>
         _.throttle((e, { size }) => {
             setColumnWidths((prev) => {
@@ -336,43 +277,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 return updatedWidths;
             });
         }, 10); // Throttle updates to ensure responsiveness
-
-
-    // Optimize resizing for smooth updates
-    // Real-time DOM update handler
-    // const handleResize = (columnKey) => {
-    //     let animationFrameId = null;
-
-    //     return (e, { size }) => {
-    //         if (animationFrameId) cancelAnimationFrame(animationFrameId);
-
-    //         animationFrameId = requestAnimationFrame(() => {
-    //             const headerElement = document.getElementById(`header${headers.indexOf(columnKey)}`);
-    //             if (headerElement) {
-    //                 headerElement.style.width = `${size.width}px`;
-    //                 headerElement.style.minWidth = `${size.width}px`;
-    //             }
-    //         });
-    //     };
-    // };
-
-    // // State update handler after resizing stops
-    // const handleResizeStop = (columnKey) => (e, { size }) => {
-    //     setColumnWidths((prev) => {
-    //         const updatedWidths = {
-    //             ...prev,
-    //             [columnKey]: size.width,
-    //         };
-
-    //         saveColumnWidthsToCookies(updatedWidths); // Persist updated widths
-    //         console.log("Column widths saved under key:", updatedWidths);
-
-    //         return updatedWidths; // Return updated state
-    //     });
-    // };
-
-
-
 
 
     // Function to handle row edit
@@ -420,7 +324,10 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
         try {
             // Call the API with the updated row data and rowIndex
-            await handleSaveAPI(updatedRow, rowIndex);
+            // await handleSaveAPI(updatedRow, rowIndex);
+            const spreadSheetID = settings.spreadsheetId;
+            const sheetName = settings.firstSheetName;
+            const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, [updatedRow]);
 
             setConfirmEditModalOpen(false);
         } catch (error) {
@@ -443,6 +350,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const handleDeleteRow = () => {
         const status = deleteRow(settings.spreadsheetId, settings.firstSheetName, rowToDelete)
         setConfirmModalOpen(false);
+        console.log({status})
         if (status) {
             notifySuccess("Deleted row successfuly!");
         }
@@ -450,6 +358,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
     async function deleteRow(spreadSheetID, sheetName, rowIndex) {
         try {
+            console.log({ spreadSheetID, sheetName, rowIndex });
             // Make the API call to your backend
             const response = await axios.post(
                 `${HOST}/deleteRow`,
@@ -1660,6 +1569,18 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 setFreezeCol={setFreezeCol}
                 globalOption={globalOption}
                 setGlobalOption={setGlobalOption}
+                ischecked={ischecked}
+                setIschecked={setIschecked}
+                EditData={EditData}
+                setEditData={setEditData}
+                handleBulkDelete={handleBulkDelete}
+                headerBgColor={headerBgColor}
+                headerTextColor={headerTextColor}
+                headerFontSize={headerFontSize}
+                headerFontFamily={headerFontFamily}
+                bodyTextColor={bodyTextColor}
+                bodyFontSize={bodyFontSize}
+                bodyFontFamily={bodyFontFamily}
             />
 
             <EditRow

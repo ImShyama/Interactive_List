@@ -132,8 +132,8 @@ export const Sort = () => (
 
 export const Filter = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 13 13" fill="none">
-        <path d="M6.2414 9.82753C8.48894 9.82753 10.3109 8.00554 10.3109 5.75801C10.3109 3.51047 8.48894 1.68848 6.2414 1.68848C3.99387 1.68848 2.17188 3.51047 2.17188 5.75801C2.17188 8.00554 3.99387 9.82753 6.2414 9.82753Z" stroke="#747474" stroke-width="1.01738" stroke-linecap="round" stroke-linejoin="round" />
-        <path d="M11.328 10.8466L9.14062 8.65918" stroke="#747474" stroke-width="1.01738" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M6.2414 9.82753C8.48894 9.82753 10.3109 8.00554 10.3109 5.75801C10.3109 3.51047 8.48894 1.68848 6.2414 1.68848C3.99387 1.68848 2.17188 3.51047 2.17188 5.75801C2.17188 8.00554 3.99387 9.82753 6.2414 9.82753Z" stroke="#747474" strokeWidth="1.01738" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M11.328 10.8466L9.14062 8.65918" stroke="#747474" strokeWidth="1.01738" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
 )
 

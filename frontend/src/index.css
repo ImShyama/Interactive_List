@@ -425,8 +425,8 @@ span a {
 
 /* For Webkit browsers (Chrome, Safari, and Edge) */
 ::-webkit-scrollbar {
-  width: 4px; /* Set the width for vertical scrollbars */
-  height: 8px; /* Set the height for horizontal scrollbars */
+  width: 6px; /* Set the width for vertical scrollbars */
+  height: 12px; /* Set the height for horizontal scrollbars */
 }
 
 ::-webkit-scrollbar-track {
