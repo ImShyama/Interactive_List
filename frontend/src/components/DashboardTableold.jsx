@@ -258,7 +258,7 @@ const DashboardTable = () => {
                     </a>
                   </td>
                   <td className="px-4 py-2 text-[14px]">
-                    {sheet.access || "N/A"}
+                  {(sheet.access && sheet.access.charAt(0).toUpperCase() + sheet.access.slice(1)) || "N/A"}
                   </td>
                   {/* <td className="px-4 py-2 text-[14px]">{formatLastUpdatedDate(sheet.lastUpdatedDate)}</td> */}
                   <td className="px-4 py-2 flex gap-[15px] justify-start items-center">

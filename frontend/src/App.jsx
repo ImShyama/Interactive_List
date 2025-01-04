@@ -15,14 +15,16 @@ import Portfolio from "./components/Portfolio";
 import InteractiveList from "./components/InteractiveList";
 import InteractiveListView from "./components/InteractiveListView";
 import PeopleTable from "./components/people_directory/PeopleTable";
+import PeopleDirectoryPreView from "./components/people_directory/PeopleDirectoryPreview";
 import PeopleDirectoryView from "./components/people_directory/PeopleDirectoryView";
+import ProfilePage from "./components/people_directory/ProfilePage";
+import VideoGallaryView from "./components/video_gallary/VideoGallaryView";
 import Testing1 from "./components/Testing1";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import { ConfigProvider } from "antd";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ProfilePage from "./components/people_directory/ProfilePage";
 import Home from "./components/Home";
 
 
@@ -60,7 +62,9 @@ const appRouter = createBrowserRouter([
       { path: "/interactiveList", element: <InteractiveList /> },
       { path: "/interactiveListView", element: <InteractiveListView /> },
       { path: "/peopledirectory", element: <PeopleTable /> },
+      { path: "/peopleDirectoryPreView", element: <PeopleDirectoryPreView /> },
       { path: "/peopleDirectoryView", element: <PeopleDirectoryView /> },
+      { path: "/videoGallaryView", element: <VideoGallaryView /> },
       { path: "/testing1", element: <Testing1 /> },
       { path: "/profile/:id", element: <ProfilePage /> },
     ],

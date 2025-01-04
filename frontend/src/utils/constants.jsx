@@ -18,6 +18,22 @@ export const APPS = [
       appID:"1sMv_CvZMTaZo1u69xLxzrBrD54n2Ymykd3hvsgEe088",
       spreadSheetName: "Data",
     },
+    {
+      appName: "People Directory",
+      appView: "PeopleDirectoryPreView",
+      appImg: "https://i.ibb.co/N1c6Djj/Screenshot-2024-10-08-125436.png",
+      description: "List all contacts.",
+      appID:"1X4urz9wKsAuWufXzy9UZKH3KIJmyFKDEM9O8aNied8c",
+      spreadSheetName: "Data",
+    },
+    {
+      appName: "Video Gallary",
+      appView: "VideoGallaryView",
+      appImg: "https://i.ibb.co/N1c6Djj/Screenshot-2024-10-08-125436.png",
+      description: "List all videos.",
+      appID:"",
+      spreadSheetName: "Data",
+    }
     // {
     //   appName: "People Directory",
     //   appView: "PeopleDirectoryView",

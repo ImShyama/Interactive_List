@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
+import React, { useState, useRef, useContext, useEffect, useCallback } from "react";
 import axios from "axios";
 import { UserContext } from "../context/UserContext";
 import { HOST } from "../utils/constants";
@@ -15,7 +15,7 @@ import EditableSpreadsheetName from "../components/EditableSpreadsheetName";
 import { notifySuccess, notifyError } from "../utils/notify";
 import BulkAdd from '../components/BulkAdd';
 import useDrivePicker from 'react-google-drive-picker';
-import { CLIENTID, DEVELOPERKEY } from "../utils/constants.js";
+import { CLIENTID, DEVELOPERKEY } from "../utils/constants.jsx";
 import { useSelector, useDispatch } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import { BsPin, BsPinAngleFill, BsPinFill } from "react-icons/bs";
@@ -24,7 +24,7 @@ import { MdEdit, MdDelete, MdOutlineLabel } from "react-icons/md";
 import { IoSaveSharp, IoSearchOutline } from "react-icons/io5";
 import { FaSort } from "react-icons/fa";
 import { editMultipleRows, deleteMultiple } from "../APIs/index";
-import { LuFilter } from "react-icons/lu"; // added by me
+import { LuFilter } from "react-icons/lu"; // added by me`
 import { CiCalendarDate } from "react-icons/ci"; // added
 import { Bs123 } from "react-icons/bs"; //added
 import { ImCancelCircle } from "react-icons/im";
@@ -32,6 +32,12 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css"; // Import slider styles
 import { RxDividerVertical } from "react-icons/rx";
 import _, { debounce } from "lodash";
+import GlobalSearch from "./interactive_list/GlobalSearch.jsx";
+import MultiSelectFilter from "./interactive_list/MultiSelectFilter.jsx";
+import ResizableHeader from "./interactive_list/ResizableHeader.jsx";
+import DataGrid from "./Table/Table.jsx";
+import FilterButton from "./interactive_list/FilterButton.jsx";
+import Table from "./interactive_list/Table.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -50,60 +56,6 @@ const convertArrayToJSON = (data) => {
     return jsonData;
 };
 
-const isNumber = (value) => {
-    return !isNaN(parseFloat(value)) && isFinite(value);
-};
-
-const isDate = (value) => {
-    if (!value || typeof value !== 'string') return false;
-
-    // Match common date patterns (YYYY-MM-DD, DD/MM/YYYY, etc.)
-    const datePatterns = [
-        /^\d{4}-\d{2}-\d{2}$/,             // YYYY-MM-DD
-        /^\d{2}\/\d{2}\/\d{4}$/,           // DD/MM/YYYY or MM/DD/YYYY
-        /^\d{2}-\d{2}-\d{4}$/,             // DD-MM-YYYY
-        /^\d{4}\/\d{2}\/\d{2}$/            // YYYY/MM/DD
-    ];
-
-    // Check if any pattern matches
-    if (datePatterns.some((pattern) => pattern.test(value))) {
-        const parsedDate = new Date(value);
-        return !isNaN(parsedDate.getTime());
-    }
-
-    return false;
-};
-
-function getHeadersWithDateAndNumbers(dataset) {
-    if (!Array.isArray(dataset) || dataset.length === 0) {
-        return { dateColumns: [], numberColumns: [] };
-    }
-
-    const headers = Object.keys(dataset[0]);
-    const result = {
-        dateColumns: [],
-        numberColumns: []
-    };
-
-    headers.forEach((header) => {
-        const columnValues = dataset.map((row) => row[header]);
-
-        // Check for dates
-        const hasDates = columnValues.some((value) => isDate(value));
-        if (hasDates) {
-            result.dateColumns.push(header);
-        }
-
-        // Check for numbers
-        const hasNumbers = columnValues.some((value) => isNumber(value));
-        if (hasNumbers) {
-            result.numberColumns.push(header);
-        }
-    });
-
-    return result;
-}
-
 const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [rowToEdit, setRowToEdit] = useState(null);
@@ -121,6 +73,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [showInCard, setShowInCard] = useState(settings?.showInCard || []);
     const [showInProfile, setShowInProfile] = useState(settings?.showInProfile || []);
     const [freezeCol, setFreezeCol] = useState(settings?.freezeCol || "");
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
     const navigate = useNavigate();
     const { token } = useContext(UserContext);
     const dispatch = useDispatch();
@@ -133,11 +86,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const [bodyTextColor, setBodyTextColor] = useState(tableSettings?.bodyTextColor || '#000000'); // Default body text color
     const [bodyFontSize, setBodyFontSize] = useState(tableSettings?.bodyFontSize || 12); // Default body font size
     const [bodyFontFamily, setBodyFontFamily] = useState(tableSettings?.bodyFontStyle || 'Poppins'); // Default body font family
-    const [visiblePopover, setVisiblePopover] = useState({});
-    const result = getHeadersWithDateAndNumbers(data);
-    const [dateColumns, setdateColumns] = useState(result.dateColumns || []);
-    const [numberColumns, setnumberColumns] = useState(result.numberColumns || []);
+    const [globalOption, setGlobalOption] = useState({});
     const isEditMode = window.location.pathname.endsWith('/edit');
+    const [isedit, setIsedit] = useState(false);
     const [columnWidths, setColumnWidths] = useState(
         headers.reduce((acc, header) => {
             acc[header] = header.toLowerCase() === 'picture' ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
@@ -169,6 +120,63 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             console.error("Error saving column widths to localStorage:", error);
         }
     };
+
+
+    const isNumber = (value) => {
+        return !isNaN(parseFloat(value)) && isFinite(value);
+    };
+
+    const isDate = (value) => {
+        if (!value || typeof value !== 'string') return false;
+
+        // Match common date patterns (YYYY-MM-DD, DD/MM/YYYY, etc.)
+        const datePatterns = [
+            /^\d{4}-\d{2}-\d{2}$/,             // YYYY-MM-DD
+            /^\d{2}\/\d{2}\/\d{4}$/,           // DD/MM/YYYY or MM/DD/YYYY
+            /^\d{2}-\d{2}-\d{4}$/,             // DD-MM-YYYY
+            /^\d{4}\/\d{2}\/\d{2}$/            // YYYY/MM/DD
+        ];
+
+        // Check if any pattern matches
+        if (datePatterns.some((pattern) => pattern.test(value))) {
+            const parsedDate = new Date(value);
+            return !isNaN(parsedDate.getTime());
+        }
+
+        return false;
+    };
+
+    function getHeadersWithDateAndNumbers(dataset) {
+        if (!Array.isArray(dataset) || dataset.length === 0) {
+            return { dateColumns: [], numberColumns: [] };
+        }
+
+        const headers = Object.keys(dataset[0]);
+        const result = {
+            dateColumns: [],
+            numberColumns: []
+        };
+
+        headers.forEach((header) => {
+            const columnValues = dataset.map((row) => row[header]);
+
+            // Check for dates
+            const hasDates = columnValues.some((value) => isDate(value));
+            if (hasDates) {
+                result.dateColumns.push(header);
+            }
+
+            // Check for numbers
+            const hasNumbers = columnValues.some((value) => isNumber(value));
+            if (hasNumbers) {
+                result.numberColumns.push(header);
+            }
+        });
+
+        return result;
+    }
+
+
 
 
     const handlePopoverVisibility = (key, isVisible) => {
@@ -215,92 +223,45 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     };
 
-    const handleFreezeColumn = async (columnKey, option, event) => {
-        const isChecked = event.target.checked;
+    // const handleFreezeColumn = useCallback(async (columnKey, option, event) => {
+    //     const isChecked = event.target.checked;
 
-        if (option == 'removeFreezeCol') {
-            columnKey = "";
-        }
-        setFreezeCol(columnKey);
-        const updatedSettings = {
-            freezeCol: columnKey
-        };
+    //     if (option == 'removeFreezeCol') {
+    //         columnKey = "";
+    //     }
+    //     setFreezeCol(columnKey);
+    //     const updatedSettings = {
+    //         freezeCol: columnKey
+    //     };
 
-        // Dispatch with updated state
-        dispatch(updateSetting(updatedSettings));
+    //     // Dispatch with updated state
+    //     dispatch(updateSetting(updatedSettings));
 
-        try {
-            // Update the settings in the backend
-            const response = await axios.put(
-                `${HOST}/spreadsheet/${settings._id}`,
-                { ...settings, ...updatedSettings }, // Merge existing settings with updates
-                {
-                    headers: {
-                        authorization: "Bearer " + token,
-                    },
-                }
-            );
+    //     try {
+    //         // Update the settings in the backend
+    //         const response = await axios.put(
+    //             `${HOST}/spreadsheet/${settings._id}`,
+    //             { ...settings, ...updatedSettings }, // Merge existing settings with updates
+    //             {
+    //                 headers: {
+    //                     authorization: "Bearer " + token,
+    //                 },
+    //             }
+    //         );
 
-            console.log("Settings updated successfully:", response.data);
+    //         console.log("Settings updated successfully:", response.data);
 
-            // Dispatch updated settings to Redux store
-            dispatch(updateSetting(response.data));
-            notifySuccess("Freeze Column updated successfully");
-            return response.data;
-        } catch (error) {
-            console.error("Error updating settings in DB:", error);
-            notifyError("Error updating settings in DB:", error);
-        }
-    };
+    //         // Dispatch updated settings to Redux store
+    //         dispatch(updateSetting(response.data));
+    //         notifySuccess("Freeze Column updated successfully");
+    //         return response.data;
+    //     } catch (error) {
+    //         console.error("Error updating settings in DB:", error);
+    //         notifyError("Error updating settings in DB:", error);
+    //     }
+    // }, []);
 
-    const handleCheckboxChange = async (columnKey, option, event) => {
-        const isChecked = event.target.checked;
 
-        let updatedSettings = {};  // Declare the updatedSettings variable
-
-        if (option === 'showInCard') {
-            setShowInCard((prevState) => {
-                const updatedState = isChecked
-                    ? [...prevState, columnKey] // Add columnKey if checked
-                    : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-
-                updatedSettings = {
-                    showInCard: updatedState,
-                    showInProfile,  // Assuming this is being set somewhere else in your state
-                };
-
-                // Dispatch with updated state
-                dispatch(updateSetting(updatedSettings));
-                // console.log({ updatedSettings });
-
-                return updatedState;
-            });
-        } else if (option === 'showInProfileView') {
-            setShowInProfile((prevState) => {
-                const updatedState = isChecked
-                    ? [...prevState, columnKey] // Add columnKey if checked
-                    : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-
-                updatedSettings = {
-                    showInCard,  // Assuming this is being set somewhere else in your state
-                    showInProfile: updatedState,
-                };
-
-                // Dispatch with updated state
-                dispatch(updateSetting(updatedSettings));
-                // console.log({ updatedSettings });
-
-                return updatedState;
-            });
-        }
-
-        // console.log({ updatedSettings });
-        // // Now call handleSaveChanges with the updatedSettings
-        // const response = await handleSaveChanges(settings, token, dispatch,updatedSettings);
-        // console.log({ response });
-        const response = await handleSaveChanges(updatedSettings);
-        console.log({ response });
-    };
 
     useEffect(() => {
         const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
@@ -346,10 +307,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const paginatedData = filteredData.slice(startIndex, startIndex + rowsPerPage);
 
-    const handlePageChange = (page, pageSize) => {
-        setCurrentPage(page);
-        setRowsPerPage(pageSize);
-    };
+
 
     // const handleResize = (column) => (e, { size }) => {
     //     setColumnWidths((prev) => {
@@ -519,427 +477,396 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     }
 
-    const handleGlobalSearch = (e) => {
-        const value = e.target.value.toLowerCase();
-        setSearchGlobal(value);
-        // data = convertArrayToJSON(data);
+    // const handleGlobalSearch = useCallback((e) => {
+    //     const value = e.target.value.toLowerCase();
+    //     setSearchGlobal(value);
+    //     // data = convertArrayToJSON(data);
 
-        // Filter the data globally across all columns
-        const filteredData = data.filter((record) => {
-            return Object.keys(record).some((key) =>
-                record[key]?.toString().toLowerCase().includes(value)
-            );
-        });
+    //     // Filter the data globally across all columns
+    //     const filteredData = data.filter((record) => {
+    //         return Object.keys(record).some((key) =>
+    //             record[key]?.toString().toLowerCase().includes(value)
+    //         );
+    //     });
 
-        // You can then set this filtered data to a state if needed
-        setFilteredData(filteredData);
-    };
+    //     // You can then set this filtered data to a state if needed
+    //     setFilteredData(filteredData);
+    // },[]);
 
-    const handleGlobalReset = () => {
-        setSearchGlobal("");
-        setIsSearchOpen(false);
-        setFilteredData(data);
-    };
-    const openSearch = () => setIsSearchOpen(true);
-    const closeSearch = () => {
-        setIsSearchOpen(false);
-        handleGlobalReset();
-        setFilteredData(data);
-    };
 
-    const [sortColumn, setSortColumn] = useState(null);
-    const [sortOrder, setSortOrder] = useState('asc');
 
-    const handleSort = (columnKey) => {
-        const newSortOrder =
-            sortColumn === columnKey ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
+    // const openSearch = useCallback(() => {setIsSearchOpen(true)},[]);
+    // const closeSearch = useCallback(() => {
+    //     setIsSearchOpen(false);
+    //     handleGlobalReset();
+    //     setFilteredData(data);
+    // },[]);
 
-        setSortColumn(columnKey);
-        setSortOrder(newSortOrder);
+    // const [sortColumn, setSortColumn] = useState(null);
+    // const [sortOrder, setSortOrder] = useState('asc');
 
-        // Perform sorting
-        const sorted = [...filteredData].sort((a, b) => {
-            if (typeof a[columnKey] === 'number' && typeof b[columnKey] === 'number') {
-                return newSortOrder === 'asc'
-                    ? a[columnKey] - b[columnKey]
-                    : b[columnKey] - a[columnKey];
-            } else {
-                return newSortOrder === 'asc'
-                    ? a[columnKey]?.toString().localeCompare(b[columnKey]?.toString())
-                    : b[columnKey]?.toString().localeCompare(a[columnKey]?.toString());
-            }
-        });
+    // const handleSort = useCallback((columnKey) => {
+    //     const newSortOrder =
+    //         sortColumn === columnKey ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
 
-        setFilteredData(sorted);
-    };
+    //     setSortColumn(columnKey);
+    //     setSortOrder(newSortOrder);
+
+    //     // Perform sorting
+    //     const sorted = [...filteredData].sort((a, b) => {
+    //         if (typeof a[columnKey] === 'number' && typeof b[columnKey] === 'number') {
+    //             return newSortOrder === 'asc'
+    //                 ? a[columnKey] - b[columnKey]
+    //                 : b[columnKey] - a[columnKey];
+    //         } else {
+    //             return newSortOrder === 'asc'
+    //                 ? a[columnKey]?.toString().localeCompare(b[columnKey]?.toString())
+    //                 : b[columnKey]?.toString().localeCompare(a[columnKey]?.toString());
+    //         }
+    //     });
+
+    //     setFilteredData(sorted);
+    // }, [filteredData, sortColumn, sortOrder]);
 
     const filterList = () => {
 
     };
 
-    const [globalOption, setGlobalOption] = useState({});
-
-    const MultiSelectFilter = ({ columnKey, closePopover }) => {
-        const [selectedValues, setSelectedValues] = useState([]);
-
-        // Step 1: Create initialData with unique labels and counts
-        const initialData = Object.values(
-            filteredData.reduce((acc, data) => {
-                const label = data[columnKey];
-                const value = data[columnKey];
-
-                if (acc[label]) {
-                    acc[label].count += 1; // Increment the count if the label already exists
-                } else {
-                    acc[label] = { label, value, count: 1 }; // Add a new label with a count of 1
-                }
-
-                return acc;
-            }, {})
-        ).map((item) => ({
-            ...item,
-            label: `${item.label} (${item.count})`, // Add the count to the label
-        }));
-
-        const [options, setOptions] = useState(initialData);
-
-        const handleSelectAll = () => {
-            let updatedOptions = globalOption[columnKey] || [];
-            if (globalOption[columnKey].length === options.length || selectedValues.length === options.length) {
-                setSelectedValues([]);
-                setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
-                return;
-            } else {
-                setSelectedValues(options.map((option) => option.value));
-                setGlobalOption((prev) => ({ ...prev, [columnKey]: options.map((option) => option.value) }));
-            }
-        }
-
-        const handleSelect = (value) => {
-            let updatedOptions = globalOption[columnKey] || [];
-            if (globalOption[columnKey]?.includes(value) || selectedValues.includes(value)) {
-                setSelectedValues((prev) => {
-                    let updatedOption = prev.filter((item) => item !== value);
-                    updatedOptions = [...updatedOptions, ...updatedOption];
-                    return prev.filter((item) => item !== value);
-                });
-            } else {
-                setSelectedValues((prev) => {
-                    let updatedOption = [...prev, value];
-                    updatedOptions = [...updatedOptions, ...updatedOption];
-                    return [...prev, value]
-                });
-            }
-            setGlobalOption((prev) => ({ ...prev, [columnKey]: updatedOptions }));
-        };
 
 
-        const handleSearch = (searchText) => {
-            if (searchText) {
-                const filteredOptions = initialData.filter(option =>
-                    option.label?.toLowerCase().includes(searchText.toLowerCase())
-                );
-                setOptions(filteredOptions);
-            } else {
-                setOptions(initialData);
-            }
-        };
+    // const MultiSelectFilter = ({ columnKey, closePopover }) => {
+    //     const [selectedValues, setSelectedValues] = useState([]);
 
-        const handleMultiSearch = () => {
-            if (selectedValues.length == 0 && globalOption[columnKey].length == 0) {
-                setFilteredData(data);
-                return;
-            }
+    //     // Step 1: Create initialData with unique labels and counts
+    //     const initialData = Object.values(
+    //         filteredData.reduce((acc, data) => {
+    //             const label = data[columnKey];
+    //             const value = data[columnKey];
 
-            const filteredDataTemp = filteredData.filter((item) => {
-                return globalOption[columnKey].includes(item[columnKey]) || selectedValues.includes(item[columnKey])
-            });
-            setFilteredData(filteredDataTemp);
-            // closePopover();
-        };
+    //             if (acc[label]) {
+    //                 acc[label].count += 1; // Increment the count if the label already exists
+    //             } else {
+    //                 acc[label] = { label, value, count: 1 }; // Add a new label with a count of 1
+    //             }
 
-        const handleReset = () => {
-            setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
-            const globalColumn = Object.keys(globalOption).map((key) => {
-                if (key == columnKey) {
-                    return null
-                } else {
-                    return key;
-                }
-            })
+    //             return acc;
+    //         }, {})
+    //     ).map((item) => ({
+    //         ...item,
+    //         label: `${item.label} (${item.count})`, // Add the count to the label
+    //     }));
 
-            if (globalColumn.length == 0 || globalColumn.every((item) => item == null)) {
-                setFilteredData(data);
-                return;
-            }
+    //     const [options, setOptions] = useState(initialData);
 
-            let globalFilterData = [];
-            globalColumn.map((key) => {
-                let filteredDataTemp = data.filter((item) => {
-                    // console.log({ key, item });
-                    // console.log({ globalOption });
-                    if (key) {
-                        return globalOption[key].includes(item[key]);
-                    }
-
-                });
-                globalFilterData = [...globalFilterData, ...filteredDataTemp];
-            })
-            // const filteredDataTemp = data.filter((item) => {
-
-            // })
-            // setSelectedValues([]);
-            setFilteredData(globalFilterData);
-            // closePopover();
-        };
-
-        // const filteredOptions = searchText
-        // ? initialData.filter((option) =>
-        //       option.label.toLowerCase().includes(searchText.toLowerCase())
-        //   )
-        // : initialData;
-
-        return (
-            <div className="flex-row justify-between items-center" style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-                <div className="flex justify-between">
-                    <Button
-                        type="primary"
-                        onClick={() => handleMultiSearch()}
-                        icon={<SearchOutlined />}
-                        size="small"
-                        style={{ width: 80 }}
-                    >
-                        Search
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            handleReset();
-                        }}
-                        size="small"
-                        style={{ width: 80 }}
-                    >
-                        Reset
-                    </Button>
-                    <Button
-                        type="link"
-                        size="small"
-                        onClick={() => {
-                            closePopover();
-                        }}
-                    >
-                        Close
-                    </Button>
-                </div>
-                <div className="pt-2">
-                    <Checkbox className="mr-2 text-primary rounded-md"
-                        style={{
-                            transform: "scale(1.4)", // Scale up the size of the checkbox
-                        }}
-                        onChange={() => handleSelectAll()} checked={globalOption[columnKey]?.length == options.length || selectedValues.length == options.length && options.length > 0} value="all"></Checkbox>
-                    <AutoComplete
-                        style={{
-                            // paddingTop: 8,
-                            width: 200,
-                        }}
-                        // onSearch={handleSearch}
-                        placeholder="input here"
-                        filterOption={false}
-                        // onChange={handleSearch}
-                        // value={searchText}
-                        onSearch={handleSearch}
-                    >
-                        {options.map((option) => (
-                            <AutoComplete.Option key={option.value}><Checkbox onChange={(e) => {
-                                handleSelect(option.value);
-                            }} checked={globalOption[columnKey]?.includes(option.value) || selectedValues.includes(option.value)} value={option.value}>{option.label}</Checkbox></AutoComplete.Option>
-                        ))}
-                    </AutoComplete>
-
-                    {/* <AutoComplete
-                        style={{ width: 200 }}
-                        placeholder="Select options"
-                        filterOption={false}
-                        onSearch={handleSearch}
-                        open // Force the dropdown to remain open
-                        dropdownClassName="custom-dropdown" // Add custom class for dropdown if needed
-                    >
-                        {options.map((option) => (
-                            <AutoComplete.Option key={option.value}>
-                                <div
-                                    onMouseDown={(e) => e.preventDefault()} // Prevent dropdown from closing
-                                    style={{ display: "flex", alignItems: "center" }}
-                                >
-                                    <Checkbox
-                                        onChange={() => handleSelect(option.value)}
-                                        checked={selectedValues.includes(option.value)}
-                                        value={option.value}
-                                    >
-                                        {option.label}
-                                    </Checkbox>
-                                </div>
-                            </AutoComplete.Option>
-                        ))}
-                    </AutoComplete> */}
-                </div>
-            </div>
-        )
-    };
-
-    const renderResizableHeader = (title, columnKey, index) => {
-        const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
-        const firstColWidth = isEditMode ? 125 : 0; // Adjust the first column width if in edit mode
-        const leftOffset =
-            (index === 0 ? firstColWidth : firstColWidth) +
-            headers
-                .slice(0, index)
-                .reduce((sum, key) => sum + columnWidths[key], 0);
-        return (
-            <Resizable
-                width={columnWidths[columnKey]}
-                height={0}
-                onResize={handleResize(columnKey)} // Immediate DOM updates
-                // onResizeStop={handleResizeStop(columnKey)} // Final state update
-                draggableOpts={{ enableUserSelectHack: false }}
-                handle={
-                    <div
-                        style={{
-                            position: "absolute",
-                            right: 0,
-                            bottom: 0,
-                            cursor: "col-resize", // Keeps the resizing cursor
-                            zIndex: 10, // Ensure it stays above other elements
-                            display: "flex", // Allows icon alignment
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: "15px", // Adjust based on the size of your icon
-                            height: "100%",
-                        }}
-                    >
-                        <RxDividerVertical style={{ color: "gray", fontSize: "32px" }} /> {/* Replace with your preferred icon */}
-                    </div>
-                }
-                style={{
-                    backgroundColor: headerBgColor,
-                }}
-            >
-                <th
-                    className="px-4 py-4 border-b border-gray-300"
-                    id={`header${index}`}
-                    style={{
-                        width: `${columnWidths[columnKey]}px`,
-                        minWidth: `${columnWidths[columnKey]}px`,
-                        zIndex: isPinned ? 1000 : 10, // Adjust z-index for proper stacking
-                        position: isPinned ? "sticky" : "relative", // Sticky only if pinned
-                        left: isPinned ? `${leftOffset}px` : "auto", // Offset only if pinned
-                        top: 0,
-                        backgroundColor: headerBgColor, // Solid background for pinned headers
-                        color: headerTextColor, // Text color
-                        whiteSpace: "nowrap",
-                        fontFamily: headerFontFamily, // Font family
-                        fontSize: `${headerFontSize}px`, // Font size
-                        // borderRight: isPinned && `4px solid #bed900`,
-                    }}
-                >
-                    <div
-                        className="flex justify-between items-center gap-3"
-                        style={{
-                            zIndex: isPinned ? 1000 : "inherit", // Ensure child elements respect z-index
-                            position: "relative", // Keep elements aligned
-                        }}
-                    >
-                        <div>
-                            <span>{title.replace(/_/g, " ").toUpperCase()}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <button onClick={() => handleSort(columnKey)}>
-                                <FaSort />
-                            </button>
-
-                            <Popover
-                                content={
-                                    <MultiSelectFilter
-                                        columnKey={columnKey}
-                                        closePopover={() => closePopover(index)}
-                                    />
-                                }
-
-                                trigger="click"
-                                placement="bottom"
-                                visible={visiblePopover[index] || false}
-                                onVisibleChange={(isVisible) => handlePopoverVisibility(index, isVisible)}
-                            >
-                                <button>
-                                    <IoSearchOutline />
-                                </button>
-                            </Popover>
-                            <Popover content={getAggregatePopoverContent(columnKey)} trigger="click" placement="bottom">
-                                <button title="Labels">
-                                    <MdOutlineLabel />
-                                </button>
-                            </Popover>
-
-                            {isEditMode &&
-                                (freezeCol.includes(columnKey) ? (
-                                    <button title="Freezed Column" onClick={(e) => handleFreezeColumn(columnKey, "removeFreezeCol", e)}>
-                                        <BsPinAngleFill />
-                                    </button>
-                                ) : (
-                                    <button title="Freeze Column" onClick={(e) => handleFreezeColumn(columnKey, "showInProfile", e)}>
-                                        <BsPin />
-                                    </button>
-                                ))
-                            }
-
-                        </div>
-                    </div>
-                </th>
-            </Resizable>
-        );
-    };
-
-
-    function getElementWidthById(elementId) {
-        const element = document.getElementById(elementId);
-
-        if (element) {
-            return element.offsetWidth; // Returns the width of the element, including padding but excluding margins
-        } else {
-            console.warn(`Element with ID ${elementId} not found.`);
-            return null; // Returns null if element is not found
-        }
-    }
-
-    // // Update column widths after the table is loaded
-    // useEffect(() => {
-    //     const updatedWidths = { ...columnWidths };
-    //     headers.forEach((header, index) => {
-    //         const elementId = header${index}; // Generate the ID for each column header
-    //         const actualWidth = getElementWidthById(elementId);
-    //         if (actualWidth) {
-    //             updatedWidths[header] = actualWidth; // Update with the actual width
+    //     const handleSelectAll = () => {
+    //         let updatedOptions = globalOption[columnKey] || [];
+    //         if (globalOption[columnKey].length === options.length || selectedValues.length === options.length) {
+    //             setSelectedValues([]);
+    //             setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
+    //             return;
+    //         } else {
+    //             setSelectedValues(options.map((option) => option.value));
+    //             setGlobalOption((prev) => ({ ...prev, [columnKey]: options.map((option) => option.value) }));
     //         }
-    //     });
+    //     }
 
-    //     setColumnWidths(updatedWidths); // Update the state with new widths
-    // }, [headers]); // Dependency ensures this runs when headers change
+    //     const handleSelect = (value) => {
+    //         let updatedOptions = globalOption[columnKey] || [];
+    //         if (globalOption[columnKey]?.includes(value) || selectedValues.includes(value)) {
+    //             setSelectedValues((prev) => {
+    //                 let updatedOption = prev.filter((item) => item !== value);
+    //                 updatedOptions = [...updatedOptions, ...updatedOption];
+    //                 return prev.filter((item) => item !== value);
+    //             });
+    //         } else {
+    //             setSelectedValues((prev) => {
+    //                 let updatedOption = [...prev, value];
+    //                 updatedOptions = [...updatedOptions, ...updatedOption];
+    //                 return [...prev, value]
+    //             });
+    //         }
+    //         setGlobalOption((prev) => ({ ...prev, [columnKey]: updatedOptions }));
+    //     };
 
-    useEffect(() => {
-        // Load column widths from cookies
-        const savedColumnWidths = loadColumnWidthsFromCookies();
-        console.log({ savedColumnWidths });
-        let updatedWidths = savedColumnWidths || { ...columnWidths };
 
-        // Update column widths after the table is loaded
-        headers.forEach((header, index) => {
-            const elementId = `header${index}`; // Generate the ID for each column header
-            const actualWidth = getElementWidthById(elementId);
-            if (actualWidth) {
-                updatedWidths[header] = actualWidth; // Update with the actual width
-            }
-        });
+    //     const handleSearch = (searchText) => {
+    //         if (searchText) {
+    //             const filteredOptions = initialData.filter(option =>
+    //                 option.label?.toLowerCase().includes(searchText.toLowerCase())
+    //             );
+    //             setOptions(filteredOptions);
+    //         } else {
+    //             setOptions(initialData);
+    //         }
+    //     };
 
-        setColumnWidths(updatedWidths); // Update the state with new widths
-    }, [headers]); // Dependency ensures this runs when headers change
+    //     const handleMultiSearch = () => {
+    //         if (selectedValues.length == 0 && globalOption[columnKey].length == 0) {
+    //             setFilteredData(data);
+    //             return;
+    //         }
+
+    //         const filteredDataTemp = filteredData.filter((item) => {
+    //             return globalOption[columnKey].includes(item[columnKey]) || selectedValues.includes(item[columnKey])
+    //         });
+    //         setFilteredData(filteredDataTemp);
+    //         // closePopover();
+    //     };
+
+    //     const handleReset = () => {
+    //         setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
+    //         const globalColumn = Object.keys(globalOption).map((key) => {
+    //             if (key == columnKey) {
+    //                 return null
+    //             } else {
+    //                 return key;
+    //             }
+    //         })
+
+    //         if (globalColumn.length == 0 || globalColumn.every((item) => item == null)) {
+    //             setFilteredData(data);
+    //             return;
+    //         }
+
+    //         let globalFilterData = [];
+    //         globalColumn.map((key) => {
+    //             let filteredDataTemp = data.filter((item) => {
+    //                 // console.log({ key, item });
+    //                 // console.log({ globalOption });
+    //                 if (key) {
+    //                     return globalOption[key].includes(item[key]);
+    //                 }
+
+    //             });
+    //             globalFilterData = [...globalFilterData, ...filteredDataTemp];
+    //         })
+    //         // const filteredDataTemp = data.filter((item) => {
+
+    //         // })
+    //         // setSelectedValues([]);
+    //         setFilteredData(globalFilterData);
+    //         // closePopover();
+    //     };
+
+    //     // const filteredOptions = searchText
+    //     // ? initialData.filter((option) =>
+    //     //       option.label.toLowerCase().includes(searchText.toLowerCase())
+    //     //   )
+    //     // : initialData;
+
+    //     return (
+    //         <div className="flex-row justify-between items-center" style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+    //             <div className="flex justify-between">
+    //                 <Button
+    //                     type="primary"
+    //                     onClick={() => handleMultiSearch()}
+    //                     icon={<SearchOutlined />}
+    //                     size="small"
+    //                     style={{ width: 80 }}
+    //                 >
+    //                     Search
+    //                 </Button>
+    //                 <Button
+    //                     onClick={() => {
+    //                         handleReset();
+    //                     }}
+    //                     size="small"
+    //                     style={{ width: 80 }}
+    //                 >
+    //                     Reset
+    //                 </Button>
+    //                 <Button
+    //                     type="link"
+    //                     size="small"
+    //                     onClick={() => {
+    //                         closePopover();
+    //                     }}
+    //                 >
+    //                     Close
+    //                 </Button>
+    //             </div>
+    //             <div className="pt-2">
+    //                 <Checkbox className="mr-2 text-primary rounded-md"
+    //                     style={{
+    //                         transform: "scale(1.4)", // Scale up the size of the checkbox
+    //                     }}
+    //                     onChange={() => handleSelectAll()} checked={globalOption[columnKey]?.length == options.length || selectedValues.length == options.length && options.length > 0} value="all"></Checkbox>
+    //                 <AutoComplete
+    //                     style={{
+    //                         // paddingTop: 8,
+    //                         width: 200,
+    //                     }}
+    //                     // onSearch={handleSearch}
+    //                     placeholder="input here"
+    //                     filterOption={false}
+    //                     // onChange={handleSearch}
+    //                     // value={searchText}
+    //                     onSearch={handleSearch}
+    //                 >
+    //                     {options.map((option) => (
+    //                         <AutoComplete.Option key={option.value}><Checkbox onChange={(e) => {
+    //                             handleSelect(option.value);
+    //                         }} checked={globalOption[columnKey]?.includes(option.value) || selectedValues.includes(option.value)} value={option.value}>{option.label}</Checkbox></AutoComplete.Option>
+    //                     ))}
+    //                 </AutoComplete>
+
+    //                 {/* <AutoComplete
+    //                     style={{ width: 200 }}
+    //                     placeholder="Select options"
+    //                     filterOption={false}
+    //                     onSearch={handleSearch}
+    //                     open // Force the dropdown to remain open
+    //                     dropdownClassName="custom-dropdown" // Add custom class for dropdown if needed
+    //                 >
+    //                     {options.map((option) => (
+    //                         <AutoComplete.Option key={option.value}>
+    //                             <div
+    //                                 onMouseDown={(e) => e.preventDefault()} // Prevent dropdown from closing
+    //                                 style={{ display: "flex", alignItems: "center" }}
+    //                             >
+    //                                 <Checkbox
+    //                                     onChange={() => handleSelect(option.value)}
+    //                                     checked={selectedValues.includes(option.value)}
+    //                                     value={option.value}
+    //                                 >
+    //                                     {option.label}
+    //                                 </Checkbox>
+    //                             </div>
+    //                         </AutoComplete.Option>
+    //                     ))}
+    //                 </AutoComplete> */}
+    //             </div>
+    //         </div>
+    //     )
+    // };
+
+    // const renderResizableHeader = (title, columnKey, index) => {
+    //     const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
+    //     const firstColWidth = isEditMode ? 125 : 0; // Adjust the first column width if in edit mode
+    //     const leftOffset =
+    //         (index === 0 ? firstColWidth : firstColWidth) +
+    //         headers
+    //             .slice(0, index)
+    //             .reduce((sum, key) => sum + columnWidths[key], 0);
+    //     return (
+    //         <Resizable
+    //             width={columnWidths[columnKey]}
+    //             height={0}
+    //             onResize={handleResize(columnKey)} // Immediate DOM updates
+    //             // onResizeStop={handleResizeStop(columnKey)} // Final state update
+    //             draggableOpts={{ enableUserSelectHack: false }}
+    //             handle={
+    //                 <div
+    //                     style={{
+    //                         position: "absolute",
+    //                         right: 0,
+    //                         bottom: 0,
+    //                         cursor: "col-resize", // Keeps the resizing cursor
+    //                         zIndex: 10, // Ensure it stays above other elements
+    //                         display: "flex", // Allows icon alignment
+    //                         alignItems: "center",
+    //                         justifyContent: "center",
+    //                         width: "15px", // Adjust based on the size of your icon
+    //                         height: "100%",
+    //                     }}
+    //                 >
+    //                     <RxDividerVertical style={{ color: "gray", fontSize: "32px" }} /> {/* Replace with your preferred icon */}
+    //                 </div>
+    //             }
+    //             style={{
+    //                 backgroundColor: headerBgColor,
+    //             }}
+    //         >
+    //             <th
+    //                 className="px-4 py-4 border-b border-gray-300"
+    //                 id={`header${index}`}
+    //                 style={{
+    //                     width: `${columnWidths[columnKey]}px`,
+    //                     minWidth: `${columnWidths[columnKey]}px`,
+    //                     zIndex: isPinned ? 1000 : 10, // Adjust z-index for proper stacking
+    //                     position: isPinned ? "sticky" : "relative", // Sticky only if pinned
+    //                     left: isPinned ? `${leftOffset}px` : "auto", // Offset only if pinned
+    //                     top: 0,
+    //                     backgroundColor: headerBgColor, // Solid background for pinned headers
+    //                     color: headerTextColor, // Text color
+    //                     whiteSpace: "nowrap",
+    //                     fontFamily: headerFontFamily, // Font family
+    //                     fontSize: `${headerFontSize}px`, // Font size
+    //                     // borderRight: isPinned && `4px solid #bed900`,
+    //                 }}
+    //             >
+    //                 <div
+    //                     className="flex justify-between items-center gap-3"
+    //                     style={{
+    //                         zIndex: isPinned ? 1000 : "inherit", // Ensure child elements respect z-index
+    //                         position: "relative", // Keep elements aligned
+    //                     }}
+    //                 >
+    //                     <div>
+    //                         <span>{title.replace(/_/g, " ").toUpperCase()}</span>
+    //                     </div>
+    //                     <div className="flex items-center gap-1">
+    //                         <button onClick={() => handleSort(columnKey)}>
+    //                             <FaSort />
+    //                         </button>
+
+    //                         <MultiSelectFilter
+    //                             data={data}
+    //                             filteredData={filteredData}
+    //                             setFilteredData={setFilteredData}
+    //                             globalOption={globalOption}
+    //                             setGlobalOption={setGlobalOption}
+    //                             columnKey={columnKey}
+    //                             closePopover={() => closePopover(index)}
+    //                             index={index}
+    //                         />
+    //                         {/* <Popover
+    //                             content={
+    //                                 <MultiSelectFilter
+    //                                     data={data}
+    //                                     filteredData={filteredData}
+    //                                     setFilteredData={setFilteredData}
+    //                                     globalOption={globalOption}
+    //                                     setGlobalOption={setGlobalOption}
+    //                                     columnKey={columnKey}
+    //                                     closePopover={() => closePopover(index)}
+    //                                 />
+    //                             }
+
+    //                             trigger="click"
+    //                             placement="bottom"
+    //                             visible={visiblePopover[index] || false}
+    //                             onVisibleChange={(isVisible) => handlePopoverVisibility(index, isVisible)}
+    //                         >
+    //                             <button>
+    //                                 <IoSearchOutline />
+    //                             </button>
+    //                         </Popover> */}
+    //                         <Popover content={getAggregatePopoverContent(columnKey)} trigger="click" placement="bottom">
+    //                             <button title="Labels">
+    //                                 <MdOutlineLabel />
+    //                             </button>
+    //                         </Popover>
+
+    //                         {isEditMode &&
+    //                             (freezeCol.includes(columnKey) ? (
+    //                                 <button title="Freezed Column" onClick={(e) => handleFreezeColumn(columnKey, "removeFreezeCol", e)}>
+    //                                     <BsPinAngleFill />
+    //                                 </button>
+    //                             ) : (
+    //                                 <button title="Freeze Column" onClick={(e) => handleFreezeColumn(columnKey, "showInProfile", e)}>
+    //                                     <BsPin />
+    //                                 </button>
+    //                             ))
+    //                         }
+
+    //                     </div>
+    //                 </div>
+    //             </th>
+    //         </Resizable>
+    //     );
+    // };
+
 
     const isValidUrl = (url) => {
         try {
@@ -1074,7 +1001,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
     const handleHeaderSwitch = async (checked, header) => {
         console.log({ checked, header, hiddenCol });
-
         let updatedHiddenCol = [];
 
         // Update the hiddenCol state using its previous value
@@ -1137,9 +1063,128 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         )
     }
 
-    const [ischecked, setIschecked] = useState([]);
-    const [isedit, setIsedit] = useState(false);
-    const [EditData, setEditData] = useState([]);
+
+
+
+    {/* Dynamically Render Sliders for Selected Checkboxes */ }
+    // const [isSearchOpen, setIsSearchOpen] = useState(false);
+    // const [isFilterOpen, setIsFilterOpen] = useState(false);
+    // const toggleFilterBox = () => {
+    //     setIsFilterOpen(!isFilterOpen);
+    //     setIsNumberDropdownOpen(false);
+    //     setIsDateDropdownOpen(false);
+    //     setSelectedNumbers([]); // Clear selected number filters
+    //     setSelectedDates([]); // Clear selected date filters
+    //     localStorage.removeItem("selectedNumbers");
+    //     localStorage.removeItem("selectedDates");
+    // };
+
+    //added latest
+    const [selectedNumbers, setSelectedNumbers] = useState(
+        JSON.parse(localStorage.getItem("selectedNumbers")) || []
+    );
+    const [selectedDates, setSelectedDates] = useState(
+        JSON.parse(localStorage.getItem("selectedDates")) || []
+    );
+    const toggleNumberDropdown = () => {
+        setIsNumberDropdownOpen(!isNumberDropdownOpen);
+        setIsDateDropdownOpen(false); // Close date dropdown
+    };
+    const toggleDateDropdown = () => {
+        setIsDateDropdownOpen(!isDateDropdownOpen);
+        setIsNumberDropdownOpen(false); // Close number dropdown
+    };
+
+
+    const [isNumberDropdownOpen, setIsNumberDropdownOpen] = useState(false);
+    const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
+
+    const [numberFilterColumn, setNumberFilterColumn] = useState(getHeadersWithDateAndNumbers(data).numberColumns);
+    const [dateFilterColumn, setDateFilterColumn] = useState(getHeadersWithDateAndNumbers(data).dateColumns);
+
+    const toggleFilterBox = useCallback(() => {
+        setIsFilterOpen(!isFilterOpen);
+        setIsNumberDropdownOpen(false);
+        setIsDateDropdownOpen(false);
+        setSelectedNumbers([]); // Clear selected number filters
+        setSelectedDates([]); // Clear selected date filters
+        localStorage.removeItem("selectedNumbers");
+        localStorage.removeItem("selectedDates");
+    }, [isFilterOpen, isNumberDropdownOpen, isDateDropdownOpen]);
+
+
+    const calculate_number_min_max = (data, key) => {
+        if (!data || data.length === 0) {
+            return { min: null, max: null };
+        }
+
+        let min = null;
+        let max = null;
+
+        data.forEach((item) => {
+            const value = parseFloat(item[key]); // Ensure the value is a number
+            if (!isNaN(value)) {
+                if (min === null || value < min) min = value;
+                if (max === null || value > max) max = value;
+            }
+        });
+
+        return {
+            min: min !== null ? min : 0,
+            max: max !== null ? max : 1000,
+        };
+    };
+    const calculate_min_max = (data, key) => {
+        console.log({ data, key });
+        if (!data || data.length === 0) {
+            return { min: null, max: null };
+        }
+
+        let min = null;
+        let max = null;
+
+        data.forEach((item) => {
+            const value = new Date(item[key]).getTime(); // Convert value to timestamp
+            if (!isNaN(value)) {
+                // Check if it's a valid date
+                if (min === null || value < min) min = value;
+                if (max === null || value > max) max = value;
+            }
+        });
+
+        // Return min and max in ISO string format for better use
+        return {
+            min: min ? new Date(min).toISOString() : null,
+            max: max ? new Date(max).toISOString() : null,
+        };
+    };
+
+    const updatefilterdata = (column, range) => {
+        const filteredDatatemp = data.filter((item) => {
+            const itemValue = item[column];
+            if (itemValue !== null && itemValue !== undefined) {
+                return itemValue >= range[0] && itemValue <= range[1];
+            }
+            return true;
+        });
+        setFilteredData(filteredDatatemp);
+    };
+
+    const updateDateFilterData = (column, value) => {
+        // Convert timestamp values back to ISO date strings
+        const [startDateTimestamp, endDateTimestamp] = value;
+        const startDate = new Date(startDateTimestamp).toISOString();
+        const endDate = new Date(endDateTimestamp).toISOString();
+
+        // Create the updated range object
+        const range = {
+            min: startDate,
+            max: endDate,
+        };
+
+        // Now call the updatefilterdata function with the updated range (converted back to date strings)
+        updatefilterdata(column, range);
+    };
 
     const handleBulkEdit = () => {
         if (ischecked.length > 0) {
@@ -1223,180 +1268,13 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
         }
     };
 
-    const handleStatusChanges = (checked, header) => {
-        if (checked) {
-            setIschecked([...ischecked, header.key_id]);
-            setEditData((prev) => [...prev, header]);
-        } else {
-            setIschecked(ischecked.filter((item) => item !== header.key_id));
-            setEditData((prev) => prev.filter((item) => item.key_id !== header.key_id));
-        }
-    }
-
-    const handleDoubleClick = (key_id, header) => {
-        setIschecked([...ischecked, key_id]);
-        setEditData((prev) => [...prev, header]);
-        setIsedit(true);
-    }
-
-    const isNumeric = (value) => !isNaN(parseFloat(value)) && isFinite(value);
-
-    const calculateSum = (dataIndex) => {
-        const sum = filteredData.reduce((total, record) => {
-            const value = parseFloat(record[dataIndex]);
-            if (!isNaN(value)) {
-                return total + value;
-            }
-            return total;
-        }, 0);
-
-        return sum;
-    };
-
-    const calculateAverage = (dataIndex) => {
-        const sum = calculateSum(dataIndex);
-        const avg = sum / filteredData.filter((record) => isNumeric(record[dataIndex])).length;
-        return avg.toFixed(2);
-    };
-
-    const calculateCount = () => {
-        return filteredData.length;
-    };
-
-    const getAggregatePopoverContent = (dataIndex) => {
-        const isNumberColumn = data.some((record) => isNumeric(record[dataIndex]));
-
-        return (
-            <div>
-                <p>Σ Sum: {isNumberColumn ? calculateSum(dataIndex) : 'NA'}</p>
-                <p>% Average: {isNumberColumn ? calculateAverage(dataIndex) : 'NA'}</p>
-                <p># Count: {calculateCount(dataIndex)}</p>
-            </div>
-        );
-    };
-
-
-    {/* Dynamically Render Sliders for Selected Checkboxes */ }
-    // const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const toggleFilterBox = () => {
-        setIsFilterOpen(!isFilterOpen);
-        setIsNumberDropdownOpen(false);
-        setIsDateDropdownOpen(false);
-        setSelectedNumbers([]); // Clear selected number filters
-        setSelectedDates([]); // Clear selected date filters
-        localStorage.removeItem("selectedNumbers");
-        localStorage.removeItem("selectedDates");
-    };
-
-    //added latest
-    const [selectedNumbers, setSelectedNumbers] = useState(
-        JSON.parse(localStorage.getItem("selectedNumbers")) || []
-    );
-    const [selectedDates, setSelectedDates] = useState(
-        JSON.parse(localStorage.getItem("selectedDates")) || []
-    );
-    const toggleNumberDropdown = () => {
-        setIsNumberDropdownOpen(!isNumberDropdownOpen);
-        setIsDateDropdownOpen(false); // Close date dropdown
-    };
-    const toggleDateDropdown = () => {
-        setIsDateDropdownOpen(!isDateDropdownOpen);
-        setIsNumberDropdownOpen(false); // Close number dropdown
-    };
-
-
-    const [isNumberDropdownOpen, setIsNumberDropdownOpen] = useState(false);
-    const [isDateDropdownOpen, setIsDateDropdownOpen] = useState(false);
-    const [numberFilterColumn, setNumberFilterColumn] = useState(getHeadersWithDateAndNumbers(data).numberColumns);
-    const [dateFilterColumn, setDateFilterColumn] = useState(getHeadersWithDateAndNumbers(data).dateColumns);
-
-
-    const calculate_number_min_max = (data, key) => {
-        if (!data || data.length === 0) {
-            return { min: null, max: null };
-        }
-
-        let min = null;
-        let max = null;
-
-        data.forEach((item) => {
-            const value = parseFloat(item[key]); // Ensure the value is a number
-            if (!isNaN(value)) {
-                if (min === null || value < min) min = value;
-                if (max === null || value > max) max = value;
-            }
-        });
-
-        return {
-            min: min !== null ? min : 0,
-            max: max !== null ? max : 1000,
-        };
-    };
-    const calculate_min_max = (data, key) => {
-        console.log({ data, key });
-        if (!data || data.length === 0) {
-            return { min: null, max: null };
-        }
-
-        let min = null;
-        let max = null;
-
-        data.forEach((item) => {
-            const value = new Date(item[key]).getTime(); // Convert value to timestamp
-            if (!isNaN(value)) {
-                // Check if it's a valid date
-                if (min === null || value < min) min = value;
-                if (max === null || value > max) max = value;
-            }
-        });
-
-        // Return min and max in ISO string format for better use
-        return {
-            min: min ? new Date(min).toISOString() : null,
-            max: max ? new Date(max).toISOString() : null,
-        };
-    };
-
-    const updatefilterdata = (column, range) => {
-        const filteredDatatemp = data.filter((item) => {
-            const itemValue = item[column];
-            if (itemValue !== null && itemValue !== undefined) {
-                return itemValue >= range[0] && itemValue <= range[1];
-            }
-            return true;
-        });
-        setFilteredData(filteredDatatemp);
-    };
-
-    const updateDateFilterData = (column, value) => {
-        // Convert timestamp values back to ISO date strings
-        const [startDateTimestamp, endDateTimestamp] = value;
-        const startDate = new Date(startDateTimestamp).toISOString();
-        const endDate = new Date(endDateTimestamp).toISOString();
-
-        // Create the updated range object
-        const range = {
-            min: startDate,
-            max: endDate,
-        };
-
-        // Now call the updatefilterdata function with the updated range (converted back to date strings)
-        updatefilterdata(column, range);
-    };
-
-    useEffect(() => {
-        if (ischecked.length < 1) {
-            setIsedit(false);
-        }
-    }, [ischecked])
 
 
     return (
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
-                    <button onClick={() => navigate(-1)}>
+                    <button onClick={() => navigate(-1)} title="Back">
                         <BackIcon />
                     </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
@@ -1517,14 +1395,15 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             })}
                         </div>
                     )}
-
                 </div>
                 <div className="flex justify-end items-center">
 
+                    {/* <FilterButton data={data} /> */}
                     {!isFilterOpen ? (
                         <button
                             onClick={toggleFilterBox}
                             className="bg-primary rounded-[4px] p-1 border-2 border-white text-white focus:outline-none"
+                            title="Filter"
                         >
                             <LuFilter className="text-white" size={18} />
                         </button>
@@ -1538,6 +1417,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                     toggleNumberDropdown();
                                     // setSelectedDates([]); // Clear date sliders
                                 }}
+                                title="Number Filter"
                             >
                                 <Bs123 className="text-green-900" size={20} />
                             </button>
@@ -1552,6 +1432,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                         <button
                                             onClick={() => setIsNumberDropdownOpen(false)}
                                             className="text-gray-500 hover:text-gray-800 focus:outline-none"
+                                            title="Close"
                                         >
                                             <ImCancelCircle />
                                         </button>
@@ -1625,6 +1506,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                     toggleDateDropdown();
                                     // setSelectedNumbers([]); // Clear number sliders
                                 }}
+                                title="Date Filter"
                             >
                                 <CiCalendarDate className="text-green-900" size={20} />
                             </button>
@@ -1639,6 +1521,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                                         <button
                                             onClick={() => setIsDateDropdownOpen(false)}
                                             className="text-gray-500 hover:text-gray-800 focus:outline-none"
+                                            title="Close"
                                         >
                                             <ImCancelCircle />
                                         </button>
@@ -1714,53 +1597,30 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                         </div>
                     )}
 
-                    {isSearchOpen && (
-                        <Input
-                            prefix={<BiSearch />}
-                            value={searchGlobal}
-                            onChange={handleGlobalSearch}
-                            style={{ width: "200px" }}
-                            className="min-w-[150px] px-4 py-1 mx-2"
-                            placeholder="Search"
-                        />
-                    )}
-                    {isSearchOpen && (
-                        <button onClick={closeSearch} className="bg-primary rounded-[4px] p-1 mr-2">
-                            <Cancel />
-                        </button>
-                    )}
-                    {!isSearchOpen && (
-                        <button onClick={openSearch} className="bg-primary rounded-[4px] p-1 mx-2">
-                            <Search />
-                        </button>
-                    )}
-
-                    <button onClick={handleGlobalReset} className="bg-primary rounded-[4px] p-1">
-                        <Reset />
-                    </button>
+                    <GlobalSearch data={data} setFilteredData={setFilteredData} />
 
                     {isEditMode && <div className="flex items-center">
-                        <button onClick={handleAdd} className="mx-2">
+                        <button onClick={handleAdd} className="mx-2" title="Add Row">
                             <Add />
                         </button>
-                        <button onClick={handleAddBukl}>
+                        <button onClick={handleAddBukl} title="Import Data">
                             <BulkAdds />
                         </button>
 
                         {isedit ?
-                            <button onClick={handleBulkSave} className="bg-primary rounded-[4px] p-1 mx-2">
+                            <button onClick={handleBulkSave} className="bg-primary rounded-[4px] p-1 mx-2" title="Save">
                                 <IoSaveSharp color="white" />
                             </button>
                             :
-                            <button onClick={handleBulkEdit} className="bg-primary rounded-[4px] p-1 mx-2">
+                            <button onClick={handleBulkEdit} className="bg-primary rounded-[4px] p-1 mx-2" title="Edit">
                                 <MdEdit color="white" />
                             </button>}
-                        <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-1">
+                        <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-1" title="Delete">
                             <MdDelete color="white" />
                         </button>
 
                         <Popover content={<HeaderSwitch />} title="Hide Columns" trigger="click" placement="bottomRight">
-                            <button className="mx-2" >
+                            <button className="mx-2" title="Hide Columns">
                                 <div className="bg-primary rounded-[4px] p-1">
                                     <BiSolidHide color="white" size={17} />
                                 </div>
@@ -1769,204 +1629,39 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                     </div>}
                 </div>
             </div>
-            <div className="px-[50px] py-[10px]">
-                <div className="overflow-x-auto">
-                    <div
-                        className="min-w-full relative border border-gray-300 rounded-t-lg bg-white"
-                        style={{
-                            maxHeight: "500px",
-                            overflowY: "auto",
-                        }}
-                    >
-                        <table
-                            className="border border-gray-300 rounded-t-lg bg-white"
-                            style={{
-                                tableLayout: "auto",
-                                minWidth: { minWidth },
-                                width: "100%",
-                                border: "1px solid #ccc",
-                                borderCollapse: "collapse",
-                            }}
-                        >
-                            <thead className="sticky top-0 bg-gray-100 z-20">
-                                <tr className="text-gray-700 text-left"
-                                    style={{ backgroundColor: headerBgColor, color: headerTextColor }}>
-                                    {isEditMode &&
-                                        <th
-                                            className="px-4 py-4 border-b border-gray-300"
-                                            style={{
-                                                width: `${columnWidths.actions}px`,
-                                                position: "sticky",
-                                                left: 0,
-                                                background: "#fff",
-                                                width: `${columnWidths.actions}px`,
-                                                position: "sticky",
-                                                left: 0,
-                                                zIndex: 100,
-                                                // borderRight: "1px solid #ccc",
-                                                backgroundColor: headerBgColor,
-                                                color: headerTextColor,
-                                                whiteSpace: "nowrap",
-                                                fontFamily: headerFontFamily,
-                                                fontSize: `${headerFontSize}px`,
-                                            }}
-                                        >
-                                            ACTIONS
-                                        </th>
-                                    }
-                                    {headers.map((header, index) => renderResizableHeader(header, header, index))}
-                                </tr>
-                            </thead>
-                            <tbody className="people_table">
-                                {paginatedData.map((item) => (
-                                    <tr key={item.key_id} className="hover:bg-gray-50">
-                                        {isEditMode &&
-                                            <td
-                                                className="px-4 py-2 border-y border-gray-300"
-                                                style={{
-                                                    width: `${columnWidths.actions}px`,
-                                                    position: "sticky",
-                                                    left: 0,
-                                                    background: "#fff",
-                                                    zIndex: 100,
-                                                }}
-                                            >
-                                                <div className="flex gap-[10px] align-center">
-                                                    <Checkbox checked={ischecked.includes(item.key_id)} onChange={(e) => handleStatusChanges(e.target.checked, item)} value={item.key_id} />
 
-                                                    <button
-                                                        className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
-                                                        onClick={() => {
-                                                            if (ischecked.length > 0) {
-                                                                if (isEditMode) {
-                                                                    handleDoubleClick(item.key_id, item);
-                                                                }
-                                                            } else {
-                                                                handleEdit(item.key_id);
-                                                            }
-                                                        }}
-                                                    >
-                                                        <Edit />
-                                                    </button>
-                                                    <button
-                                                        className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
-                                                        onClick={() => {
-                                                            if (ischecked.length > 0) {
-                                                                if (isEditMode) {
-                                                                    handleBulkDelete();
-                                                                }
-                                                            } else {
-                                                                handleDelete(item.key_id)
-                                                            }
-                                                        }}
-                                                    >
-                                                        <Delete />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        }
-                                        {headers.map((header, index) => {
-                                            const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(header);
-                                            const firstColWidth = isEditMode ? 125 : 0;
-                                            const leftOffset =
-                                                (index === 0 ? firstColWidth : firstColWidth) +
-                                                headers
-                                                    .slice(0, index)
-                                                    .reduce((sum, key) => sum + columnWidths[key], 0);
+            {/* <DataGrid
+                columnResizeMode="onChange"
+                rows={data}
+                columns={headers.map((col) => {
+                    return {
+                        field: col,
+                        header: col,
+                        width: 200,
+                    };
 
-                                            return (
-                                                <td
-                                                    key={header}
-                                                    className="px-4 py-2 border-b border-gray-300"
-                                                    style={{
-                                                        width: `${columnWidths[header]}px`,
-                                                        minWidth: `${columnWidths[header]}px`,
-                                                        zIndex: isPinned ? 100 : 10, // Adjust z-index for proper stacking
-                                                        position: isPinned ? "sticky" : "relative", // Sticky only if pinned
-                                                        left: isPinned ? `${leftOffset}px` : "auto", // Offset only if pinned
-                                                        // backgroundColor: isPinned ? '#fff' : null, // Solid background for pinned headers
-                                                        color: bodyTextColor, // Text color
-                                                        whiteSpace: "nowrap",
-                                                        fontFamily: bodyFontFamily, // Font family
-                                                        fontSize: `${bodyFontSize}px`, // Font size
-                                                        // borderRight: isPinned ? "4px solid #bed900" : "none",
-                                                        // boxShadow: isPinned && `4px solid #bed900`,
-                                                        boxShadow: isPinned ? "3px 0px 5px rgba(0, 0, 0, 0.1)" : "none", // Fallback shadow
-                                                    }}
-                                                >
-                                                    {isedit && ischecked.includes(item.key_id) ?
-                                                        <div className="tableTD w-full h-full flex items-center"
-                                                            style={{
-                                                                zIndex: isPinned ? 100 : "inherit", // Ensure child elements respect z-index
-                                                                position: "relative", // Keep elements aligned
-                                                            }}
-                                                        >
-                                                            <input
-                                                                className="w-full h-full border-b-2 border-gray-300 border-primary"
-                                                                value={EditData.find((data) => data.key_id === item.key_id)?.[header] || ""}
-                                                                onChange={(e) => {
-                                                                    const newValue = e.target.value;
-                                                                    setEditData((prev) =>
-                                                                        prev.map((data) =>
-                                                                            data.key_id === item.key_id
-                                                                                ? { ...data, [header]: newValue } // Update only the target field
-                                                                                : data
-                                                                        )
-                                                                    );
-                                                                }}
-                                                            />
-                                                        </div>
-                                                        :
-                                                        <div className="tableTD w-full h-full flex items-center"
-                                                            style={{
-                                                                zIndex: isPinned ? 100 : "inherit", // Ensure child elements respect z-index
-                                                                position: "relative", // Keep elements aligned
-                                                            }}
-                                                            onDoubleClick={(e) => isEditMode && handleDoubleClick(item.key_id, item)}
-                                                        >
-                                                            {header.toLowerCase() === "picture" ? (
-                                                                <div className="w-full h-full flex justify-center items-center">
-                                                                    {isValidUrl(item[header]) ? (
-                                                                        <img
-                                                                            src={item[header]}
-                                                                            alt="profile"
-                                                                            className="w-12 h-12 rounded-full border-[1px] border-[#D3CBCB] object-cover"
-                                                                        />
-                                                                    ) : (
-                                                                        <Avatar size={48} icon={<UserOutlined />} alt="User" />
-                                                                    )}
-                                                                </div>
-                                                            ) : (
-                                                                item[header] || "N/A"
-                                                            )}
-                                                        </div>
+                })}
+            /> */}
 
-                                                    }
-                                                </td>
+            <Table
+                data={data}
+                headers={headers}
+                filteredData={filteredData}
+                setFilteredData={setFilteredData}
+                paginatedData={paginatedData}
+                loading={loading}
+                isEditMode={isEditMode}
+                isedit={isedit}
+                setIsedit={setIsedit}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                settings={settings}
+                freezeCol={freezeCol}
+                setFreezeCol={setFreezeCol}
+                globalOption={globalOption}
+                setGlobalOption={setGlobalOption}
+            />
 
-                                            )
-                                        })}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div className="flex justify-between items-center mt-4">
-                    <div>
-                        <span>Total Rows: </span>
-                        <span>{filteredData.length}</span>
-                    </div>
-
-                    <Pagination
-                        current={currentPage}
-                        total={filteredData.length}
-                        pageSize={rowsPerPage}
-                        onChange={handlePageChange}
-                        showSizeChanger={true}
-                    />
-                </div>
-            </div>
             <EditRow
                 isOpen={confirmEditModalOpen}
                 onClose={handleEditCancel}

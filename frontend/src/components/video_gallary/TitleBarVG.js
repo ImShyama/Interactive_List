@@ -1,13 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 import { LuFilter } from "react-icons/lu";
 import { IoMdArrowBack } from "react-icons/io";
 import { IoSearch } from "react-icons/io5";
 const TitleBarVG = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex justify-between items-center bg-transparent box-border py-[10px] px-[70px]">
       {/* Title Section */}
       <div className="flex items-center justify-start w-full gap-[20px]">
-        <IoMdArrowBack className="text-[28px] text-black " />
+        <IoMdArrowBack className="text-[37px] text-black "
+         onClick={() => navigate(-1)}
+         />
         <h1 className="text-[30px] font-medium leading-normal text-[#2A3C54] font-poppins m-0">
           Tech Fridays
         </h1>

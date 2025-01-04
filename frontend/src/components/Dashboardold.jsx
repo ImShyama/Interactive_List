@@ -48,7 +48,7 @@ const Dashboard = () => {
       navigate("/");
     }
   }, [navigate]);
-  
+
   const [openPicker, authResponse] = useDrivePicker();
 
   const handleOpenPicker = () => {
@@ -126,7 +126,6 @@ const Dashboard = () => {
     console.log("onsearch");
   };
 
-     
   return (
     <div className="mt-[80px]">
       <div className="flex justify-between px-[50px] py-[5px]">
@@ -139,7 +138,6 @@ const Dashboard = () => {
               + Create app from zero
             </span>
           </button>
-          
         </div>
         <div className="flex justify-between gap-2">
           {showAppCard && (
@@ -165,7 +163,6 @@ const Dashboard = () => {
                   ]}
                 />
               </div>
-
               {/* <button className="flex gap-[10px] justify-center items-center flex-shrink-0 text-center bg-[#FFA500] rounded-[8px] p-[5px] text-white text-[14px] h-[44px]">
                 <span className="text-[var(--white,#FFF)] font-poppins text-[14px] font-medium leading-normal">
                   More apps
