@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Space, Table, Popover, Tooltip, Pagination, ConfigProvider } from 'antd';
+import { Button, Input, Space, Popover, Tooltip, Pagination, ConfigProvider } from 'antd';
 import Highlighter from 'react-highlight-words';
 import label from '../assets/label.svg'
 import useDrivePicker from 'react-google-drive-picker';
@@ -12,6 +12,7 @@ import { Resizable } from 'react-resizable';
 import './table.css';
 import { BackIcon } from '../assets/svgIcons';
 import { headers, data } from '../utils/InetractiveList_DumyData';
+import Table from './interactive_list/Table';
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
@@ -245,7 +246,7 @@ const InteractiveListView = () => {
     };
 
     const getColumnSearchProps = (dataIndex) => ({
-       
+
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
 
             <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
@@ -333,64 +334,6 @@ const InteractiveListView = () => {
             return false;
         }
     };
-
-    // const columns = headers.map((header) => ({
-    //     title: (
-    //         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-    //             {/* <span>{header.replace(/_/g, ' ').toUpperCase()}</span> */}
-    //             <Tooltip title={header.replace(/_/g, ' ').toUpperCase()}>
-    //                 <span
-    //                     style={{
-    //                         overflow: 'hidden',
-    //                         whiteSpace: 'normal',
-    //                         textOverflow: 'ellipsis',
-    //                         display: '-webkit-box',
-    //                         WebkitLineClamp: 2,
-    //                         WebkitBoxOrient: 'vertical',
-    //                         maxWidth: 100, // Adjust the width to your preference
-
-    //                     }}
-    //                 >
-    //                     {header.replace(/_/g, ' ').toUpperCase()}
-    //                 </span>
-    //             </Tooltip>
-    //             <Popover content={getAggregatePopoverContent(header)} trigger="click" placement="bottom">
-    //                 <img src={label} alt="label" style={{ marginLeft: 8, cursor: 'pointer', height: "18px" }} />
-    //                 {/* <BarsOutlined style={{ marginLeft: 8, cursor: 'pointer' }} /> */}
-    //             </Popover>
-
-    //         </div>
-    //     ),
-    //     dataIndex: header,
-    //     key: header,
-    //     width: 200,
-    //     ...getColumnSearchProps(header),
-
-    //     sorter: (a, b) => {
-    //         if (isNumeric(a[header]) && isNumeric(b[header])) {
-    //             return a[header] - b[header];
-    //         }
-    //         return a[header].toString().localeCompare(b[header].toString());
-    //     },
-    //     render: (text) => {
-    //         // Check if the email is a valid URL
-    //         return isValidUrl(text) ? (
-    //             <a href={text} target="_blank" rel="noopener noreferrer"
-    //                 className="text-[#437FFF] font-poppins font-normal leading-[26.058px]"
-    //             >
-    //                 Click here
-    //             </a>
-    //         ) : (
-    //             text
-    //         );
-    //     },
-    //     onHeaderCell: () => ({
-    //         style: {
-    //             backgroundColor: searchedColumns.includes(header) ? 'rgb(216 216 216)' : 'transparent',  // Apply blue background to the entire header cell
-    //             // color: searchedColumns.includes(header) ? '#fff' : '#000',
-    //         }
-    //     })
-    // }))
 
     const [columns, setColumns] = useState(headers.map((header) => ({
         title: (
@@ -571,7 +514,7 @@ const InteractiveListView = () => {
                 </div>
             </div>
 
-            <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[10px]'>
+            {/* <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[10px]'>
 
                 <div style={{ width: '100%', overflowX: 'auto', maxHeight: maxHeight, }}>
                     <div style={{ minWidth: '1500px' }}>
@@ -594,7 +537,7 @@ const InteractiveListView = () => {
                     </div>
                 </div>
 
-                {/* Pagination outside the scroll */}
+                
                 <div style={{ display: 'flex', justifyContent: 'right', marginTop: '10px' }}>
                     <Pagination
                         current={currentPage}
@@ -607,7 +550,38 @@ const InteractiveListView = () => {
                         }}
                     />
                 </div>
-            </div>
+            </div> */}
+
+            <Table
+                data={data}
+                headers={headers}
+                filteredData={filteredData}
+                setFilteredData={setFilteredData}
+                paginatedData={paginatedData}
+                // loading={loading}
+                // isEditMode={isEditMode}
+                // isedit={isedit}
+                // setIsedit={setIsedit}
+                // handleEdit={handleEdit}
+                // handleDelete={handleDelete}
+                // settings={settings}
+                // freezeCol={freezeCol}
+                // setFreezeCol={setFreezeCol}
+                // globalOption={globalOption}
+                // setGlobalOption={setGlobalOption}
+                // ischecked={ischecked}
+                // setIschecked={setIschecked}
+                // EditData={EditData}
+                // setEditData={setEditData}
+                // handleBulkDelete={handleBulkDelete}
+                // headerBgColor={headerBgColor}
+                // headerTextColor={headerTextColor}
+                // headerFontSize={headerFontSize}
+                // headerFontFamily={headerFontFamily}
+                // bodyTextColor={bodyTextColor}
+                // bodyFontSize={bodyFontSize}
+                // bodyFontFamily={bodyFontFamily}
+            />
         </div>
     )
 };

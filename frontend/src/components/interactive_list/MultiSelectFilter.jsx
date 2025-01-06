@@ -1,4 +1,4 @@
-import { useState, memo, useMemo, useCallback } from "react";
+import { useState, memo, useMemo, useCallback, useEffect } from "react";
 import { Pagination, Input, Avatar, Popover, Checkbox, Space, Button, AutoComplete, Switch } from "antd";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
 import { IoSaveSharp, IoSearchOutline } from "react-icons/io5";
@@ -209,10 +209,52 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
         setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
         setSelectedValues([]);
         setSearchText(""); // Clear input field
-        setOptions([...initialData]); // Reset dropdown options
+        setOptions([...initialData()]); // Reset dropdown options
         setFilteredData(data); // Reset table
         closePopover(); // Optionally close the dropdown
     };
+
+
+
+    // const handleReset = () => {
+    //     console.log({ globalOption, columnKey, selectedValues });
+    //     setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
+    //     const globalColumn = Object.keys(globalOption).map((key) => {
+    //         if (key == columnKey) {
+    //             return null
+    //         } else {
+    //             return key;
+    //         }
+    //     })
+
+    //     if (globalColumn.length == 0 || globalColumn.every((item) => item == null)) {
+    //         setFilteredData(data);
+    //         return;
+    //     }
+
+    //     let globalFilterData = [];
+    //     globalColumn.map((key) => {
+    //         let filteredDataTemp = data.filter((item) => {
+    //             // console.log({ key, item });
+    //             // console.log({ globalOption });
+    //             if (key) {
+    //                 return globalOption[key].includes(item[key]);
+    //             }
+
+    //         });
+    //         globalFilterData = [...globalFilterData, ...filteredDataTemp];
+    //     })
+    //     // const filteredDataTemp = data.filter((item) => {
+
+    //     // })
+    //     // setSelectedValues([]);
+    //     console.log(globalFilterData)
+    //     setFilteredData(globalFilterData);
+    //     // closePopover();
+    // };
+
+
+
 
 
 

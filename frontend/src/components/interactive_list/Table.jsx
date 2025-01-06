@@ -29,7 +29,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
 
 
     const loadColumnWidthsFromCookies = () => {
-        const storageKey = `${settings._id}_${settings.firstSheetName}`;
+        const storageKey = `${settings?._id}_${settings?.firstSheetName}`;
         const savedWidths = localStorage.getItem(storageKey);
         console.log("loading column width: ", JSON.parse(savedWidths));
         return savedWidths ? JSON.parse(savedWidths) : null;
@@ -162,7 +162,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         return (
             <div>
                 <p>Σ Sum: {isNumberColumn ? calculateSum(dataIndex) : 'NA'}</p>
-                <p>% Average: {isNumberColumn ? calculateAverage(dataIndex) : 'NA'}</p>
+                <p>x̄ Average: {isNumberColumn ? calculateAverage(dataIndex) : 'NA'}</p>
                 <p># Count: {calculateCount(dataIndex)}</p>
             </div>
         );
@@ -225,7 +225,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
 
 
     useEffect(() => {
-        if (ischecked.length < 1) {
+        if (ischecked?.length < 1) {
             setIsedit(false);
         }
     }, [ischecked])

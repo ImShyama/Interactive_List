@@ -4,16 +4,28 @@ import { HOST } from "../utils/constants";
 import axios from "axios";
 import { UserContext } from "../context/UserContext";
 import Loader from "./Loader";
+import Table from "./interactive_list/Table";
 
 const Preview = ({ closeModal, sheetdetails }) => {
 
     const [sheetData, setSheetData] = useState("");
     const [tableHeader, setTableHeader] = useState("");
     const [Loading, setLoading] = useState(true);
-    console.log("sheetData: ", sheetdetails);
     const sheetName = sheetdetails.spreadsheetName;
-    console.log(sheetName)
     const { token } = useContext(UserContext);
+    const [filteredData, setFilteredData] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    useEffect(() => {
+        if (sheetData) {
+            setFilteredData(sheetData);
+        }
+    }, [sheetData])
+
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const paginatedData = filteredData.slice(startIndex, startIndex + rowsPerPage);
+
 
     useEffect(() => {
         // if (!sheetdetails || !settings.spreadsheetId || !settings.firstTabDataRange) return;
@@ -21,9 +33,9 @@ const Preview = ({ closeModal, sheetdetails }) => {
         // Fetch sheet data
         axios
             .post(
-                `${HOST}/getSheetData`,
+                `${HOST}/getSheetDataWithID`,
                 {
-                    spreadSheetID: sheetdetails.spreadsheetId,
+                    sheetID: sheetdetails._id,
                     range: sheetdetails.firstTabDataRange,
                 },
                 {
@@ -39,10 +51,14 @@ const Preview = ({ closeModal, sheetdetails }) => {
                     return;
                 }
 
-                const [header, ...dataRows] = res;
-                setSheetData(res);
-                setTableHeader(header);
-                setTableData(dataRows);
+                // Process sheet data
+                const [header, ...dataRows] = res.rows;
+                const normalizedHeader = header.map((col) => col.replace(/ /g, "_").toLowerCase());
+                const filteredHeader = normalizedHeader.filter((col) => !res.hiddenCol?.includes(col));
+                const {jsonData} = res;
+                setSheetData(jsonData);
+                setTableHeader(filteredHeader);
+                setTableData(jsonData);
                 setLoading(false);
             })
             .catch((err) => {
@@ -51,13 +67,16 @@ const Preview = ({ closeModal, sheetdetails }) => {
             });
     }, [sheetdetails]);
 
-    console.log("Data: ", sheetData)
-    console.log("tableHeader: ", tableHeader)
+    // console.log("Data: ", sheetData)
+    // console.log("tableHeader: ", tableHeader)
     return (
         <div className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-[#F5F6F7] w-full max-w-[90%] h-[90%] relative rounded-lg px-[25px] py-[10px]">
-                <div className="h-full">
-                    <div className='flex text-center justify-between '>
+            {
+                 !Loading && sheetData && tableHeader ? (
+                
+                <div className="bg-[#F5F6F7] w-full max-w-[90%] max-h-[100%] relative rounded-lg px-[25px] py-[10px]">
+                <div className="py-[20px]">
+                    <div className='flex text-center justify-between px-[50px]'>
                         <div className='p-2'><span className="text-[#2A3C54] font-poppins text-[24px] font-medium">{sheetName}</span></div>
                         <div className='pr-6 pt-2'>
                             <button
@@ -88,16 +107,52 @@ const Preview = ({ closeModal, sheetdetails }) => {
                         {/* Conditional rendering for InteractiveListPreview */}
                         {!Loading && sheetData && tableHeader ? (
                             <div>
-                                <InteractiveListPreview data={sheetData} headers={tableHeader} />
+                                {/* <InteractiveListPreview data={sheetData} headers={tableHeader} /> */}
+
+                                <Table
+                                    data={sheetData}
+                                    headers={tableHeader}
+                                    filteredData={filteredData}
+                                    setFilteredData={setFilteredData}
+                                    paginatedData={paginatedData}
+                                // loading={loading}
+                                // isEditMode={isEditMode}
+                                // isedit={isedit}
+                                // setIsedit={setIsedit}
+                                // handleEdit={handleEdit}
+                                // handleDelete={handleDelete}
+                                // settings={settings}
+                                // freezeCol={freezeCol}
+                                // setFreezeCol={setFreezeCol}
+                                // globalOption={globalOption}
+                                // setGlobalOption={setGlobalOption}
+                                // ischecked={ischecked}
+                                // setIschecked={setIschecked}
+                                // EditData={EditData}
+                                // setEditData={setEditData}
+                                // handleBulkDelete={handleBulkDelete}
+                                // headerBgColor={headerBgColor}
+                                // headerTextColor={headerTextColor}
+                                // headerFontSize={headerFontSize}
+                                // headerFontFamily={headerFontFamily}
+                                // bodyTextColor={bodyTextColor}
+                                // bodyFontSize={bodyFontSize}
+                                // bodyFontFamily={bodyFontFamily}
+                                />
                             </div>
                         ) : (
                             <div className="flex justify-center items-center h-full">
                                 <Loader textToDisplay={"Loading..."} />
-                            </div> 
-                         )}
+                            </div>
+                        )}
                     </div>
                 </div>
-            </div>
+            </div>) : (
+                    <div className="flex justify-center items-center h-full">
+                        <Loader textToDisplay={"Loading..."} />
+                    </div>
+                )
+            }
         </div>
     )
 }

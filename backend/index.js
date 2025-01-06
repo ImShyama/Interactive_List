@@ -252,7 +252,7 @@ app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
       return;
     }
 
-    getMetaSheetData({sheets, spreadSheetID, range, header:rows[0]});
+    // getMetaSheetData({sheets, spreadSheetID, range, header:rows[0]});
 
     // Extract hidden column from Sheet 
     const hiddenCol = sheetDetails.hiddenCol;

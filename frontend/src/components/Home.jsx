@@ -22,8 +22,8 @@ const Home = () => {
 
   useEffect(() => {
     // Prevent scrolling
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
+    // document.documentElement.style.overflow = "hidden";
+    // document.body.style.overflow = "hidden";
     // Slide in the left section after 500ms
     const sectionTimer = setTimeout(() => {
       setShowSections(true);
@@ -123,7 +123,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className=" w-[100vw] h-[100vh] flex overflow-hidden bg-[#FFF] ">
+    <div className=" w-[100%] h-[100vh] flex overflow-auto bg-[#FFF] ">
       {/* Left Section - Text and Button */}
       <div
         className={`left-section w-[40%] flex flex-col items-start justify-center pl-[76px] mt-[-181px] ${
