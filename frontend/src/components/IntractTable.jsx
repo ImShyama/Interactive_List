@@ -169,7 +169,8 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
             // Check for numbers
             const hasNumbers = columnValues.some((value) => isNumber(value));
-            if (hasNumbers) {
+            if (hasNumbers && header !== "key_id") {
+                console.log(header)
                 result.numberColumns.push(header);
             }
         });
@@ -950,7 +951,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
 
                 // Dispatch updated settings to Redux store
                 dispatch(updateSetting(response.data));
-                notifySuccess("Hidden Column updated successfully");
+                notifySuccess("Hidden Column updated successfully, please refresh the page");
                 return response.data;
             } catch (error) {
                 console.error("Error updating settings in DB:", error);
@@ -964,7 +965,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             <div className="flex-row max-h-[300px] overflow-auto">
                 {tempHeader.map((header, index) => (
                     <div className="flex justify-between items-center gap-1">
-                        <span>{header.split("_").join(" ").toUpperCase()}</span>
+                        <span>{header.split("_").join(" ")}</span>
                         <Switch onChange={(checked) => handleHeaderSwitch(checked, header)} checked={hiddenCol.includes(header)} size="small" key={index} label={header} />
                     </div>
                 ))}
@@ -1581,6 +1582,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 bodyTextColor={bodyTextColor}
                 bodyFontSize={bodyFontSize}
                 bodyFontFamily={bodyFontFamily}
+                tempHeader={tempHeader}
             />
 
             <EditRow

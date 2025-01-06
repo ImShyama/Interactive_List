@@ -74,11 +74,13 @@ const Table = () => {
 
         // Process sheet data
         const [header, ...dataRows] = res.rows;
+        const normalHeader = header.map((col) => col.replace(/ /g, "_"));
+        const normalizedHeader1 = normalHeader.filter((col) => !res.hiddenCol?.includes(col.toLowerCase()));
         const normalizedHeader = header.map((col) => col.replace(/ /g, "_").toLowerCase());
         const filteredHeader = normalizedHeader.filter((col) => !res.hiddenCol?.includes(col));
 
         setSheetData(res.jsonData || []);
-        setTableHeader(normalizedHeader);
+        setTableHeader(normalizedHeader1);
         setFilterHeader(filteredHeader);
         setFreezeIndex(res.freezeIndex || 0);
         setLoading(false);
@@ -100,6 +102,7 @@ const Table = () => {
         return (
           <IntractTable
             data={sheetData}
+            tableHeader={tableHeader}
             headers={filterHeader}
             settings={settings}
             freezeIndex={freezeIndex}

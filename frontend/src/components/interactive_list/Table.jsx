@@ -9,7 +9,7 @@ import _, { debounce } from "lodash";
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
     handleDelete, handleEdit, handleBulkDelete, ischecked, setIschecked, EditData, setEditData, headerBgColor, headerTextColor, headerFontSize, headerFontFamily,
-    bodyTextColor, bodyFontSize, bodyFontFamily, isEditMode, minWidth
+    bodyTextColor, bodyFontSize, bodyFontFamily, isEditMode, minWidth, tempHeader
 }) => {
 
     // const [ischecked, setIschecked] = useState([]);
@@ -220,9 +220,6 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         saveColumnWidthsToCookies(updatedWidths);
     }, [headers]); // Runs whenever headers change
     
-    
-
-
 
     useEffect(() => {
         if (ischecked?.length < 1) {
@@ -230,8 +227,46 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         }
     }, [ischecked])
 
+    // const renderedHeaders = useMemo(() => (
+    //     headers.map((header, index) => (
+    //         <ResizableHeader
+    //             key={header}
+    //             data={data}
+    //             headers={headers}
+    //             index={index}
+    //             getAggregatePopoverContent={getAggregatePopoverContent}
+    //             setFreezeCol={setFreezeCol}
+    //             freezeCol={freezeCol}
+    //             filteredData={filteredData}
+    //             setFilteredData={setFilteredData}
+    //             columnKey={header}
+    //             columnWidths={columnWidths}
+    //             isEditMode={isEditMode}
+    //             settings={settings}
+    //             handleResize={handleResize}
+    //             globalOption={globalOption}
+    //             setGlobalOption={setGlobalOption}
+    //             visiblePopover={visiblePopover}
+    //             setVisiblePopover={setVisiblePopover}
+    //             headerFontFamily={headerFontFamily}
+    //             headerFontSize={headerFontSize}
+    //             headerTextColor={headerTextColor}
+    //             headerBgColor={headerBgColor}
+    //         />
+    //     ))
+    // ), [
+    //     headers,
+    //     data,
+    //     columnWidths,
+    //     isEditMode,
+    //     settings,
+    //     filteredData,
+    //     globalOption,
+    //     visiblePopover
+    // ]);
+
     const renderedHeaders = useMemo(() => (
-        headers.map((header, index) => (
+        tempHeader.map((header, index) => (
             <ResizableHeader
                 key={header}
                 data={data}
@@ -251,10 +286,10 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 setGlobalOption={setGlobalOption}
                 visiblePopover={visiblePopover}
                 setVisiblePopover={setVisiblePopover}
-                headerFontFamily={headerFontFamily}
-                headerFontSize={headerFontSize}
-                headerTextColor={headerTextColor}
-                headerBgColor={headerBgColor}
+                headerFontFamily={headerFontFamily} // Ensure latest font family is used
+                headerFontSize={headerFontSize}     // Ensure latest font size is used
+                headerTextColor={headerTextColor}   // Ensure latest text color is used
+                headerBgColor={headerBgColor}       // Ensure latest background color is used
             />
         ))
     ), [
@@ -265,9 +300,13 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         settings,
         filteredData,
         globalOption,
-        visiblePopover
+        visiblePopover,
+        headerFontFamily, 
+        headerFontSize,   
+        headerTextColor,  
+        headerBgColor  
     ]);
-
+    
 
     const renderedRows = useMemo(() => (
         paginatedData.map((item) => (

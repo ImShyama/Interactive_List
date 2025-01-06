@@ -29,9 +29,11 @@ import { notifyError, notifySuccess } from "../utils/notify.jsx";
 import { Reset } from "../assets/svgIcons.jsx";
 import DeleteAlert from "./DeleteAlert.jsx";
 import { set } from "lodash";
+import { debounce } from "lodash";
+import { ImSpinner2 } from "react-icons/im";
 
-const AddData = ({ activateSave }) => {
-  
+const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
+
   const dispatch = useDispatch();
   const settingData = useSelector((state) => state.setting.settings);
   const { token } = useContext(UserContext);
@@ -99,31 +101,62 @@ const AddData = ({ activateSave }) => {
   });
 
 
+  // const handleChange = (field, value) => {
+  //   setFormData((prevFormData) => {
+  //     const updatedFormData = {
+  //       ...prevFormData,
+  //       [field]: value,
+  //     };
+
+  //     // Dispatch and log after the formData is updated
+  //     const updatedSettings = {
+  //       tableSettings: [updatedFormData],
+  //     };
+  //     dispatch(updateSetting(updatedSettings));
+  //     console.log("Updated settings:", settingData);
+
+  //     // Call the API to update the backend with the new settings
+  //     handleSaveChanges(updatedSettings);
+
+  //     return updatedFormData;
+  //   });
+
+  // };
+
+  const handleSaveChangesDebounced = debounce((updatedSettings) => {
+    // Call the API to update the backend with the new settings
+    handleSaveChanges(updatedSettings);
+
+    // Dispatch the updated settings
+    dispatch(updateSetting(updatedSettings));
+    console.log("Updated settings:", updatedSettings);
+    setIsTableLoading(false);
+  }, 300); // Adjust the debounce delay as needed
+
   const handleChange = (field, value) => {
+    setIsTableLoading(true);
     setFormData((prevFormData) => {
       const updatedFormData = {
         ...prevFormData,
         [field]: value,
       };
 
-      // Dispatch and log after the formData is updated
+      // Prepare the settings object
       const updatedSettings = {
         tableSettings: [updatedFormData],
       };
-      dispatch(updateSetting(updatedSettings));
-      console.log("Updated settings:", settingData);
 
-      // Call the API to update the backend with the new settings
-      handleSaveChanges(updatedSettings);
+      // Debounce the backend update
+      handleSaveChangesDebounced(updatedSettings);
+
 
       return updatedFormData;
     });
 
+
   };
 
-  
 
-  
 
   return (
     <div className="w-[100%]">
@@ -134,6 +167,7 @@ const AddData = ({ activateSave }) => {
             <span className="text-[#111] font-poppins text-[16px] font-medium leading-normal">
               Header Settings
             </span>
+
           </div>
           <div className="flex justify-between items-center my-3">
             <span className="text-[#111] font-poppins text-[14px] font-normal leading-normal">
@@ -262,7 +296,7 @@ const AddData = ({ activateSave }) => {
         </button>
       </div> */}
 
-      
+
     </div>
   );
 };
@@ -487,6 +521,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const nav = useNavigate();
   const { token } = useContext(UserContext);
   const dispatch = useDispatch();
+  const [isTableLoading, setIsTableLoading] = useState(false);
 
   const settingData = useSelector((state) => state.setting.settings);
 
@@ -494,14 +529,14 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     setIsSaveChanges(true);
   };
 
-  const handleSaveChanges = async (updatedSetting,message) => {
+  const handleSaveChanges = async (updatedSetting, message) => {
     setIsLoading(true);
     try {
       console.log({ updatedSetting, settingData });
       // Use the passed settings or fallback to the Redux state
       const settingsToSave = updatedSetting || settingData;
-      console.log({settingsToSave})
-  
+      console.log({ settingsToSave })
+
       const response = await axios.put(
         `${HOST}/spreadsheet/${settingData._id}`,
         settingsToSave,
@@ -511,26 +546,25 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           },
         }
       );
-  
+
       console.log("Settings updated successfully:", response.data);
       dispatch(updateSetting(response.data));
       setIsLoading(false);
       setIsSaveChanges(false);
       notifySuccess(message);
+      setIsTableLoading(false);
       closeDrawer();
     } catch (error) {
       console.error("Error updating settings in DB:", error);
+      setIsTableLoading(false);
       setIsLoading(false);
       setIsSaveChanges(false);
     }
   };
-  
-  
-  const handleReset = () => {
-    setConfirmModalOpen(true);
-  }
+
 
   const handleResetChange = async () => {
+    setIsTableLoading(true);
     // Define the updated settings
     const updatedSetting = {
       tableSettings: [
@@ -546,14 +580,14 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
         },
       ],
     };
-  
+
     // Dispatch the settings to update Redux state
     dispatch(updateSetting(updatedSetting));
-  
+
     // Directly pass the updated settings to handleSaveChanges
-    await handleSaveChanges(updatedSetting,"Table Style Reset successfully");
+    await handleSaveChanges(updatedSetting, "Table Style Reset successfully");
   };
-  
+
 
   return (
     <div>
@@ -571,7 +605,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
             <div className="setting_icons_top_right">
               <button
                 className="submit_btn"
-                onClick={() => handleSaveChanges(settingData,"Settings saved successfully, please refresh the page")}
+                onClick={() => handleSaveChanges(settingData, "Settings saved successfully, please refresh the page")}
                 disabled={!isSaveChanges}
               >
                 {/* {isLoading ? (
@@ -617,30 +651,34 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           >
             <path d="M0 1.21265H621" stroke="#EDEEF3" />
           </svg>
-          <div className="setting_filter_top">
-            <div
-              className="setting_filter_top1"
-              onClick={() => {
-                setAddData(!addData);
-              }}
-            >
-              <span className="setting_filter_top1_text">Table Settings</span>
-              <img className="setting_filter_top1_img" src={downIcon} />
-            </div>
-            {addData && 
-            <button onClick={handleResetChange} className="bg-primary rounded-[4px] p-1" title="Reset">
-              <Reset />
-            </button>
-            }
-            {/* <div className="setting_filter_top2">
-              <div className="setting_filter_top2_inner">
-                <img src={filterIcon} />
-                <span>Filter</span>
-                <img src={downIcon} />
+
+          <div className="flex justify-between items-center w-[100%]">
+            <div className="flex justify-center items-center">
+              <div
+                className="setting_filter_top1"
+                onClick={() => {
+                  setAddData(!addData);
+                }}
+              >
+                <span className="setting_filter_top1_text">Table Settings</span>
+                <img className="setting_filter_top1_img" src={downIcon} />
               </div>
-            </div> */}
+              {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." /> } 
+            </div>
+            <div>
+            {addData &&
+              <button onClick={
+                () => {
+                  setIsTableLoading(true);
+                  handleResetChange();
+                }
+              } className="bg-primary rounded-[4px] p-1" title="Reset">
+                <Reset />
+              </button>
+            }
+            </div>
           </div>
-          {addData && <AddData activateSave={activateSave} />}
+          {addData && <AddData activateSave={activateSave} isTableLoading={isTableLoading} setIsTableLoading={setIsTableLoading} />}
         </div>
       </div>
       <DeleteAlert

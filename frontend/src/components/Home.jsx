@@ -7,6 +7,8 @@ import { UserContext } from "../context/UserContext";
 import { HOST } from "../utils/constants";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { IoIosArrowForward } from "react-icons/io";
+
 
 const Home = () => {
   const [showSections, setShowSections] = useState(false);
@@ -135,12 +137,13 @@ const Home = () => {
           display.
         </p>
         <button
-          className="mt-[72.47px] py-2 px-4 flex justify-center items-center gap-[16px] rounded-[4vw] bg-[#598931]"
+          className="mt-[72.47px] py-[1rem] px-[3rem] flex justify-center items-center gap-[4px] rounded-[4vw] bg-[#598931]"
           onClick={() => navigate("/signin")}
         >
-          <span className="text-white font-poppins text-[35.109px] font-medium leading-normal">
+          <span className="text-white font-poppins text-[28px] font-medium leading-normal">
             Get Started
           </span>
+          <IoIosArrowForward className="text-white text-[28px] font-medium"/>
         </button>
       </div>
 
