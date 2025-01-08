@@ -9,7 +9,7 @@ import _, { debounce } from "lodash";
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
     handleDelete, handleEdit, handleBulkDelete, ischecked, setIschecked, EditData, setEditData, headerBgColor, headerTextColor, headerFontSize, headerFontFamily,
-    bodyTextColor, bodyFontSize, bodyFontFamily, isEditMode, minWidth, tempHeader
+    bodyTextColor, bodyFontSize, bodyFontFamily, isEditMode, minWidth, tempHeader, formulaData
 }) => {
 
     // const [ischecked, setIschecked] = useState([]);
@@ -227,6 +227,9 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         }
     }, [ischecked])
 
+
+    
+
     // const renderedHeaders = useMemo(() => (
     //     headers.map((header, index) => (
     //         <ResizableHeader
@@ -381,7 +384,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                 boxShadow: isPinned ? "3px 0px 5px rgba(0, 0, 0, 0.1)" : "none",
                             }}
                         >
-                            {isedit && ischecked.includes(item.key_id) ? (
+                            {isedit && ischecked.includes(item.key_id) && formulaData?.[header] ? (
                                 <div
                                 className="tableTD w-full h-full flex items-center"
                                 style={{
@@ -426,7 +429,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                             )}
                                         </div>
                                     ) : (
-                                        <spna style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header] || "N/A"}</spna>
+                                        <span style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header]}</span>
                                     )}
                                 </div>
                             )}
@@ -502,6 +505,14 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                     pageSize={rowsPerPage}
                     onChange={handlePageChange}
                     showSizeChanger={true}
+                    // showSizeChangerSearch={false}
+                    // sizeChangerRender={(props) => (
+                    //     <CustomSizeChanger
+                    //         value={props.value}
+                    //         onChange={props.onChange}
+                    //         options={props.options}
+                    //     />
+                    // )}
                 />
             </div>
         </div>

@@ -135,7 +135,7 @@ const Dashboard = () => {
             onClick={openModal}
           >
             <span className="text-[var(--white,#FFF)] font-poppins text-[14px] font-normal leading-normal">
-              + Create app from zero
+              + Create App from zero
             </span>
           </button>
         </div>

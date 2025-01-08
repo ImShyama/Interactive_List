@@ -16,6 +16,7 @@ const Table = () => {
   const [sheetData, setSheetData] = useState([]);
   const [tableHeader, setTableHeader] = useState([]);
   const [filterHeader, setFilterHeader] = useState([]);
+  const [formulaData, setFormulaData] = useState({});
   const [loading, setLoading] = useState(true);
   const [freezeIndex, setFreezeIndex] = useState(0);
   const { token } = useContext(UserContext);
@@ -83,6 +84,7 @@ const Table = () => {
         setTableHeader(normalizedHeader1);
         setFilterHeader(filteredHeader);
         setFreezeIndex(res.freezeIndex || 0);
+        setFormulaData(res.formulaData);
         setLoading(false);
       })
       .catch((err) => {
@@ -107,6 +109,7 @@ const Table = () => {
             settings={settings}
             freezeIndex={freezeIndex}
             tempHeader={tableHeader}
+            formulaData={formulaData}
           />
         );
       case "People Directory":

@@ -52,6 +52,19 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+
+  useEffect(() => {
+    // Check if the current pathname ends with "/edit"
+    const checkEditMode = () => {
+        if (!window.location.pathname.endsWith("/edit") && isDrawerOpen) {
+            handleToggleDrawer(); // Close the drawer if not in edit mode
+        }
+    };
+
+    // Run the check whenever the location changes
+    checkEditMode();
+}, [location, isDrawerOpen, handleToggleDrawer]);
+
   // useEffect(() => {
   //   axios
   //     .get(`${HOST}/getuser`, {

@@ -22,7 +22,7 @@ import { BsPin, BsPinAngleFill, BsPinFill } from "react-icons/bs";
 import { BiSolidHide } from "react-icons/bi";
 import { MdEdit, MdDelete, MdOutlineLabel } from "react-icons/md";
 import { IoSaveSharp, IoSearchOutline } from "react-icons/io5";
-import { FaSort } from "react-icons/fa";
+import { FaForumbee, FaSort } from "react-icons/fa";
 import { editMultipleRows, deleteMultiple } from "../APIs/index";
 import { LuFilter } from "react-icons/lu"; // added by me`
 import { CiCalendarDate } from "react-icons/ci"; // added
@@ -56,7 +56,7 @@ const convertArrayToJSON = (data) => {
     return jsonData;
 };
 
-const IntractTable = ({ data, headers, settings, tempHeader }) => {
+const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaData }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [rowToEdit, setRowToEdit] = useState(null);
     const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
@@ -170,7 +170,6 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             // Check for numbers
             const hasNumbers = columnValues.some((value) => isNumber(value));
             if (hasNumbers && header !== "key_id") {
-                console.log(header)
                 result.numberColumns.push(header);
             }
         });
@@ -320,21 +319,30 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     };
 
     const handleEditRow = async (updatedRow) => {
-        setLoading(true);
-        const rowIndex = +updatedRow.key_id + 1;  // Assuming key_id is the 0-based index, add 1 to get 1-based index for the sheet
-
         try {
-            // Call the API with the updated row data and rowIndex
-            // await handleSaveAPI(updatedRow, rowIndex);
+            setLoading(true);
+            // Call the backend API to update rows in Google Sheets
             const spreadSheetID = settings.spreadsheetId;
             const sheetName = settings.firstSheetName;
-            const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, [updatedRow]);
+            const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, [updatedRow], formulaData);
 
+            setFilteredData((prev) => {
+                return prev.map((item) => {
+                    if (item.key_id == updatedRow.key_id) {
+                        return [updatedRow].find((editItem) => editItem.key_id === item.key_id);
+                    }
+                    return item;
+                });
+            })
+            notifySuccess("Rows updated successfully!");
+
+        } catch (err) {
+            console.error("Error updating rows:", err.message);
+            notifyError(err.message);
+        } finally {
+            setLoading(false);
             setConfirmEditModalOpen(false);
-        } catch (error) {
-            console.error('Error saving row:', error);
         }
-        setLoading(false);
     };
 
     // Function to handle the delete action
@@ -351,7 +359,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const handleDeleteRow = () => {
         const status = deleteRow(settings.spreadsheetId, settings.firstSheetName, rowToDelete)
         setConfirmModalOpen(false);
-        console.log({status})
+        console.log({ status })
         if (status) {
             notifySuccess("Deleted row successfuly!");
         }
@@ -803,10 +811,13 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
     const handleAddAPI = async (updatedRow) => {
         const spreadSheetID = settings.spreadsheetId;
         const sheetName = settings.firstSheetName;
-        // const newData = Object.values(updatedRow);  // Convert the row object to an array for newData
-        const rowData = Object.entries(updatedRow)
-            .filter(([key]) => key !== 'key_id')  // Filter out the key_id field
-            .map(([, value]) => value);  // Map to get only the values
+
+        let rowData = updatedRow
+        for (let key in formulaData) {
+            if (formulaData?.[key] == false) {
+                delete rowData[key]
+            }
+        }
 
 
         try {
@@ -1114,7 +1125,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
             // Call the backend API to update rows in Google Sheets
             const spreadSheetID = settings.spreadsheetId;
             const sheetName = settings.firstSheetName;
-            const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, EditData);
+            const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, EditData, formulaData);
 
             console.log("Updated sheet data:", updatedSheetData);
 
@@ -1335,7 +1346,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             {/* Dropdown for Number */}
                             {isNumberDropdownOpen && (
                                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between gap-2">
                                         <p className="text-sm font-medium text-gray-700 text-center w-full">
                                             Number Options
                                         </p>
@@ -1424,7 +1435,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                             {/* Dropdown for Date */}
                             {isDateDropdownOpen && (
                                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
-                                    <div className="flex items-center justify-between">
+                                    <div className="flex items-center justify-between gap-2">
                                         <p className="text-sm font-medium text-gray-700 text-center w-full">
                                             Date Options
                                         </p>
@@ -1583,6 +1594,7 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 bodyFontSize={bodyFontSize}
                 bodyFontFamily={bodyFontFamily}
                 tempHeader={tempHeader}
+                formulaData={formulaData}
             />
 
             <EditRow
@@ -1592,13 +1604,16 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 modelName="Edit Row"
                 row={rowToEdit}
                 loading={loading}
+                formulaData={formulaData}
             />
+
             <DeleteAlert
                 isOpen={confirmModalOpen}
                 onClose={handleDeleteCancel}
                 onConfirm={handleDeleteRow}
                 sheetName={"Are you sure you want to delete this row permanently. "}
             />
+
             {/* Confirmation modal */}
             <DeleteAlert
                 isOpen={confirmModalOpen}
@@ -1613,7 +1628,9 @@ const IntractTable = ({ data, headers, settings, tempHeader }) => {
                 modelName="Add Row"
                 row={rowToEdit}
                 loading={loading}
+                formulaData={formulaData}
             />
+
             <BulkAdd
                 isOpen={confirmBulkAddModalOpen}
                 onClose={handleBulkAddCancel}

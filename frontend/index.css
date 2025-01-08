@@ -335,3 +335,8 @@ button:disabled {
    overflow-y: auto !important;
    /* border: 1px solid red !important; */
 } 
+
+/* Hide search input in the size changer dropdown */
+.ant-select-dropdown .ant-select-selection-search {
+  display: none !important;
+}

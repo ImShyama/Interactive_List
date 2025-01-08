@@ -33,14 +33,26 @@ export const handleSaveChanges = async (settingData, token, dispatch, updatedSet
 };
 
 
-export const editMultipleRows = async (spreadSheetID, sheetName, rowsToUpdate) => {
+export const editMultipleRows = async (spreadSheetID, sheetName, rowsToUpdate, formulaData) => {
+    console.log({spreadSheetID, sheetName, rowsToUpdate, formulaData});
+    let tempRows = rowsToUpdate.map((row) => {
+        let tempObj = {...row};
+        for (let key in formulaData) {
+            if(formulaData?.[key] == false) {
+                delete tempObj[key]
+            }
+        }
+        return tempObj
+    })
+    console.log(tempRows)
+
     try {
         const response = await axios.post(
             `${HOST}/editMultipleRows`, // Replace HOST with your backend URL
             {
                 spreadSheetID: spreadSheetID,
                 sheetName: sheetName,
-                rowsToUpdate: rowsToUpdate,
+                rowsToUpdate: tempRows,
             },
             {
                 withCredentials: true, // Include cookies in the request if needed

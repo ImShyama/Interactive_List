@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading }) => {
+const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading, formulaData}) => {
   const [editedRow, setEditedRow] = useState({});
   const [isDisabled, setIsDisabled] = useState(true);
   
@@ -71,7 +71,9 @@ const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading }) => {
 
             {/* Form Content */}
             <div className="flex w-[560px] max-h-[60vh] mx-[auto] overflow-y-auto px-[8px] flex-wrap">
-              {fields.map((field, index) => (
+              {fields.map((field, index) => {
+                if(formulaData?.[field] == false) return <></>
+              return(
                 <div key={index} className="w-1/2 mb-4">
                   <div>
                     <label className="text-[#111] font-poppins text-[14px] px-[2px] font-medium leading-normal">
@@ -87,7 +89,7 @@ const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading }) => {
                     />
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
 
             {/* Save Button */}

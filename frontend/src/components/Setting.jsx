@@ -363,6 +363,34 @@ const SpreadsheetSettings = ({ activateSave }) => {
     }
   };
 
+  const handleSaveChangesSettings = async (updatedSettings) => {
+    // const updatedSettings = {
+    //   firstSheetName: selectedSheet,
+    //   firstTabDataRange: `${selectedSheet}!${dataRange}`,
+    // };
+
+    // Dispatch action to update settings in Redux
+    dispatch(updateSetting(updatedSettings));
+    const updatedSpreadsheet = settingData;
+
+    // Make the API call to update the settings in MongoDB
+    try {
+      // Make the API call to update the settings in MongoDB
+      const response = await axios.put(
+        `${HOST}/spreadsheet/${settingData._id}`,
+        updatedSpreadsheet,
+        {
+          headers: {
+            authorization: "Bearer " + token,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error updating settings in DB:", error);
+    }
+  };
+
+
   const getSpreadsheetDetails = async (spreadSheetID) => {
     try {
       const response = await axios.post(
@@ -378,8 +406,6 @@ const SpreadsheetSettings = ({ activateSave }) => {
       // setSelectSpreadsheet(response.data.data);
       const data = response.data.data;
 
-      console.log({ data });
-      console.log({ URL: data.sheetUrl });
       const updatedSettings = {
         sheetDetails: data.sheetDetails,
         firstSheetName: data.sheetDetails[0].name,
@@ -391,6 +417,7 @@ const SpreadsheetSettings = ({ activateSave }) => {
       };
       // Dispatch action to update settings in Redux
       dispatch(updateSetting(updatedSettings));
+      // handleSaveChangesSettings(updatedSettings);
       notifySuccess("Spreadsheet selected successfully");
       setLoading(false);
 
@@ -413,11 +440,11 @@ const SpreadsheetSettings = ({ activateSave }) => {
       supportDrives: true,
       multiselect: false, // Single file picker for spreadsheet
       callbackFunction: (data) => {
-        if (data.action === "cancel") {
+        if (data?.action === "cancel") {
           console.log("User clicked cancel/close button");
           setLoading(false);
-        } else if (data.action === "picked") {
-          const spreadSheetID = data.docs[0].id; // Extract Spreadsheet ID
+        } else if (data?.action === "picked") {
+          const spreadSheetID = data?.docs[0].id; // Extract Spreadsheet ID
           console.log(`Spreadsheet ID: ${spreadSheetID}`);
           getSpreadsheetDetails(spreadSheetID); // Call the API to get sheet details
           activateSave();
@@ -426,7 +453,6 @@ const SpreadsheetSettings = ({ activateSave }) => {
     });
   };
 
-  console.log({ settingData });
 
   return (
     <div className="Spreadsheet_setting">
@@ -512,7 +538,6 @@ const SpreadsheetSettings = ({ activateSave }) => {
 
 const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const { setToken, setProfile } = useContext(UserContext);
-  console.log(setToken, setProfile);
   const [addData, setAddData] = useState(false);
   const [addSheet, setAddSheet] = useState(false);
   const [isSaveChanges, setIsSaveChanges] = useState(false);

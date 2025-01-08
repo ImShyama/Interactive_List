@@ -61,7 +61,7 @@ app.use("/", authRoute);
 
 //   const sheetData = response.data.valueRanges[0].values;
 //   const headers = header || sheetData[0]; // Use provided header or assume the first row contains headers
-  
+
 //   let result = {};
 
 //   // Loop through the rows (starting from index 1 to skip the header row)
@@ -103,112 +103,44 @@ app.use("/", authRoute);
 // }
 
 
-async function getMetaSheetData({ sheets, spreadSheetID:spreadsheetId, range, header }) {
-  try {
-    // Fetch the header row data from the specified range with valueRenderOption to get formulas
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: spreadsheetId,
-      range: range, // Range like 'Sheet1!1:1'
-      valueRenderOption: "FORMULA" // Fetch formulas instead of values
-    });
+async function getMetaSheetData({ sheets, spreadSheetID, range }) {
+  const formulaResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId: spreadSheetID,
+    range: `${range}!1:2`,
+    valueRenderOption: "FORMULA", // Ensures formulas are returned
+  });
+  const formulaHeader = formulaResponse.data.values[0];
 
-    const headers = res.data.values[0]; // First row (header row)
-    const result = [];
+  const normalResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId: spreadSheetID,
+    range: `${range}!1:1`,
+  });
 
-    let hasFormulaFlag = false; // Flag to check if any header contains IMPORTRANGE or QUERY
+  const normalHeader = normalResponse.data.values[0];
 
-    // First loop: check if any header contains IMPORTRANGE or QUERY
-    for (let colIndex = 0; colIndex < headers.length; colIndex++) {
-      const headerName = headers[colIndex];
-      const columnRange = `${range.split('!')[0]}!${String.fromCharCode(65 + colIndex)}1`; // Get column reference, like 'A1'
+  const checkRow1 = formulaHeader.find((item) => {
+    return String(item || "").toLowerCase().includes("=query") || String(item || "").toLowerCase().includes("=importrange")
+    || String(item || "").toLowerCase().includes("=filter");
+  });
 
-      // Get the formula for the header cell
-      const formulaRes = await sheets.spreadsheets.values.get({
-        spreadsheetId: spreadsheetId,
-        range: columnRange,
-        valueRenderOption: "FORMULA" // Fetch formulas instead of values
-      });
+  const checkRow2 = formulaResponse.data.values[1].find((item) => {
+    return String(item || "").toLowerCase().includes("=query") || String(item || "").toLowerCase().includes("=importrange")
+    || String(item || "").toLowerCase().includes("=filter");
+  });
 
-      const formula = formulaRes.data.values[0][0];
+  const disableEditing = checkRow1 || checkRow2;
 
-      // If formula contains 'IMPORTRANGE' or 'QUERY', set the flag to false
-      console.log(formula, formula.includes('IMPORTRANGE'),  formula.includes('QUERY'))
-      if (formula && (formula.includes('IMPORTRANGE') || formula.includes('QUERY'))) {
-        hasFormulaFlag = true;
-        break; // No need to check further, as we only need one header to contain the formula
-      }
-    }
+  let obj = {};
 
-    // Second loop: return result, with editable based on the flag
-    for (let colIndex = 0; colIndex < headers.length; colIndex++) {
-      const headerName = headers[colIndex];
-
-      // If any header contains 'IMPORTRANGE' or 'QUERY', all headers will be non-editable
-      const isEditable = !hasFormulaFlag;
-
-      result.push({
-        name: headerName,
-        editable: isEditable,
-      });
-    }
-    console.log(result)
-    return result;
-  } catch (error) {
-    console.error('Error fetching sheet data:', error);
-    throw error;
+  for (let i = 0; i < formulaHeader.length; i++) {
+    let fHeader = formulaHeader[i];
+    let nHeader = normalHeader[i].replace(/\s+/g, '_').toLowerCase();
+    obj[nHeader] = !(disableEditing || String(fHeader || "").toLowerCase().includes("=arrayformula"));
   }
+
+  console.log({ obj });
+  return obj;
 }
-
-
-// async function getMetaSheetData({ sheets, spreadSheetID:spreadsheetId, range, header }) {
-//   try {
-//     // Fetch the header row data from the specified range
-//     const res = await sheets.spreadsheets.values.get({
-//       spreadsheetId: spreadsheetId,
-//       range: range, // Range like 'Sheet1!1:1'
-//     });
-
-//     const headers = res.data.values[0]; // First row (header row)
-//     const result = [];
-
-//     for (let colIndex = 0; colIndex < headers.length; colIndex++) {
-//       const headerName = headers[colIndex];
-//       const columnRange = `${range.split('!')[0]}!${String.fromCharCode(65 + colIndex)}1`; // Get column reference, like 'A1'
-
-//       // Get the formula for the header cell
-//       const formulaRes = await sheets.spreadsheets.values.get({
-//         spreadsheetId: spreadsheetId,
-//         range: columnRange,
-//       });
-
-//       const formula = formulaRes.data.formulaValue;
-//       let isEditable = true; // Default to editable
-
-//       // Check if the formula contains 'IMPORTRANGE', 'QUERY', or 'ARRAYFORMULA'
-//       if (formula) {
-//         if (formula.includes('IMPORTRANGE')) {
-//           isEditable = false;
-//         } else if (formula.includes('QUERY')) {
-//           isEditable = false;
-//         } else if (formula.includes('ARRAYFORMULA')) {
-//           isEditable = false;
-//         }
-//       }
-
-//       result.push({
-//         name: headerName,
-//         editable: isEditable,
-//       });
-//     }
-//     console.log(result)
-//     return result;
-//   } catch (error) {
-//     console.error('Error fetching sheet data:', error);
-//     throw error;
-//   }
-// }
-
-
 
 app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
 
@@ -218,6 +150,7 @@ app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
   const spreadSheetID = sheetDetails.spreadsheetId;
   const spreadSheeSharedWith = sheetDetails.sharedWith;
   const range = sheetDetails.firstTabDataRange;
+  const sheetName = range.split("!")[0];
 
   const user = sheetOwner
   const refreshToken = user.googleRefreshToken;
@@ -236,7 +169,7 @@ app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
 
   const sheets = google.sheets({ version: "v4", auth: authClient });
 
-  
+
 
   try {
     const response = await sheets.spreadsheets.values.get({
@@ -244,7 +177,7 @@ app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
       range: range,
     });
 
-    
+
 
     const rows = response.data.values;
     if (!rows || rows.length === 0) {
@@ -252,7 +185,7 @@ app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
       return;
     }
 
-    // getMetaSheetData({sheets, spreadSheetID, range, header:rows[0]});
+    const formulaData = await getMetaSheetData({ sheets, spreadSheetID, range: sheetName });
 
     // Extract hidden column from Sheet 
     const hiddenCol = sheetDetails.hiddenCol;
@@ -269,7 +202,7 @@ app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
     }
     // const permissions = "view";
 
-    return res.status(200).json({ rows, permissions, jsonData, hiddenCol });
+    return res.status(200).json({ rows, permissions, jsonData, hiddenCol, formulaData });
   } catch (error) {
     console.error("Error fetching spreadsheet data:", error);
     res.status(500).json({ error: error.message });
@@ -711,6 +644,17 @@ async function editRowInSpreadsheet(authClient, spreadSheetID, sheetName, rowInd
 async function addRowToSpreadsheet(authClient, spreadSheetID, sheetName, rowData) {
   const sheets = google.sheets({ version: 'v4', auth: authClient });
 
+  const getRequest1 = { spreadsheetId: spreadSheetID, range: `${sheetName}!1:1` };
+  const response = await sheets.spreadsheets.values.get(getRequest1);
+  const firstRow = response.data.values[0];
+
+  let temp = [];
+  for (let j = 0; j < firstRow.length; j++) {
+    let param = firstRow[j].replace(/\s+/g, '_').toLowerCase();
+    temp[j] = rowData[param] ?? null;
+  }
+  console.log({ temp });
+
   // Append the new row
   const appendRequest = {
     spreadsheetId: spreadSheetID,
@@ -718,7 +662,7 @@ async function addRowToSpreadsheet(authClient, spreadSheetID, sheetName, rowData
     valueInputOption: 'RAW', // or 'USER_ENTERED' if you want Google Sheets to interpret the data
     insertDataOption: 'INSERT_ROWS', // Append the data as new rows
     resource: {
-      values: [rowData], // Pass the new row data as an array of arrays
+      values: [temp]//Pass the new row data as an array of arrays
     },
   };
 
@@ -935,51 +879,51 @@ app.post("/editMultipleRows", authenticateToken, async (req, res) => {
       let temp = [];
       for (let j = 0; j < firstRow.length; j++) {
         let param = firstRow[j].replace(/\s+/g, '_').toLowerCase();
-        temp[j] = rowsToUpdate[i][param];
+        temp[j] = rowsToUpdate[i][param] ?? null;
       }
-      console.log({temp});
-      updatedSheetData.push({key_id:rowsToUpdate[i].key_id,rowData:temp});
+      console.log({ temp });
+      updatedSheetData.push({ key_id: rowsToUpdate[i].key_id, rowData: temp });
     }
 
 
     // Process the rows to create batch update data
-      const updateRequests = updatedSheetData.map((row) => {
-        const { key_id, rowData } = row; // Extract key_id and the rest of the data
-        const rowIndex = parseInt(key_id) + 1; // Compute row index (key_id + 1)
+    const updateRequests = updatedSheetData.map((row) => {
+      const { key_id, rowData } = row; // Extract key_id and the rest of the data
+      const rowIndex = parseInt(key_id) + 1; // Compute row index (key_id + 1)
 
-        // Map rowData into an array of values for the row
-        const newData = rowData;
+      // Map rowData into an array of values for the row
+      const newData = rowData;
 
-        // Define the range for this row update
-        const range = `${sheetName}!A${rowIndex}:${String.fromCharCode(64 + newData.length)}${rowIndex}`;
-        return {
-          range: range,
-          values: [newData],
-        };
-      });
-
-      // Execute batch update
-      const sheets = google.sheets({ version: 'v4', auth: authClient });
-      const batchUpdateRequest = {
-        spreadsheetId: spreadSheetID,
-        resource: {
-          data: updateRequests,
-          valueInputOption: "RAW",
-        },
+      // Define the range for this row update
+      const range = `${sheetName}!A${rowIndex}:${String.fromCharCode(64 + newData.length)}${rowIndex}`;
+      return {
+        range: range,
+        values: [newData],
       };
+    });
 
-      await sheets.spreadsheets.values.batchUpdate(batchUpdateRequest);
+    // Execute batch update
+    const sheets = google.sheets({ version: 'v4', auth: authClient });
+    const batchUpdateRequest = {
+      spreadsheetId: spreadSheetID,
+      resource: {
+        data: updateRequests,
+        valueInputOption: "RAW",
+      },
+    };
 
-      // Fetch the updated sheet data after updates
-      const getRequest = {
-        spreadsheetId: spreadSheetID,
-        range: `${sheetName}`, // Get all data from the sheet
-      };
-      const getResponse = await sheets.spreadsheets.values.get(getRequest);
+    await sheets.spreadsheets.values.batchUpdate(batchUpdateRequest);
 
-      res.status(200).json({
-        message: "Rows updated successfully",
-        updatedSheetData: getResponse.data,
+    // Fetch the updated sheet data after updates
+    const getRequest = {
+      spreadsheetId: spreadSheetID,
+      range: `${sheetName}`, // Get all data from the sheet
+    };
+    const getResponse = await sheets.spreadsheets.values.get(getRequest);
+
+    res.status(200).json({
+      message: "Rows updated successfully",
+      updatedSheetData: getResponse.data,
     });
   } catch (err) {
     console.error("Error updating multiple rows:", err);
@@ -1130,8 +1074,6 @@ app.post("/getSheetData", authenticateToken, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-
 
 // Route to get all spreadsheets for a user
 app.post("/getSpreadSheets", authenticateToken, async (req, res) => {

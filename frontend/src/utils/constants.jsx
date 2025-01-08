@@ -15,7 +15,7 @@ export const APPS = [
       appView: "InteractiveListView",
       appImg: "https://i.ibb.co/N1c6Djj/Screenshot-2024-10-08-125436.png",
       description: "List all employees attendance score.",
-      appID:"1sMv_CvZMTaZo1u69xLxzrBrD54n2Ymykd3hvsgEe088",
+      appID:"1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ",
       spreadSheetName: "Data",
     },
     // {
