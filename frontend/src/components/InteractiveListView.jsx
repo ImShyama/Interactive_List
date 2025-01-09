@@ -554,6 +554,7 @@ const InteractiveListView = () => {
 
             <Table
                 data={data}
+                tempHeader={headers}
                 headers={headers}
                 filteredData={filteredData}
                 setFilteredData={setFilteredData}

@@ -112,6 +112,7 @@ const Preview = ({ closeModal, sheetdetails }) => {
                                 <Table
                                     data={sheetData}
                                     headers={tableHeader}
+                                    tempHeader={tableHeader}
                                     filteredData={filteredData}
                                     setFilteredData={setFilteredData}
                                     paginatedData={paginatedData}
