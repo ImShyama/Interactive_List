@@ -579,6 +579,9 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
       notifySuccess(message);
       setIsTableLoading(false);
       closeDrawer();
+
+      // Refresh the page
+    window.location.reload();
     } catch (error) {
       console.error("Error updating settings in DB:", error);
       setIsTableLoading(false);
@@ -630,7 +633,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
             <div className="setting_icons_top_right">
               <button
                 className="submit_btn"
-                onClick={() => handleSaveChanges(settingData, "Settings saved successfully, please refresh the page")}
+                onClick={() => handleSaveChanges(settingData, "Settings saved successfully, Reloading...")}
                 disabled={!isSaveChanges}
               >
                 {/* {isLoading ? (
