@@ -431,7 +431,7 @@ const DashboardTable = () => {
                       </button>
                     )}
 
-                    {sheet.access !== "view" && (
+                    {sheet.access == "owner" && (
                       <button
                         className="icons"
                         onClick={() => handleShare(sheet._id, sheet.sharedWith)}

@@ -5,6 +5,7 @@ import axios from "axios";
 import { UserContext } from "../context/UserContext";
 import Loader from "./Loader";
 import Table from "./interactive_list/Table";
+import { filter } from "lodash";
 
 const Preview = ({ closeModal, sheetdetails }) => {
 
@@ -16,6 +17,7 @@ const Preview = ({ closeModal, sheetdetails }) => {
     const [filteredData, setFilteredData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [filterHeader, setFilterHeader] = useState([]);
 
     useEffect(() => {
         if (sheetData) {
@@ -52,13 +54,27 @@ const Preview = ({ closeModal, sheetdetails }) => {
                 }
 
                 // Process sheet data
+                // const [header, ...dataRows] = res.rows;
+                // const normalizedHeader = header.map((col) => col.replace(/ /g, "_").toLowerCase());
+                // const filteredHeader = normalizedHeader.filter((col) => !res.hiddenCol?.includes(col));
+                // const {jsonData} = res;
+                // setSheetData(jsonData);
+                // setTableHeader(filteredHeader);
+                // setTableData(jsonData);
+                // setLoading(false);
+
                 const [header, ...dataRows] = res.rows;
+                const normalHeader = header.map((col) => col.replace(/ /g, "_"));
+                const normalizedHeader1 = normalHeader.filter((col) => !res.hiddenCol?.includes(col.toLowerCase()));
                 const normalizedHeader = header.map((col) => col.replace(/ /g, "_").toLowerCase());
                 const filteredHeader = normalizedHeader.filter((col) => !res.hiddenCol?.includes(col));
-                const {jsonData} = res;
-                setSheetData(jsonData);
-                setTableHeader(filteredHeader);
-                setTableData(jsonData);
+
+                setSheetData(res.jsonData || []);
+                setTableHeader(normalizedHeader1);
+                setFilterHeader(filteredHeader);
+                setFreezeIndex(res.freezeIndex || 0);
+                setFormulaData(res.formulaData);
+                setUnhideHeader(header);
                 setLoading(false);
             })
             .catch((err) => {
@@ -66,6 +82,8 @@ const Preview = ({ closeModal, sheetdetails }) => {
                 setLoading(false);
             });
     }, [sheetdetails]);
+
+    console.log({sheetdetails})
 
     // console.log("Data: ", sheetData)
     // console.log("tableHeader: ", tableHeader)
@@ -111,7 +129,7 @@ const Preview = ({ closeModal, sheetdetails }) => {
 
                                 <Table
                                     data={sheetData}
-                                    headers={tableHeader}
+                                    headers={filterHeader}
                                     tempHeader={tableHeader}
                                     filteredData={filteredData}
                                     setFilteredData={setFilteredData}
@@ -132,13 +150,13 @@ const Preview = ({ closeModal, sheetdetails }) => {
                                 // EditData={EditData}
                                 // setEditData={setEditData}
                                 // handleBulkDelete={handleBulkDelete}
-                                // headerBgColor={headerBgColor}
-                                // headerTextColor={headerTextColor}
-                                // headerFontSize={headerFontSize}
-                                // headerFontFamily={headerFontFamily}
-                                // bodyTextColor={bodyTextColor}
-                                // bodyFontSize={bodyFontSize}
-                                // bodyFontFamily={bodyFontFamily}
+                                headerBgColor={sheetdetails?.tableSettings[0]?.headerBgColor}
+                                headerTextColor={sheetdetails?.tableSettings[0]?.headerTextColor}
+                                headerFontSize={sheetdetails?.tableSettings[0]?.headerFontSize}
+                                headerFontFamily={sheetdetails?.tableSettings[0]?.headerFontFamily}
+                                bodyTextColor={sheetdetails?.tableSettings[0]?.bodyTextColor}
+                                bodyFontSize={sheetdetails?.tableSettings[0]?.bodyFontSize}
+                                bodyFontFamily={sheetdetails?.tableSettings[0]?.bodyFontFamily}
                                 />
                             </div>
                         ) : (

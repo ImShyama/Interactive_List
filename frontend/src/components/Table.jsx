@@ -11,11 +11,13 @@ import IntractTable from "./IntractTable.jsx";
 import PeopleTable from "./people_directory/PeopleTable.jsx";
 import useSpreadSheetDetails from "../utils/useSpreadSheetDetails";
 import { UserContext } from "../context/UserContext";
+import { set } from "lodash";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
   const [tableHeader, setTableHeader] = useState([]);
   const [filterHeader, setFilterHeader] = useState([]);
+  const [unhideHeader, setUnhideHeader] = useState([]);
   const [formulaData, setFormulaData] = useState({});
   const [loading, setLoading] = useState(true);
   const [freezeIndex, setFreezeIndex] = useState(0);
@@ -85,6 +87,7 @@ const Table = () => {
         setFilterHeader(filteredHeader);
         setFreezeIndex(res.freezeIndex || 0);
         setFormulaData(res.formulaData);
+        setUnhideHeader(header);
         setLoading(false);
       })
       .catch((err) => {
@@ -110,6 +113,7 @@ const Table = () => {
             freezeIndex={freezeIndex}
             tempHeader={tableHeader}
             formulaData={formulaData}
+            unhideHeader={unhideHeader}
           />
         );
       case "People Directory":

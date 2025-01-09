@@ -158,7 +158,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
           /> */}
 
           <Input type="email" placeholder="Enter email address" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '80%' }} />
-          <Select defaultValue="View" options={options} onChange={(value) => setAccess(value)} style={{ width: '20%' }} />
+          <Select defaultValue="View" options={options} onChange={(value) => setAccess(value)} style={{ width: '25%' }} />
 
           {/* Error message */}
 

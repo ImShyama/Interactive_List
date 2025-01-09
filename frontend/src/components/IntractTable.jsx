@@ -56,7 +56,7 @@ const convertArrayToJSON = (data) => {
     return jsonData;
 };
 
-const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaData }) => {
+const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaData, unhideHeader }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [rowToEdit, setRowToEdit] = useState(null);
     const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
@@ -148,6 +148,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     };
 
     function getHeadersWithDateAndNumbers(dataset) {
+
         if (!Array.isArray(dataset) || dataset.length === 0) {
             return { dateColumns: [], numberColumns: [] };
         }
@@ -174,8 +175,19 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             }
         });
 
+        // Filter and map results back to original `unhideHeader` case
+        result.dateColumns = unhideHeader.filter((header) =>
+            result.dateColumns.some((col) => col.toLowerCase() === header.toLowerCase().split(" ").join("_"))
+        );
+
+        result.numberColumns = unhideHeader.filter((header) =>
+            result.numberColumns.some((col) => col.toLowerCase() === header.toLowerCase().split(" ").join("_"))
+        );
+
         return result;
     }
+
+
 
     const handlePopoverVisibility = (key, isVisible) => {
         setVisiblePopover((prev) => ({
@@ -922,6 +934,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
 
     const handleHeaderSwitch = async (checked, header) => {
         console.log({ checked, header, hiddenCol });
+        header = header.toLowerCase()
         let updatedHiddenCol = [];
 
         // Update the hiddenCol state using its previous value
@@ -972,14 +985,18 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     };
 
     const HeaderSwitch = () => {
+        console.log({ unhideHeader, hiddenCol });
         return (
             <div className="flex-row max-h-[300px] overflow-auto">
-                {tempHeader.map((header, index) => (
-                    <div className="flex justify-between items-center gap-1">
-                        <span>{header.split("_").join(" ")}</span>
-                        <Switch onChange={(checked) => handleHeaderSwitch(checked, header)} checked={hiddenCol.includes(header)} size="small" key={index} label={header} />
-                    </div>
-                ))}
+                {unhideHeader.map((header, index) => {
+                    let tempHeader = header.toLowerCase().split(" ").join("_");
+                    return (
+                        <div className="flex justify-between items-center gap-1">
+                            <span>{header}</span>
+                            <Switch onChange={(checked) => handleHeaderSwitch(checked, tempHeader)} checked={hiddenCol.includes(tempHeader)} size="small" key={index} label={header} />
+                        </div>
+                    )
+                })}
             </div>
         )
     }
@@ -1361,6 +1378,9 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                     {/* Render checkboxes dynamically */}
                                     {numberFilterColumn.length > 0 ? (
                                         numberFilterColumn.map((item, index) => {
+                                            let tempItem = item
+                                            item = item.toLowerCase().split(" ").join("_");
+                                            
                                             // Determine if the current item is already selected
                                             const isChecked = selectedNumbers.some(
                                                 (slider) => slider.column === item
@@ -1407,9 +1427,9 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                                             overflow: "hidden",
                                                             textOverflow: "ellipsis",
                                                         }}
-                                                        title={item.replace(/_/g, " ").toUpperCase()} // Full text displayed on hover
+                                                        title={tempItem} // Full text displayed on hover
                                                     >
-                                                        {item.replace(/_/g, " ").toUpperCase()}
+                                                        {tempItem}
                                                     </span>
                                                 </label>
                                             );
@@ -1450,6 +1470,10 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                     {/* Render checkboxes dynamically */}
                                     {dateFilterColumn.length > 0 ? (
                                         dateFilterColumn.map((item, index) => {
+
+                                            let tempItem = item
+                                            item = item.toLowerCase().split(" ").join("_");
+
                                             const isChecked = selectedDates.some(
                                                 (slider) => slider.column === item
                                             );
@@ -1495,9 +1519,9 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                                             overflow: "hidden",
                                                             textOverflow: "ellipsis",
                                                         }}
-                                                        title={item.replace(/_/g, " ").toUpperCase()} // Full text displayed on hover
+                                                        title={tempItem} // Full text displayed on hover
                                                     >
-                                                        {item.replace(/_/g, " ").toUpperCase()}
+                                                        {tempItem}
                                                     </span>
                                                 </label>
                                             );

@@ -11,13 +11,13 @@ import { IoSearchOutline } from "react-icons/io5";
 // import { Resizable } from 're-resizable';
 
 const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFreezeCol, freezeCol, columnKey, index, headers, columnWidths, headerBgColor, headerTextColor, headerFontFamily, headerFontSize, isEditMode, handleResize,
-    settings, getAggregatePopoverContent, globalOption, setGlobalOption
+    settings, getAggregatePopoverContent, globalOption, setGlobalOption, title
 }) => {
 
     const [sortColumn, setSortColumn] = useState(null);
     const [visiblePopover, setVisiblePopover] = useState({});
     const [sortOrder, setSortOrder] = useState('asc');
-    const title = columnKey.replace(/_/g, " ");
+    // const title = columnKey.replace(/_/g, " ");
     const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
     const firstColWidth = isEditMode ? 125 : 0; // Adjust the first column width if in edit mode
 
@@ -163,7 +163,9 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                     }}
                 >
                     <div title={title.replace(/_/g, " ")}>
-                        <span style={{ fontFamily: headerFontFamily, fontSize: `${headerFontSize}px` }}>{title.replace(/_/g, " ")}</span>
+                        <span style={{ fontFamily: headerFontFamily, fontSize: `${headerFontSize}px` }}>
+                            {title.replace(/_/g, " ")}
+                        </span>
                     </div>
                     <div className="flex items-center gap-1">
                         <button
