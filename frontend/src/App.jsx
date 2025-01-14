@@ -15,7 +15,7 @@ import Portfolio from "./components/Portfolio";
 import InteractiveList from "./components/InteractiveList";
 import InteractiveListView from "./components/InteractiveListView";
 import PeopleTable from "./components/people_directory/PeopleTable";
-import PeopleDirectoryView from "./components/people_directory/PeopleDirectoryView";
+import PeopleDirectoryPreview from "./components/people_directory/PeopleDirectoryPreview";
 import Testing1 from "./components/Testing1";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
@@ -60,7 +60,7 @@ const appRouter = createBrowserRouter([
       { path: "/interactiveList", element: <InteractiveList /> },
       { path: "/interactiveListView", element: <InteractiveListView /> },
       { path: "/peopledirectory", element: <PeopleTable /> },
-      { path: "/peopleDirectoryView", element: <PeopleDirectoryView /> },
+      { path: "/peopleDirectoryPreview", element: <PeopleDirectoryPreview /> },
       { path: "/testing1", element: <Testing1 /> },
       { path: "/profile/:id", element: <ProfilePage /> },
     ],

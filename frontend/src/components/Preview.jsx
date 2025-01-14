@@ -5,6 +5,8 @@ import axios from "axios";
 import { UserContext } from "../context/UserContext";
 import Loader from "./Loader";
 import Table from "./interactive_list/Table";
+import PeopleDirectoryView from "./people_directory/PeopleDirectoryView";
+// import VideoGallaryView from "./video_gallary/VideoGallaryView";
 import { filter } from "lodash";
 
 const Preview = ({ closeModal, sheetdetails }) => {
@@ -83,90 +85,117 @@ const Preview = ({ closeModal, sheetdetails }) => {
             });
     }, [sheetdetails]);
 
-    console.log({sheetdetails})
+    console.log({ sheetdetails })
 
     // console.log("Data: ", sheetData)
     // console.log("tableHeader: ", tableHeader)
     return (
         <div className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex justify-center items-center">
             {
-                 !Loading && sheetData && tableHeader ? (
-                
-                <div className="bg-[#F5F6F7] w-full max-w-[90%] max-h-[100%] relative rounded-lg px-[25px] py-[10px]">
-                <div className="py-[20px]">
-                    <div className='flex text-center justify-between px-[50px]'>
-                        <div className='p-2'><span className="text-[#2A3C54] font-poppins text-[24px] font-medium">{sheetName}</span></div>
-                        <div className='pr-6 pt-2'>
-                            <button
-                                onClick={closeModal}
-                                className="absolute w-[25px] h-[25px] text-gray-400 hover:text-red-600"
-                            >
-                                <span className="cursor-pointer">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={2}
-                                        stroke="currentColor"
-                                        className="w-6 h-6"
+                !Loading && sheetData && tableHeader ? (
+
+                    <div className="bg-[#F5F6F7] w-full max-w-[90%] max-h-[100%] relative rounded-lg px-[25px] py-[10px]">
+                        <div className="py-[20px]">
+                            <div className='flex text-center justify-between px-[50px]'>
+                                <div className='p-2'><span className="text-[#2A3C54] font-poppins text-[24px] font-medium">{sheetName}</span></div>
+                                <div className='pr-6 pt-2'>
+                                    <button
+                                        onClick={closeModal}
+                                        className="absolute w-[25px] h-[25px] text-gray-400 hover:text-red-600"
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M6 18L18 6M6 6l12 12"
-                                        />
-                                    </svg>
-                                </span>
+                                        <span className="cursor-pointer">
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth={2}
+                                                stroke="currentColor"
+                                                className="w-6 h-6"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
+                                            </svg>
+                                        </span>
 
-                            </button>
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="h-full">
+                                {/* Conditional rendering for InteractiveListPreview */}
+                                {!Loading && sheetData && tableHeader ? (
+                                    <div>
+                                        {/* <InteractiveListPreview data={sheetData} headers={tableHeader} /> */}
+                                        {(() => {
+                                            switch (sheetdetails.appName) {
+                                                case "Interactive List":
+                                                    return (
+                                                        <Table
+                                                            data={sheetData}
+                                                            headers={filterHeader}
+                                                            tempHeader={tableHeader}
+                                                            filteredData={filteredData}
+                                                            setFilteredData={setFilteredData}
+                                                            paginatedData={paginatedData}
+                                                            // loading={loading}
+                                                            // isEditMode={isEditMode}
+                                                            // isedit={isedit}
+                                                            // setIsedit={setIsedit}
+                                                            // handleEdit={handleEdit}
+                                                            // handleDelete={handleDelete}
+                                                            // settings={settings}
+                                                            // freezeCol={freezeCol}
+                                                            // setFreezeCol={setFreezeCol}
+                                                            // globalOption={globalOption}
+                                                            // setGlobalOption={setGlobalOption}
+                                                            // ischecked={ischecked}
+                                                            // setIschecked={setIschecked}
+                                                            // EditData={EditData}
+                                                            // setEditData={setEditData}
+                                                            // handleBulkDelete={handleBulkDelete}
+                                                            headerBgColor={sheetdetails?.tableSettings[0]?.headerBgColor}
+                                                            headerTextColor={sheetdetails?.tableSettings[0]?.headerTextColor}
+                                                            headerFontSize={sheetdetails?.tableSettings[0]?.headerFontSize}
+                                                            headerFontFamily={sheetdetails?.tableSettings[0]?.headerFontFamily}
+                                                            bodyTextColor={sheetdetails?.tableSettings[0]?.bodyTextColor}
+                                                            bodyFontSize={sheetdetails?.tableSettings[0]?.bodyFontSize}
+                                                            bodyFontFamily={sheetdetails?.tableSettings[0]?.bodyFontStyle}
+                                                        />
+                                                    );
+                                                case "People Directory":
+                                                    return (
+                                                        <PeopleDirectoryView
+                                                            data={sheetData}
+                                                            headers={filterHeader}
+                                                            tempHeader={tableHeader}
+                                                            filteredData={filteredData}
+                                                            setFilteredData={setFilteredData}
+                                                            paginatedData={paginatedData}
+                                                        />
+                                                    );
+                                                // case "Video Gallary":
+                                                //     return (
+                                                //         <VideoGallaryView
+                                                //             data={sheetData}
+                                                //             headers={tableHeader}
+                                                //         />
+                                                //     );
+                                                default:
+                                                    return null;
+                                            }
+                                        })()}
+
+                                    </div>
+                                ) : (
+                                    <div className="flex justify-center items-center h-full">
+                                        <Loader textToDisplay={"Loading..."} />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                    <div className="h-full">
-                        {/* Conditional rendering for InteractiveListPreview */}
-                        {!Loading && sheetData && tableHeader ? (
-                            <div>
-                                {/* <InteractiveListPreview data={sheetData} headers={tableHeader} /> */}
-
-                                <Table
-                                    data={sheetData}
-                                    headers={filterHeader}
-                                    tempHeader={tableHeader}
-                                    filteredData={filteredData}
-                                    setFilteredData={setFilteredData}
-                                    paginatedData={paginatedData}
-                                // loading={loading}
-                                // isEditMode={isEditMode}
-                                // isedit={isedit}
-                                // setIsedit={setIsedit}
-                                // handleEdit={handleEdit}
-                                // handleDelete={handleDelete}
-                                // settings={settings}
-                                // freezeCol={freezeCol}
-                                // setFreezeCol={setFreezeCol}
-                                // globalOption={globalOption}
-                                // setGlobalOption={setGlobalOption}
-                                // ischecked={ischecked}
-                                // setIschecked={setIschecked}
-                                // EditData={EditData}
-                                // setEditData={setEditData}
-                                // handleBulkDelete={handleBulkDelete}
-                                headerBgColor={sheetdetails?.tableSettings[0]?.headerBgColor}
-                                headerTextColor={sheetdetails?.tableSettings[0]?.headerTextColor}
-                                headerFontSize={sheetdetails?.tableSettings[0]?.headerFontSize}
-                                headerFontFamily={sheetdetails?.tableSettings[0]?.headerFontFamily}
-                                bodyTextColor={sheetdetails?.tableSettings[0]?.bodyTextColor}
-                                bodyFontSize={sheetdetails?.tableSettings[0]?.bodyFontSize}
-                                bodyFontFamily={sheetdetails?.tableSettings[0]?.bodyFontStyle}
-                                />
-                            </div>
-                        ) : (
-                            <div className="flex justify-center items-center h-full">
-                                <Loader textToDisplay={"Loading..."} />
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>) : (
+                    </div>) : (
                     <div className="flex justify-center items-center h-full">
                         <Loader textToDisplay={"Loading.."} />
                     </div>

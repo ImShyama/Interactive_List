@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, Pagination, Input, Select } from "antd";
+import { Table, Pagination, Input, Select, AutoComplete } from "antd";
 import { BiSearch } from "react-icons/bi";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -14,8 +14,9 @@ import DeleteAlert from "./DeleteAlert";
 import Preview from "./Preview";
 import InteractiveListView from "./InteractiveListView";
 import ShareModal from "./ShareModal";
-import { FRONTENDHOST } from "../utils/constants";
+import { FRONTENDHOST, OPTIONS } from "../utils/constants";
 import { notifySuccess } from "../utils/notify";
+const options = OPTIONS;
 
 const DashboardTable = () => {
   const [spreadsheet, setSpreadSheet] = useState([]);
@@ -210,7 +211,7 @@ const DashboardTable = () => {
                 placeholder="Search by Spreadsheet Name"
               />
             </div>
-            <div className="flex">
+            {/* <div className="flex">
               <Select
                 defaultValue={"Select App Name"}
                 style={{ width: "200px" }}
@@ -221,6 +222,25 @@ const DashboardTable = () => {
                   { value: "Interactive List", label: "Interactive List" },
                 ]}
               />
+            </div> */}
+            <div className="flex items-center">
+              <AutoComplete
+                style={{
+                  width: 200,
+                  height: 44,
+                }}
+                options={options}
+                placeholder="Select App Name"
+                size="large"
+                filterOption={(inputValue, option) =>
+                  option.value.toLowerCase().includes(inputValue.toLowerCase())
+                }
+              >
+                <Input style={{
+                  width: 200,
+                  height: 44,
+                }} size="large" />
+              </AutoComplete>
             </div>
           </div>
         </div>
@@ -233,11 +253,11 @@ const DashboardTable = () => {
                   Active Spreadsheet
                 </th>
                 <th className="w-1/6 p-4 text-start text-[#667085] font-poppins text-[20px] font-semibold leading-[23.452px]">
+                  App Name
+                </th>
+                <th className="w-1/6 p-4 text-start text-[#667085] font-poppins text-[20px] font-semibold leading-[23.452px]">
                   Access
                 </th>
-                {/* <th className="w-1/6 p-4 text-start text-[#667085] font-poppins text-[20px] font-semibold leading-[23.452px]">
-                  Last Update
-                </th> */}
                 <th className="w-1/6 p-4 text-start text-[#667085] font-poppins text-[20px] font-semibold leading-[23.452px]">
                   Action
                 </th>
@@ -257,10 +277,11 @@ const DashboardTable = () => {
                       {sheet.spreadsheetName || sheet.firstSheetName}
                     </a>
                   </td>
+                  <td className="px-4 py-2 text-[14px]">{sheet.appName}</td>
                   <td className="px-4 py-2 text-[14px]">
-                  {(sheet.access && sheet.access.charAt(0).toUpperCase() + sheet.access.slice(1)) || "N/A"}
+                    {(sheet.access && sheet.access.charAt(0).toUpperCase() + sheet.access.slice(1)) || "N/A"}
                   </td>
-                  {/* <td className="px-4 py-2 text-[14px]">{formatLastUpdatedDate(sheet.lastUpdatedDate)}</td> */}
+
                   <td className="px-4 py-2 flex gap-[15px] justify-start items-center">
                     <button
                       onClick={() => openModal(sheet)}
@@ -297,7 +318,7 @@ const DashboardTable = () => {
                       <button
                         className="icons"
                         onClick={() => handleCopy(sheet._id, sheet.access)}
-                        // disabled={sheet.access == "view"}
+                      // disabled={sheet.access == "view"}
                       >
                         <div className="group">
                           <svg
@@ -444,9 +465,8 @@ const DashboardTable = () => {
                           viewBox="0 0 20 20"
                           fill="none"
                           // className="group-hover:stroke-orange-500"
-                          className={`group-hover:stroke-orange-500 ${
-                            sheet.access === "view" ? "disabled-svg" : ""
-                          }`}
+                          className={`group-hover:stroke-orange-500 ${sheet.access === "view" ? "disabled-svg" : ""
+                            }`}
                         >
                           <path
                             d="M15 6.66602C16.3807 6.66602 17.5 5.54673 17.5 4.16602C17.5 2.7853 16.3807 1.66602 15 1.66602C13.6193 1.66602 12.5 2.7853 12.5 4.16602C12.5 5.54673 13.6193 6.66602 15 6.66602Z"

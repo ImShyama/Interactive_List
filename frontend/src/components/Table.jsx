@@ -118,12 +118,35 @@ const Table = () => {
         );
       case "People Directory":
         return (
+          // <PeopleTable
+          //   data={sheetData}
+          //   headers={filterHeader}
+          //   settings={settings}
+          //   freezeIndex={freezeIndex}
+          //   tempHeader={tableHeader}
+          // />
           <PeopleTable
             data={sheetData}
+            tableHeader={tableHeader}
             headers={filterHeader}
             settings={settings}
             freezeIndex={freezeIndex}
             tempHeader={tableHeader}
+            formulaData={formulaData}
+            unhideHeader={unhideHeader}
+          />
+        );
+      case "Video Gallary":
+        return (
+          <VideoTable
+            data={sheetData}
+            tableHeader={tableHeader}
+            headers={filterHeader}
+            settings={settings}
+            freezeIndex={freezeIndex}
+            tempHeader={tableHeader}
+            formulaData={formulaData}
+            unhideHeader={unhideHeader}
           />
         );
       default:

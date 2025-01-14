@@ -115,6 +115,11 @@ const Header = () => {
       });
   }, [token]);
 
+  // Scroll to top whenever the location (route) changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   
   return (
     <div className="fixed top-0 left-0 right-0 " style={{ zIndex: 999 }}>

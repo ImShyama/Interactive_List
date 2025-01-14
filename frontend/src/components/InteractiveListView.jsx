@@ -13,6 +13,7 @@ import './table.css';
 import { BackIcon } from '../assets/svgIcons';
 import { headers, data } from '../utils/InetractiveList_DumyData';
 import Table from './interactive_list/Table';
+import TitleBarPreview from './TitleBarPreview';
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
@@ -495,62 +496,13 @@ const InteractiveListView = () => {
 
     return (
         <div>
-            <div className='flex text-center justify-between items-center px-[50px]'>
-                <div className="flex items-center gap-[10px]">
-                    <button onClick={() => navigate(-1)}>
-                        <BackIcon />
-                    </button>
-                    <span className="text-[#2A3C54] font-poppins text-[21px] font-medium">Interactive List</span>
-                </div>
-                <div>
-                    <button className="flex py-[5px] px-[10px] justify-center items-center gap-[5px] flex-shrink-0 bg-primary text-white rounded-md hover:bg-secondary"
-                        onClick={handleOpenPicker}
-                    >
-                        <span className="text-white font-poppins text-[14px] font-bold leading-normal">+</span>
-                        <span className="text-white font-poppins text-[14px] font-bold leading-normal">Create App from zero</span>
-                        {/* + Create app from zero */}
-                    </button>
-
-                </div>
+            <div className='w-full px-[30px]'>
+            <TitleBarPreview 
+            appName={"Interactive List"} 
+            spreadSheetID={"1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ"} 
+            spreadSheetName={"Data"} 
+            />
             </div>
-
-            {/* <div style={{ position: 'relative', zIndex: '10' }} className='relative z-10 px-[50px] py-[10px]'>
-
-                <div style={{ width: '100%', overflowX: 'auto', maxHeight: maxHeight, }}>
-                    <div style={{ minWidth: '1500px' }}>
-                        <Table
-                            bordered
-                            components={{
-                                header: {
-                                    cell: ResizableTitle,
-                                },
-                            }}
-                            columns={mergedColumns}
-                            dataSource={paginatedData}
-                            pagination={false}
-                            rowClassName="custom-row"
-                            scroll={{ x: true }}
-                            // small
-                            sticky
-                            size="small"
-                        />
-                    </div>
-                </div>
-
-                
-                <div style={{ display: 'flex', justifyContent: 'right', marginTop: '10px' }}>
-                    <Pagination
-                        current={currentPage}
-                        pageSize={pageSize}
-                        total={data.length}
-                        showSizeChanger
-                        onChange={(page, size) => {
-                            setCurrentPage(page);
-                            setPageSize(size);
-                        }}
-                    />
-                </div>
-            </div> */}
 
             <Table
                 data={data}

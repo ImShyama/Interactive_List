@@ -8,12 +8,14 @@ import DashboardTable from "./DashboardTable";
 import uparrow from "../assets/uparrow.svg";
 import downarrow from "../assets/downarrow.svg";
 import updownIcon from "../assets/updownIcon.svg";
-import { APPS, APPSNAME, CLIENTID, DEVELOPERKEY } from "../utils/constants";
+import { APPS, APPSNAME, CLIENTID, DEVELOPERKEY, OPTIONS } from "../utils/constants";
 import { Input, Select } from "antd";
 import { BiSearch } from "react-icons/bi";
 import { HOST } from "../utils/constants";
+import { AutoComplete } from "antd";
 const clientId = CLIENTID;
 const developerKey = DEVELOPERKEY;
+const options = OPTIONS;
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -126,6 +128,8 @@ const Dashboard = () => {
     console.log("onsearch");
   };
 
+  
+
   return (
     <div className="mt-[80px]">
       <div className="flex justify-between px-[50px] py-[5px]">
@@ -150,25 +154,25 @@ const Dashboard = () => {
                   placeholder="Search"
                 />
               </div>
-              <div className="flex">
-                <Select
-                  defaultValue={"Select App Name"}
-                  style={{ width: "200px", height: "44px" }}
-                  className="w-full"
+              <div className="flex items-center">
+                <AutoComplete
+                  style={{
+                    width: 200,
+                    height: 44,
+                  }}
+                  options={options}
+                  placeholder="Select App Name"
                   size="large"
-                  aria-required
-                  options={[
-                    { value: "", label: "Select App Name", disabled: true },
-                    { value: "Interactive List", label: "Interactive List" },
-                  ]}
-                />
+                  filterOption={(inputValue, option) =>
+                    option.value.toLowerCase().includes(inputValue.toLowerCase())
+                  }
+                >
+                  <Input style={{
+                    width: 200,
+                    height: 44,
+                  }} size="large" />
+                </AutoComplete>
               </div>
-              {/* <button className="flex gap-[10px] justify-center items-center flex-shrink-0 text-center bg-[#FFA500] rounded-[8px] p-[5px] text-white text-[14px] h-[44px]">
-                <span className="text-[var(--white,#FFF)] font-poppins text-[14px] font-medium leading-normal">
-                  More apps
-                </span>
-                <img src={updownIcon} className="w-[8px] h-[13px] flex-shrink-0" />
-              </button> */}
             </div>
           )}
 
