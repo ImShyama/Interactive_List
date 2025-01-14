@@ -3,7 +3,6 @@ export const CLIENT_ID = "733145859090-a841efgntmtqmpqn8u08oiulimf0leeu.apps.goo
 // export const FRONTENDHOST = "http://localhost:5173"
 export const HOST = ""
 export const FRONTENDHOST = "https://interact.ceoitbox.com"
-// export const FRONTENDHOST = "https://interactive-list.onrender.com"
 export const APPSNAME = ["Interactive List",
   //  "People Directory"
   ];

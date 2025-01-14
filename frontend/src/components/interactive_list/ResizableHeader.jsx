@@ -18,7 +18,10 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
     const [visiblePopover, setVisiblePopover] = useState({});
     const [sortOrder, setSortOrder] = useState('asc');
     // const title = columnKey.replace(/_/g, " ");
-    const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
+    // const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
+    const pinnedHeaders = headers.slice(0, headers.indexOf(freezeCol) + 1);
+    const isPinned = pinnedHeaders.includes(columnKey);
+    const isLastPinned = isPinned && columnKey === pinnedHeaders[pinnedHeaders.length - 1];
     const firstColWidth = isEditMode ? 125 : 0; // Adjust the first column width if in edit mode
 
     const leftOffset = useMemo(() => {
@@ -155,6 +158,20 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                     // borderRight: isPinned && `4px solid #bed900`,
                 }}
             >
+                {isLastPinned && (
+                    <div
+                        style={{
+                            position: "absolute",
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: "4px ",
+                            minWidth: "4px ",
+                            backgroundColor: "#ccc",
+                            zIndex: 15, // Ensure it stays above other elements
+                        }}
+                    />
+                )}
                 <div
                     className="flex justify-between items-center gap-3"
                     style={{

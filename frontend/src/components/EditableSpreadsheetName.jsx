@@ -67,9 +67,9 @@ const EditableSpreadsheetName = ({ settings }) => {
   };
 
   const handleBlur = () => {
-    if (!isChanged) {
+    // if (!isChanged) {
       setIsEditing(false);
-    }
+    // }
   };
 
   return (

@@ -156,7 +156,7 @@ const Preview = ({ closeModal, sheetdetails }) => {
                                 headerFontFamily={sheetdetails?.tableSettings[0]?.headerFontFamily}
                                 bodyTextColor={sheetdetails?.tableSettings[0]?.bodyTextColor}
                                 bodyFontSize={sheetdetails?.tableSettings[0]?.bodyFontSize}
-                                bodyFontFamily={sheetdetails?.tableSettings[0]?.bodyFontFamily}
+                                bodyFontFamily={sheetdetails?.tableSettings[0]?.bodyFontStyle}
                                 />
                             </div>
                         ) : (
@@ -168,7 +168,7 @@ const Preview = ({ closeModal, sheetdetails }) => {
                 </div>
             </div>) : (
                     <div className="flex justify-center items-center h-full">
-                        <Loader textToDisplay={"Loading..."} />
+                        <Loader textToDisplay={"Loading.."} />
                     </div>
                 )
             }

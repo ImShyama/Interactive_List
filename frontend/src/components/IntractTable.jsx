@@ -38,6 +38,7 @@ import ResizableHeader from "./interactive_list/ResizableHeader.jsx";
 import DataGrid from "./Table/Table.jsx";
 import FilterButton from "./interactive_list/FilterButton.jsx";
 import Table from "./interactive_list/Table.jsx";
+import Loader from "./Loader.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -91,6 +92,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     const [EditData, setEditData] = useState([]);
     const isEditMode = window.location.pathname.endsWith('/edit');
     const [isedit, setIsedit] = useState(false);
+    const [globalCheckboxChecked, setGlobalCheckboxChecked] = useState(false);
     const [columnWidths, setColumnWidths] = useState(
         headers.reduce((acc, header) => {
             acc[header] = header.toLowerCase() === 'picture' ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
@@ -1125,6 +1127,10 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     };
 
     const handleBulkEdit = () => {
+        // if(globalCheckboxChecked){
+        //     notifyError("Select all works only for delete option");
+        //     return;
+        // }
         if (ischecked.length > 0) {
             if (isedit) {
                 setIsedit(!isedit);
@@ -1139,6 +1145,11 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     const handleBulkSave = async () => {
 
         try {
+
+            // if(globalCheckboxChecked){
+            //     notifyError("Select all works only for delete option");
+            //     return;
+            // }
             // Call the backend API to update rows in Google Sheets
             const spreadSheetID = settings.spreadsheetId;
             const sheetName = settings.firstSheetName;
@@ -1166,6 +1177,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             setIsedit(!isedit);
             setIschecked([]);
             setEditData([]);
+            setGlobalCheckboxChecked(false);
         }
     };
 
@@ -1199,6 +1211,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             notifySuccess("Rows deleted successfully");
             setIschecked([]);
             setEditData([]);
+            setGlobalCheckboxChecked(false);
         } catch (error) {
             // Handle error
             console.error("Error during bulk delete:", error);
@@ -1380,7 +1393,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                         numberFilterColumn.map((item, index) => {
                                             let tempItem = item
                                             item = item.toLowerCase().split(" ").join("_");
-                                            
+
                                             // Determine if the current item is already selected
                                             const isChecked = selectedNumbers.some(
                                                 (slider) => slider.column === item
@@ -1548,26 +1561,26 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                         <button onClick={handleAdd} className="mx-2" title="Add Row">
                             <Add />
                         </button>
-                        <button onClick={handleAddBukl} title="Import Data">
+                        <button className="mr-2" onClick={handleAddBukl} title="Import Data">
                             <BulkAdds />
                         </button>
 
-                        {isedit ?
+                        {/* {isedit ?
                             <button onClick={handleBulkSave} className="bg-primary rounded-[4px] p-1 mx-2" title="Save">
                                 <IoSaveSharp color="white" />
                             </button>
                             :
                             <button onClick={handleBulkEdit} className="bg-primary rounded-[4px] p-1 mx-2" title="Edit">
                                 <MdEdit color="white" />
-                            </button>}
-                        <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-1" title="Delete">
+                            </button>} */}
+                        <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-[5px]" title="Delete">
                             <MdDelete color="white" />
                         </button>
 
                         <Popover content={<HeaderSwitch />} title="Hide Columns" trigger="click" placement="bottomRight">
                             <button className="mx-2" title="Hide Columns">
                                 <div className="bg-primary rounded-[4px] p-1">
-                                    <BiSolidHide color="white" size={17} />
+                                    <BiSolidHide color="white" size={18} />
                                 </div>
                             </button>
                         </Popover>
@@ -1619,6 +1632,9 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                 bodyFontFamily={bodyFontFamily}
                 tempHeader={tempHeader}
                 formulaData={formulaData}
+                handleBulkSave={handleBulkSave}
+                globalCheckboxChecked={globalCheckboxChecked}
+                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
             />
 
             <EditRow

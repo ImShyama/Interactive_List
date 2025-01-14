@@ -86,23 +86,47 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
         }
     };
 
+    // const handleSelect = (value) => {
+    //     console.log({ value, selectedValues, globalOption });
+    //     let updatedOptions = globalOption[columnKey] || [];
+    //     if (globalOption[columnKey]?.includes(value) || selectedValues.includes(value)) {
+    //         setSelectedValues((prev) => {
+    //             let updatedOption = prev.filter((item) => item !== value);
+    //             updatedOptions = [...updatedOptions, ...updatedOption];
+    //             return prev.filter((item) => item !== value);
+    //         });
+    //     } else {
+    //         setSelectedValues((prev) => {
+    //             let updatedOption = [...prev, value];
+    //             updatedOptions = [...updatedOptions, ...updatedOption];
+    //             return [...prev, value]
+    //         });
+    //     }
+    //     setGlobalOption((prev) => ({ ...prev, [columnKey]: updatedOptions }));
+    // };
+
     const handleSelect = (value) => {
-        console.log({ value, selectedValues });
-        let updatedOptions = globalOption[columnKey] || [];
-        if (globalOption[columnKey]?.includes(value) || selectedValues.includes(value)) {
-            setSelectedValues((prev) => {
-                let updatedOption = prev.filter((item) => item !== value);
-                updatedOptions = [...updatedOptions, ...updatedOption];
-                return prev.filter((item) => item !== value);
-            });
-        } else {
-            setSelectedValues((prev) => {
-                let updatedOption = [...prev, value];
-                updatedOptions = [...updatedOptions, ...updatedOption];
-                return [...prev, value]
-            });
-        }
-        setGlobalOption((prev) => ({ ...prev, [columnKey]: updatedOptions }));
+        console.log({ value, selectedValues, globalOption });
+
+        setSelectedValues((prev) => {
+            let updatedValues;
+
+            if (prev.includes(value)) {
+                // Remove unchecked value from selectedValues
+                updatedValues = prev.filter((item) => item !== value);
+            } else {
+                // Add new checked value to selectedValues
+                updatedValues = [...prev, value];
+            }
+
+            // Update globalOption with unique values
+            setGlobalOption((prevGlobal) => ({
+                ...prevGlobal,
+                [columnKey]: [...new Set(updatedValues)]
+            }));
+
+            return updatedValues;
+        });
     };
 
 
@@ -117,18 +141,35 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
     //     }
     // }, [initialData]);
 
-    const handleSearch =
-        (searchText) => {
-            if (searchText.trim()) {
-                const filteredOptions = initialData.filter((option) =>
-                    option.label?.toLowerCase().includes(searchText.toLowerCase())
-                );
-                setOptions(filteredOptions);
-            } else {
-                setOptions([...initialData]); // Reset options when search is cleared
-            }
-        };
+    // const handleSearch = (searchText) => {
+    //     console.log({ searchText, initialData });
+    //     if (searchText.trim()) {
+    //         const filteredOptions = initialData.filter((option) =>
+    //             option.label?.toLowerCase().includes(searchText.toLowerCase())
+    //         );
+    //         setOptions(filteredOptions);
+    //     } else {
+    //         setOptions([...initialData]); // Reset options when search is cleared
+    //     }
+    // };
 
+
+    const handleSearch = (searchText) => {
+        console.log({ searchText, initialData: initialData() });
+        setSearchText(searchText);
+    
+        const initialOptions = initialData(); // Call the function to get the data
+    
+        if (searchText.trim()) {
+            const filteredOptions = initialOptions.filter((option) =>
+                option.label?.toLowerCase().includes(searchText.toLowerCase())
+            );
+            setOptions(filteredOptions);
+        } else {
+            setOptions([...initialOptions]); // Reset options when search is cleared
+        }
+    };
+    
 
     const handleMultiSearch = () => {
         if (selectedValues.length == 0 && globalOption[columnKey].length == 0) {
@@ -205,14 +246,39 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
     //     }
     // }, [data, globalOption, columnKey, initialData]);
 
+    // const handleReset = () => {
+    //     setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
+    //     setSelectedValues([]);
+    //     setSearchText(""); // Clear input field
+    //     setOptions([...initialData()]); // Reset dropdown options
+    //     setFilteredData(data); // Reset table
+    //     closePopover(); // Optionally close the dropdown
+    // };
+
     const handleReset = () => {
+        // Reset only for the specific column key
         setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
-        setSelectedValues([]);
-        setSearchText(""); // Clear input field
+
+        // Filter and reset `selectedValues` based on the specific column key
+        setSelectedValues((prev) => prev.filter((value) => !globalOption[columnKey]?.includes(value)));
+
+        // Clear search text and reset options for the specific column
+        setSearchText("");
         setOptions([...initialData()]); // Reset dropdown options
-        setFilteredData(data); // Reset table
-        closePopover(); // Optionally close the dropdown
+
+        // Reset table data by applying filtered conditions if needed
+        const filtered = data.filter(item => {
+            return !globalOption[columnKey]?.includes(item[columnKey]);
+        });
+
+        setFilteredData(filtered.length ? filtered : data);
+
+        // Optionally close the dropdown
+        closePopover();
     };
+
+
+    const [dropdownOpen, setDropdownOpen] = useState(false);
 
 
 
@@ -252,10 +318,6 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
     //     setFilteredData(globalFilterData);
     //     // closePopover();
     // };
-
-
-
-
 
 
 
@@ -324,7 +386,7 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
                     ))}
                 </AutoComplete> */}
 
-                <AutoComplete
+                {/* <AutoComplete
                     style={{ width: 200 }}
                     placeholder="Search here"
                     filterOption={false}
@@ -335,22 +397,43 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
                     value={searchText} // Reset input on clear
                 >
                     {options.map((option) => (
-                        <AutoComplete.Option key={option.value}>
+                        <AutoComplete.Option key={option.value} mode="tags">
                             <Checkbox
-                                onChange={() => handleSelect(option.value)}
+                                onChange={(e) => handleSelect(option.value)}
                                 checked={
                                     globalOption[columnKey]?.includes(option.value) || selectedValues.includes(option.value)
                                 }
                                 value={option.value}
                                 title={option.label}
+                                mode="tags"
+                            >
+                                {option.label}
+                            </Checkbox>
+                        </AutoComplete.Option>
+                    ))}
+                </AutoComplete> */}
+
+                <AutoComplete
+                    style={{ width: 200 }}
+                    placeholder="Search here"
+                    filterOption={false}
+                    onSearch={handleSearch}
+                    open={dropdownOpen}
+                    onBlur={() => setTimeout(() => setDropdownOpen(false), 200)} // Optional delay to allow click events
+                    onFocus={() => setDropdownOpen(true)}
+                    value={searchText}
+                >
+                    {options.map((option) => (
+                        <AutoComplete.Option key={option.value}>
+                            <Checkbox
+                                onChange={(e) => handleSelect(option.value, e.target.checked)}
+                                checked={selectedValues.includes(option.value)}
                             >
                                 {option.label}
                             </Checkbox>
                         </AutoComplete.Option>
                     ))}
                 </AutoComplete>
-
-
             </div>
         </div>
     )

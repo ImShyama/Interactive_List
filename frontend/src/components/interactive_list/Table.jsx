@@ -6,10 +6,12 @@ import { Resizable } from "react-resizable";
 import "react-resizable/css/styles.css";
 import ResizableHeader from "./ResizableHeader";
 import _, { debounce } from "lodash";
+import { IoSaveSharp, IoSave } from "react-icons/io5";
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
     handleDelete, handleEdit, handleBulkDelete, ischecked, setIschecked, EditData, setEditData, headerBgColor, headerTextColor, headerFontSize, headerFontFamily,
-    bodyTextColor, bodyFontSize, bodyFontFamily, isEditMode, minWidth, tempHeader, formulaData
+    bodyTextColor, bodyFontSize, bodyFontFamily, isEditMode, minWidth, tempHeader, formulaData, handleBulkSave,
+    globalCheckboxChecked, setGlobalCheckboxChecked
 }) => {
 
     // const [ischecked, setIschecked] = useState([]);
@@ -168,41 +170,94 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         );
     };
 
+
+
+    // Handle global checkbox changes
+    // const handleGlobalCheckboxChange = (checked) => {
+    //     setGlobalCheckboxChecked(checked);
+    //     if (checked) {
+    //         const allKeys = paginatedData.map((item) => item.key_id);
+    //         setIschecked(allKeys);
+    //     } else {
+    //         setIschecked([]);
+    //     }
+    // };
+
+    const handleGlobalCheckboxChange = (checked) => {
+        setGlobalCheckboxChecked(checked);
+
+        if (checked) {
+            // Select all row data
+            const allKeys = paginatedData.map((item) => item.key_id);
+            const allData = paginatedData;
+
+            setIschecked(allKeys);
+            setEditData((prev) => {
+                const uniqueData = [...prev, ...allData].reduce((acc, current) => {
+                    if (!acc.some(item => item.key_id === current.key_id)) {
+                        acc.push(current);
+                    }
+                    return acc;
+                }, []);
+                return uniqueData;
+            });
+        } else {
+            // Deselect all rows
+            setIschecked([]);
+            setEditData((prev) => prev.filter((item) => !paginatedData.some(row => row.key_id === item.key_id)));
+        }
+    };
+
+
     const saveColumnWidthsDebounced = _.debounce((columnWidths) => {
         saveColumnWidthsToCookies(columnWidths); // Save widths to localStorage
-    }, 500);
+    }, 250);
 
-    const handleResize = (column) =>
-        _.throttle((e, { size }) => {
-            setColumnWidths((prev) => {
-                const updatedWidths = {
-                    ...prev,
-                    [column]: size.width,
-                };
+    // const handleResize = (column) =>
+    //     _.throttle((e, { size }) => {
+    //         setColumnWidths((prev) => {
+    //             const updatedWidths = {
+    //                 ...prev,
+    //                 [column]: size.width,
+    //             };
 
-                // debounce(() => saveColumnWidthsToCookies(updatedWidths), 500); // Save after resizing stops
-                saveColumnWidthsDebounced(updatedWidths);
+    //             // debounce(() => saveColumnWidthsToCookies(updatedWidths), 500); // Save after resizing stops
+    //             saveColumnWidthsDebounced(updatedWidths);
 
-                return updatedWidths;
-            });
-        }, 30); // Throttle updates to ensure responsiveness
-   
+    //             return updatedWidths;
+    //         });
+    //     }, 30); // Throttle updates to ensure responsiveness
+
+    const handleResize = (column) => (e, { size }) => {
+        setColumnWidths((prev) => {
+            const updatedWidths = {
+                ...prev,
+                [column]: size.width,
+            };
+    
+            // Save after resizing stops
+            saveColumnWidthsDebounced(updatedWidths);
+    
+            return updatedWidths;
+        });
+    };
+    
 
 
     useEffect(() => {
         // Load saved widths from localStorage
         const savedColumnWidths = loadColumnWidthsFromCookies() || {};
-    
+
         // Prepare an updated widths object
         let updatedWidths = { ...savedColumnWidths };
-    
+
         headers.forEach((header, index) => {
             const elementId = `header${index}`; // Generate the ID for each column header
-            
+
             // Skip calculating width if saved width already exists
             if (!updatedWidths[header]) {
                 const actualWidth = getElementWidthById(elementId);
-    
+
                 if (actualWidth) {
                     // If actual width exists, update it
                     updatedWidths[header] = actualWidth;
@@ -212,14 +267,14 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 }
             }
         });
-    
+
         // Update column widths state
         setColumnWidths(updatedWidths);
-    
+
         // Save the merged widths back to localStorage
         saveColumnWidthsToCookies(updatedWidths);
     }, [headers]); // Runs whenever headers change
-    
+
 
     useEffect(() => {
         if (ischecked?.length < 1) {
@@ -228,7 +283,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
     }, [ischecked])
 
 
-    
+
 
     // const renderedHeaders = useMemo(() => (
     //     headers.map((header, index) => (
@@ -305,12 +360,12 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         filteredData,
         globalOption,
         visiblePopover,
-        headerFontFamily, 
-        headerFontSize,   
-        headerTextColor,  
-        headerBgColor  
+        headerFontFamily,
+        headerFontSize,
+        headerTextColor,
+        headerBgColor
     ]);
-    
+
 
     const renderedRows = useMemo(() => (
         paginatedData.map((item) => (
@@ -324,6 +379,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             left: 0,
                             background: "#fff",
                             zIndex: 5,
+
                         }}
                     >
                         <div className="flex gap-[10px] align-center">
@@ -360,14 +416,17 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                     </td>
                 )}
                 {headers.map((header, index) => {
-                    const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(header);
+                    // const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(header);
+                    const pinnedHeaders = headers.slice(0, headers.indexOf(freezeCol) + 1);
+                    const isPinned = pinnedHeaders.includes(header);
+                    const isLastPinned = isPinned && header === pinnedHeaders[pinnedHeaders.length - 1];
                     const firstColWidth = isEditMode ? 125 : 0;
                     const leftOffset = (index === 0 ? firstColWidth : firstColWidth) + headers.slice(0, index).reduce((sum, key) => {
                         const width = parseInt(columnWidths[key], 10); // Parse columnWidths[key] as an integer
                         return sum + (isNaN(width) ? 0 : width); // Handle non-numeric widths gracefully
                     }, 0);
 
-                    
+
                     return (
                         <td
                             key={header}
@@ -385,28 +444,42 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                 boxShadow: isPinned ? "3px 0px 5px rgba(0, 0, 0, 0.1)" : "none",
                             }}
                         >
-                            {isedit && ischecked.includes(item.key_id) && formulaData?.[header] ? (
+                            {isLastPinned && (
                                 <div
-                                className="tableTD w-full h-full flex items-center"
-                                style={{
-                                    zIndex: isPinned ? 10 : "inherit",
-                                    position: "relative",
-                                }}
-                            >
-                                <input
-                                    className="w-full h-full border-b-2 border-gray-300 border-primary"
-                                    value={EditData.find((data) => data.key_id === item.key_id)?.[header] || ""}
-                                    onChange={(e) => {
-                                        const newValue = e.target.value;
-                                        setEditData((prev) =>
-                                            prev.map((data) =>
-                                                data.key_id === item.key_id
-                                                    ? { ...data, [header]: newValue }
-                                                    : data
-                                            )
-                                        );
+                                    style={{
+                                        position: "absolute",
+                                        right: 0,
+                                        top: 0,
+                                        bottom: 0,
+                                        width: "4px ",
+                                        minWidth: "4px ",
+                                        backgroundColor: "#ccc",
+                                        zIndex: 15, // Ensure it stays above other elements
                                     }}
                                 />
+                            )}
+                            {isedit && ischecked.includes(item.key_id) && formulaData?.[header] ? (
+                                <div
+                                    className="tableTD w-full h-full flex items-center"
+                                    style={{
+                                        zIndex: isPinned ? 10 : "inherit",
+                                        position: "relative",
+                                    }}
+                                >
+                                    <input
+                                        className="w-full h-full border-b-2 border-gray-300 border-primary"
+                                        value={EditData.find((data) => data.key_id === item.key_id)?.[header] || ""}
+                                        onChange={(e) => {
+                                            const newValue = e.target.value;
+                                            setEditData((prev) =>
+                                                prev.map((data) =>
+                                                    data.key_id === item.key_id
+                                                        ? { ...data, [header]: newValue }
+                                                        : data
+                                                )
+                                            );
+                                        }}
+                                    />
                                 </div>
                             ) : (
                                 <div
@@ -467,7 +540,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                 style={{ backgroundColor: headerBgColor, color: headerTextColor }}>
                                 {isEditMode &&
                                     <th
-                                        className="px-4 py-4 border-b border-gray-300"
+                                        className="px-4 py-4 flex items-center"
                                         style={{
                                             width: `${columnWidths.actions}px`,
                                             position: "sticky",
@@ -482,7 +555,15 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                             fontSize: `${headerFontSize}px`,
                                         }}
                                     >
-                                        Actions
+                                        {/* Actions */}
+                                        <Checkbox
+                                            checked={globalCheckboxChecked}
+                                            indeterminate={ischecked.length > 0 && ischecked.length < paginatedData.length}
+                                            onChange={(e) => handleGlobalCheckboxChange(e.target.checked)}
+                                        />
+                                        <button onClick={handleBulkSave} className="rounded-[4px] mx-2" title="Save">
+                                            <IoSaveSharp color="#598931" size={18} />
+                                        </button>
                                     </th>
                                 }
                                 {renderedHeaders}
@@ -506,14 +587,14 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                     pageSize={rowsPerPage}
                     onChange={handlePageChange}
                     showSizeChanger={true}
-                    // showSizeChangerSearch={false}
-                    // sizeChangerRender={(props) => (
-                    //     <CustomSizeChanger
-                    //         value={props.value}
-                    //         onChange={props.onChange}
-                    //         options={props.options}
-                    //     />
-                    // )}
+                // showSizeChangerSearch={false}
+                // sizeChangerRender={(props) => (
+                //     <CustomSizeChanger
+                //         value={props.value}
+                //         onChange={props.onChange}
+                //         options={props.options}
+                //     />
+                // )}
                 />
             </div>
         </div>
