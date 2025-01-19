@@ -145,7 +145,7 @@ const Preview = ({ closeModal, sheetdetails }) => {
                                                             // setIsedit={setIsedit}
                                                             // handleEdit={handleEdit}
                                                             // handleDelete={handleDelete}
-                                                            // settings={settings}
+                                                            settings={sheetdetails}
                                                             // freezeCol={freezeCol}
                                                             // setFreezeCol={setFreezeCol}
                                                             // globalOption={globalOption}

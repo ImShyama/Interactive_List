@@ -26,8 +26,7 @@ const EditableSpreadsheetName = ({ settings }) => {
 
   const handleSave = async () => {
     const newname = editedName;
-    const sheetId = settings.spreadsheetId; // Assuming spreadsheetId is available in your component
-
+    const sheetId = settings.spreadsheetId;
     setIsLoading(true);
     try {
       // Call your backend API to update the spreadsheet name
@@ -41,7 +40,6 @@ const EditableSpreadsheetName = ({ settings }) => {
       });
 
       const data = await response.json();
-
       if (response.ok) {
         setEditedName(newname); // Update state with new name
         setIsChanged(false);
@@ -67,9 +65,9 @@ const EditableSpreadsheetName = ({ settings }) => {
   };
 
   const handleBlur = () => {
-    // if (!isChanged) {
+    if (!isChanged) {
       setIsEditing(false);
-    // }
+    }
   };
 
   return (
@@ -86,30 +84,34 @@ const EditableSpreadsheetName = ({ settings }) => {
                 className="border border-primary px-2 py-1 rounded-md outline-none w-full font-poppins text-[21px] font-medium text-[#2A3C54]"
                 style={{ minWidth: '300px' }}
               />
+
               {isChanged && !isLoading && (
-                <IoSaveOutline
-                  color="#598931"
-                  className="ml-2 cursor-pointer"
+                <button className='px-2 py-2 rounded-md'
                   onClick={handleSave}
                   title="Save"
-                />
+                >
+                  <IoSaveOutline
+                    color="#598931"
+                    className="ml-2 cursor-pointer"
+                  />
+                </button>
               )}
               {isLoading && <ImSpinner2 className="ml-2 animate-spin" color="#598931" title="Saving..." />}
             </div>
           ) : (
             <div
-            className="flex justify-start items-center px-2 py-1 rounded-md hover:border-[#598931] cursor-pointer"
-            style={{ border: 'none', transition: 'border-color 0.2s ease' }}
-            onClick={() => setIsEditing(true)}
-            title='Rename'
-          >
-            <span
-              className="text-[#2A3C54] font-poppins text-[21px] font-medium w-full"
-              style={{ minWidth: '300px', whiteSpace: 'nowrap' }}
+              className="flex justify-start items-center px-2 py-1 rounded-md hover:border-[#598931] cursor-pointer"
+              style={{ border: 'none', transition: 'border-color 0.2s ease' }}
+              onClick={() => setIsEditing(true)}
+              title='Rename'
             >
-              {editedName}
-            </span>
-          </div>
+              <span
+                className="flex justify-start text-[#2A3C54] font-poppins text-[21px] font-medium w-full"
+                style={{ minWidth: '300px', whiteSpace: 'nowrap' }}
+              >
+                {editedName}
+              </span>
+            </div>
           )}
         </div>
       ) : (

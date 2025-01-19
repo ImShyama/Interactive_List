@@ -15,8 +15,6 @@ const TitleBarPreview = ({appName, spreadSheetID, spreadSheetName}) => {
   const clientId = CLIENTID
   const developerKey = DEVELOPERKEY
   const token = Cookies.get('token');
-  // added to make copy icon working
-    console.log({appName, spreadSheetID, spreadSheetName});
   const [loading, setLoading] = useState(false);
   const { token: userToken } = useContext(UserContext);
 
@@ -145,7 +143,9 @@ const handleAddSheet = (data) => {
               <Loader textToDisplay="Creating a copy..." />
             </div>
           )}
-        <button className="flex justify-center items-center w-[90px] h-[49px] bg-[#598931] border-none rounded-[5.145px] cursor-pointer transition-colors duration-300 hover:bg-secondary" onClick={handleCopy}>
+        <button className="flex justify-center items-center w-[90px] h-[49px] bg-[#598931] border-none rounded-[5.145px] cursor-pointer transition-colors duration-300 hover:bg-secondary" onClick={handleCopy}
+          title="Copy App"
+        >
           <IoCopyOutline className="text-white w-[24px] h-[24px] " />{" "}
           {/* copy icon */}
         </button>

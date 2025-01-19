@@ -8,14 +8,22 @@ import { Popover } from "antd";
 import Freeze from "./Freeze";
 import MultiSelectFilter from "./MultiSelectFilter";
 import { IoSearchOutline } from "react-icons/io5";
+import PeopleDirectoryThreeDot from "../people_directory/PeopleDirectoryThreeDot";
 // import { Resizable } from 're-resizable';
 
 const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFreezeCol, freezeCol, columnKey, index, headers, columnWidths, headerBgColor, headerTextColor, headerFontFamily, headerFontSize, isEditMode, handleResize,
     settings, getAggregatePopoverContent, globalOption, setGlobalOption, title
 }) => {
 
+
     const [sortColumn, setSortColumn] = useState(null);
     const [visiblePopover, setVisiblePopover] = useState({});
+    const [openPopoverId, setOpenPopoverId] = useState(null);
+    // Store selections as an object with column keys
+    const [checkboxSelections, setCheckboxSelections] = useState({
+        showInCard: {},
+        showInProfile: {},
+    });
     const [sortOrder, setSortOrder] = useState('asc');
     // const title = columnKey.replace(/_/g, " ");
     // const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
@@ -50,6 +58,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
     };
 
     const handleSort = useCallback((columnKey) => {
+        console.log({ columnKey, filteredData });
         const newSortOrder =
             sortColumn === columnKey ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
 
@@ -109,10 +118,25 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
         setFilteredData(sorted);
     }, [filteredData, sortColumn, sortOrder]);
 
+    const updateSelection = (type, columnName, checked) => {
+        setCheckboxSelections((prevSelections) => {
+            const updatedType = { ...prevSelections[type] };
+            if (checked) {
+                updatedType[columnName] = { columnName, order: Object.keys(updatedType).length + 1 };
+            } else {
+                delete updatedType[columnName];
+            }
+            return { ...prevSelections, [type]: updatedType };
+        });
+    };
+
+    useEffect(() => {
+        console.log("Current Selections:", checkboxSelections);
+    }, [checkboxSelections]);
+
 
     return (
         <Resizable
-
             width={columnWidths[columnKey]}
             height={0}
             onResize={handleResize(columnKey)} // Immediate DOM updates
@@ -246,7 +270,17 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                         } */}
 
                         <Freeze columnKey={columnKey} isEditMode={isEditMode} setFreezeCol={setFreezeCol} freezeCol={freezeCol} settings={settings} />
-
+                        {isEditMode && settings.appName == "People Directory" &&
+                            <PeopleDirectoryThreeDot
+                                headerId={columnKey}
+                                columnKey={columnKey}
+                                openPopoverId={openPopoverId}
+                                setOpenPopoverId={setOpenPopoverId}
+                                // checkboxSelections={checkboxSelections}
+                                // updateSelection={updateSelection}
+                                settings={settings}
+                            />
+                        }
                     </div>
                 </div>
             </th>

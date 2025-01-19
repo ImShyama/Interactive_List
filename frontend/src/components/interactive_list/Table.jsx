@@ -234,14 +234,14 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 ...prev,
                 [column]: size.width,
             };
-    
+
             // Save after resizing stops
             saveColumnWidthsDebounced(updatedWidths);
-    
+
             return updatedWidths;
         });
     };
-    
+
 
 
     useEffect(() => {
@@ -570,8 +570,16 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                             indeterminate={ischecked.length > 0 && ischecked.length < paginatedData.length}
                                             onChange={(e) => handleGlobalCheckboxChange(e.target.checked)}
                                         />
-                                        <button onClick={handleBulkSave} className="rounded-[4px] mx-2" title="Save">
+                                        {/* <button onClick={handleBulkSave} className="rounded-[4px] mx-2" title="Save">
                                             <IoSaveSharp color="#598931" size={18} />
+                                        </button> */}
+                                        <button
+                                            onClick={handleBulkSave}
+                                            className={`rounded-[4px] mx-2 ${ischecked.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#598931] hover:bg-[#598931]'}`}
+                                            title="Save"
+                                            disabled={ischecked.length === 0}
+                                        >
+                                            <IoSaveSharp color="#ffffff" size={18} />
                                         </button>
                                     </th>
                                 }

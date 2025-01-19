@@ -31,6 +31,12 @@ import DeleteAlert from "./DeleteAlert.jsx";
 import { set } from "lodash";
 import { debounce } from "lodash";
 import { ImSpinner2 } from "react-icons/im";
+import Info from "./info.jsx";
+import { PiDotsSixVerticalBold } from "react-icons/pi";
+import { SixDots } from "../assets/svgIcons.jsx";
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import { SortableContext, useSortable, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
 
@@ -318,14 +324,33 @@ const SpreadsheetSettings = ({ activateSave }) => {
   const clientId = CLIENTID;
   const developerKey = DEVELOPERKEY;
 
+  // const handleSheetChange = (e) => {
+  //   setSelectedSheet(e.target.value);
+
+  //   const updatedSettings = {
+  //     firstSheetName: e.target.value,
+  //   };
+  //   dispatch(updateSetting(updatedSettings));
+  //   activateSave();
+  // };
+
   const handleSheetChange = (e) => {
+    const newSheetName = e.target.value;
     setSelectedSheet(e.target.value);
+
+    // Extract the column range from `firstTabDataRange`
+    const currentRange = settingData.firstTabDataRange.split("!")[1]; // Extracts "A1:S"
+
+    // Create updated settings with the new sheet name
     const updatedSettings = {
-      firstSheetName: e.target.value,
+      firstSheetName: newSheetName,
+      firstTabDataRange: `${newSheetName}!${currentRange}` // Update tab name in range
     };
+
     dispatch(updateSetting(updatedSettings));
     activateSave();
   };
+
 
   const handleRangeChange = (e) => {
     setDataRange(e.target.value);
@@ -498,6 +523,7 @@ const SpreadsheetSettings = ({ activateSave }) => {
         <div className="sheet_data_tab">
           <div className="sheet_data_tabLabel">
             <span className="sheet_data_text">Select a Data Sheet</span>
+            <Info info="After selecting the spreadsheet, all tabs will appear in the dropdown. Choose the data tab you wish to work with." />
           </div>
           <div className="sheet_data_select">
             <select
@@ -516,6 +542,7 @@ const SpreadsheetSettings = ({ activateSave }) => {
         <div className="sheet_range">
           <div className="sheet_data_tabLabel">
             <span className="sheet_data_text">Add a Range</span>
+            <Info info="Define the range of data you need, for example, A1:H." />
           </div>
           <div className="sheet_data_select">
             <input
@@ -536,10 +563,213 @@ const SpreadsheetSettings = ({ activateSave }) => {
   );
 };
 
+const ViewSettings = ({ settingsData }) => {
+  console.log({ settingsData });
+  const [showCard, setShowCard] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+
+  // const CardSettings = ({ settingsData }) => {
+  //   const cardData = settingsData?.showInCard
+  //   return (
+  //     <div className="flex w-[100%]">
+  //       <div className="flex flex-col m-2 w-[130px]">
+  //         <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Profile</span>
+  //         <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Name</span>
+  //         <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Header 1</span>
+  //         <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Header 2</span>
+  //         <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Email</span>
+  //         <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Contact</span>
+  //       </div>
+  //       <div className="flex flex-col m-2">
+  //         {cardData?.map((item, index) => (
+  //           <div key={item.id} className="flex items-center">
+  //              <SixDots /> <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">{item.title}</span>
+  //           </div>
+  //         ))}
+  //       </div>
+  //     </div>
+  //   );
+  // };
+
+  const ProfileSettings = ({ settingsData }) => {
+    const [profileData, setProfileData] = useState(settingsData?.showInProfile || []);
+
+    const handleDragEnd = (event) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const oldIndex = profileData.findIndex((item) => item.id === active.id);
+      const newIndex = profileData.findIndex((item) => item.id === over.id);
+
+      // Log before updating state
+      console.log("Dragged Item ID:", active.id);
+      console.log("Dropped On Item ID:", over.id);
+      console.log("Old Index:", oldIndex, "New Index:", newIndex);
+
+      // Update state using functional form to get the latest value
+      setProfileData((prevData) => {
+        const updatedData = arrayMove(prevData, oldIndex, newIndex);
+        // Log updated data immediately after state update
+        console.log("Updated Profile Data (immediately):", updatedData);
+        return updatedData; // Return the updated data
+      });
+    };
+
+
+
+    // Draggable Item Component
+    const DraggableItem = ({ item }) => {
+      const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
+
+      return (
+        <div
+          ref={setNodeRef}
+          {...attributes}
+          {...listeners}
+          style={{ transform: CSS.Transform.toString(transform), transition }}
+          className="flex items-center cursor-grab"
+        >
+          <SixDots />
+          <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
+            {item.title}
+          </span>
+        </div>
+      );
+    };
+
+    return (
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={profileData}>
+          <div className="flex w-[100%] h-[400px]">
+            {/* Left Side (Headings) */}
+            <div className="flex flex-col m-2 w-[130px]">
+              {profileData.map((_, index) => (
+                <div key={index} className="flex items-center">
+                  <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
+                    Heading {index + 1}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* Right Side (Draggable Items) */}
+            <div className="flex flex-col m-2">
+              {profileData.map((item) => (
+                <DraggableItem key={item.id} item={item} />
+              ))}
+            </div>
+          </div>
+        </SortableContext>
+      </DndContext>
+    );
+  };
+
+  const CardSettings = ({ settingsData }) => {
+    const [cardData, setCardData] = useState(settingsData?.showInCard || []);
+
+    // Handle item movement in the right column
+    const handleDragEnd = (event) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const oldIndex = cardData.findIndex((item) => item.id === active.id);
+      const newIndex = cardData.findIndex((item) => item.id === over.id);
+
+      // Log the drag details (optional)
+      console.log("Dragged Item ID:", active.id);
+      console.log("Dropped On Item ID:", over.id);
+      console.log("Old Index:", oldIndex, "New Index:", newIndex);
+
+      // Update state
+      setCardData(arrayMove(cardData, oldIndex, newIndex));
+    };
+
+    // Draggable Item Component
+    const DraggableItem = ({ item }) => {
+      const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
+
+      return (
+        <div
+          ref={setNodeRef}
+          {...attributes}
+          {...listeners}
+          style={{ transform: CSS.Transform.toString(transform), transition }}
+          className="flex items-center cursor-grab"
+        >
+          <SixDots />
+          <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
+            {item.title}
+          </span>
+        </div>
+      );
+    };
+
+    return (
+      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={cardData}>
+          <div className="flex w-[100%]">
+            {/* Left Column (Fixed) */}
+            <div className="flex flex-col m-2 w-[130px]">
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Profile</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Name</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Header 1</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Header 2</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Email</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Contact</span>
+            </div>
+
+            {/* Right Column (Draggable Items) */}
+            <div className="flex flex-col m-2">
+              {cardData?.map((item) => (
+                <DraggableItem key={item?.id} item={item} />
+              ))}
+            </div>
+          </div>
+        </SortableContext>
+      </DndContext>
+    );
+  };
+
+  return (
+    <div className="w-[100%]">
+      {/* // show card drower */}
+      <div className="ml-[30px] mb-[20px] w-[100%]">
+        <div className="flex items-center gap-2 cursor-pointer"
+          onClick={() => setShowCard(!showCard)}
+        >
+          <span
+            className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]"
+          >
+            Card Settings
+          </span>
+          <img src={downIcon} />
+        </div>
+        {showCard && <CardSettings settingsData={settingsData} />}
+      </div>
+
+      {/* // show profile drower */}
+      <div className="ml-[30px]">
+        <div className="flex items-center gap-2 cursor-pointer"
+          onClick={() => setShowProfile(!showProfile)}
+        >
+          <span
+            className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]"
+          >
+            Profile Settings
+          </span>
+          <img src={downIcon} />
+        </div>
+        {showProfile && <ProfileSettings settingsData={settingsData} />}
+      </div>
+    </div>
+  )
+}
+
 const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const { setToken, setProfile } = useContext(UserContext);
   const [addData, setAddData] = useState(false);
   const [addSheet, setAddSheet] = useState(false);
+  const [addView, setAddView] = useState(false);
   const [isSaveChanges, setIsSaveChanges] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -581,7 +811,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
       closeDrawer();
 
       // Refresh the page
-    window.location.reload();
+      window.location.reload();
     } catch (error) {
       console.error("Error updating settings in DB:", error);
       setIsTableLoading(false);
@@ -655,18 +885,36 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           </div>
         </div>
         <div className="setting_filter">
-          <div className="setting_filter_bottom">
-            <div
-              className="setting_filter_bottom_inner"
-              onClick={() => {
-                setAddSheet(!addSheet);
-              }}
-            >
-              <span className="setting_filter_bottom_span">
-                Spreadsheet Settings
-              </span>
-              <img src={downIcon} />
+          <div className="setting_filter_bottom flex justify-between items-center w-[100%]">
+            <div className="flex items-center">
+              <div
+                className="setting_filter_bottom_inner"
+                onClick={() => {
+                  setAddSheet(!addSheet);
+                }}
+              >
+                <span className="setting_filter_bottom_span">
+                  Spreadsheet Settings
+                </span>
+                <img src={downIcon} />
+              </div>
+              <div>
+
+              </div>
+              <Info info={"With these settings, you can manage your spreadsheet options, including fetching a spreadsheet directly from Google Drive and selecting the desired data range."} />
             </div>
+            <div>
+              {addSheet &&
+                <button onClick={
+                  () => {
+                    window.location.reload();
+                  }
+                } className="bg-primary rounded-[4px] p-1" title="Reset Spreadsheet">
+                  <Reset />
+                </button>
+              }
+            </div>
+
           </div>
           {addSheet && <SpreadsheetSettings activateSave={activateSave} />}
 
@@ -682,31 +930,66 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
           <div className="flex justify-between items-center w-[100%]">
             <div className="flex justify-center items-center">
-              <div
-                className="setting_filter_top1"
-                onClick={() => {
-                  setAddData(!addData);
-                }}
-              >
-                <span className="setting_filter_top1_text">Table Settings</span>
-                <img className="setting_filter_top1_img" src={downIcon} />
+              <div className="flex items-center">
+                <div
+                  className="setting_filter_top1"
+                  onClick={() => {
+                    setAddData(!addData);
+                  }}
+                >
+                  <span className="setting_filter_top1_text">Table Settings</span>
+                  <img className="setting_filter_top1_img" src={downIcon} />
+                </div>
+                <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body contect, You can easily revert to the original settings by clicking the Reset icon."} />
               </div>
-              {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." /> } 
+              {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." />}
             </div>
             <div>
-            {addData &&
-              <button onClick={
-                () => {
-                  setIsTableLoading(true);
-                  handleResetChange();
-                }
-              } className="bg-primary rounded-[4px] p-1" title="Reset">
-                <Reset />
-              </button>
-            }
+              {addData &&
+                <button onClick={
+                  () => {
+                    setIsTableLoading(true);
+                    handleResetChange();
+                  }
+                } className="bg-primary rounded-[4px] p-1" title="Reset Table Styles">
+                  <Reset />
+                </button>
+              }
             </div>
           </div>
           {addData && <AddData activateSave={activateSave} isTableLoading={isTableLoading} setIsTableLoading={setIsTableLoading} />}
+
+          {settingData?.appName == "People Directory" &&
+            <>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="472"
+                height="2"
+                viewBox="0 0 472 2"
+                fill="none"
+              >
+                <path d="M0 1.21265H621" stroke="#EDEEF3" />
+              </svg>
+              <div className="flex justify-between items-center w-[100%]">
+                <div className="flex justify-center items-center">
+                  <div className="flex items-center">
+                    <div
+                      className="setting_filter_top1"
+                      onClick={() => {
+                        setAddView(!addView);
+                      }}
+                    >
+                      <span className="setting_filter_top1_text ">View Settings</span>
+                      <img className="setting_filter_top1_img" src={downIcon} />
+                    </div>
+                    {/* <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body contect, You can easily revert to the original settings by clicking the Reset icon."}/> */}
+                  </div>
+                  {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." />}
+                </div>
+
+              </div>
+              {addView && <ViewSettings settingsData={settingData} />}
+            </>}
         </div>
       </div>
       <DeleteAlert

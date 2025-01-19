@@ -234,18 +234,19 @@
 
 .setting_filter_bottom {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+  /* flex-direction: column; */
+  /* justify-content: center; */
+  /* align-items: center; */
   gap: 26px;
   border-left: 3px solid var(--primary-color);
 }
 
 .setting_filter_bottom_inner {
   display: flex;
-  width: 265px;
+  /* width: 265px; */
   height: 59px;
-  padding: 0px 25px;
+  padding-right: 10px;
+  padding-left: 25px;
   align-items: center;
   gap: 10px;
   cursor: pointer;

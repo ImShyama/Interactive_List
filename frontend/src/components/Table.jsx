@@ -81,6 +81,9 @@ const Table = () => {
         const normalizedHeader1 = normalHeader.filter((col) => !res.hiddenCol?.includes(col.toLowerCase()));
         const normalizedHeader = header.map((col) => col.replace(/ /g, "_").toLowerCase());
         const filteredHeader = normalizedHeader.filter((col) => !res.hiddenCol?.includes(col));
+        const resSettings = res.settings;
+        console.log({ resSettings });
+        dispatch(updateSetting(resSettings));
 
         setSheetData(res.jsonData || []);
         setTableHeader(normalizedHeader1);

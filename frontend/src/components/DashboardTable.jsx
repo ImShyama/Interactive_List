@@ -174,6 +174,9 @@ const DashboardTable = () => {
     })
     .slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
+
+    console.log({ filteredSheets, tableData });
+
   // Function to format date in dd/MM/YYYY hh:mm:ss format
   function formatLastUpdatedDate(dateInput) {
     // Check if dateInput is valid

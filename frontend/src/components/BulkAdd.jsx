@@ -7,6 +7,7 @@ import "./setting.css";
 import { HOST } from "../utils/constants";
 import { useSelector } from "react-redux";
 import { notifyError, notifySuccess } from "../utils/notify";
+import Info from "./info";
 
 const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData, handleBuldData }) => {
     // State for selected sheet and data range
@@ -107,8 +108,9 @@ const BulkAdd = ({ isOpen, onClose, openPicker, spreadSheetData, handleBuldData 
                 <div className="flex justify-center flex-shrink-0 rounded-[20px] bg-white shadow-lg">
                     <div className="flex flex-col p-6">
                         <div className="flex px-6 mb-3 justify-between">
-                            <div className="flex justify-start items-center">
+                            <div className="flex justify-start items-center gap-2">
                                 <span className="text-xl font-medium font-poppins">Add From Spreadsheet</span>
+                                <Info info="Easily add bulk data to your existing table by importing it directly from another spreadsheet. Note: Ensure that the header in the source sheet matches exactly with the header of the existing table." />
                             </div>
                             <div className="flex justify-end items-center">
                                 <div className="mr-6 mt-[-25px]">
