@@ -415,7 +415,9 @@ const PeopleDirectoryView = ({
   headers,
   tempHeader,
   filteredData,
-  setFilteredData }) => {
+  setFilteredData,
+  settings,
+}) => {
 
   const [visitedProfiles, setVisitedProfiles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -440,7 +442,7 @@ const PeopleDirectoryView = ({
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
   console.log({ paginatedData });
 
-  const showInCard = ["picture", "name", "department", "email_address", "contact"];
+  const showInCard = settings?.showInCard || [];
 
   return (
     <div className="px-6 py-4">
@@ -466,21 +468,21 @@ const PeopleDirectoryView = ({
                 <div className="flex flex-col items-center justify-center bg-[#FBFBFB] rounded-[24px] shadow p-4 gap-2">
                   <img
                     className="w-20 h-20 rounded-full mb-3 object-cover"
-                    src={person[showInCard[0]]}
-                    alt={`${person[showInCard[1]]}'s Profile`}
+                    src={person[showInCard[0]?.title.toLowerCase().replace(' ', '_')]}
+                    alt={`${person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}'s Profile`}
                   />
-                  <h2 className="text-sm font-medium text-gray-900">{person[showInCard[1]]}</h2>
-                  <p className="text-xs text-gray-600">{person.role}</p>
-                  <p className="text-xs text-gray-600">{person[showInCard[2]]}</p>
+                  <h2 className="text-sm font-medium text-gray-900">{person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}</h2>
+                  <p className="text-xs text-gray-600">{person[showInCard[2]?.title.toLowerCase().replace(' ', '_')]}</p>
+                  <p className="text-xs text-gray-600">{person[showInCard[3]?.title.toLowerCase().replace(' ', '_')]}</p>
                   <div className="flex items-center w-full mt-2 gap-2">
                     <HiOutlineEnvelope className="ml-8" />
-                    <a href={`mailto:${person[showInCard[3]]}`} className="text-blue-500 text-xs underline">
-                      {person[showInCard[3]]}
+                    <a href={`mailto:${person[showInCard[4]?.title.toLowerCase().replace(' ', '_')]}`} className="text-blue-500 text-xs underline">
+                      {person[showInCard[4]?.title.toLowerCase().replace(' ', '_')]}
                     </a>
                   </div>
                   <div className="flex items-center w-full mt-1 gap-2">
                     <IoCallOutline className="ml-8" />
-                    <p className="text-xs text-gray-600">{person[showInCard[4]]}</p>
+                    <span className="text-xs text-gray-600">{person[showInCard[5]?.title.toLowerCase().replace(' ', '_')]}</span>
                   </div>
                 </div>
               </div>

@@ -2,6 +2,9 @@ import axios from "axios";
 import { HOST } from "../utils/constants";
 import { notifyError } from "../utils/notify";
 import { updateSetting } from "../utils/settingSlice";
+import { UserContext } from "../context/UserContext";
+import { useDispatch } from "react-redux";
+import { useContext } from "react";
 
 export const handleSaveChanges = async (settingData, token, dispatch, updatedSettings) => {
     try {
@@ -89,5 +92,32 @@ export const deleteMultiple = async (spreadSheetID, sheetName, rowsToDelete) => 
     } catch (error) {
       console.error("Error deleting rows:", error);
       throw new Error(error.response?.data?.error || "Failed to delete rows");
+    }
+  };
+
+
+  export const handleUpdateSettings = async (updatedSetting, token, dispatch) => {
+    
+    try {
+      // Use the passed settings or fallback to the Redux state
+      const settingsToSave = updatedSetting;
+
+      const response = await axios.put(
+        `${HOST}/spreadsheet/${updatedSetting._id}`,
+        settingsToSave,
+        {
+          headers: {
+            authorization: "Bearer " + token,
+          },
+        }
+      );
+
+      console.log("Settings updated successfully:", response.data);
+      dispatch(updateSetting(response.data));
+
+      return response;
+    } catch (error) {
+      console.error("Error updating settings in DB:", error);
+      return(error);
     }
   };

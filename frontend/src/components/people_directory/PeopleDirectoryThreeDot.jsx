@@ -33,12 +33,12 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
         
         const updateList = (list = []) => {
           if (checked) {
-            if (optionType === "showInCard" && list.length >= 5) {
-              notifyError("You can only add up to 5 items in Show in Card");
+            if (optionType === "showInCard" && list.length >= 6) {
+              notifyError("You can only add up to 6 items in Show in Card");
               return list;
             }
             // Add new entry with incremental ID
-            const newId = list.length > 0 ? list[list.length - 1].id + 1 : 1;
+            const newId = list.length + 1; 
             return [...list, { id: newId, title: columnKey }];
           } else {
             // Remove entry by title
@@ -87,7 +87,7 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
   };
 
   const popoverContent = (
-    <table>
+    <table className="w-[180px]">
       <tbody>
         <tr>
           <td>

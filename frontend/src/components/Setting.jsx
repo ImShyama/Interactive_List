@@ -37,6 +37,7 @@ import { SixDots } from "../assets/svgIcons.jsx";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { handleUpdateSettings } from "../APIs/index.jsx";
 
 const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
 
@@ -567,6 +568,8 @@ const ViewSettings = ({ settingsData }) => {
   console.log({ settingsData });
   const [showCard, setShowCard] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const dispatch = useDispatch();
+  const { token } = useContext(UserContext);
 
   // const CardSettings = ({ settingsData }) => {
   //   const cardData = settingsData?.showInCard
@@ -594,30 +597,50 @@ const ViewSettings = ({ settingsData }) => {
   const ProfileSettings = ({ settingsData }) => {
     const [profileData, setProfileData] = useState(settingsData?.showInProfile || []);
 
-    const handleDragEnd = (event) => {
+    // const handleDragEnd = (event) => {
+    //   const { active, over } = event;
+    //   if (!over || active.id === over.id) return;
+
+    //   const oldIndex = profileData.findIndex((item) => item.id === active.id);
+    //   const newIndex = profileData.findIndex((item) => item.id === over.id);
+
+    //   // Log before updating state
+    //   console.log("Dragged Item ID:", active.id);
+    //   console.log("Dropped On Item ID:", over.id);
+    //   console.log("Old Index:", oldIndex, "New Index:", newIndex);
+
+    //   // Update state using functional form to get the latest value
+    //   setProfileData((prevData) => {
+    //     const updatedData = arrayMove(prevData, oldIndex, newIndex);
+    //     // Log updated data immediately after state update
+    //     console.log("Updated Profile Data (immediately):", updatedData);
+    //     return updatedData; // Return the updated data
+    //   });
+    // };
+
+
+
+    // Draggable Item Component
+
+    const handleDragEnd = async (event) => {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
 
       const oldIndex = profileData.findIndex((item) => item.id === active.id);
       const newIndex = profileData.findIndex((item) => item.id === over.id);
 
-      // Log before updating state
-      console.log("Dragged Item ID:", active.id);
-      console.log("Dropped On Item ID:", over.id);
-      console.log("Old Index:", oldIndex, "New Index:", newIndex);
+      // Update the local state
+      const updatedData = arrayMove(profileData, oldIndex, newIndex);
+      setProfileData(updatedData);
 
-      // Update state using functional form to get the latest value
-      setProfileData((prevData) => {
-        const updatedData = arrayMove(prevData, oldIndex, newIndex);
-        // Log updated data immediately after state update
-        console.log("Updated Profile Data (immediately):", updatedData);
-        return updatedData; // Return the updated data
-      });
+      // Prepare the updated settings to be saved
+      const updatedSetting = { ...settingsData, showInProfile: updatedData };
+
+      // Call the API to save changes
+      const response = await handleUpdateSettings(updatedSetting, token, dispatch);
+      console.log({ response });
     };
 
-
-
-    // Draggable Item Component
     const DraggableItem = ({ item }) => {
       const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
 
@@ -668,21 +691,41 @@ const ViewSettings = ({ settingsData }) => {
     const [cardData, setCardData] = useState(settingsData?.showInCard || []);
 
     // Handle item movement in the right column
-    const handleDragEnd = (event) => {
+    // const handleDragEnd = (event) => {
+    //   const { active, over } = event;
+    //   if (!over || active.id === over.id) return;
+
+    //   const oldIndex = cardData.findIndex((item) => item.id === active.id);
+    //   const newIndex = cardData.findIndex((item) => item.id === over.id);
+
+    //   // Log the drag details (optional)
+    //   console.log("Dragged Item ID:", active.id);
+    //   console.log("Dropped On Item ID:", over.id);
+    //   console.log("Old Index:", oldIndex, "New Index:", newIndex);
+
+    //   // Update state
+    //   setCardData(arrayMove(cardData, oldIndex, newIndex));
+    // };
+
+    const handleDragEnd = async (event) => {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
 
       const oldIndex = cardData.findIndex((item) => item.id === active.id);
       const newIndex = cardData.findIndex((item) => item.id === over.id);
 
-      // Log the drag details (optional)
-      console.log("Dragged Item ID:", active.id);
-      console.log("Dropped On Item ID:", over.id);
-      console.log("Old Index:", oldIndex, "New Index:", newIndex);
+      // Update the local state
+      const updatedData = arrayMove(cardData, oldIndex, newIndex);
+      setCardData(updatedData);
 
-      // Update state
-      setCardData(arrayMove(cardData, oldIndex, newIndex));
+      // Prepare the updated settings to be saved
+      const updatedSetting = { ...settingsData, showInCard: updatedData };
+
+      // Call the API to save changes
+      const response = await handleUpdateSettings(updatedSetting, token, dispatch);
+      console.log({ response });
     };
+
 
     // Draggable Item Component
     const DraggableItem = ({ item }) => {
@@ -909,7 +952,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   () => {
                     window.location.reload();
                   }
-                } className="bg-primary rounded-[4px] p-1" title="Reset Spreadsheet">
+                } className="bg-primary rounded-[4px] p-1" title="Refresh Spreadsheet">
                   <Reset />
                 </button>
               }
@@ -940,7 +983,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   <span className="setting_filter_top1_text">Table Settings</span>
                   <img className="setting_filter_top1_img" src={downIcon} />
                 </div>
-                <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body contect, You can easily revert to the original settings by clicking the Reset icon."} />
+                <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body content, You can easily revert to the original settings by clicking the Reset icon."} />
               </div>
               {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." />}
             </div>

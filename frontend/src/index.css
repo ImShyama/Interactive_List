@@ -528,3 +528,15 @@ button:disabled {
    /* border: 1px solid red !important; */
 } 
 
+.resizeActions{
+  opacity: 0 !important;
+}
+
+.ResizeTH:hover .resizeActions {
+  background-color: #f1f1f1 !important; /* Solid background for pinned headers */
+  /* z-index: 100 !important; */
+  display: flex !important;
+  opacity: 1 !important;
+  transition: all 0.3s ease-in-out;
+}
+

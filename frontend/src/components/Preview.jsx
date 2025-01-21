@@ -173,6 +173,7 @@ const Preview = ({ closeModal, sheetdetails }) => {
                                                             filteredData={filteredData}
                                                             setFilteredData={setFilteredData}
                                                             paginatedData={paginatedData}
+                                                            settings={sheetdetails}
                                                         />
                                                     );
                                                 // case "Video Gallary":

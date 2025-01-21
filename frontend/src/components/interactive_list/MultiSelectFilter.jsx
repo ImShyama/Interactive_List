@@ -422,6 +422,8 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
                     onBlur={() => setTimeout(() => setDropdownOpen(false), 200)} // Optional delay to allow click events
                     onFocus={() => setDropdownOpen(true)}
                     value={searchText}
+                    dropdownMatchSelectWidth={false} // Prevents unwanted resizing
+                    virtual // Enables virtual scrolling
                 >
                     {options.map((option) => (
                         <AutoComplete.Option key={option.value}>

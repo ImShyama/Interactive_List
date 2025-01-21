@@ -15,6 +15,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
     settings, getAggregatePopoverContent, globalOption, setGlobalOption, title
 }) => {
 
+    title = title.replace(/_/g, " ");
 
     const [sortColumn, setSortColumn] = useState(null);
     const [visiblePopover, setVisiblePopover] = useState({});
@@ -137,12 +138,14 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
 
     return (
         <Resizable
+            className="truncate ResizeTH"
             width={columnWidths[columnKey]}
             height={0}
             onResize={handleResize(columnKey)} // Immediate DOM updates
             draggableOpts={{ enableUserSelectHack: false }}
             handle={
                 <div
+                    className="resizeActions"
                     style={{
                         position: "absolute",
                         right: 0,
@@ -165,7 +168,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
             }}
         >
             <th
-                className="px-4 py-4 border-b border-gray-300"
+                className="px-4 py-4 border-b border-gray-300 truncate"
                 id={`header${index}`}
                 style={{
                     width: `${columnWidths[columnKey]}px`,
@@ -180,6 +183,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                     fontFamily: headerFontFamily, // Font family
                     fontSize: `${headerFontSize}px`, // Font size
                     // borderRight: isPinned && `4px solid #bed900`,
+                    maxWidth: `${columnWidths[columnKey]}px`,
                 }}
             >
                 {isLastPinned && (
@@ -197,18 +201,26 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                     />
                 )}
                 <div
-                    className="flex justify-between items-center gap-3"
+                    className="flex justify-between items-center gap-3 truncate"
                     style={{
                         zIndex: isPinned ? 1000 : "inherit", // Ensure child elements respect z-index
                         position: "relative", // Keep elements aligned
                     }}
                 >
-                    <div title={title.replace(/_/g, " ")}>
-                        <span style={{ fontFamily: headerFontFamily, fontSize: `${headerFontSize}px` }}>
-                            {title.replace(/_/g, " ")}
+                    <div title={title}>
+                        <span className="truncate" style={{ fontFamily: headerFontFamily, fontSize: `${headerFontSize}px` }}>
+                            {title}
                         </span>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="items-center gap-1 resizeActions"
+                        style={{
+                            position: "absolute",
+                            right: 5,
+                            bottom: 0,
+                            cursor: "col-resize", // Keeps the resizing cursor
+                            zIndex: 5, // Ensure it stays above other elements
+                        }}
+                    >
                         <button
                             onClick={() => {
                                 handleSort(columnKey);
@@ -247,7 +259,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                             visible={visiblePopover[index] || false}
                             onVisibleChange={(isVisible) => handlePopoverVisibility(index, isVisible)}
                         >
-                            <button>
+                            <button >
                                 <IoSearchOutline />
                             </button>
                         </Popover>
@@ -273,12 +285,13 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                         {isEditMode && settings.appName == "People Directory" &&
                             <PeopleDirectoryThreeDot
                                 headerId={columnKey}
-                                columnKey={columnKey}
+                                columnKey={title}
                                 openPopoverId={openPopoverId}
                                 setOpenPopoverId={setOpenPopoverId}
                                 // checkboxSelections={checkboxSelections}
                                 // updateSelection={updateSelection}
                                 settings={settings}
+
                             />
                         }
                     </div>
