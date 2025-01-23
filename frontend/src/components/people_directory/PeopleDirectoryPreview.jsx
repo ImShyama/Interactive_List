@@ -1252,12 +1252,100 @@ const PeopleDirectoryPreView = () => {
   }, []);
 
   const handleProfileClick = (id) => {
+    console.log("Profile ID:", id);
     if (!visitedProfiles.includes(id)) {
       const updatedProfiles = [...visitedProfiles, id];
       setVisitedProfiles(updatedProfiles);
       localStorage.setItem('visitedProfiles', JSON.stringify(updatedProfiles));
     }
-    navigate(`/profile/${id}`);
+
+    // Filter data based on the clicked profile's ID
+    const filteredData = dummyData.filter((profile)=>{ return profile.id == id})
+    const settings = {
+      "showInCard": [
+          {
+              "id": 1,
+              "title": "Picture"
+          },
+          {
+              "id": 2,
+              "title": "Name"
+          },
+          {
+              "id": 3,
+              "title": "Role"
+          },
+          {
+              "id": 4,
+              "title": "Department"
+          },
+          {
+              "id": 5,
+              "title": "Email"
+          },
+          {
+              "id": 6,
+              "title": "Phone"
+          }
+      ],
+      "showInProfile": [
+          {
+              "id": 1,
+              "title": "Name"
+          },
+          {
+              "id": 2,
+              "title": "DOJ"
+          },
+          {
+              "id": 3,
+              "title": "Email"
+          },
+          {
+              "id": 4,
+              "title": "Department"
+          },
+          {
+              "id": 5,
+              "title": "Designation"
+          },
+          {
+              "id": 6,
+              "title": "Skills & Expertise"
+          },
+          {
+              "id": 7,
+              "title": "Birth date"
+          },
+          {
+              "id": 8,
+              "title": "UAN"
+          },
+          {
+              "id": 9,
+              "title": "ESI"
+          },
+          {
+              "id": 10,
+              "title": "Birth date"
+          },
+          {
+              "id": 11,
+              "title": "Branch location"
+          },
+          {
+              "id": 12,
+              "title": "Manager"
+          },
+          {
+              "id": 13,
+              "title": "Gender"
+          }
+      ],
+  }
+
+    // Navigate to profile page
+    navigate(`/profile/${id}`, { state: { data: filteredData, settings: settings } });
   };
 
   // Pagination logic
@@ -1284,7 +1372,6 @@ const PeopleDirectoryPreView = () => {
             <div key={person.id} className="relative group">
               <div className="absolute top-[24px] left-[10px] right-[10px] flex justify-between px-4">
                 <a
-                  href="#!"
                   onClick={() => handleProfileClick(person.id)}
                   className={`w-[24px] h-[24px] flex items-center justify-center 
                     transition-colors duration-300 cursor-pointer opacity-0 group-hover:opacity-100 

@@ -14,11 +14,11 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [showInCardChecked, setShowInCardChecked] = useState(
-    settings.showInCard?.some((item) => settings.showInCard.map(i => i.title).includes(columnKey)) || false
+    settings.showInCard?.some((item) => settings?.showInCard?.map(i => i?.title).includes(columnKey)) || false
   );
   
   const [showInProfileChecked, setShowInProfileChecked] = useState(
-    settings.showInProfile?.some((item) => settings.showInProfile.map(i => i.title).includes(columnKey)) || false
+    settings.showInProfile?.some((item) => settings?.showInProfile?.map(i => i?.title).includes(columnKey)) || false
   );
 
   const handleCheckboxChange = useCallback(

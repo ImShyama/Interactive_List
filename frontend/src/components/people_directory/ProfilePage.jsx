@@ -5,11 +5,22 @@ import { dummyData } from "./PeopleDirectoryView"; // Adjust path if necessary
 import { HiOutlineEnvelope } from "react-icons/hi2";
 import { IoCallOutline } from "react-icons/io5";
 import { IoMdArrowBack } from "react-icons/io";
+import { useLocation } from "react-router-dom";
 
 const ProfilePage = () => {
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
   const navigate = useNavigate(); // Move it inside here
+
+  const location = useLocation();
+  const data = location.state?.data[0] || [];
+  const settings = location.state?.settings || {};
+
+  const showInCard = settings?.showInCard || [];
+  const showInProfile = settings?.showInProfile || [];
+
+  console.log({ data, settings, showInCard, showInProfile });
+
   useEffect(() => {
     const selectedProfile = dummyData.find(
       (person) => person.id === parseInt(id)
@@ -22,17 +33,17 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center p-10">
+    <div className="min-h-screen bg-white flex items-center justify-center ">
       {/* Back Arrow at the Top Left of the Page, Below Navbar */}
       <IoMdArrowBack
         className="text-[37px] text-black cursor-pointer absolute top-[120px] left-[70px]"
-        onClick={() => navigate("/PeopleDirectoryPreView")} // You may try replacing this with a direct path like `/people-directory`
+        onClick={() => navigate(-1)} // You may try replacing this with a direct path like `/people-directory`
       />
 
       <div className="w-[1357px] h-[872px] flex-shrink-0 rounded-[25px] bg-[#FAFAFA]">
         {/* Profile and Details Section */}
         <div className="inline-flex items-start gap-[50px] mt-[38px] mb-[35px] ml-[85px] mr-[85px]">
-          
+
           {/* Left: Profile Card */}
           <div
             className="w-[497px] h-[668px] flex-shrink-0 rounded-[21px] bg-white my-[60.5px]"
@@ -43,8 +54,9 @@ const ProfilePage = () => {
           >
             <div className="w-[338.18px] h-[441px] flex-shrink-0">
               <img
-                src={profile.image}
-                alt={`${profile.name}'s Profile`}
+                src={data[showInCard[0]?.title.toLowerCase().replace(" ", "_")]}
+                alt={`${data[showInCard[1]?.title.toLowerCase().replace(" ", "_")]}'s Profile`}
+                // title={`${data[showInCard[1]?.title.toLowerCase().replace(" ", "_")]}'s Profile`}
                 className="w-[338.18px] h-[338.18px] flex-shrink-0 rounded-full bg-lightgray bg-cover bg-center bg-no-repeat mt-[44px]  mx-[79px] "
               />
 
@@ -57,7 +69,7 @@ const ProfilePage = () => {
                     lineHeight: "normal",
                   }}
                 >
-                  {profile.name}
+                  {data[showInCard[1]?.title.toLowerCase().replace(" ", "_")]}
                 </div>
                 <p
                   className="self-stretch text-[#747171] font-semibold mx-[135px] w-[330px]"
@@ -67,7 +79,8 @@ const ProfilePage = () => {
                     lineHeight: "normal",
                   }}
                 >
-                  {`${profile.role}, ${profile.department}`}
+                  {`${data[showInCard[2]?.title.toLowerCase().replace(" ", "_")]}, 
+                  ${data[showInCard[3]?.title.toLowerCase().replace(" ", "_")]}`}
                 </p>
               </div>
             </div>
@@ -81,10 +94,10 @@ const ProfilePage = () => {
                     <HiOutlineEnvelope />
                   </span>
                   <a
-                    href={`mailto:${profile.email}`}
+                    href={`mailto:${data[showInCard[4]?.title.toLowerCase().replace(" ", "_")]}`}
                     className="text-[#3D6EEE] font-[Montserrat] text-[19.454px] normal-case font-normal underline decoration-solid decoration-0 text-underline-offset-auto"
                   >
-                    {profile.email}
+                    {data[showInCard[4]?.title.toLowerCase().replace(" ", "_")]}
                   </a>
                 </div>
               )}
@@ -95,7 +108,7 @@ const ProfilePage = () => {
                     <IoCallOutline />
                   </span>
                   <span className="text-[#4E4E4E] font-[Montserrat] text-[19.454px] font-normal normal-case leading-normal">
-                    {profile.phone}
+                    {data[showInCard[5]?.title.toLowerCase().replace(" ", "_")] || ""}
                   </span>
                 </div>
               )}
@@ -105,228 +118,26 @@ const ProfilePage = () => {
           {/* Right: Employment Details */}
           <div className="w-[640px] h-[799px] drop-shadow-[rgba(216,_216,_216,_0.25)_-4px_4px_23.3px] flex-shrink-0 rounded-[21px] bg-white">
             <h2 className="self-stretch text-[#9F9F9F] font-[Montserrat] text-[30px] font-medium normal-case leading-normal border-b-2 pb-2 mb-6 mx-[47px] mt-[36px]">
-              Employment Details
+              {settings?.peopleDirectory?.HeaderTitle || "Details"} 
             </h2>
             <div className="space-y-4 text-sm ml-[51px] pr-[183.31px]">
               {/* Loop through the employmentDetails properties */}
               <div className="grid grid-cols-1 sm:grid-cols-[240px_50px_1fr] gap-y-4">
                 {/* Date of Joining */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("joiningDate") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        Date of Joining
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.joiningDate}
-                      </div>
-                    </>
-                  )}
 
-                {/* Year of Experience */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("experience") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        Year of Experience
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.experience}
-                      </div>
-                    </>
-                  )}
-                {/* PF */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("pf") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        PF
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.pf}
-                      </div>
-                    </>
-                  )}
-
-                {/* UAN */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("uan") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        UAN
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.uan}
-                      </div>
-                    </>
-                  )}
-                {/*ESI */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("esi") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        ESI
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.esi}
-                      </div>
-                    </>
-                  )}
-
-                {/* Branch location */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("branch") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        Branch location
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.branch}
-                      </div>
-                    </>
-                  )}
-                {/* Manager */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("manager") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        Manager
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.manager}
-                      </div>
-                    </>
-                  )}
-
-                {/* DISC score */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("discScore") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        DISC score
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.discScore}
-                      </div>
-                    </>
-                  )}
-                {/* DISC profile */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("discProfile") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        DISC profile
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.discProfile}
-                      </div>
-                    </>
-                  )}
-
-                {/* Reports To*/}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("reportsTo") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        Reports to
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.reportsTo}
-                      </div>
-                    </>
-                  )}
-                {/* KPI link */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("kpiLink") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        KPI & KRA link
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.kpiLink}
-                      </div>
-                    </>
-                  )}
-
-                {/* Birth Date*/}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("birthDate") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        Birth Date
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.birthDate}
-                      </div>
-                    </>
-                  )}
-                {/* Gender */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("gender") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        Gender
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.gender}
-                      </div>
-                    </>
-                  )}
-
-                {/* Emergency Contact */}
-                {profile.employmentDetails &&
-                  profile.employmentDetails.includes("emergencyContact") && (
-                    <>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        Emergency No.
-                      </div>
-                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                        :
-                      </div>
-                      <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
-                        {profile.emergencyContact}
-                      </div>
-                    </>
-                  )}
+                {showInProfile.map((profile, index) => (
+                  <>
+                    <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
+                      {profile?.title}
+                    </div>
+                    <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
+                      :
+                    </div>
+                    <div className="text-[#808080] font-Montserrat font-normal text-[19.696px] leading-normal">
+                      {data[profile?.title.toLowerCase().replace(" ", "_")]}
+                    </div>
+                  </>
+                ))}
               </div>
             </div>
           </div>

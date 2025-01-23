@@ -35,6 +35,29 @@ const ResizableTitle = (props) => {
     );
 };
 
+const filterHeader = [
+    "country",
+    "region",
+    "population",
+    "gdp_(usd_billions)",
+    "gdp_per_capita",
+    "life_expectancy",
+    "literacy_rate",
+    "internet_users_%",
+    "urbanization_%",
+    "co2_emissions_(tons)",
+    "renewable_energy_%",
+    "trade_balance_(usd_m)",
+    "fdi_inflow_(usd_m)",
+    "tourism_revenue_(usd_m)",
+    "healthcare_spending_%",
+    "r&d_investment_%",
+    "youth_population_%",
+    "export_value_(usd_m)",
+    "import_value_(usd_m)",
+    "education_spending_%"
+]
+
 const isNumeric = (value) => !isNaN(parseFloat(value)) && isFinite(value);
 
 const maxHeight = window.innerHeight - 220;
@@ -384,7 +407,7 @@ const InteractiveListView = () => {
             <Table
                 data={data}
                 tempHeader={headers}
-                headers={headers}
+                headers={filterHeader}
                 filteredData={filteredData}
                 setFilteredData={setFilteredData}
                 paginatedData={paginatedData}

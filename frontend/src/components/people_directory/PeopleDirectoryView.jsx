@@ -429,14 +429,15 @@ const PeopleDirectoryView = ({
   //   setVisitedProfiles(savedProfiles);
   // }, []);
 
-  // const handleProfileClick = (id) => {
-  //   if (!visitedProfiles.includes(id)) {
-  //     const updatedProfiles = [...visitedProfiles, id];
-  //     setVisitedProfiles(updatedProfiles);
-  //     localStorage.setItem('visitedProfiles', JSON.stringify(updatedProfiles));
-  //   }
-  //   navigate(`/profile/${id}`);
-  // };
+  const handleProfileClick = (id) => {
+    if (!visitedProfiles.includes(id)) {
+      const updatedProfiles = [...visitedProfiles, id];
+      setVisitedProfiles(updatedProfiles);
+      localStorage.setItem('visitedProfiles', JSON.stringify(updatedProfiles));
+    }
+    const filteredData = data.filter((person) => person.key_id === id);
+    navigate(`/profile/${id}`, { state: { data: filteredData, settings: settings } });
+  };
 
   // console.log("Visited Profiles:", visitedProfiles);
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -451,16 +452,15 @@ const PeopleDirectoryView = ({
         <div style={{ width: '100%', overflowX: 'auto', maxHeight: '600px' }}>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-3 w-full">
             {paginatedData.map((person) => (
-              <div key={person.id} className="relative group">
+              <div key={person.key_id} className="relative group">
                 {/* Icon Section */}
                 <div className="absolute top-[24px] left-[10px] right-[10px] flex justify-end px-4">
-                  {/* <a
-                    href="#!"
-                    onClick={() => handleProfileClick(person.id)}
+                  <a
+                    onClick={() => handleProfileClick(person.key_id)}
                     className={`w-[24px] h-[24px] flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-colors duration-300 ${visitedProfiles.includes(person.id) ? 'text-[#497626]' : 'text-gray-500 hover:text-[#497626]'}`}
                   >
                     <CgArrowsExpandRight />
-                  </a> */}
+                  </a>
                   {person.hasStar && <MdOutlineStar className="w-[24px] h-[24px] text-[#3D6EEE]" />}
                 </div>
 

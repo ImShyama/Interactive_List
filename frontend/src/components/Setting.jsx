@@ -38,6 +38,7 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { handleUpdateSettings } from "../APIs/index.jsx";
+import HeadingTitle from "./people_directory/HeadingTitle.jsx";
 
 const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
 
@@ -94,6 +95,7 @@ const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
       // setIsSaveChanges(false);
     }
   };
+
 
   // Initial state to manage all inputs
   const [formData, setFormData] = useState({
@@ -159,7 +161,6 @@ const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
 
       return updatedFormData;
     });
-
 
   };
 
@@ -597,31 +598,7 @@ const ViewSettings = ({ settingsData }) => {
   const ProfileSettings = ({ settingsData }) => {
     const [profileData, setProfileData] = useState(settingsData?.showInProfile || []);
 
-    // const handleDragEnd = (event) => {
-    //   const { active, over } = event;
-    //   if (!over || active.id === over.id) return;
-
-    //   const oldIndex = profileData.findIndex((item) => item.id === active.id);
-    //   const newIndex = profileData.findIndex((item) => item.id === over.id);
-
-    //   // Log before updating state
-    //   console.log("Dragged Item ID:", active.id);
-    //   console.log("Dropped On Item ID:", over.id);
-    //   console.log("Old Index:", oldIndex, "New Index:", newIndex);
-
-    //   // Update state using functional form to get the latest value
-    //   setProfileData((prevData) => {
-    //     const updatedData = arrayMove(prevData, oldIndex, newIndex);
-    //     // Log updated data immediately after state update
-    //     console.log("Updated Profile Data (immediately):", updatedData);
-    //     return updatedData; // Return the updated data
-    //   });
-    // };
-
-
-
     // Draggable Item Component
-
     const handleDragEnd = async (event) => {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
@@ -661,51 +638,40 @@ const ViewSettings = ({ settingsData }) => {
     };
 
     return (
-      <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={profileData}>
-          <div className="flex w-[100%] h-[400px]">
-            {/* Left Side (Headings) */}
-            <div className="flex flex-col m-2 w-[130px]">
-              {profileData.map((_, index) => (
-                <div key={index} className="flex items-center">
-                  <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
-                    Heading {index + 1}
-                  </span>
-                </div>
-              ))}
-            </div>
+      <div>
+        <div className="m-2">
+          <HeadingTitle settings={settingsData} />
+        </div>
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={profileData}>
+            <div className="flex w-[100%] h-[400px]">
+              {/* Left Side (Headings) */}
+              <div className="flex flex-col m-2 w-[130px]">
+                {profileData.map((_, index) => (
+                  <div key={index} className="flex items-center">
+                    <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
+                      Heading {index + 1}
+                    </span>
+                  </div>
+                ))}
+              </div>
 
-            {/* Right Side (Draggable Items) */}
-            <div className="flex flex-col m-2">
-              {profileData.map((item) => (
-                <DraggableItem key={item.id} item={item} />
-              ))}
+              {/* Right Side (Draggable Items) */}
+              <div className="flex flex-col m-2">
+
+                {profileData.map((item) => (
+                  <DraggableItem key={item.id} item={item} />
+                ))}
+              </div>
             </div>
-          </div>
-        </SortableContext>
-      </DndContext>
+          </SortableContext>
+        </DndContext>
+      </div>
     );
   };
 
   const CardSettings = ({ settingsData }) => {
     const [cardData, setCardData] = useState(settingsData?.showInCard || []);
-
-    // Handle item movement in the right column
-    // const handleDragEnd = (event) => {
-    //   const { active, over } = event;
-    //   if (!over || active.id === over.id) return;
-
-    //   const oldIndex = cardData.findIndex((item) => item.id === active.id);
-    //   const newIndex = cardData.findIndex((item) => item.id === over.id);
-
-    //   // Log the drag details (optional)
-    //   console.log("Dragged Item ID:", active.id);
-    //   console.log("Dropped On Item ID:", over.id);
-    //   console.log("Old Index:", oldIndex, "New Index:", newIndex);
-
-    //   // Update state
-    //   setCardData(arrayMove(cardData, oldIndex, newIndex));
-    // };
 
     const handleDragEnd = async (event) => {
       const { active, over } = event;

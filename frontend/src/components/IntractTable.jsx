@@ -33,10 +33,6 @@ import "rc-slider/assets/index.css"; // Import slider styles
 import { RxDividerVertical } from "react-icons/rx";
 import _, { debounce } from "lodash";
 import GlobalSearch from "./interactive_list/GlobalSearch.jsx";
-import MultiSelectFilter from "./interactive_list/MultiSelectFilter.jsx";
-import ResizableHeader from "./interactive_list/ResizableHeader.jsx";
-import DataGrid from "./Table/Table.jsx";
-import FilterButton from "./interactive_list/FilterButton.jsx";
 import Table from "./interactive_list/Table.jsx";
 import Loader from "./Loader.jsx";
 

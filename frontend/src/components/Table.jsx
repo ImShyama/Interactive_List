@@ -12,6 +12,7 @@ import PeopleTable from "./people_directory/PeopleTable.jsx";
 import useSpreadSheetDetails from "../utils/useSpreadSheetDetails";
 import { UserContext } from "../context/UserContext";
 import { set } from "lodash";
+import VideoTable from "./video_gallary/VideoTable.jsx";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
@@ -99,6 +100,8 @@ const Table = () => {
       });
   }, [id, token, navigate]);
 
+  console.log({sheetData, tableHeader, filterHeader})
+
   // Render the appropriate table based on appName in settings
   const renderTable = () => {
     if (loading || !sheetData.length || !tableHeader.length) {
@@ -121,13 +124,6 @@ const Table = () => {
         );
       case "People Directory":
         return (
-          // <PeopleTable
-          //   data={sheetData}
-          //   headers={filterHeader}
-          //   settings={settings}
-          //   freezeIndex={freezeIndex}
-          //   tempHeader={tableHeader}
-          // />
           <PeopleTable
             data={sheetData}
             tableHeader={tableHeader}
@@ -139,7 +135,7 @@ const Table = () => {
             unhideHeader={unhideHeader}
           />
         );
-      case "Video Gallary":
+      case "Video Gallery":
         return (
           <VideoTable
             data={sheetData}

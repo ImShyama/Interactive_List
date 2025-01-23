@@ -33,12 +33,9 @@ import "rc-slider/assets/index.css"; // Import slider styles
 import { RxDividerVertical } from "react-icons/rx";
 import _, { debounce } from "lodash";
 import GlobalSearch from "../interactive_list/GlobalSearch.jsx";
-import MultiSelectFilter from "../interactive_list/MultiSelectFilter.jsx";
-import ResizableHeader from "../interactive_list/ResizableHeader.jsx";
-import DataGrid from "../Table/Table.jsx";
-import FilterButton from "../interactive_list/FilterButton.jsx";
 import Table from "../interactive_list/Table.jsx";
 import Loader from "../Loader.jsx";
+import PeopleDirectoryView from "./PeopleDirectoryView.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -408,396 +405,6 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             throw error;
         }
     }
-
-    // const handleGlobalSearch = useCallback((e) => {
-    //     const value = e.target.value.toLowerCase();
-    //     setSearchGlobal(value);
-    //     // data = convertArrayToJSON(data);
-
-    //     // Filter the data globally across all columns
-    //     const filteredData = data.filter((record) => {
-    //         return Object.keys(record).some((key) =>
-    //             record[key]?.toString().toLowerCase().includes(value)
-    //         );
-    //     });
-
-    //     // You can then set this filtered data to a state if needed
-    //     setFilteredData(filteredData);
-    // },[]);
-
-
-
-    // const openSearch = useCallback(() => {setIsSearchOpen(true)},[]);
-    // const closeSearch = useCallback(() => {
-    //     setIsSearchOpen(false);
-    //     handleGlobalReset();
-    //     setFilteredData(data);
-    // },[]);
-
-    // const [sortColumn, setSortColumn] = useState(null);
-    // const [sortOrder, setSortOrder] = useState('asc');
-
-    // const handleSort = useCallback((columnKey) => {
-    //     const newSortOrder =
-    //         sortColumn === columnKey ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
-
-    //     setSortColumn(columnKey);
-    //     setSortOrder(newSortOrder);
-
-    //     // Perform sorting
-    //     const sorted = [...filteredData].sort((a, b) => {
-    //         if (typeof a[columnKey] === 'number' && typeof b[columnKey] === 'number') {
-    //             return newSortOrder === 'asc'
-    //                 ? a[columnKey] - b[columnKey]
-    //                 : b[columnKey] - a[columnKey];
-    //         } else {
-    //             return newSortOrder === 'asc'
-    //                 ? a[columnKey]?.toString().localeCompare(b[columnKey]?.toString())
-    //                 : b[columnKey]?.toString().localeCompare(a[columnKey]?.toString());
-    //         }
-    //     });
-
-    //     setFilteredData(sorted);
-    // }, [filteredData, sortColumn, sortOrder]);
-
-    const filterList = () => {
-
-    };
-
-
-
-    // const MultiSelectFilter = ({ columnKey, closePopover }) => {
-    //     const [selectedValues, setSelectedValues] = useState([]);
-
-    //     // Step 1: Create initialData with unique labels and counts
-    //     const initialData = Object.values(
-    //         filteredData.reduce((acc, data) => {
-    //             const label = data[columnKey];
-    //             const value = data[columnKey];
-
-    //             if (acc[label]) {
-    //                 acc[label].count += 1; // Increment the count if the label already exists
-    //             } else {
-    //                 acc[label] = { label, value, count: 1 }; // Add a new label with a count of 1
-    //             }
-
-    //             return acc;
-    //         }, {})
-    //     ).map((item) => ({
-    //         ...item,
-    //         label: `${item.label} (${item.count})`, // Add the count to the label
-    //     }));
-
-    //     const [options, setOptions] = useState(initialData);
-
-    //     const handleSelectAll = () => {
-    //         let updatedOptions = globalOption[columnKey] || [];
-    //         if (globalOption[columnKey].length === options.length || selectedValues.length === options.length) {
-    //             setSelectedValues([]);
-    //             setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
-    //             return;
-    //         } else {
-    //             setSelectedValues(options.map((option) => option.value));
-    //             setGlobalOption((prev) => ({ ...prev, [columnKey]: options.map((option) => option.value) }));
-    //         }
-    //     }
-
-    //     const handleSelect = (value) => {
-    //         let updatedOptions = globalOption[columnKey] || [];
-    //         if (globalOption[columnKey]?.includes(value) || selectedValues.includes(value)) {
-    //             setSelectedValues((prev) => {
-    //                 let updatedOption = prev.filter((item) => item !== value);
-    //                 updatedOptions = [...updatedOptions, ...updatedOption];
-    //                 return prev.filter((item) => item !== value);
-    //             });
-    //         } else {
-    //             setSelectedValues((prev) => {
-    //                 let updatedOption = [...prev, value];
-    //                 updatedOptions = [...updatedOptions, ...updatedOption];
-    //                 return [...prev, value]
-    //             });
-    //         }
-    //         setGlobalOption((prev) => ({ ...prev, [columnKey]: updatedOptions }));
-    //     };
-
-
-    //     const handleSearch = (searchText) => {
-    //         if (searchText) {
-    //             const filteredOptions = initialData.filter(option =>
-    //                 option.label?.toLowerCase().includes(searchText.toLowerCase())
-    //             );
-    //             setOptions(filteredOptions);
-    //         } else {
-    //             setOptions(initialData);
-    //         }
-    //     };
-
-    //     const handleMultiSearch = () => {
-    //         if (selectedValues.length == 0 && globalOption[columnKey].length == 0) {
-    //             setFilteredData(data);
-    //             return;
-    //         }
-
-    //         const filteredDataTemp = filteredData.filter((item) => {
-    //             return globalOption[columnKey].includes(item[columnKey]) || selectedValues.includes(item[columnKey])
-    //         });
-    //         setFilteredData(filteredDataTemp);
-    //         // closePopover();
-    //     };
-
-    //     const handleReset = () => {
-    //         setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
-    //         const globalColumn = Object.keys(globalOption).map((key) => {
-    //             if (key == columnKey) {
-    //                 return null
-    //             } else {
-    //                 return key;
-    //             }
-    //         })
-
-    //         if (globalColumn.length == 0 || globalColumn.every((item) => item == null)) {
-    //             setFilteredData(data);
-    //             return;
-    //         }
-
-    //         let globalFilterData = [];
-    //         globalColumn.map((key) => {
-    //             let filteredDataTemp = data.filter((item) => {
-    //                 // console.log({ key, item });
-    //                 // console.log({ globalOption });
-    //                 if (key) {
-    //                     return globalOption[key].includes(item[key]);
-    //                 }
-
-    //             });
-    //             globalFilterData = [...globalFilterData, ...filteredDataTemp];
-    //         })
-    //         // const filteredDataTemp = data.filter((item) => {
-
-    //         // })
-    //         // setSelectedValues([]);
-    //         setFilteredData(globalFilterData);
-    //         // closePopover();
-    //     };
-
-    //     // const filteredOptions = searchText
-    //     // ? initialData.filter((option) =>
-    //     //       option.label.toLowerCase().includes(searchText.toLowerCase())
-    //     //   )
-    //     // : initialData;
-
-    //     return (
-    //         <div className="flex-row justify-between items-center" style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-    //             <div className="flex justify-between">
-    //                 <Button
-    //                     type="primary"
-    //                     onClick={() => handleMultiSearch()}
-    //                     icon={<SearchOutlined />}
-    //                     size="small"
-    //                     style={{ width: 80 }}
-    //                 >
-    //                     Search
-    //                 </Button>
-    //                 <Button
-    //                     onClick={() => {
-    //                         handleReset();
-    //                     }}
-    //                     size="small"
-    //                     style={{ width: 80 }}
-    //                 >
-    //                     Reset
-    //                 </Button>
-    //                 <Button
-    //                     type="link"
-    //                     size="small"
-    //                     onClick={() => {
-    //                         closePopover();
-    //                     }}
-    //                 >
-    //                     Close
-    //                 </Button>
-    //             </div>
-    //             <div className="pt-2">
-    //                 <Checkbox className="mr-2 text-primary rounded-md"
-    //                     style={{
-    //                         transform: "scale(1.4)", // Scale up the size of the checkbox
-    //                     }}
-    //                     onChange={() => handleSelectAll()} checked={globalOption[columnKey]?.length == options.length || selectedValues.length == options.length && options.length > 0} value="all"></Checkbox>
-    //                 <AutoComplete
-    //                     style={{
-    //                         // paddingTop: 8,
-    //                         width: 200,
-    //                     }}
-    //                     // onSearch={handleSearch}
-    //                     placeholder="input here"
-    //                     filterOption={false}
-    //                     // onChange={handleSearch}
-    //                     // value={searchText}
-    //                     onSearch={handleSearch}
-    //                 >
-    //                     {options.map((option) => (
-    //                         <AutoComplete.Option key={option.value}><Checkbox onChange={(e) => {
-    //                             handleSelect(option.value);
-    //                         }} checked={globalOption[columnKey]?.includes(option.value) || selectedValues.includes(option.value)} value={option.value}>{option.label}</Checkbox></AutoComplete.Option>
-    //                     ))}
-    //                 </AutoComplete>
-
-    //                 {/* <AutoComplete
-    //                     style={{ width: 200 }}
-    //                     placeholder="Select options"
-    //                     filterOption={false}
-    //                     onSearch={handleSearch}
-    //                     open // Force the dropdown to remain open
-    //                     dropdownClassName="custom-dropdown" // Add custom class for dropdown if needed
-    //                 >
-    //                     {options.map((option) => (
-    //                         <AutoComplete.Option key={option.value}>
-    //                             <div
-    //                                 onMouseDown={(e) => e.preventDefault()} // Prevent dropdown from closing
-    //                                 style={{ display: "flex", alignItems: "center" }}
-    //                             >
-    //                                 <Checkbox
-    //                                     onChange={() => handleSelect(option.value)}
-    //                                     checked={selectedValues.includes(option.value)}
-    //                                     value={option.value}
-    //                                 >
-    //                                     {option.label}
-    //                                 </Checkbox>
-    //                             </div>
-    //                         </AutoComplete.Option>
-    //                     ))}
-    //                 </AutoComplete> */}
-    //             </div>
-    //         </div>
-    //     )
-    // };
-
-    // const renderResizableHeader = (title, columnKey, index) => {
-    //     const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
-    //     const firstColWidth = isEditMode ? 125 : 0; // Adjust the first column width if in edit mode
-    //     const leftOffset =
-    //         (index === 0 ? firstColWidth : firstColWidth) +
-    //         headers
-    //             .slice(0, index)
-    //             .reduce((sum, key) => sum + columnWidths[key], 0);
-    //     return (
-    //         <Resizable
-    //             width={columnWidths[columnKey]}
-    //             height={0}
-    //             onResize={handleResize(columnKey)} // Immediate DOM updates
-    //             // onResizeStop={handleResizeStop(columnKey)} // Final state update
-    //             draggableOpts={{ enableUserSelectHack: false }}
-    //             handle={
-    //                 <div
-    //                     style={{
-    //                         position: "absolute",
-    //                         right: 0,
-    //                         bottom: 0,
-    //                         cursor: "col-resize", // Keeps the resizing cursor
-    //                         zIndex: 10, // Ensure it stays above other elements
-    //                         display: "flex", // Allows icon alignment
-    //                         alignItems: "center",
-    //                         justifyContent: "center",
-    //                         width: "15px", // Adjust based on the size of your icon
-    //                         height: "100%",
-    //                     }}
-    //                 >
-    //                     <RxDividerVertical style={{ color: "gray", fontSize: "32px" }} /> {/* Replace with your preferred icon */}
-    //                 </div>
-    //             }
-    //             style={{
-    //                 backgroundColor: headerBgColor,
-    //             }}
-    //         >
-    //             <th
-    //                 className="px-4 py-4 border-b border-gray-300"
-    //                 id={`header${index}`}
-    //                 style={{
-    //                     width: `${columnWidths[columnKey]}px`,
-    //                     minWidth: `${columnWidths[columnKey]}px`,
-    //                     zIndex: isPinned ? 1000 : 10, // Adjust z-index for proper stacking
-    //                     position: isPinned ? "sticky" : "relative", // Sticky only if pinned
-    //                     left: isPinned ? `${leftOffset}px` : "auto", // Offset only if pinned
-    //                     top: 0,
-    //                     backgroundColor: headerBgColor, // Solid background for pinned headers
-    //                     color: headerTextColor, // Text color
-    //                     whiteSpace: "nowrap",
-    //                     fontFamily: headerFontFamily, // Font family
-    //                     fontSize: `${headerFontSize}px`, // Font size
-    //                     // borderRight: isPinned && `4px solid #bed900`,
-    //                 }}
-    //             >
-    //                 <div
-    //                     className="flex justify-between items-center gap-3"
-    //                     style={{
-    //                         zIndex: isPinned ? 1000 : "inherit", // Ensure child elements respect z-index
-    //                         position: "relative", // Keep elements aligned
-    //                     }}
-    //                 >
-    //                     <div>
-    //                         <span>{title.replace(/_/g, " ").toUpperCase()}</span>
-    //                     </div>
-    //                     <div className="flex items-center gap-1">
-    //                         <button onClick={() => handleSort(columnKey)}>
-    //                             <FaSort />
-    //                         </button>
-
-    //                         <MultiSelectFilter
-    //                             data={data}
-    //                             filteredData={filteredData}
-    //                             setFilteredData={setFilteredData}
-    //                             globalOption={globalOption}
-    //                             setGlobalOption={setGlobalOption}
-    //                             columnKey={columnKey}
-    //                             closePopover={() => closePopover(index)}
-    //                             index={index}
-    //                         />
-    //                         {/* <Popover
-    //                             content={
-    //                                 <MultiSelectFilter
-    //                                     data={data}
-    //                                     filteredData={filteredData}
-    //                                     setFilteredData={setFilteredData}
-    //                                     globalOption={globalOption}
-    //                                     setGlobalOption={setGlobalOption}
-    //                                     columnKey={columnKey}
-    //                                     closePopover={() => closePopover(index)}
-    //                                 />
-    //                             }
-
-    //                             trigger="click"
-    //                             placement="bottom"
-    //                             visible={visiblePopover[index] || false}
-    //                             onVisibleChange={(isVisible) => handlePopoverVisibility(index, isVisible)}
-    //                         >
-    //                             <button>
-    //                                 <IoSearchOutline />
-    //                             </button>
-    //                         </Popover> */}
-    //                         <Popover content={getAggregatePopoverContent(columnKey)} trigger="click" placement="bottom">
-    //                             <button title="Labels">
-    //                                 <MdOutlineLabel />
-    //                             </button>
-    //                         </Popover>
-
-    //                         {isEditMode &&
-    //                             (freezeCol.includes(columnKey) ? (
-    //                                 <button title="Freezed Column" onClick={(e) => handleFreezeColumn(columnKey, "removeFreezeCol", e)}>
-    //                                     <BsPinAngleFill />
-    //                                 </button>
-    //                             ) : (
-    //                                 <button title="Freeze Column" onClick={(e) => handleFreezeColumn(columnKey, "showInProfile", e)}>
-    //                                     <BsPin />
-    //                                 </button>
-    //                             ))
-    //                         }
-
-    //                     </div>
-    //                 </div>
-    //             </th>
-    //         </Resizable>
-    //     );
-    // };
 
 
     const isValidUrl = (url) => {
@@ -1223,11 +830,11 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
 
     return (
         <div>
-            <div className="flex text-center justify-between items-center px-[50px]">
+            <div className="flex text-center justify-between items-center px-[50px] ">
                 <div className="flex align-center gap-[10px]">
-                    <button onClick={() => navigate(-1)} title="Back">
+                    {isEditMode &&<button onClick={() => navigate(-1)} title="Back">
                         <BackIcon />
-                    </button>
+                    </button>}
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
                 <div className="flex ">
@@ -1601,41 +1208,56 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                 })}
             /> */}
 
-            <Table
-                data={data}
-                headers={headers}
-                filteredData={filteredData}
-                setFilteredData={setFilteredData}
-                paginatedData={paginatedData}
-                loading={loading}
-                isEditMode={isEditMode}
-                isedit={isedit}
-                setIsedit={setIsedit}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                settings={settings}
-                freezeCol={freezeCol}
-                setFreezeCol={setFreezeCol}
-                globalOption={globalOption}
-                setGlobalOption={setGlobalOption}
-                ischecked={ischecked}
-                setIschecked={setIschecked}
-                EditData={EditData}
-                setEditData={setEditData}
-                handleBulkDelete={handleBulkDelete}
-                headerBgColor={headerBgColor}
-                headerTextColor={headerTextColor}
-                headerFontSize={headerFontSize}
-                headerFontFamily={headerFontFamily}
-                bodyTextColor={bodyTextColor}
-                bodyFontSize={bodyFontSize}
-                bodyFontFamily={bodyFontFamily}
-                tempHeader={tempHeader}
-                formulaData={formulaData}
-                handleBulkSave={handleBulkSave}
-                globalCheckboxChecked={globalCheckboxChecked}
-                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-            />
+            {isEditMode ?
+
+                <Table
+                    data={data}
+                    headers={headers}
+                    filteredData={filteredData}
+                    setFilteredData={setFilteredData}
+                    paginatedData={paginatedData}
+                    loading={loading}
+                    isEditMode={isEditMode}
+                    isedit={isedit}
+                    setIsedit={setIsedit}
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                    settings={settings}
+                    freezeCol={freezeCol}
+                    setFreezeCol={setFreezeCol}
+                    globalOption={globalOption}
+                    setGlobalOption={setGlobalOption}
+                    ischecked={ischecked}
+                    setIschecked={setIschecked}
+                    EditData={EditData}
+                    setEditData={setEditData}
+                    handleBulkDelete={handleBulkDelete}
+                    headerBgColor={headerBgColor}
+                    headerTextColor={headerTextColor}
+                    headerFontSize={headerFontSize}
+                    headerFontFamily={headerFontFamily}
+                    bodyTextColor={bodyTextColor}
+                    bodyFontSize={bodyFontSize}
+                    bodyFontFamily={bodyFontFamily}
+                    tempHeader={tempHeader}
+                    formulaData={formulaData}
+                    handleBulkSave={handleBulkSave}
+                    globalCheckboxChecked={globalCheckboxChecked}
+                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                />
+
+                :
+
+                <PeopleDirectoryView
+                    data={data}
+                    headers={headers}
+                    tempHeader={tempHeader}
+                    filteredData={filteredData}
+                    setFilteredData={setFilteredData}
+                    paginatedData={paginatedData}
+                    settings={settings}
+                />
+            }
 
             <EditRow
                 isOpen={confirmEditModalOpen}

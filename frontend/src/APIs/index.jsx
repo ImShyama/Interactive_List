@@ -2,9 +2,6 @@ import axios from "axios";
 import { HOST } from "../utils/constants";
 import { notifyError } from "../utils/notify";
 import { updateSetting } from "../utils/settingSlice";
-import { UserContext } from "../context/UserContext";
-import { useDispatch } from "react-redux";
-import { useContext } from "react";
 
 export const handleSaveChanges = async (settingData, token, dispatch, updatedSettings) => {
     try {

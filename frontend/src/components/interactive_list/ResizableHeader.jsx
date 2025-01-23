@@ -9,6 +9,7 @@ import Freeze from "./Freeze";
 import MultiSelectFilter from "./MultiSelectFilter";
 import { IoSearchOutline } from "react-icons/io5";
 import PeopleDirectoryThreeDot from "../people_directory/PeopleDirectoryThreeDot";
+import VideoGalleryThreeDot from "../video_gallary/VideoGallaryThreeDot";
 // import { Resizable } from 're-resizable';
 
 const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFreezeCol, freezeCol, columnKey, index, headers, columnWidths, headerBgColor, headerTextColor, headerFontFamily, headerFontSize, isEditMode, handleResize,
@@ -284,6 +285,18 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                         <Freeze columnKey={columnKey} isEditMode={isEditMode} setFreezeCol={setFreezeCol} freezeCol={freezeCol} settings={settings} />
                         {isEditMode && settings.appName == "People Directory" &&
                             <PeopleDirectoryThreeDot
+                                headerId={columnKey}
+                                columnKey={title}
+                                openPopoverId={openPopoverId}
+                                setOpenPopoverId={setOpenPopoverId}
+                                // checkboxSelections={checkboxSelections}
+                                // updateSelection={updateSelection}
+                                settings={settings}
+
+                            />
+                        }
+                        {isEditMode && settings.appName == "Video Gallery" &&
+                            <VideoGalleryThreeDot
                                 headerId={columnKey}
                                 columnKey={title}
                                 openPopoverId={openPopoverId}

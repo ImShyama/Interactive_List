@@ -20,6 +20,7 @@ const SheetSchema = new mongoose.Schema({
     showInProfile: Array,
     freezeCol: String,
     hiddenCol: Array,
+    peopleDirectory: Object,
 });
 
 
