@@ -6,144 +6,144 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-  :root {
-    --radius: 0.5rem;
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+:root {
+  --radius: 0.5rem;
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 3.9%;
+  --primary: 0 0% 9%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 0 0% 96.1%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96.1%;
+  --muted-foreground: 0 0% 45.1%;
+  --accent: 0 0% 96.1%;
+  --accent-foreground: 0 0% 9%;
 
-    --tab-selected: 0 0% 91%;
-    
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    --active-tab-bg: rgba(144, 237, 140, 0.1);
-    --active-tab-color: rgba(26, 137, 21, 1);
-    --scrollbar-bg: #e4e4e7;
-    --scrollbar-color: #fafafa;
-    --text-color: black;
-    --inputbg-color: white;
-    --background-color:rgba(249, 250, 252, 1);
-    
-    /* Custom Table Variables */
-    --table-border-color:rgba(228, 228, 231, 1);
-    --row-hover-color: rgb(243, 243, 243);
-    --row-even-color: rgb(255, 255, 255);
-    --row-odd-color: rgb(246, 246, 246);
+  --tab-selected: 0 0% 91%;
 
-    /* Receive Form Page */
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 89.8%;
+  --input: 0 0% 89.8%;
+  --ring: 0 0% 3.9%;
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  --active-tab-bg: rgba(144, 237, 140, 0.1);
+  --active-tab-color: rgba(26, 137, 21, 1);
+  --scrollbar-bg: #e4e4e7;
+  --scrollbar-color: #fafafa;
+  --text-color: black;
+  --inputbg-color: white;
+  --background-color: rgba(249, 250, 252, 1);
 
-    --tab-info-text: rgba(60, 97, 53, 1);
-    --form-border-color:#E4E4E7;
-  }
+  /* Custom Table Variables */
+  --table-border-color: rgba(228, 228, 231, 1);
+  --row-hover-color: rgb(243, 243, 243);
+  --row-even-color: rgb(255, 255, 255);
+  --row-odd-color: rgb(246, 246, 246);
 
-  .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+  /* Receive Form Page */
 
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+  --tab-info-text: rgba(60, 97, 53, 1);
+  --form-border-color: #E4E4E7;
+}
 
-    --tab-selected: 0 0% 22%;
+.dark {
+  --background: 0 0% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 14.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 14.9%;
+  --muted-foreground: 0 0% 63.9%;
+  --accent: 0 0% 14.9%;
+  --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    --active-tab-bg: #27272a;
-    --active-tab-color: white;
-    --scrollbar-bg: #343434;
-    --scrollbar-color: #18181b;
-    --inputbg-color: rgb(0, 0, 0);
-    --text-color: white;
-    --background-color:rgb(16, 16, 16);
+  --accent: 0 0% 14.9%;
+  --accent-foreground: 0 0% 98%;
 
-    /* Custom Table Variables */
-    --table-border-color:rgb(80, 80, 80);
-    --row-hover-color: rgb(50, 50, 50);
-    --row-even-color: rgba(10, 10, 10);
-    --row-odd-color: rgb(28, 28, 28);
-    
-    /* Receive Form Page */
+  --tab-selected: 0 0% 22%;
 
-    --tab-info-text: white;
-    --form-border-color:#E4E4E7;
-  }
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 14.9%;
+  --input: 0 0% 14.9%;
+  --ring: 0 0% 83.1%;
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+  --sidebar-background: 240 5.9% 10%;
+  --sidebar-foreground: 240 4.8% 95.9%;
+  --sidebar-primary: 224.3 76.3% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 240 4.8% 95.9%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  --active-tab-bg: #27272a;
+  --active-tab-color: white;
+  --scrollbar-bg: #343434;
+  --scrollbar-color: #18181b;
+  --inputbg-color: rgb(0, 0, 0);
+  --text-color: white;
+  --background-color: rgb(16, 16, 16);
+
+  /* Custom Table Variables */
+  --table-border-color: rgb(80, 80, 80);
+  --row-hover-color: rgb(50, 50, 50);
+  --row-even-color: rgba(10, 10, 10);
+  --row-odd-color: rgb(28, 28, 28);
+
+  /* Receive Form Page */
+
+  --tab-info-text: white;
+  --form-border-color: #E4E4E7;
+}
 
 
-  :root {
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+:root {
+  --sidebar-background: 0 0% 98%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-accent-foreground: 240 5.9% 10%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
 
-  .dark {
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 0 0% 98%;
-    --sidebar-primary-foreground: 240 5.9% 10%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+.dark {
+  --sidebar-background: 240 5.9% 10%;
+  --sidebar-foreground: 240 4.8% 95.9%;
+  --sidebar-primary: 0 0% 98%;
+  --sidebar-primary-foreground: 240 5.9% 10%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 240 4.8% 95.9%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+}
 
 
 #root * {
@@ -152,7 +152,7 @@
 
 }
 
-*{
+* {
   scroll-behavior: smooth !important;
 }
 
@@ -243,13 +243,13 @@ body {
   box-shadow: 8px 8px 24px 0px rgba(66, 68, 90, 1);
 }
 
-.form_container > h2 {
+.form_container>h2 {
   margin-block: 1rem;
   padding-block: 0.6rem;
   color: rgba(0, 212, 255, 1);
 }
 
-.form_container > form {
+.form_container>form {
   display: flex;
   flex-direction: column;
   gap: 1.4rem;
@@ -326,6 +326,7 @@ span a {
   .home_page {
     font-size: 1.5rem;
   }
+
   .home_page button {
     padding: 0.6rem 1rem;
     font-size: 1.5rem;
@@ -352,7 +353,8 @@ span a {
 
 /* When drawer is open, adjust the width of the left content */
 .drawer-open .left-content {
-  margin-right: 500px; /* width of the drawer */
+  margin-right: 500px;
+  /* width of the drawer */
 }
 
 .icon_outer {
@@ -382,14 +384,18 @@ span a {
 
 
 /* Change focus and hover colors to orange */
-.custom-input:hover, .custom-input:focus {
-  border-color: var(--primary-color) !important; /* Orange border on hover and focus */
-  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2); /* Orange shadow */
+.custom-input:hover,
+.custom-input:focus {
+  border-color: var(--primary-color) !important;
+  /* Orange border on hover and focus */
+  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2);
+  /* Orange shadow */
 }
 
 /* Change the search icon color */
 .custom-input .ant-input-prefix {
-  color: var(--primary-color) !important; /* Orange search icon */
+  color: var(--primary-color) !important;
+  /* Orange search icon */
 }
 
 
@@ -398,48 +404,60 @@ span a {
 .custom-select .ant-select-selector:focus,
 .custom-select .ant-select-selector:focus-visible,
 .custom-select .ant-select-selector:active {
-  border-color: var(--primary-color) !important; /* Orange border on hover, focus, and active */
-  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2) !important; /* Orange shadow */
+  border-color: var(--primary-color) !important;
+  /* Orange border on hover, focus, and active */
+  box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.2) !important;
+  /* Orange shadow */
 }
 
 /* Change the dropdown arrow color */
 .custom-select .ant-select-arrow {
-  color: var(--primary-color) !important; /* Orange arrow icon */
+  color: var(--primary-color) !important;
+  /* Orange arrow icon */
 }
 
 /* Change selected option text and border color */
 .custom-select .ant-select-selection-item {
-  color: var(--primary-color) !important; /* Orange selected option text */
+  color: var(--primary-color) !important;
+  /* Orange selected option text */
 }
 
 
 /* styles.css */
 .custom-row {
-  height: 22px; /* Adjust this value to your preference */
+  height: 22px;
+  /* Adjust this value to your preference */
 }
 
 .custom-row td {
-  padding: 8px 16px; /* Adjust top/bottom and left/right padding as needed */
+  padding: 8px 16px;
+  /* Adjust top/bottom and left/right padding as needed */
 }
 
 
 /* For Webkit browsers (Chrome, Safari, and Edge) */
 ::-webkit-scrollbar {
-  width: 6px; /* Set the width for vertical scrollbars */
-  height: 12px; /* Set the height for horizontal scrollbars */
+  width: 6px;
+  /* Set the width for vertical scrollbars */
+  height: 12px;
+  /* Set the height for horizontal scrollbars */
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Optional: background for the scrollbar track */
+  background: #f1f1f1;
+  /* Optional: background for the scrollbar track */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--primary-color); /* Set the color of the scrollbar */
-  border-radius: 10px; /* Optional: round edges of the scrollbar */
+  background: var(--primary-color);
+  /* Set the color of the scrollbar */
+  border-radius: 10px;
+  /* Optional: round edges of the scrollbar */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-color); /* Optional: hover color for the scrollbar */
+  background: var(--primary-color);
+  /* Optional: hover color for the scrollbar */
 }
 
 
@@ -461,82 +479,108 @@ span a {
 
 /* button:disabled  */
 button:disabled {
-  background: #cccccc; /* Disabled state background */
-  cursor: not-allowed;  /* Disabled state cursor */
-  box-shadow: none;     /* Remove shadow when disabled */
+  background: #cccccc;
+  /* Disabled state background */
+  cursor: not-allowed;
+  /* Disabled state cursor */
+  box-shadow: none;
+  /* Remove shadow when disabled */
 }
 
 .icons:disabled {
-  background: transparent; /* Disabled state background */
-  cursor: not-allowed;  /* Disabled state cursor */
-  box-shadow: none;     /* Remove shadow when disabled */
+  background: transparent;
+  /* Disabled state background */
+  cursor: not-allowed;
+  /* Disabled state cursor */
+  box-shadow: none;
+  /* Remove shadow when disabled */
 }
 
 .icons svg {
-  stroke: #919191; /* Default color */
+  stroke: #919191;
+  /* Default color */
 }
 
 .icons.disabled-svg {
-  stroke: #d3d3d3; /* Lighter, disabled color */
+  stroke: #d3d3d3;
+  /* Lighter, disabled color */
 }
 
 
 
 /* loader inside a button */
 .loader {
-  border: 4px solid transparent; /* Transparent border for the full circle */
-  border-top: 4px solid #ffffff; /* White "dot" on top */
+  border: 4px solid transparent;
+  /* Transparent border for the full circle */
+  border-top: 4px solid #ffffff;
+  /* White "dot" on top */
   border-radius: 50%;
-  width: 25px; /* Size of the loader */
-  height: 25px; /* Size of the loader */
-  animation: spin 0.8s linear infinite; /* Slower spin */
+  width: 25px;
+  /* Size of the loader */
+  height: 25px;
+  /* Size of the loader */
+  animation: spin 0.8s linear infinite;
+  /* Slower spin */
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 
 .people_table tr:nth-child(even) {
-  background-color: #F3F4F6 !important; /* Light green for even rows */
+  background-color: #F3F4F6 !important;
+  /* Light green for even rows */
 }
 
 .people_table tr:nth-child(even) td {
-  background-color: #F3F4F6 !important; /* Light green for even rows */
+  background-color: #F3F4F6 !important;
+  /* Light green for even rows */
 }
 
 .people_table tr:nth-child(odd) {
-  background-color: #f9fff9 !important; /* Lighter green for odd rows */
+  background-color: #f9fff9 !important;
+  /* Lighter green for odd rows */
 }
 
 .people_table tr:nth-child(odd) td {
-  background-color: #f9fff9 !important; /* Lighter green for odd rows */
+  background-color: #f9fff9 !important;
+  /* Lighter green for odd rows */
 }
 
 .people_table tr:hover {
-  background-color: #F1F1F1 !important; /* Slightly darker green on hover */
+  background-color: #F1F1F1 !important;
+  /* Slightly darker green on hover */
 }
-.people_table tr:hover td{
-  background-color: #F1F1F1 !important; /* Slightly darker green on hover */
+
+.people_table tr:hover td {
+  background-color: #F1F1F1 !important;
+  /* Slightly darker green on hover */
 }
 
 .tableTD {
-  height: 50px; /* Adjust height as needed */
-   /* white-space: nowrap;  */
-   overflow-y: auto !important;
-   /* border: 1px solid red !important; */
-} 
+  height: 50px;
+  /* Adjust height as needed */
+  /* white-space: nowrap;  */
+  overflow-y: auto !important;
+  /* border: 1px solid red !important; */
+}
 
 .resizeActions{
   opacity: 0 !important;
 }
 
 .ResizeTH:hover .resizeActions {
-  background-color: #f1f1f1 !important; /* Solid background for pinned headers */
-  /* z-index: 100 !important; */
+  background-color: #f1f1f1 !important;
+  z-index: 100 !important;
   display: flex !important;
+  align-items: center !important;
   opacity: 1 !important;
   transition: all 0.3s ease-in-out;
 }
-

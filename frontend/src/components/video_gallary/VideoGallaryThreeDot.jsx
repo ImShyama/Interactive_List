@@ -1,5 +1,5 @@
 
-import React, { useCallback, useContext, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Popover, Checkbox, Input, Select, Button, Slider } from "antd";
 import axios from "axios";
@@ -10,22 +10,27 @@ import { useDispatch } from "react-redux";
 import { updateSetting } from "../../utils/settingSlice";
 import { Edit } from "../../assets/svgIcons";
 import CirclePicker from "./CirclePicker";
+import { set } from "lodash";
+import SeeCardPreview from "./SeeCardPreview";
 
 const { Option } = Select;
 
-const VideoGallaryThreeDot = ({ columnKey, settings }) => {
+const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
   const dispatch = useDispatch();
   const { token } = useContext(UserContext);
 
+  const [showCardPreview, setShowCardPreview] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [isEditBoxOpen, setIsEditBoxOpen] = useState(false); // Track edit box visibility
   const [selectedOption, setSelectedOption] = useState("Font Style"); // Default editing option
+  const currentStylingSettings = settings?.showInCard?.find((item) => item?.title === columnKey);
   const [editValues, setEditValues] = useState({
-    fontStyle: settings.fontStyle || "Regular",
-    fontColor: settings.fontColor || "#000000",
-    fontSize: settings.fontSize || "16",
-    fontType: settings.fontType || "Poppins",
+    fontStyle: currentStylingSettings?.setting?.fontStyle || "Regular",
+    fontColor: currentStylingSettings?.setting?.fontColor || "#000000",
+    fontSize: currentStylingSettings?.setting?.fontSize || "16",
+    fontType: currentStylingSettings?.setting?.fontType || "Poppins",
   });
+
 
   const [colorPickerVisible, setColorPickerVisible] = useState(false); // Track if color picker is visible
   const [pickerVisible, setPickerVisible] = React.useState(false); // Toggle CirclePicker visibility
@@ -47,6 +52,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings }) => {
   const handleEditClick = (e) => {
     e.stopPropagation();
     setIsEditBoxOpen(true);
+    setIsPopoverOpen(false);
   };
 
   const [showInCardChecked, setShowInCardChecked] = useState(
@@ -122,7 +128,16 @@ const VideoGallaryThreeDot = ({ columnKey, settings }) => {
   };
   const handleSaveEdit = async () => {
     try {
-      const updatedSettings = { ...settings, ...editValues };
+      const updatedShowInCard = settings?.showInCard?.map((item) =>
+        item?.title === columnKey
+          ? { ...item, setting: { ...item.setting, ...editValues } }
+          : item
+      );
+      
+      const updatedSettings = {
+        ...settings,
+        showInCard: updatedShowInCard,
+      };
 
       dispatch(updateSetting(updatedSettings));
 
@@ -146,10 +161,10 @@ const VideoGallaryThreeDot = ({ columnKey, settings }) => {
   const handleCancelEdit = () => {
     setIsEditBoxOpen(false); // Close the edit box
     setEditValues({
-      fontStyle: settings.fontStyle || "Regular",
-      fontColor: settings.fontColor || "#000000",
-      fontSize: settings.fontSize || "16",
-      fontType: settings.fontType || "Poppins",
+      fontStyle: currentStylingSettings?.setting?.fontStyle || "Regular",
+      fontColor: currentStylingSettings?.setting?.fontColor || "#000000",
+      fontSize: currentStylingSettings?.setting?.fontSize || "16",
+      fontType: currentStylingSettings?.setting?.fontType || "Poppins",
     });
   };
 
@@ -394,19 +409,21 @@ const VideoGallaryThreeDot = ({ columnKey, settings }) => {
     }
   };
 
-  const editBox = isEditBoxOpen && (
-    // <div
-    //   className="fixed inset-0 bg-white border border-gray-200 shadow-lg overflow-hidden flex"
-    //   style={{
-    //     width: "889px",
-    //     height: "469px",
-    //     borderRadius: "50px",
-    //     top: "250px",
-    //     left: "515px",
-    //   }}
-    // >
+  const handleShowCardPreview = () => {
+    setShowCardPreview(!showCardPreview);
+  }
 
-    <div className="fixed inset-0 flex items-center justify-center ">
+  // const [columnSettings, setColumnSettings] = useState(
+  //   settings?.showInCard
+  // );
+
+  // useEffect(() => {
+
+  // }, [settings]);
+
+  const editBox = isEditBoxOpen && (
+
+    <div className="fixed inset-0 flex items-center justify-center z-[1000] cursor-pointer ">
       <div
         className="bg-white border border-gray-200 shadow-lg overflow-hidden flex"
         style={{
@@ -421,11 +438,10 @@ const VideoGallaryThreeDot = ({ columnKey, settings }) => {
             (option) => (
               <div
                 key={option}
-                className={`cursor-pointer p-2 rounded-md text-[30px] font-semibold font-poppins leading-none ${
-                  selectedOption === option
-                    ? "text-[#598931]"
-                    : "text-[#CDCCCC]"
-                }`}
+                className={`cursor-pointer p-2 rounded-md text-[30px] font-semibold font-poppins leading-none ${selectedOption === option
+                  ? "text-[#598931]"
+                  : "text-[#CDCCCC]"
+                  }`}
                 onClick={() => setSelectedOption(option)}
               >
                 {option}
@@ -494,13 +510,16 @@ const VideoGallaryThreeDot = ({ columnKey, settings }) => {
           >
             {/* Header Name */}
 
-            {settings.headers || "Default Header"}
+            {columnKey || "Default Header"}
           </div>
 
           {/* Show Card Preview Link */}
-
-          <div className="mt-2 text-[#598931] text-sm font-semibold cursor-pointer underline decoration-solid decoration-[#598931] underline-offset-auto decoration-thick text-[12px] font-poppins">
-            See Card Preview
+          <div>
+            <button className="mt-2 text-[#598931] text-sm font-semibold cursor-pointer underline decoration-solid decoration-[#598931] underline-offset-auto decoration-thick text-[12px] font-poppins"
+              onClick={handleShowCardPreview}
+            >
+              See Card Preview
+            </button>
           </div>
           <div className="flex justify-end gap-4 mt-auto pt-4">
             <Button
@@ -535,12 +554,15 @@ const VideoGallaryThreeDot = ({ columnKey, settings }) => {
           Save
         </Button>
       </div> */}
+        {showCardPreview && (
+          <SeeCardPreview onClose={handleShowCardPreview} settings={settings} rowData={firstRowData} />
+        )}
       </div>
     </div>
   );
 
   const popoverContent = (
-    <div>
+    <div className="z-10">
       <table>
         <tbody>
           {/* Show in Card */}
@@ -611,13 +633,14 @@ const VideoGallaryThreeDot = ({ columnKey, settings }) => {
   );
 
   return (
-    <div className="relative">
+    <div className="flex items-center">
       <Popover
         content={popoverContent}
         trigger="click"
         open={isPopoverOpen}
         onOpenChange={handlePopoverClose}
         placement="bottomRight"
+        overlayStyle={{ zIndex: 999 }}
       >
         <button onClick={handleDotClick}>
           <BsThreeDotsVertical />

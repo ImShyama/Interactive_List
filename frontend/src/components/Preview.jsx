@@ -8,6 +8,7 @@ import Table from "./interactive_list/Table";
 import PeopleDirectoryView from "./people_directory/PeopleDirectoryView";
 // import VideoGallaryView from "./video_gallary/VideoGallaryView";
 import { filter } from "lodash";
+import VideoGallaryView from "./video_gallary/VideoGallaryView";
 
 const Preview = ({ closeModal, sheetdetails }) => {
 
@@ -176,13 +177,18 @@ const Preview = ({ closeModal, sheetdetails }) => {
                                                             settings={sheetdetails}
                                                         />
                                                     );
-                                                // case "Video Gallary":
-                                                //     return (
-                                                //         <VideoGallaryView
-                                                //             data={sheetData}
-                                                //             headers={tableHeader}
-                                                //         />
-                                                //     );
+                                                case "Video Gallery":
+                                                    return (
+                                                        <VideoGallaryView
+                                                            data={sheetData}
+                                                            headers={filterHeader}
+                                                            tempHeader={tableHeader}
+                                                            filteredData={filteredData}
+                                                            setFilteredData={setFilteredData}
+                                                            paginatedData={paginatedData}
+                                                            settings={sheetdetails}
+                                                        />
+                                                    );
                                                 default:
                                                     return null;
                                             }

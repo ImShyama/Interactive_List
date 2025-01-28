@@ -341,12 +341,28 @@ button:disabled {
   display: none !important;
 }
 
-.resizeActions{
+/* .resizeActions{
   display: none !important;
 }
 
 .resizeTh:hover .resizeActions {
   background-color: #f1f1f1 !important; /* Solid background for pinned headers */
-  z-index: 10 !important;
+  /* z-index: 10 !important;
   display: flex !important;
+} */
+
+
+.resizeActions {
+  opacity: 0; /* Hide by default */
+  visibility: hidden; /* Ensure it's not interactable when hidden */
+  display: flex; /* Always use flex layout */
+  align-items: center; /* Center align items */
+  background-color: #f1f1f1; /* Default background */
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Smooth transition */
+}
+
+.ResizeTH:hover .resizeActions,
+.ResizeTH:focus-within .resizeActions { /* Add focus support for accessibility */
+  opacity: 1; /* Show on hover/focus */
+  visibility: visible; /* Make it interactable */
 }

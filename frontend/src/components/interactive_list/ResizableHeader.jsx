@@ -17,6 +17,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
 }) => {
 
     title = title.replace(/_/g, " ");
+    const firstRowData = data[0];
 
     const [sortColumn, setSortColumn] = useState(null);
     const [visiblePopover, setVisiblePopover] = useState({});
@@ -158,6 +159,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                         justifyContent: "center",
                         width: "15px", // Adjust based on the size of your icon
                         height: "100%",
+                        marginRight: "5px",
                     }}
                 >
                     <RxDividerVertical style={{ color: "gray", fontSize: "32px" }} /> {/* Replace with your preferred icon */}
@@ -304,7 +306,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                                 // checkboxSelections={checkboxSelections}
                                 // updateSelection={updateSelection}
                                 settings={settings}
-
+                                firstRowData={firstRowData}
                             />
                         }
                     </div>

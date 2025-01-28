@@ -55,7 +55,6 @@ export const Search = () => (
             <path id="Vector_2" d="M19.944 20.0046L15.9492 16.0098" stroke="white" strokeWidth="1.85805" strokeLinecap="round" strokeLinejoin="round" />
         </g>
     </svg>
-
 )
 
 export const Reset = () => (

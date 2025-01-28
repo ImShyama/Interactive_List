@@ -35,6 +35,7 @@ import _, { debounce } from "lodash";
 import GlobalSearch from "../interactive_list/GlobalSearch.jsx";
 import Table from "../interactive_list/Table.jsx";
 import Loader from "../Loader.jsx";
+import VideoGallaryView from "./VideoGallaryView.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -1207,41 +1208,57 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                 })}
             /> */}
 
-            <Table
+            {isEditMode ?
+
+                <Table
+                    data={data}
+                    headers={headers}
+                    filteredData={filteredData}
+                    setFilteredData={setFilteredData}
+                    paginatedData={paginatedData}
+                    loading={loading}
+                    isEditMode={isEditMode}
+                    isedit={isedit}
+                    setIsedit={setIsedit}
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                    settings={settings}
+                    freezeCol={freezeCol}
+                    setFreezeCol={setFreezeCol}
+                    globalOption={globalOption}
+                    setGlobalOption={setGlobalOption}
+                    ischecked={ischecked}
+                    setIschecked={setIschecked}
+                    EditData={EditData}
+                    setEditData={setEditData}
+                    handleBulkDelete={handleBulkDelete}
+                    headerBgColor={headerBgColor}
+                    headerTextColor={headerTextColor}
+                    headerFontSize={headerFontSize}
+                    headerFontFamily={headerFontFamily}
+                    bodyTextColor={bodyTextColor}
+                    bodyFontSize={bodyFontSize}
+                    bodyFontFamily={bodyFontFamily}
+                    tempHeader={tempHeader}
+                    formulaData={formulaData}
+                    handleBulkSave={handleBulkSave}
+                    globalCheckboxChecked={globalCheckboxChecked}
+                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                />
+
+            :
+
+            <VideoGallaryView
                 data={data}
-                headers={headers}
-                filteredData={filteredData}
-                setFilteredData={setFilteredData}
-                paginatedData={paginatedData}
-                loading={loading}
-                isEditMode={isEditMode}
-                isedit={isedit}
-                setIsedit={setIsedit}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
+                // headers={filterHeader}
+                // tempHeader={tableHeader}
+                // filteredData={filteredData}
+                // setFilteredData={setFilteredData}
+                // paginatedData={paginatedData}
                 settings={settings}
-                freezeCol={freezeCol}
-                setFreezeCol={setFreezeCol}
-                globalOption={globalOption}
-                setGlobalOption={setGlobalOption}
-                ischecked={ischecked}
-                setIschecked={setIschecked}
-                EditData={EditData}
-                setEditData={setEditData}
-                handleBulkDelete={handleBulkDelete}
-                headerBgColor={headerBgColor}
-                headerTextColor={headerTextColor}
-                headerFontSize={headerFontSize}
-                headerFontFamily={headerFontFamily}
-                bodyTextColor={bodyTextColor}
-                bodyFontSize={bodyFontSize}
-                bodyFontFamily={bodyFontFamily}
-                tempHeader={tempHeader}
-                formulaData={formulaData}
-                handleBulkSave={handleBulkSave}
-                globalCheckboxChecked={globalCheckboxChecked}
-                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
             />
+
+            }
 
             <EditRow
                 isOpen={confirmEditModalOpen}

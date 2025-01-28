@@ -38,8 +38,9 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
               return list;
             }
             // Add new entry with incremental ID
-            const newId = list.length + 1; 
-            return [...list, { id: newId, title: columnKey }];
+             // Find the highest existing ID and increment it
+          const highestId = list.reduce((max, item) => Math.max(max, item.id), 0);
+          return [...list, { id: highestId + 1, title: columnKey }];
           } else {
             // Remove entry by title
             return list.filter((item) => item.title !== columnKey);

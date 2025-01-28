@@ -627,52 +627,84 @@ const VideoGallaryPreview = () => {
     {
       id: 1,
       title: "Significance of Video Thumbnail",
-      video:"https://drive.google.com/file/d/1sbiKGp8iIyTzOHACuSm0xOME4fzz29uz/view?usp=sharing",
+      video:
+        "https://drive.google.com/file/d/1sbiKGp8iIyTzOHACuSm0xOME4fzz29uz/view?usp=sharing",
       image: thumbnail1,
-      isGoogleDrive: true, // Flag to identify Google Drive videos
+      category: "Architecture",
+      description:
+        "From 28% to 35% gross profit in under 3 months—Shantanoo Rane's story is nothing short of inspiring!",
+      subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
       id: 2,
       title: "How to Make YouTube Thumbnails",
       video: "https://www.youtube.com/embed/02kVDdzlflM",
       image: thumbnail2,
+      category: "Architecture",
+      description:
+        "From 28% to 35% gross profit in under 3 months—Shantanoo Rane's story is nothing short of inspiring!",
+      subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
       id: 3,
       title: "Inspiring Story - Shantanoo Rane",
       video: "https://www.youtube.com/embed/HD4IUbTZsfM",
       image: thumbnail3,
+      category: "Architecture",
+      description:
+        "From 28% to 35% gross profit in under 3 months—Shantanoo Rane's story is nothing short of inspiring!",
+      subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
       id: 4,
       title: "Watch My Video!",
       video: "https://www.youtube.com/embed/C0UyDNCx3qo",
       image: thumbnail4,
+      category: "Architecture",
+      description:
+        "From 28% to 35% gross profit in under 3 months—Shantanoo Rane's story is nothing short of inspiring!",
+      subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
       id: 5,
       title: "YouTube Thumbnail Template",
       video: "https://www.youtube.com/embed/hDZ91RzzgkY",
       image: thumbnail5,
+      category: "Architecture",
+      description:
+        "From 28% to 35% gross profit in under 3 months—Shantanoo Rane's story is nothing short of inspiring!",
+      subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
       id: 6,
       title: "Another Inspiring Story",
       video: "https://www.youtube.com/embed/0lAuwVLJ_nw",
       image: thumbnail6,
+      category: "Architecture",
+      description:
+        "From 28% to 35% gross profit in under 3 months—Shantanoo Rane's story is nothing short of inspiring!",
+      subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
       id: 7,
       title: "Funny Video to watch",
       video: "https://www.youtube.com/embed/AreWQuDjtUE",
       image: thumbnail7,
+      category: "Architecture",
+      description:
+        "From 28% to 35% gross profit in under 3 months—Shantanoo Rane's story is nothing short of inspiring!",
+      subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
       id: 8,
       title: "Podcast Video to Watch",
-      video:"https://drive.google.com/file/d/1NCGl77J5498TNDuDp4_9g3C5cfb4RraZ/view?usp=sharing",
+      video:
+        "https://drive.google.com/file/d/1NCGl77J5498TNDuDp4_9g3C5cfb4RraZ/view?usp=sharing",
       image: thumbnail8,
-      isGoogleDrive: true, // Flag for Google Drive
+      category: "Architecture",
+      description:
+        "From 28% to 35% gross profit in under 3 months—Shantanoo Rane's story is nothing short of inspiring!",
+      subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
   ];
 
@@ -707,7 +739,7 @@ const VideoGallaryPreview = () => {
         {paginatedVideos.map((video) => (
           <VideoCard
             key={video.id}
-            video={video}
+            rowData={video}
             hoveredVideo={hoveredVideo}
             setHoveredVideo={setHoveredVideo}
             handleVideoClick={handleVideoClick}

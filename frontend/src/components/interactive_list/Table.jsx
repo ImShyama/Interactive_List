@@ -1,5 +1,5 @@
 import { memo, useState, useEffect, useMemo } from "react";
-import { Table as AntTable, Pagination, Checkbox } from "antd";
+import { Table as AntTable, Pagination, Checkbox, Avatar } from "antd";
 import { Delete, Edit } from "../../assets/svgIcons";
 import { RxDividerVertical } from "react-icons/rx";
 import { Resizable } from "react-resizable";
@@ -7,12 +7,28 @@ import "react-resizable/css/styles.css";
 import ResizableHeader from "./ResizableHeader";
 import _, { debounce } from "lodash";
 import { IoSaveSharp, IoSave } from "react-icons/io5";
+import { UserOutlined } from "@ant-design/icons";
+
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
     handleDelete, handleEdit, handleBulkDelete, ischecked, setIschecked, EditData, setEditData, headerBgColor, headerTextColor, headerFontSize, headerFontFamily,
     bodyTextColor, bodyFontSize, bodyFontFamily, isEditMode, minWidth, tempHeader, formulaData, handleBulkSave,
     globalCheckboxChecked, setGlobalCheckboxChecked
 }) => {
+
+    const primaryColumn = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
+
+    const reorderedHeaders = useMemo(() => {
+        return [
+            primaryColumn,
+            ...headers.filter((header) => header !== primaryColumn),
+        ];
+    }, [headers, primaryColumn]); // Ensure it only updates when `headers` changes
+
+    // headers = reorderedHeaders;
+
+    console.log({ headers, tempHeader, reorderedHeaders, primaryColumn });
+
 
     // const [ischecked, setIschecked] = useState([]);
     const [globalOption, setGlobalOption] = useState({});
@@ -24,7 +40,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
     const paginatedData = filteredData.slice(startIndex, startIndex + rowsPerPage);
     const [columnWidths, setColumnWidths] = useState(
         headers.reduce((acc, header) => {
-            acc[header] = header.toLowerCase() === 'picture' ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
+            acc[header] = header.toLowerCase() === primaryColumn ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
             return acc;
         }, { actions: '125px' }) // Default action column width
     );
@@ -458,169 +474,169 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                 maxWidth: `${columnWidths[header]}px`
                             }}
                         >
-                {isLastPinned && (
-                    <div
-                        style={{
-                            position: "absolute",
-                            right: 0,
-                            top: 0,
-                            bottom: 0,
-                            width: "4px ",
-                            minWidth: "4px ",
-                            backgroundColor: "#ccc",
-                            zIndex: 15, // Ensure it stays above other elements
-                        }}
-                    />
-                )}
-                {isedit && ischecked.includes(item.key_id) && formulaData?.[header] ? (
-                    <div
-                        className="tableTD w-full h-full flex items-center"
-                        style={{
-                            zIndex: isPinned ? 10 : "inherit",
-                            position: "relative",
-                        }}
-                    >
-                        <input
-                            className="w-full h-full border-b-2 border-gray-300 border-primary"
-                            value={EditData.find((data) => data.key_id === item.key_id)?.[header] || ""}
-                            onChange={(e) => {
-                                const newValue = e.target.value;
-                                setEditData((prev) =>
-                                    prev.map((data) =>
-                                        data.key_id === item.key_id
-                                            ? { ...data, [header]: newValue }
-                                            : data
-                                    )
-                                );
-                            }}
-                        />
-                    </div>
-                ) : (
-                    <div
-                        className="tableTD w-full h-full flex items-center "
-                        style={{
-                            zIndex: isPinned ? 10 : "inherit",
-                            position: "relative",
-                        }}
-                        onDoubleClick={(e) => isEditMode && handleDoubleClick(item.key_id, item)}
-                    >
-                        {header.toLowerCase() === "picture" ? (
-                            <div className="w-full h-full flex justify-center items-center">
-                                {isValidUrl(item[header]) ? (
-                                    <img
-                                        src={item[header]}
-                                        alt="profile"
-                                        className="w-12 h-12 rounded-full border-[1px] border-[#D3CBCB] object-cover"
+                            {isLastPinned && (
+                                <div
+                                    style={{
+                                        position: "absolute",
+                                        right: 0,
+                                        top: 0,
+                                        bottom: 0,
+                                        width: "4px ",
+                                        minWidth: "4px ",
+                                        backgroundColor: "#ccc",
+                                        zIndex: 15, // Ensure it stays above other elements
+                                    }}
+                                />
+                            )}
+                            {isedit && ischecked.includes(item.key_id) && formulaData?.[header] ? (
+                                <div
+                                    className="tableTD w-full h-full flex items-center"
+                                    style={{
+                                        zIndex: isPinned ? 10 : "inherit",
+                                        position: "relative",
+                                    }}
+                                >
+                                    <input
+                                        className="w-full h-full border-b-2 border-gray-300 border-primary"
+                                        value={EditData.find((data) => data.key_id === item.key_id)?.[header] || ""}
+                                        onChange={(e) => {
+                                            const newValue = e.target.value;
+                                            setEditData((prev) =>
+                                                prev.map((data) =>
+                                                    data.key_id === item.key_id
+                                                        ? { ...data, [header]: newValue }
+                                                        : data
+                                                )
+                                            );
+                                        }}
                                     />
-                                ) : (
-                                    <Avatar size={48} icon={<UserOutlined />} alt="User" />
-                                )}
-                            </div>
-                        ) : (
-                            <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header]}</span>
-                        )}
-                    </div>
-                )}
-            </td>
-        );
-})}
+                                </div>
+                            ) : (
+                                <div
+                                    className="tableTD w-full h-full flex items-center "
+                                    style={{
+                                        zIndex: isPinned ? 10 : "inherit",
+                                        position: "relative",
+                                    }}
+                                    onDoubleClick={(e) => isEditMode && handleDoubleClick(item.key_id, item)}
+                                >
+                                    {header.toLowerCase().replace(" ", "_") === primaryColumn ? (
+                                        <div className="w-full h-full flex justify-start items-center">
+                                            {isValidUrl(item[header]) ? (
+                                                <img
+                                                    src={item[header]}
+                                                    alt="profile"
+                                                    className="w-12 h-12 rounded-full border-[1px] border-[#D3CBCB] object-cover"
+                                                />
+                                            ) : (
+                                                <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header]}</span>
+                                    )}
+                                </div>
+                            )}
+                        </td>
+                    );
+                })}
             </tr >
         ))
     ), [paginatedData, headers, columnWidths, isEditMode, bodyTextColor, bodyFontFamily, bodyFontSize, freezeCol, isedit, ischecked]);
 
 
-return (
-    <div className="px-[50px] py-[10px]">
-        <div className="overflow-x-auto">
-            <div
-                className="min-w-full relative border border-gray-300 rounded-t-lg bg-white"
-                style={{
-                    maxHeight: "75vh",
-                    overflowY: "auto",
-                }}
-            >
-                <table
-                    className="border border-gray-300 rounded-t-lg bg-white"
+    return (
+        <div className="px-[50px] py-[10px]">
+            <div className="overflow-x-auto">
+                <div
+                    className="min-w-full relative border border-gray-300 rounded-t-lg bg-white"
                     style={{
-                        tableLayout: "auto",
-                        minWidth: { minWidth },
-                        width: "100%",
-                        border: "1px solid #ccc",
-                        borderCollapse: "collapse",
+                        maxHeight: "75vh",
+                        overflowY: "auto",
                     }}
                 >
-                    <thead className="sticky top-0 bg-gray-100 z-20">
-                        <tr className="text-gray-700 text-left"
-                            style={{ backgroundColor: headerBgColor, color: headerTextColor }}>
-                            {isEditMode &&
-                                <th
-                                    className="px-4 py-4 flex items-center"
-                                    style={{
-                                        width: `${columnWidths.actions}px`,
-                                        position: "sticky",
-                                        left: 0,
-                                        zIndex: 10,
-                                        background: "#fff",
-                                        // borderRight: "1px solid #ccc",
-                                        backgroundColor: headerBgColor || "#f1f1f1",
-                                        color: headerTextColor,
-                                        whiteSpace: "nowrap",
-                                        fontFamily: headerFontFamily,
-                                        fontSize: `${headerFontSize}px`,
-                                    }}
-                                >
-                                    {/* Actions */}
-                                    <Checkbox
-                                        checked={globalCheckboxChecked}
-                                        indeterminate={ischecked.length > 0 && ischecked.length < paginatedData.length}
-                                        onChange={(e) => handleGlobalCheckboxChange(e.target.checked)}
-                                    />
-                                    {/* <button onClick={handleBulkSave} className="rounded-[4px] mx-2" title="Save">
+                    <table
+                        className="border border-gray-300 rounded-t-lg bg-white"
+                        style={{
+                            tableLayout: "auto",
+                            minWidth: { minWidth },
+                            width: "100%",
+                            border: "1px solid #ccc",
+                            borderCollapse: "collapse",
+                        }}
+                    >
+                        <thead className="sticky top-0 bg-gray-100 z-20">
+                            <tr className="text-gray-700 text-left"
+                                style={{ backgroundColor: headerBgColor, color: headerTextColor }}>
+                                {isEditMode &&
+                                    <th
+                                        className="px-4 py-4 flex items-center"
+                                        style={{
+                                            width: `${columnWidths.actions}px`,
+                                            position: "sticky",
+                                            left: 0,
+                                            zIndex: 10,
+                                            background: "#fff",
+                                            // borderRight: "1px solid #ccc",
+                                            backgroundColor: headerBgColor || "#f1f1f1",
+                                            color: headerTextColor,
+                                            whiteSpace: "nowrap",
+                                            fontFamily: headerFontFamily,
+                                            fontSize: `${headerFontSize}px`,
+                                        }}
+                                    >
+                                        {/* Actions */}
+                                        <Checkbox
+                                            checked={globalCheckboxChecked}
+                                            indeterminate={ischecked.length > 0 && ischecked.length < paginatedData.length}
+                                            onChange={(e) => handleGlobalCheckboxChange(e.target.checked)}
+                                        />
+                                        {/* <button onClick={handleBulkSave} className="rounded-[4px] mx-2" title="Save">
                                             <IoSaveSharp color="#598931" size={18} />
                                         </button> */}
-                                    <button
-                                        onClick={handleBulkSave}
-                                        className={`rounded-[4px] mx-2 ${ischecked.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#598931] hover:bg-[#598931]'}`}
-                                        title="Save"
-                                        disabled={ischecked.length === 0}
-                                    >
-                                        <IoSaveSharp color="#ffffff" size={18} />
-                                    </button>
-                                </th>
-                            }
-                            {renderedHeaders}
-                        </tr>
-                    </thead>
-                    <tbody className="people_table">
-                        {renderedRows}
-                    </tbody>
-                </table>
+                                        <button
+                                            onClick={handleBulkSave}
+                                            className={`rounded-[4px] mx-2 ${ischecked.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#598931] hover:bg-[#598931]'}`}
+                                            title="Save"
+                                            disabled={ischecked.length === 0}
+                                        >
+                                            <IoSaveSharp color="#ffffff" size={18} />
+                                        </button>
+                                    </th>
+                                }
+                                {renderedHeaders}
+                            </tr>
+                        </thead>
+                        <tbody className="people_table">
+                            {renderedRows}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-        <div className="flex justify-between items-center mt-4">
-            <div>
-                <span>Total Rows: </span>
-                <span>{filteredData.length}</span>
-            </div>
+            <div className="flex justify-between items-center mt-4">
+                <div>
+                    <span>Total Rows: </span>
+                    <span>{filteredData.length}</span>
+                </div>
 
-            <Pagination
-                current={currentPage}
-                total={filteredData.length}
-                pageSize={rowsPerPage}
-                onChange={handlePageChange}
-                showSizeChanger={true}
-            // showSizeChangerSearch={false}
-            // sizeChangerRender={(props) => (
-            //     <CustomSizeChanger
-            //         value={props.value}
-            //         onChange={props.onChange}
-            //         options={props.options}
-            //     />
-            // )}
-            />
+                <Pagination
+                    current={currentPage}
+                    total={filteredData.length}
+                    pageSize={rowsPerPage}
+                    onChange={handlePageChange}
+                    showSizeChanger={true}
+                // showSizeChangerSearch={false}
+                // sizeChangerRender={(props) => (
+                //     <CustomSizeChanger
+                //         value={props.value}
+                //         onChange={props.onChange}
+                //         options={props.options}
+                //     />
+                // )}
+                />
+            </div>
         </div>
-    </div>
-)
+    )
 }
 
 export default memo(Table);

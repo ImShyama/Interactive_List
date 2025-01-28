@@ -639,9 +639,10 @@ const ViewSettings = ({ settingsData }) => {
 
     return (
       <div>
-        <div className="m-2">
+        {settingsData?.appName == "People Directory" && <div className="m-2">
           <HeadingTitle settings={settingsData} />
-        </div>
+        </div>}
+
         <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={profileData}>
             <div className="flex w-[100%] h-[400px]">
@@ -718,14 +719,23 @@ const ViewSettings = ({ settingsData }) => {
         <SortableContext items={cardData}>
           <div className="flex w-[100%]">
             {/* Left Column (Fixed) */}
-            <div className="flex flex-col m-2 w-[130px]">
+            {settingsData?.appName == "People Directory" && <div className="flex flex-col m-2 w-[130px]">
               <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Profile</span>
               <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Name</span>
               <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Header 1</span>
               <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Header 2</span>
               <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Email</span>
               <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Contact</span>
-            </div>
+            </div>}
+
+            {settingsData?.appName == "Video Gallery" && <div className="flex flex-col m-2 w-[130px]">
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Video Link</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Thumbnail</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Video Title</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Category</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Descriptions</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Title</span>
+            </div>}
 
             {/* Right Column (Draggable Items) */}
             <div className="flex flex-col m-2">
@@ -968,7 +978,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           </div>
           {addData && <AddData activateSave={activateSave} isTableLoading={isTableLoading} setIsTableLoading={setIsTableLoading} />}
 
-          {settingData?.appName == "People Directory" &&
+          {(settingData?.appName == "People Directory" || settingData?.appName == "Video Gallery") &&
             <>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

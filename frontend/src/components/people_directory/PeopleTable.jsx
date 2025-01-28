@@ -610,22 +610,6 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
         )
     }
 
-
-
-
-    {/* Dynamically Render Sliders for Selected Checkboxes */ }
-    // const [isSearchOpen, setIsSearchOpen] = useState(false);
-    // const [isFilterOpen, setIsFilterOpen] = useState(false);
-    // const toggleFilterBox = () => {
-    //     setIsFilterOpen(!isFilterOpen);
-    //     setIsNumberDropdownOpen(false);
-    //     setIsDateDropdownOpen(false);
-    //     setSelectedNumbers([]); // Clear selected number filters
-    //     setSelectedDates([]); // Clear selected date filters
-    //     localStorage.removeItem("selectedNumbers");
-    //     localStorage.removeItem("selectedDates");
-    // };
-
     //added latest
     const [selectedNumbers, setSelectedNumbers] = useState(
         JSON.parse(localStorage.getItem("selectedNumbers")) || []
@@ -825,7 +809,6 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             notifyError(error.message || "An error occurred while deleting rows");
         }
     };
-
 
 
     return (
@@ -1194,19 +1177,6 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                     </div>}
                 </div>
             </div>
-
-            {/* <DataGrid
-                columnResizeMode="onChange"
-                rows={data}
-                columns={headers.map((col) => {
-                    return {
-                        field: col,
-                        header: col,
-                        width: 200,
-                    };
-
-                })}
-            /> */}
 
             {isEditMode ?
 
