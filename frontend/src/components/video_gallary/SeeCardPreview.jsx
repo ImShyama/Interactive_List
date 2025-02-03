@@ -5,7 +5,7 @@ import VideoCard from "./VideoCard";
 
 const SeeCardPreview = ({ onClose, settings, rowData }) => {
     return (
-        <div className="modal fixed inset-0 bg-gray-600 bg-opacity-75 z-[10] flex justify-center items-center">
+        <div className="modal fixed inset-0 bg-gray-600 bg-opacity-0 z-[10] flex justify-center items-center">
             <div className="bg-white rounded-2xl shadow-lg w-96 p-6 relative ">
                 <div className="flex justify-end">
                     <button

@@ -42,7 +42,7 @@ const Freeze = ({ columnKey, isEditMode,setFreezeCol, freezeCol, settings }) => 
 
             // Dispatch updated settings to Redux store
             dispatch(updateSetting(response.data));
-            notifySuccess("Freeze Column updated successfully");
+            notifySuccess("Freeze column successfully");
             return response.data;
         } catch (error) {
             console.error("Error updating settings in DB:", error);

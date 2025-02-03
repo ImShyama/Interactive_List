@@ -35,7 +35,7 @@ const VideoGallaryView = ({data,headers,tempHeader,filteredData,setFilteredData,
   };
 
   return (
-    <div className="px-10 py-2">
+    <div className="px-10">
       {/* <div>
         <TitleBarPreview
           appName={"Video Gallary"}
@@ -45,7 +45,7 @@ const VideoGallaryView = ({data,headers,tempHeader,filteredData,setFilteredData,
       </div> */}
 
       <div
-        style={{ width: "100%", overflowX: "auto", maxHeight: "600px" }}
+        style={{ width: "100%", overflowX: "auto", maxHeight: "70vh" }}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 px-4 gap-4 mt-4"
       >
         {paginatedVideos.map((video) => (

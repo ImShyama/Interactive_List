@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios, { spread } from "axios";
@@ -627,15 +627,56 @@ const ViewSettings = ({ settingsData }) => {
           {...attributes}
           {...listeners}
           style={{ transform: CSS.Transform.toString(transform), transition }}
-          className="flex items-center cursor-grab"
+          className="flex justify-between items-center cursor-grab"
         >
-          <SixDots />
-          <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
-            {item.title}
-          </span>
+          <div className="flex items-center">
+            <SixDots />
+            <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
+              {item.title}
+            </span>
+          </div>
+          {/* <div className="flex items-center">
+            {item.title && (
+              <button onClick={() => handleDeleteCard(item.id)} className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins] right-0 hover:text-red-500">
+                ✖
+              </button>
+            )}
+          </div> */}
         </div>
       );
     };
+
+    const handleDeleteProfileCard = async (id) => {
+      try {
+        console.log({ id });
+    
+        // Create a new settingsData object with the updated showInProfile list
+        const updatedSettings = {
+          ...settingsData,
+          showInProfile: settingsData.showInProfile.filter((item) => item.id !== id),
+        };
+    
+        // Dispatch the updated settings locally
+        dispatch(updateSetting(updatedSettings));
+    
+        // Update backend
+        const response = await axios.put(
+          `${HOST}/spreadsheet/${settingsData._id}`,
+          updatedSettings,
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
+        );
+    
+        console.log("Profile card deleted successfully:", response.data);
+        dispatch(updateSetting(response.data));
+        notifySuccess("Profile card deleted successfully");
+      } catch (error) {
+        console.error("Error deleting profile card:", error);
+        notifyError("Error deleting profile card");
+      }
+    };
+    
 
     return (
       <div>
@@ -664,6 +705,26 @@ const ViewSettings = ({ settingsData }) => {
                   <DraggableItem key={item.id} item={item} />
                 ))}
               </div>
+
+              <div className="flex flex-col m-2">
+              {profileData?.map((item) => (
+                item.title ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Button clicked for ID:", item.id);
+                      handleDeleteProfileCard(item.id);
+                    }}
+
+                    className="text-[16px] m-[6px] font-medium leading-normal text-[#111] font-[Poppins] right-0 hover:text-red-500">
+                    ✖
+                  </button>
+                ) : (
+                  <span key={item.id} className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">{"\u00A0"}</span> // Prevents layout shifting
+                )
+              ))}
+            </div>
+
             </div>
           </SortableContext>
         </DndContext>
@@ -698,6 +759,38 @@ const ViewSettings = ({ settingsData }) => {
     const DraggableItem = ({ item }) => {
       const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
 
+      const handleDeleteCard = async (id) => {
+        try {
+          console.log({ id });
+          // Create a new settingsData object with the updated showInCard list
+          const updatedSettings = {
+            ...settingsData,
+            showInCard: settingsData.showInCard.map((item) =>
+              item.id === id ? { ...item, title: "" } : item
+            ),
+          };
+
+          // Dispatch the updated settings locally
+          dispatch(updateSetting(updatedSettings));
+
+          // Update backend
+          const response = await axios.put(
+            `${HOST}/spreadsheet/${settingsData._id}`,
+            updatedSettings,
+            {
+              headers: { authorization: `Bearer ${token}` },
+            }
+          );
+
+          console.log("Card deleted successfully:", response.data);
+          dispatch(updateSetting(response.data));
+          notifySuccess("Card deleted successfully");
+        } catch (error) {
+          console.error("Error deleting card:", error);
+          notifyError("Error deleting card");
+        }
+      };
+
       return (
         <div
           ref={setNodeRef}
@@ -706,12 +799,61 @@ const ViewSettings = ({ settingsData }) => {
           style={{ transform: CSS.Transform.toString(transform), transition }}
           className="flex items-center cursor-grab"
         >
+          {/* <div className="flex items-center"> */}
           <SixDots />
           <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
-            {item.title}
+            {item.title || "\u00A0"}
           </span>
+          {/* </div> */}
+          {/* <div>
+            {item.title && (
+              <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                console.log("Button clicked for ID:", item.id);
+                handleDeleteCard(item.id);
+              }} 
+              
+              className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins] right-0 hover:text-red-500">
+                ✖
+              </button>
+            )}
+
+          </div> */}
         </div>
       );
+    };
+
+    const handleDeleteCard = async (id) => {
+      try {
+        console.log({ id });
+        // Create a new settingsData object with the updated showInCard list
+        const updatedSettings = {
+          ...settingsData,
+          showInCard: settingsData.showInCard.map((item) =>
+            item.id === id ? { ...item, title: "" } : item
+          ),
+        };
+
+        // Dispatch the updated settings locally
+        dispatch(updateSetting(updatedSettings));
+
+        // Update backend
+        const response = await axios.put(
+          `${HOST}/spreadsheet/${settingsData._id}`,
+          updatedSettings,
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
+        );
+
+        console.log("Card deleted successfully:", response.data);
+        dispatch(updateSetting(response.data));
+        notifySuccess("Card deleted successfully");
+      } catch (error) {
+        console.error("Error deleting card:", error);
+        notifyError("Error deleting card");
+      }
     };
 
     return (
@@ -743,11 +885,138 @@ const ViewSettings = ({ settingsData }) => {
                 <DraggableItem key={item?.id} item={item} />
               ))}
             </div>
+
+            <div className="flex flex-col m-2">
+              {cardData?.map((item) => (
+                item.title ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Button clicked for ID:", item.id);
+                      handleDeleteCard(item.id);
+                    }}
+
+                    className="text-[16px] m-[6px] font-medium leading-normal text-[#111] font-[Poppins] right-0 hover:text-red-500">
+                    ✖
+                  </button>
+                ) : (
+                  <span key={item.id} className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">{"\u00A0"}</span> // Prevents layout shifting
+                )
+              ))}
+            </div>
           </div>
         </SortableContext>
       </DndContext>
     );
   };
+
+  // const CardSettings = ({ settingsData }) => {
+  //   const [cardData, setCardData] = useState(settingsData?.showInCard || []);
+
+  //   // Generate default order from showInCard and ensure it includes 1-6
+  //   const generateDefaultOrder = () => {
+  //     let existingIds = settingsData?.showInCard?.map((item) => item.id) || [];
+  //     let completeOrder = Array.from({ length: 6 }, (_, i) => i + 1); // ["id1", "id2", ..., "id6"]
+
+  //     // Merge, keeping the order from showInCard but ensuring 1-6 exists
+  //     return completeOrder.map((id) => (existingIds.includes(id) ? id : id));
+  //   };
+
+  //   const [defaultOrder, setDefaultOrder] = useState(generateDefaultOrder());
+
+  //   useEffect(() => {
+  //     setDefaultOrder(generateDefaultOrder());
+  //   }, [cardData]);
+
+  //   const handleDragEnd = async (event) => {
+  //     const { active, over } = event;
+  //     if (!over || active.id === over.id) return;
+
+  //     const oldIndex = defaultOrder.indexOf(active.id);
+  //     const newIndex = defaultOrder.indexOf(over.id);
+
+  //     // Reorder defaultOrder list
+  //     const updatedOrder = arrayMove(defaultOrder, oldIndex, newIndex);
+  //     setDefaultOrder(updatedOrder);
+
+  //     // Reorder the cardData based on the new defaultOrder
+  //     const updatedData = updatedOrder
+  //       .map((id) => cardData.find((item) => item.id === id) || null) // Keep null for missing items
+  //       .filter(Boolean); // Remove null values before saving
+
+  //     setCardData(updatedData);
+
+  //     // Save updated settings
+  //     const updatedSetting = { ...settingsData, showInCard: updatedData };
+  //     const response = await handleUpdateSettings(updatedSetting, token, dispatch);
+  //     console.log({ response });
+  //   };
+
+  //   // Draggable Item Component
+  //   const DraggableItem = ({ item }) => {
+  //     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
+
+  //     return (
+  //       <div
+  //         ref={setNodeRef}
+  //         {...attributes}
+  //         {...listeners}
+  //         style={{ transform: CSS.Transform.toString(transform), transition }}
+  //         className="flex items-center cursor-grab"
+  //       >
+  //         <SixDots />
+  //         <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
+  //           {item.title}
+  //         </span>
+  //       </div>
+  //     );
+  //   };
+
+  //   return (
+  //     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+  //       <SortableContext items={defaultOrder}>
+  //         <div className="flex w-[100%]">
+  //           {/* Left Column (Fixed) */}
+  //           {settingsData?.appName === "People Directory" && (
+  //             <div className="flex flex-col m-2 w-[130px]">
+  //               {["Profile", "Name", "Sub Header 1", "Sub Header 2", "Email", "Contact"].map((label) => (
+  //                 <span key={label} className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
+  //                   {label}
+  //                 </span>
+  //               ))}
+  //             </div>
+  //           )}
+
+  //           {settingsData?.appName === "Video Gallery" && (
+  //             <div className="flex flex-col m-2 w-[130px]">
+  //               {["Video Link", "Thumbnail", "Video Title", "Category", "Descriptions", "Sub Title"].map((label) => (
+  //                 <span key={label} className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
+  //                   {label}
+  //                 </span>
+  //               ))}
+  //             </div>
+  //           )}
+
+  //           {/* Right Column (Draggable Items with Order & Placeholder) */}
+  //           <div className="flex flex-col m-2">
+  //             {defaultOrder.map((id) => {
+  //               const item = cardData.find((data) => data.id === id);
+  //               return item ? (
+  //                 <DraggableItem key={id} item={item} />
+  //               ) : (
+  //                 <div key={id} className="m-[6px] text-[16px] font-medium leading-normal text-gray-400 italic">
+  //                   (Empty)
+  //                 </div>
+  //               );
+  //             })}
+  //           </div>
+  //         </div>
+  //       </SortableContext>
+  //     </DndContext>
+  //   );
+  // };
+
+
 
   return (
     <div className="w-[100%]">

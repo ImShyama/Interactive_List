@@ -21,6 +21,69 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
     settings.showInProfile?.some((item) => settings?.showInProfile?.map(i => i?.title).includes(columnKey)) || false
   );
 
+
+  useEffect(() => {
+    setShowInCardChecked(settings.showInCard?.some((item) => settings?.showInCard?.map(i => i?.title).includes(columnKey)) || false);
+    setShowInProfileChecked(settings.showInProfile?.some((item) => settings?.showInProfile?.map(i => i?.title).includes(columnKey)) || false);
+  }, [settings]);
+
+  // const handleCheckboxChange = useCallback(
+  //   async (checked, optionType) => {
+  //     if (!columnKey) {
+  //       console.warn("Invalid columnKey provided");
+  //       return;
+  //     }
+  
+  //     try {
+  //       const updatedSettings = { ...settings };
+        
+  //       const updateList = (list = []) => {
+  //         if (checked) {
+  //           if (optionType === "showInCard" && list.length >= 6) {
+  //             notifyError("You can only add up to 6 items in Show in Card");
+  //             return list;
+  //           }
+  //           // Add new entry with incremental ID
+  //            // Find the highest existing ID and increment it
+  //         const highestId = list.reduce((max, item) => Math.max(max, item.id), 0);
+  //         return [...list, { id: highestId + 1, title: columnKey }];
+  //         } else {
+  //           // Remove entry by title
+  //           return list.filter((item) => item.title !== columnKey);
+  //         }
+  //       };
+        
+  //       if (optionType === "showInCard") {
+  //         updatedSettings.showInCard = updateList(settings.showInCard);
+  //         setShowInCardChecked(checked);
+  //       } else if (optionType === "showInProfile") {
+  //         updatedSettings.showInProfile = updateList(settings.showInProfile);
+  //         setShowInProfileChecked(checked);
+  //       }
+  
+  //       // Dispatch updated settings locally
+  //       dispatch(updateSetting(updatedSettings));
+  
+  //       // Update backend
+  //       const response = await axios.put(
+  //         `${HOST}/spreadsheet/${settings._id}`,
+  //         updatedSettings,
+  //         {
+  //           headers: { authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  
+  //       console.log("Settings updated successfully:", response.data);
+  //       dispatch(updateSetting(response.data));
+  //       notifySuccess("Settings updated successfully");
+  //     } catch (error) {
+  //       console.error("Error updating settings:", error);
+  //       notifyError("Error updating settings");
+  //     }
+  //   },
+  //   [dispatch, settings, token, columnKey]
+  // );
+  
   const handleCheckboxChange = useCallback(
     async (checked, optionType) => {
       if (!columnKey) {
@@ -30,30 +93,46 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
   
       try {
         const updatedSettings = { ...settings };
-        
-        const updateList = (list = []) => {
-          if (checked) {
-            if (optionType === "showInCard" && list.length >= 6) {
-              notifyError("You can only add up to 6 items in Show in Card");
-              return list;
+  
+        if (optionType === "showInProfile") {
+          // Existing logic for showInProfile
+          const updateList = (list = []) => {
+            if (checked) {
+              const highestId = list.reduce((max, item) => Math.max(max, item.id), 0);
+              return [...list, { id: highestId + 1, title: columnKey }];
+            } else {
+              return list.filter((item) => item.title !== columnKey);
             }
-            // Add new entry with incremental ID
-             // Find the highest existing ID and increment it
-          const highestId = list.reduce((max, item) => Math.max(max, item.id), 0);
-          return [...list, { id: highestId + 1, title: columnKey }];
-          } else {
-            // Remove entry by title
-            return list.filter((item) => item.title !== columnKey);
-          }
-        };
-        
-        if (optionType === "showInCard") {
-          updatedSettings.showInCard = updateList(settings.showInCard);
-          setShowInCardChecked(checked);
-        } else if (optionType === "showInProfile") {
+          };
+  
           updatedSettings.showInProfile = updateList(settings.showInProfile);
           setShowInProfileChecked(checked);
+        } 
+        
+        else if (optionType === "showInCard") {
+          let updatedChecked = checked; // Keep track of the checkbox state
+          let found = false; // Flag to track if we already added the columnKey
+        
+          updatedSettings.showInCard = settings.showInCard.map((item) => {
+            if (checked && item.title === "" && !found) {
+              // Assign columnKey to the first empty title and stop further modifications
+              found = true; // Mark that we've made a replacement
+              return { ...item, title: columnKey };
+            }
+            if (!checked && item.title === columnKey) {
+              // Remove columnKey when unchecked
+              updatedChecked = false; // Set checked state to false only when removing
+              return { ...item, title: "" };
+            }
+            return item; // Keep other items unchanged
+          });
+        
+          // Only update the checkbox state when necessary
+          setShowInCardChecked(checked ? true : updatedChecked);
         }
+        
+        
+        
   
         // Dispatch updated settings locally
         dispatch(updateSetting(updatedSettings));
@@ -78,6 +157,8 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
     [dispatch, settings, token, columnKey]
   );
   
+
+
   const handleButtonClick = (e) => {
     e.stopPropagation();
     setIsPopoverOpen((prev) => !prev);

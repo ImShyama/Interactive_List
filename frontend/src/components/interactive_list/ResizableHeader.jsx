@@ -21,6 +21,8 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
 
     const [sortColumn, setSortColumn] = useState(null);
     const [visiblePopover, setVisiblePopover] = useState({});
+    const [isEditBoxOpen, setIsEditBoxOpen] = useState(false);
+    // const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [openPopoverId, setOpenPopoverId] = useState(null);
     // Store selections as an object with column keys
     const [checkboxSelections, setCheckboxSelections] = useState({
@@ -160,6 +162,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                         width: "15px", // Adjust based on the size of your icon
                         height: "100%",
                         marginRight: "5px",
+                        backgroundColor: headerBgColor || "#f1f1f1",
                     }}
                 >
                     <RxDividerVertical style={{ color: "gray", fontSize: "32px" }} /> {/* Replace with your preferred icon */}
@@ -215,20 +218,28 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                             {title}
                         </span>
                     </div>
-                    <div className="items-center gap-1 resizeActions"
+                    <div className="flex items-center gap-1"
                         style={{
                             position: "absolute",
                             right: 5,
                             bottom: 0,
                             cursor: "col-resize", // Keeps the resizing cursor
                             zIndex: 5, // Ensure it stays above other elements
+                            backgroundColor: "transparent", // Default transparent
+                            transition: "background-color 0.2s ease-in-out",
                         }}
+                        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = headerBgColor || "#f1f1f1")} // Hover applies background
+                        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")} // Ensures background disappears properly
                     >
                         <button
                             onClick={() => {
                                 handleSort(columnKey);
                             }}
                             title="Sort"
+                            className="resizeActions"
+                        // style={{
+                        //     backgroundColor: headerBgColor || "#f1f1f1",
+                        // }}
                         >
                             <FaSort />
                         </button>
@@ -262,12 +273,14 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                             visible={visiblePopover[index] || false}
                             onVisibleChange={(isVisible) => handlePopoverVisibility(index, isVisible)}
                         >
-                            <button >
+                            <button className="resizeActions"
+
+                            >
                                 <IoSearchOutline />
                             </button>
                         </Popover>
                         <Popover content={getAggregatePopoverContent(columnKey)} trigger="click" placement="bottom">
-                            <button title="Labels">
+                            <button title="Labels" className="resizeActions">
                                 <MdOutlineLabel />
                             </button>
                         </Popover>
@@ -283,32 +296,38 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                                 </button>
                             ))
                         } */}
+                        <div className="resizeActions">
+                            <Freeze columnKey={columnKey} isEditMode={isEditMode} setFreezeCol={setFreezeCol} freezeCol={freezeCol} settings={settings} />
+                        </div>
 
-                        <Freeze columnKey={columnKey} isEditMode={isEditMode} setFreezeCol={setFreezeCol} freezeCol={freezeCol} settings={settings} />
-                        {isEditMode && settings.appName == "People Directory" &&
-                            <PeopleDirectoryThreeDot
-                                headerId={columnKey}
-                                columnKey={title}
-                                openPopoverId={openPopoverId}
-                                setOpenPopoverId={setOpenPopoverId}
-                                // checkboxSelections={checkboxSelections}
-                                // updateSelection={updateSelection}
-                                settings={settings}
+                        <div className={isEditBoxOpen ? " " : "resizeActions"} >
+                            {isEditMode && settings.appName == "People Directory" &&
+                                <PeopleDirectoryThreeDot
+                                    headerId={columnKey}
+                                    columnKey={title}
+                                    openPopoverId={openPopoverId}
+                                    setOpenPopoverId={setOpenPopoverId}
+                                    // checkboxSelections={checkboxSelections}
+                                    // updateSelection={updateSelection}
+                                    settings={settings}
 
-                            />
-                        }
-                        {isEditMode && settings.appName == "Video Gallery" &&
-                            <VideoGalleryThreeDot
-                                headerId={columnKey}
-                                columnKey={title}
-                                openPopoverId={openPopoverId}
-                                setOpenPopoverId={setOpenPopoverId}
-                                // checkboxSelections={checkboxSelections}
-                                // updateSelection={updateSelection}
-                                settings={settings}
-                                firstRowData={firstRowData}
-                            />
-                        }
+                                />
+                            }
+                            {isEditMode && settings.appName == "Video Gallery" &&
+                                <VideoGalleryThreeDot
+                                    headerId={columnKey}
+                                    columnKey={title}
+                                    openPopoverId={openPopoverId}
+                                    setOpenPopoverId={setOpenPopoverId}
+                                    // checkboxSelections={checkboxSelections}
+                                    // updateSelection={updateSelection}
+                                    settings={settings}
+                                    firstRowData={firstRowData}
+                                    isEditBoxOpen={isEditBoxOpen}
+                                    setIsEditBoxOpen={setIsEditBoxOpen}
+                                />
+                            }
+                        </div>
                     </div>
                 </div>
             </th>

@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import Loader from "./Loader";
 import { HOST } from "../utils/constants";
+import { notifyError, notifySuccess } from "../utils/notify";
 
 const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, description }) => {
   const [loading, setLoading] = useState(false);
@@ -35,8 +36,10 @@ const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, des
       .then(({ data: res, status }) => {
         if (status === 200 && !res.error) {
           console.log("res data: ", res);
-          // Redirect to edit page with the new spreadsheet ID
           navigate(`/${res._id}/edit`);
+          setTimeout(() => {
+            notifySuccess("Copied successfully!");
+          }, 500); 
         } else {
           alert(res.error);
         }

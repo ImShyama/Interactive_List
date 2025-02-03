@@ -89,10 +89,20 @@ const VideoCard = ({ rowData, settings }) => {
   const settingsData = settings || defaultSettings;
   const [hoveredVideo, setHoveredVideo] = useState(null);
   const navigate = useNavigate();
+  // const handleVideoClick = (rowData) => {
+  //   console.log(rowData);
+  //   // const filteredData = data.filter((person) => person.key_id === id);
+  //   navigate(`/video/${rowData.key_id}`, { state: { data: rowData, settings: settings } });
+  // };
+
   const handleVideoClick = (rowData) => {
-    console.log(rowData);
-    // const filteredData = data.filter((person) => person.key_id === id);
-    navigate(`/video/${rowData.key_id}`, { state: { data: rowData, settings: settings } });
+  
+    // Store data and settings in localStorage
+    localStorage.setItem(`profileData_${rowData.key_id}`, JSON.stringify(rowData));
+    localStorage.setItem(`profileSettings_${rowData.key_id}`, JSON.stringify(settings));
+  
+    // Open the profile in a new tab
+    window.open(`/video/${rowData.key_id}`, '_blank');
   };
 
   return (
@@ -143,7 +153,7 @@ const VideoCard = ({ rowData, settings }) => {
 
               if (videoUrl.includes("drive.google.com")) {
                 let driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
-                console.log({driveIdMatch, videoUrl});
+                console.log({ driveIdMatch, videoUrl });
                 return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
               }
 
@@ -154,33 +164,108 @@ const VideoCard = ({ rowData, settings }) => {
           className="w-full h-[200px] object-cover"
         />
       )}
-      <div className="p-4 flex flex-col gap-[10px]">
-        <span style={{
-          color: settingsData?.showInCard[2]?.setting?.fontColor,
-          fontSize: `${settingsData?.showInCard[2]?.setting?.fontSize}px`,
-          fontFamily: settingsData?.showInCard[2]?.setting?.fontType,
-          fontStyle: settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase(),
-          fontWeight: settingsData?.showInCard[2]?.setting?.fontStyle === "Bold" ? "bold" : "normal"
-        }}>{videoData[settingsData?.showInCard[2]?.title.toLowerCase().replace(" ", "_")]}</span>
+      <div className="p-4 flex flex-col gap-[10px] cursor-pointer">
+        <span
+
+          style={{
+            fontStyle: ["normal", "italic", "oblique"].includes(
+              settingsData?.showInCard[2]?.setting?.fontStyle
+            )
+              ? settingsData?.showInCard[2]?.setting?.fontStyle
+              : undefined, // Apply only if it's a valid font-style
+            fontWeight: settingsData?.showInCard[2]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+            textDecoration: [
+              "underline",
+              "line-through",
+              "overline",
+            ].includes(settingsData?.showInCard[2]?.setting?.fontStyle)
+              ? settingsData?.showInCard[2]?.setting?.fontStyle
+              : undefined,
+            fontVariant:
+              settingsData?.showInCard[2]?.setting?.fontStyle === "small-caps"
+                ? "small-caps"
+                : undefined,
+            textTransform: ["uppercase", "lowercase"].includes(
+              settingsData?.showInCard[2]?.setting?.fontStyle
+            )
+              ? settingsData?.showInCard[2]?.setting?.fontStyle
+              : undefined,
+
+            color: settingsData?.showInCard[2]?.setting?.fontColor || "#000000",
+            fontSize: `${settingsData?.showInCard[2]?.setting?.fontSize}px`,
+            fontFamily: settingsData?.showInCard[2]?.setting?.fontType,
+          }}
+
+          // style={{
+          //   color: settingsData?.showInCard[2]?.setting?.fontColor,
+          //   fontSize: `${settingsData?.showInCard[2]?.setting?.fontSize}px`,
+          //   fontFamily: settingsData?.showInCard[2]?.setting?.fontType,
+          //   fontStyle: settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase(),
+          //   fontWeight: settingsData?.showInCard[2]?.setting?.fontStyle === "Bold" ? "bold" : "normal"
+          // }}
+          
+          >{videoData[settingsData?.showInCard[2]?.title.toLowerCase().replace(" ", "_")]}</span>
 
 
         <span style={{
-          color: settingsData?.showInCard[3]?.setting?.fontColor,
+          fontStyle: ["normal", "italic", "oblique"].includes(
+            settingsData?.showInCard[3]?.setting?.fontStyle
+          )
+            ? settingsData?.showInCard[3]?.setting?.fontStyle
+            : undefined, // Apply only if it's a valid font-style
+          fontWeight: settingsData?.showInCard[3]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+          textDecoration: [
+            "underline",
+            "line-through",
+            "overline",
+          ].includes(settingsData?.showInCard[3]?.setting?.fontStyle)
+            ? settingsData?.showInCard[3]?.setting?.fontStyle
+            : undefined,
+          fontVariant:
+            settingsData?.showInCard[3]?.setting?.fontStyle === "small-caps"
+              ? "small-caps"
+              : undefined,
+          textTransform: ["uppercase", "lowercase"].includes(
+            settingsData?.showInCard[3]?.setting?.fontStyle
+          )
+            ? settingsData?.showInCard[3]?.setting?.fontStyle
+            : undefined,
+
+          color: settingsData?.showInCard[3]?.setting?.fontColor || "#000000",
           fontSize: `${settingsData?.showInCard[3]?.setting?.fontSize}px`,
           fontFamily: settingsData?.showInCard[3]?.setting?.fontType,
-          fontStyle: settingsData?.showInCard[3]?.setting?.fontStyle.toLowerCase(),
-          fontWeight: settingsData?.showInCard[3]?.setting?.fontStyle === "Bold" ? "bold" : "normal"
         }}>
           {videoData[settingsData?.showInCard[3]?.title.toLowerCase().replace(" ", "_")]}
         </span>
 
         <span
           style={{
-            color: settingsData?.showInCard[4]?.setting?.fontColor,
+            fontStyle: ["normal", "italic", "oblique"].includes(
+              settingsData?.showInCard[4]?.setting?.fontStyle
+            )
+              ? settingsData?.showInCard[4]?.setting?.fontStyle
+              : undefined, // Apply only if it's a valid font-style
+            fontWeight: settingsData?.showInCard[4]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+            textDecoration: [
+              "underline",
+              "line-through",
+              "overline",
+            ].includes(settingsData?.showInCard[4]?.setting?.fontStyle)
+              ? settingsData?.showInCard[4]?.setting?.fontStyle
+              : undefined,
+            fontVariant:
+              settingsData?.showInCard[4]?.setting?.fontStyle === "small-caps"
+                ? "small-caps"
+                : undefined,
+            textTransform: ["uppercase", "lowercase"].includes(
+              settingsData?.showInCard[4]?.setting?.fontStyle
+            )
+              ? settingsData?.showInCard[4]?.setting?.fontStyle
+              : undefined,
+
+            color: settingsData?.showInCard[4]?.setting?.fontColor || "#000000",
             fontSize: `${settingsData?.showInCard[4]?.setting?.fontSize}px`,
             fontFamily: settingsData?.showInCard[4]?.setting?.fontType,
-            fontStyle: settingsData?.showInCard[4]?.setting?.fontStyle?.toLowerCase(),
-            fontWeight: settingsData?.showInCard[4]?.setting?.fontStyle === "Bold" ? "bold" : "normal",
             display: "-webkit-box",
             WebkitBoxOrient: "vertical",
             WebkitLineClamp: 3,
@@ -193,11 +278,32 @@ const VideoCard = ({ rowData, settings }) => {
 
 
         <span style={{
-          color: settingsData?.showInCard[5]?.setting?.fontColor,
+          fontStyle: ["normal", "italic", "oblique"].includes(
+            settingsData?.showInCard[5]?.setting?.fontStyle
+          )
+            ? settingsData?.showInCard[5]?.setting?.fontStyle
+            : undefined, // Apply only if it's a valid font-style
+          fontWeight: settingsData?.showInCard[5]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+          textDecoration: [
+            "underline",
+            "line-through",
+            "overline",
+          ].includes(settingsData?.showInCard[5]?.setting?.fontStyle)
+            ? settingsData?.showInCard[5]?.setting?.fontStyle
+            : undefined,
+          fontVariant:
+            settingsData?.showInCard[5]?.setting?.fontStyle === "small-caps"
+              ? "small-caps"
+              : undefined,
+          textTransform: ["uppercase", "lowercase"].includes(
+            settingsData?.showInCard[5]?.setting?.fontStyle
+          )
+            ? settingsData?.showInCard[5]?.setting?.fontStyle
+            : undefined,
+
+          color: settingsData?.showInCard[5]?.setting?.fontColor || "#000000",
           fontSize: `${settingsData?.showInCard[5]?.setting?.fontSize}px`,
           fontFamily: settingsData?.showInCard[5]?.setting?.fontType,
-          fontStyle: settingsData?.showInCard[5]?.setting?.fontStyle.toLowerCase(),
-          fontWeight: settingsData?.showInCard[5]?.setting?.fontStyle === "Bold" ? "bold" : "normal"
         }}>{videoData[settingsData?.showInCard[5]?.title.toLowerCase().replace(" ", "_")]}
         </span>
       </div>

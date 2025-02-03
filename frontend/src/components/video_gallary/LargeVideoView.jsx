@@ -1,16 +1,120 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IoMdArrowBack } from "react-icons/io";
+import { useParams } from "react-router-dom";
 
 const LargeVideoView = () => {
   const navigate = useNavigate();
   // const video = location.state?.video;
-
-  const location = useLocation();
-  const data = location.state?.data || [];
-  const settings = location.state?.settings || {};
+  const dummySetting = {
+    "_id": "679e4eb7145f160ae5f9a287",
+    "userId": "665cba3eef771aacc222afb0",
+    "spreadsheetName": "Copy of Video Gallery",
+    "spreadsheetId": "1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc",
+    "spreadsheetUrl": "https://docs.google.com/spreadsheets/d/1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc/edit",
+    "firstSheetName": "Data",
+    "firstSheetId": "1435322083",
+    "firstSheetUrl": "https://docs.google.com/spreadsheets/d/1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc/edit#gid=1435322083",
+    "firstTabDataRange": "Data!A1:N",
+    "firstTabHeader": [
+        "Company name",
+        "Domain",
+        "Name",
+        "Designation",
+        "Topic",
+        "Title",
+        "Description",
+        "City",
+        "Link",
+        "Type",
+        "Designation11",
+        "Designation12",
+        "Link 2",
+        "Image"
+    ],
+    "appName": "Video Gallery",
+    "sheetDetails": [
+        {
+            "name": "Data",
+            "url": "https://docs.google.com/spreadsheets/d/1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc/edit#gid=1435322083",
+            "sheetId": 1435322083
+        },
+        {
+            "name": "HTML",
+            "url": "https://docs.google.com/spreadsheets/d/1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc/edit#gid=1940464747",
+            "sheetId": 1940464747
+        }
+    ],
+    "sharedWith": [],
+    "tableSettings": [],
+    "access": "Owner",
+    "lastUpdatedDate": "Sat Feb 01 2025 22:26:21 GMT+0545 (Nepal Time)",
+    "showInCard": [
+        {
+            "id": 0,
+            "title": "Link 2"
+        },
+        {
+            "id": 4,
+            "title": "Image"
+        },
+        {
+            "id": 2,
+            "title": "Company name"
+        },
+        {
+            "id": 1,
+            "title": ""
+        },
+        {
+            "id": 3,
+            "title": "Domain"
+        },
+        {
+            "id": 5,
+            "title": ""
+        }
+    ],
+    "showInProfile": [
+        {
+            "id": 1,
+            "title": "City",
+            "setting": {
+                "fontStyle": "Regular",
+                "fontColor": "#000000",
+                "fontSize": "16",
+                "fontType": "Poppins"
+            }
+        },
+        {
+            "id": 2,
+            "title": "Link",
+            "setting": {
+                "fontStyle": "Regular",
+                "fontColor": "#000000",
+                "fontSize": "16",
+                "fontType": "Poppins"
+            }
+        },
+        {
+            "id": 3,
+            "title": "Designation",
+            "setting": {
+                "fontStyle": "Regular",
+                "fontColor": "#000000",
+                "fontSize": "16",
+                "fontType": "Poppins"
+            }
+        }
+    ],
+    "hiddenCol": [],
+    "__v": 0
+}
+  // const location = useLocation();
+  // const data = location.state?.data || [];
+  // const settings = location.state?.settings || dummySetting;
   const [isPlaying, setIsPlaying] = useState(false);
-  console.log({ data, settings });
+  
 
   // const video = data?[settings?.showInCard[0]?.title.toLowerCase().replace(/\s/g, "_")]:"";
 
@@ -20,6 +124,22 @@ const LargeVideoView = () => {
   //   return null;
   // }
 
+  const { id } = useParams();
+  const [data, setData] = useState(null);
+  const [settings, setSettings] = useState(dummySetting);
+
+  useEffect(() => {
+    const storedData = localStorage.getItem(`profileData_${id}`);
+    const storedSettings = localStorage.getItem(`profileSettings_${id}`);
+
+    if (storedData) setData(JSON.parse(storedData));
+    if (storedSettings) setSettings(JSON.parse(storedSettings));
+  }, [id]);
+
+  if (!data ) return <p>Loading...</p>;
+
+
+  console.log({ data, settings });
   /** Function to Extract Thumbnail for Drive Images */
   const getThumbnailSrc = (imageUrl) => {
     if (!imageUrl) return "";
@@ -67,20 +187,41 @@ const LargeVideoView = () => {
     <div className="flex flex-col items-center mx-20">
       {/* Title Bar Section */}
       <div className="w-[100%] flex items-center gap-[39px] py-3">
-        <div>
-          <IoMdArrowBack
+        {/* <div> */}
+          {/* <IoMdArrowBack
             className="text-xl cursor-pointer"
             style={{ height: "45px", width: "45px", color: "#000000" }}
             onClick={() => navigate(-1)}
-          />
-        </div>
+          /> */}
+        {/* </div> */}
         <div className="">
           <span style={{
-            color: settings?.showInCard[2]?.setting?.fontColor,
+            fontStyle: ["normal", "italic", "oblique"].includes(
+              settings?.showInCard[2]?.setting?.fontStyle
+            )
+              ? settings?.showInCard[2]?.setting?.fontStyle
+              : undefined, // Apply only if it's a valid font-style
+            fontWeight: settings?.showInCard[2]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+            textDecoration: [
+              "underline",
+              "line-through",
+              "overline",
+            ].includes(settings?.showInCard[2]?.setting?.fontStyle)
+              ? settings?.showInCard[2]?.setting?.fontStyle
+              : undefined,
+            fontVariant:
+              settings?.showInCard[2]?.setting?.fontStyle === "small-caps"
+                ? "small-caps"
+                : undefined,
+            textTransform: ["uppercase", "lowercase"].includes(
+              settings?.showInCard[2]?.setting?.fontStyle
+            )
+              ? settings?.showInCard[2]?.setting?.fontStyle
+              : undefined,
+
+            color: settings?.showInCard[2]?.setting?.fontColor || "#000000",
             fontSize: `${settings?.showInCard[2]?.setting?.fontSize}px`,
             fontFamily: settings?.showInCard[2]?.setting?.fontType,
-            fontStyle: settings?.showInCard[2]?.setting?.fontStyle.toLowerCase(),
-            fontWeight: settings?.showInCard[2]?.setting?.fontStyle === "Bold" ? "bold" : "normal"
           }}>{data[settings?.showInCard[2]?.title.toLowerCase().replace(" ", "_")]}</span>
         </div>
       </div>
@@ -161,11 +302,32 @@ const LargeVideoView = () => {
       <div className="w-[100%] flex flex-col items-start gap-[16px] mt-6">
         <div className="">
           <span style={{
-            color: settings?.showInCard[3]?.setting?.fontColor,
-            fontSize: `${settings?.showInCard[3]?.setting?.fontSize}px`,
-            fontFamily: settings?.showInCard[3]?.setting?.fontType,
-            fontStyle: settings?.showInCard[3]?.setting?.fontStyle.toLowerCase(),
-            fontWeight: settings?.showInCard[3]?.setting?.fontStyle === "Bold" ? "bold" : "normal"
+           fontStyle: ["normal", "italic", "oblique"].includes(
+            settings?.showInCard[3]?.setting?.fontStyle
+          )
+            ? settings?.showInCard[3]?.setting?.fontStyle
+            : undefined, // Apply only if it's a valid font-style
+          fontWeight: settings?.showInCard[3]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+          textDecoration: [
+            "underline",
+            "line-through",
+            "overline",
+          ].includes(settings?.showInCard[3]?.setting?.fontStyle)
+            ? settings?.showInCard[3]?.setting?.fontStyle
+            : undefined,
+          fontVariant:
+            settings?.showInCard[3]?.setting?.fontStyle === "small-caps"
+              ? "small-caps"
+              : undefined,
+          textTransform: ["uppercase", "lowercase"].includes(
+            settings?.showInCard[3]?.setting?.fontStyle
+          )
+            ? settings?.showInCard[3]?.setting?.fontStyle
+            : undefined,
+
+          color: settings?.showInCard[3]?.setting?.fontColor || "#000000",
+          fontSize: `${settings?.showInCard[3]?.setting?.fontSize}px`,
+          fontFamily: settings?.showInCard[3]?.setting?.fontType,
           }}>
             {data[settings?.showInCard[3]?.title.toLowerCase().replace(" ", "_")]}
           </span>
@@ -173,12 +335,32 @@ const LargeVideoView = () => {
         <div className="">
           <span
             style={{
-              color: settings?.showInCard[4]?.setting?.fontColor,
+              fontStyle: ["normal", "italic", "oblique"].includes(
+                settings?.showInCard[4]?.setting?.fontStyle
+              )
+                ? settings?.showInCard[4]?.setting?.fontStyle
+                : undefined, // Apply only if it's a valid font-style
+              fontWeight: settings?.showInCard[4]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+              textDecoration: [
+                "underline",
+                "line-through",
+                "overline",
+              ].includes(settings?.showInCard[4]?.setting?.fontStyle)
+                ? settings?.showInCard[4]?.setting?.fontStyle
+                : undefined,
+              fontVariant:
+                settings?.showInCard[4]?.setting?.fontStyle === "small-caps"
+                  ? "small-caps"
+                  : undefined,
+              textTransform: ["uppercase", "lowercase"].includes(
+                settings?.showInCard[4]?.setting?.fontStyle
+              )
+                ? settings?.showInCard[4]?.setting?.fontStyle
+                : undefined,
+  
+              color: settings?.showInCard[4]?.setting?.fontColor || "#000000",
               fontSize: `${settings?.showInCard[4]?.setting?.fontSize}px`,
-              fontFamily: settings?.showInCard[4]?.setting?.fontType,
-              fontStyle: settings?.showInCard[4]?.setting?.fontStyle?.toLowerCase(),
-              fontWeight: settings?.showInCard[4]?.setting?.fontStyle === "Bold" ? "bold" : "normal",
-
+              fontFamily: settings?.showInCard[4]?.setting?.fontType4
             }}
           >
             {data[settings?.showInCard[4]?.title?.toLowerCase().replace(/\s/g, "_")]}
@@ -186,23 +368,67 @@ const LargeVideoView = () => {
         </div>
         <div className="">
           <span style={{
-            color: settings?.showInCard[5]?.setting?.fontColor,
+            fontStyle: ["normal", "italic", "oblique"].includes(
+              settings?.showInCard[5]?.setting?.fontStyle
+            )
+              ? settings?.showInCard[5]?.setting?.fontStyle
+              : undefined, // Apply only if it's a valid font-style
+            fontWeight: settings?.showInCard[5]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+            textDecoration: [
+              "underline",
+              "line-through",
+              "overline",
+            ].includes(settings?.showInCard[5]?.setting?.fontStyle)
+              ? settings?.showInCard[5]?.setting?.fontStyle
+              : undefined,
+            fontVariant:
+              settings?.showInCard[5]?.setting?.fontStyle === "small-caps"
+                ? "small-caps"
+                : undefined,
+            textTransform: ["uppercase", "lowercase"].includes(
+              settings?.showInCard[5]?.setting?.fontStyle
+            )
+              ? settings?.showInCard[5]?.setting?.fontStyle
+              : undefined,
+
+            color: settings?.showInCard[5]?.setting?.fontColor || "#000000",
             fontSize: `${settings?.showInCard[5]?.setting?.fontSize}px`,
             fontFamily: settings?.showInCard[5]?.setting?.fontType,
-            fontStyle: settings?.showInCard[5]?.setting?.fontStyle.toLowerCase(),
-            fontWeight: settings?.showInCard[5]?.setting?.fontStyle === "Bold" ? "bold" : "normal"
           }}>{data[settings?.showInCard[5]?.title.toLowerCase().replace(" ", "_")]}
           </span>
         </div>
 
         {settings?.showInProfile?.map((item, index) => (
           <div key={index}>
-            <span style={{
-              color: item?.setting?.fontColor,
+            <span 
+            
+            style={{
+              fontStyle: ["normal", "italic", "oblique"].includes(
+                item?.setting?.fontStyle
+              )
+                ? item?.setting?.fontStyle
+                : undefined, // Apply only if it's a valid font-style
+              fontWeight: item?.setting?.fontStyle === "bold" ? "bold" : "normal",
+              textDecoration: [
+                "underline",
+                "line-through",
+                "overline",
+              ].includes(item?.setting?.fontStyle)
+                ? item?.setting?.fontStyle
+                : undefined,
+              fontVariant:
+                item?.setting?.fontStyle === "small-caps"
+                  ? "small-caps"
+                  : undefined,
+              textTransform: ["uppercase", "lowercase"].includes(
+                item?.setting?.fontStyle
+              )
+                ? item?.setting?.fontStyle
+                : undefined,
+  
+              color: item?.setting?.fontColor || "#000000",
               fontSize: `${item?.setting?.fontSize}px`,
               fontFamily: item?.setting?.fontType,
-              fontStyle: item?.setting?.fontStyle.toLowerCase(),
-              fontWeight: item?.setting?.fontStyle === "Bold" ? "bold" : "normal"
             }}>
               {data[item?.title.toLowerCase().replace(" ", "_")]}
             </span>

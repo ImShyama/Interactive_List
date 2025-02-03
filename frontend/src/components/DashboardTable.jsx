@@ -22,6 +22,7 @@ const DashboardTable = () => {
   const [spreadsheet, setSpreadSheet] = useState([]);
   const [filteredSheets, setFilteredSheets] = useState([]); // To store the filtered data
   const [searchQuery, setSearchQuery] = useState(""); // To store the search query
+  const [searchValue, setSearchValue] = useState(""); // To store the search query
   const [loading, setLoading] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [sheetToDelete, setSheetToDelete] = useState(null);
@@ -82,13 +83,28 @@ const DashboardTable = () => {
   // Function to handle search input
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
+    console.log(query);
     setSearchQuery(query);
+    setSearchValue(query);
 
     const filteredData = spreadsheet.filter((sheet) => {
       const sheetName = sheet.spreadsheetName || sheet.firstSheetName;
       return sheetName.toLowerCase().includes(query);
     });
 
+    setFilteredSheets(filteredData);
+  };
+  
+  const handleSearchDropdown = (query) => {
+    const searchQuery = query.toLowerCase();
+    console.log(searchQuery);
+    setSearchQuery(searchQuery);
+  
+    const filteredData = spreadsheet.filter((sheet) => {
+      const sheetName = sheet.spreadsheetName || sheet.firstSheetName;
+      return sheetName.toLowerCase().includes(searchQuery);
+    });
+  
     setFilteredSheets(filteredData);
   };
 
@@ -207,7 +223,7 @@ const DashboardTable = () => {
             <div className="flex">
               <Input
                 prefix={<BiSearch />}
-                value={searchQuery}
+                value={searchValue}
                 onChange={handleSearch}
                 style={{ width: "200px" }}
                 className="min-w-[150px]"
@@ -238,8 +254,11 @@ const DashboardTable = () => {
                 filterOption={(inputValue, option) =>
                   option.value.toLowerCase().includes(inputValue.toLowerCase())
                 }
+                onChange={handleSearchDropdown}
               >
-                <Input style={{
+                <Input 
+                // onChange={handleSearch}
+                style={{
                   width: 200,
                   height: 44,
                 }} size="large" />

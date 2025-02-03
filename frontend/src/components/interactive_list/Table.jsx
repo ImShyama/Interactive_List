@@ -16,7 +16,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
     globalCheckboxChecked, setGlobalCheckboxChecked
 }) => {
 
-    const primaryColumn = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
+    const primaryColumn = settings?.appName == "Video Gallery" ? settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_") : settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
 
     const reorderedHeaders = useMemo(() => {
         return [
@@ -391,6 +391,71 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         }
     };
 
+    function getDriveThumbnail(url) {
+        if (!url) return "";
+
+        if (url.includes("drive.google.com")) {
+            let driveIdMatch = url.match(/(?:id=|\/d\/)([\w-]+)/);
+            console.log({ driveIdMatch, url });
+            return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
+        }
+
+        return url;
+    }
+
+
+
+    const RenderImage = ({ url }) => {
+
+        if (settings.appName == "People Directory") {
+            return (
+
+                <div className="w-full h-full flex justify-start items-center">
+                    {isValidUrl(url) ? (
+                        <img
+                            src={getDriveThumbnail(url)}
+                            alt="profile"
+                            className="w-12 h-12 rounded-full border-[1px] border-[#D3CBCB] object-cover"
+                        />
+                    ) : (
+                        <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                    )}
+                </div>
+            )
+        }
+        else if (settings?.appName == "Video Gallery") {
+            return (
+                <div className="w-full h-full flex justify-start items-center">
+                    {isValidUrl(url) ? (
+                        <img
+                            src={getDriveThumbnail(url)}
+                            alt="profile"
+                            className="w-12 h-12 rounded-md border-[1px] border-[#D3CBCB] object-cover"
+                        />
+                    ) : (
+                        <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                    )}
+                </div>
+            )
+        }
+        else if (settings?.appName == "Image Gallery") {
+            return (
+                <div className="w-full h-full flex justify-start items-center">
+                    {isValidUrl(url) ? (
+                        <img
+                            src={getDriveThumbnail(url)}
+                            alt="profile"
+                            className="w-12 h-12 rounded-md border-[1px] border-[#D3CBCB] object-cover"
+                        />
+                    ) : (
+                        <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                    )}
+                </div>
+            )
+        }
+    }
+
+
 
     const renderedRows = useMemo(() => (
         paginatedData.map((item) => (
@@ -520,21 +585,14 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                     }}
                                     onDoubleClick={(e) => isEditMode && handleDoubleClick(item.key_id, item)}
                                 >
-                                    {header.toLowerCase().replace(" ", "_") === primaryColumn ? (
-                                        <div className="w-full h-full flex justify-start items-center">
-                                            {isValidUrl(item[header]) ? (
-                                                <img
-                                                    src={item[header]}
-                                                    alt="profile"
-                                                    className="w-12 h-12 rounded-full border-[1px] border-[#D3CBCB] object-cover"
-                                                />
-                                            ) : (
-                                                <Avatar size={48} icon={<UserOutlined />} alt="User" />
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header]}</span>
-                                    )}
+                                    {header.toLowerCase().replace(" ", "_") === primaryColumn ?
+
+
+                                        <RenderImage url={item[header]} />
+
+                                        : (
+                                            <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header]}</span>
+                                        )}
                                 </div>
                             )}
                         </td>

@@ -449,6 +449,14 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       sheetDetails: res.sheetDetails,
       access: res.access, // Save access type
       lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
+      showInCard: [
+        {id: 0, title: ""},
+        {id: 1, title: ""},
+        {id: 2, title: ""},
+        {id: 3, title: ""},
+        {id: 4, title: ""},
+        {id: 5, title: ""},
+      ]
     });
 
     return newSheet;
@@ -534,6 +542,7 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       sheetDetails: sheetDetails,
       access: access, // Add access type
       lastUpdatedDate: lastUpdatedDate, // Add last updated date
+      
     };
 
     // Save the sheet details to the database
@@ -551,6 +560,14 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       sheetDetails: sheetDetails,
       access: res.access, // Save access type
       lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
+      showInCard: [
+        {id: 0, title: ""},
+        {id: 1, title: ""},
+        {id: 2, title: ""},
+        {id: 3, title: ""},
+        {id: 4, title: ""},
+        {id: 5, title: ""},
+      ]
     });
 
     return newSheet;

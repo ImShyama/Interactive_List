@@ -577,8 +577,8 @@ button:disabled {
 }
 
 .ResizeTH:hover .resizeActions {
-  background-color: #f1f1f1 !important;
-  z-index: 100 !important;
+  /* background-color: #f1f1f1 !important; */
+  z-index: 5 ;
   display: flex !important;
   align-items: center !important;
   opacity: 1 !important;

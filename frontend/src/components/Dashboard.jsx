@@ -28,13 +28,15 @@ const Dashboard = () => {
   const [showAppCard, setShowAppCard] = useState(true);
   const [apps, setApps] = useState(APPS);
   const [isDisable, setIsDisable] = useState(true);
+  const [searchQuery, setSearchQuery] = useState(""); // To store the search query
+  const [searchValue, setSearchValue] = useState(""); // To store the search query
 
-  {
-    console.log("app:", apps);
-    apps.map((app) => {
-      console.log(app.appName, app.description);
-    });
-  }
+  // {
+  //   console.log("app:", apps);
+  //   apps.map((app) => {
+  //     console.log(app.appName, app.description);
+  //   });
+  // }
 
   const handleSelectChange = (e) => {
     setSelectedOption(e.target.value);
@@ -128,6 +130,34 @@ const Dashboard = () => {
     console.log("onsearch");
   };
 
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    console.log({query, APPS});
+    setSearchQuery(query);
+    setSearchValue(query);
+
+    const filteredData = APPS.filter((app) => {
+      const appName = app.appName.toLowerCase();
+      return appName.includes(query);
+    });
+
+    setApps(filteredData);
+  };
+  
+  const handleSearchDropdown = (query) => {
+    const searchQuery = query.toLowerCase();
+    console.log({query, APPS});
+    setSearchQuery(searchQuery);
+
+    const filteredData = APPS.filter((app) => {
+      const appName = app.appName.toLowerCase();
+      return appName.includes(searchQuery);
+    });
+
+    setApps(filteredData);
+  };
+
   
 
   return (
@@ -152,6 +182,8 @@ const Dashboard = () => {
                   style={{ width: "200px", height: "44px" }}
                   className="min-w-[150px]"
                   placeholder="Search"
+                  value={searchValue}
+                  onChange={handleSearch}
                 />
               </div>
               <div className="flex items-center">
@@ -166,6 +198,7 @@ const Dashboard = () => {
                   filterOption={(inputValue, option) =>
                     option.value.toLowerCase().includes(inputValue.toLowerCase())
                   }
+                  onChange={handleSearchDropdown}
                 >
                   <Input style={{
                     width: 200,
@@ -271,7 +304,7 @@ const Dashboard = () => {
 
       {showAppCard && (
         <div className="flex flex-wrap justify-center">
-          {APPS.map((app, index) => (
+          {apps.map((app, index) => (
             <AppCard
               key={index}
               appName={app.appName}

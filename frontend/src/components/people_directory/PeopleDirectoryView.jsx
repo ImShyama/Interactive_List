@@ -429,15 +429,34 @@ const PeopleDirectoryView = ({
   //   setVisitedProfiles(savedProfiles);
   // }, []);
 
+  // const handleProfileClick = (id) => {
+  //   if (!visitedProfiles.includes(id)) {
+  //     const updatedProfiles = [...visitedProfiles, id];
+  //     setVisitedProfiles(updatedProfiles);
+  //     localStorage.setItem('visitedProfiles', JSON.stringify(updatedProfiles));
+  //   }
+  //   const filteredData = data.filter((person) => person.key_id === id);
+  //   navigate(`/profile/${id}`, { state: { data: filteredData, settings: settings } });
+  // };
+
   const handleProfileClick = (id) => {
     if (!visitedProfiles.includes(id)) {
       const updatedProfiles = [...visitedProfiles, id];
       setVisitedProfiles(updatedProfiles);
       localStorage.setItem('visitedProfiles', JSON.stringify(updatedProfiles));
     }
-    const filteredData = data.filter((person) => person.key_id === id);
-    navigate(`/profile/${id}`, { state: { data: filteredData, settings: settings } });
+  
+    const filteredData = data.find((person) => person.key_id === id);
+  
+    // Store data and settings in localStorage
+    localStorage.setItem(`profileData_${id}`, JSON.stringify(filteredData));
+    localStorage.setItem(`profileSettings_${id}`, JSON.stringify(settings));
+  
+    // Open the profile in a new tab
+    window.open(`/profile/${id}`, '_blank');
   };
+  
+  
 
   // console.log("Visited Profiles:", visitedProfiles);
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -446,10 +465,10 @@ const PeopleDirectoryView = ({
   const showInCard = settings?.showInCard || [];
 
   return (
-    <div className="px-6 py-4">
+    <div className="px-[50px] ">
       <div style={{ position: 'relative', zIndex: 10 }}>
         {/* Scrollable Grid View */}
-        <div style={{ width: '100%', overflowX: 'auto', maxHeight: '600px' }}>
+        <div style={{ width: '100%', overflowX: 'auto', maxHeight: '70vh' }}>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-3 w-full">
             {paginatedData.map((person) => (
               <div key={person.key_id} className="relative group">

@@ -1,12 +1,12 @@
 export const CLIENT_ID = "733145859090-a841efgntmtqmpqn8u08oiulimf0leeu.apps.googleusercontent.com";
-export const HOST = "http://localhost:4000"
-export const FRONTENDHOST = "http://localhost:5173"
-// export const HOST = ""
-// export const FRONTENDHOST = "https://interact.ceoitbox.com"
+// export const HOST = "http://localhost:4000"
+// export const FRONTENDHOST = "http://localhost:5173"
+export const HOST = ""
+export const FRONTENDHOST = "https://interact.ceoitbox.com"
 import People_Card_Image from "../assets/images/People_Card_Image.png";
 import Video_Image from "../assets/images/Video_Card_Image.png"
 export const APPSNAME = ["Interactive List",
-  "People Directory"
+  "People Directory", "Video Gallery"
 ];
 export const CLIENTID = '260938166249-rv9fgk97t8b2qmrpi5nqk8hd4frd2qba.apps.googleusercontent.com';
 export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ';

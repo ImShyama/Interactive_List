@@ -95,9 +95,9 @@ const Preview = ({ closeModal, sheetdetails }) => {
             {
                 !Loading && sheetData && tableHeader ? (
 
-                    <div className="bg-[#F5F6F7] w-full max-w-[90%] max-h-[100%] relative rounded-lg px-[25px] py-[10px]">
-                        <div className="py-[20px]">
-                            <div className='flex text-center justify-between px-[50px]'>
+                    <div className="bg-[#F5F6F7] w-full h-full max-w-[90%] max-h-[95%] relative rounded-lg">
+                        <div >
+                            <div className='flex text-center justify-between px-[50px] pt-[10px]'>
                                 <div className='p-2'><span className="text-[#2A3C54] font-poppins text-[24px] font-medium">{sheetName}</span></div>
                                 <div className='pr-6 pt-2'>
                                     <button
@@ -124,7 +124,7 @@ const Preview = ({ closeModal, sheetdetails }) => {
                                     </button>
                                 </div>
                             </div>
-                            <div className="h-full">
+                            <div className="">
                                 {/* Conditional rendering for InteractiveListPreview */}
                                 {!Loading && sheetData && tableHeader ? (
                                     <div>

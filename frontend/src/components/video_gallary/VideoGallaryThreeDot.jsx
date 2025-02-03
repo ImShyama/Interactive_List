@@ -15,15 +15,16 @@ import SeeCardPreview from "./SeeCardPreview";
 
 const { Option } = Select;
 
-const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
+const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen, setIsEditBoxOpen }) => {
   const dispatch = useDispatch();
   const { token } = useContext(UserContext);
 
   const [showCardPreview, setShowCardPreview] = useState(false);
+  const [showIn, setShowIn] = useState("");
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [isEditBoxOpen, setIsEditBoxOpen] = useState(false); // Track edit box visibility
+  // const [isEditBoxOpen, setIsEditBoxOpen] = useState(false); // Track edit box visibility
   const [selectedOption, setSelectedOption] = useState("Font Style"); // Default editing option
-  const currentStylingSettings = settings?.showInCard?.find((item) => item?.title === columnKey);
+  const currentStylingSettings = settings?.[showIn]?.find((item) => item?.title === columnKey);
   const [editValues, setEditValues] = useState({
     fontStyle: currentStylingSettings?.setting?.fontStyle || "Regular",
     fontColor: currentStylingSettings?.setting?.fontColor || "#000000",
@@ -49,8 +50,8 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
     }
   };
 
-  const handleEditClick = (e) => {
-    e.stopPropagation();
+  const handleEditClick = () => {
+    // e.stopPropagation();
     setIsEditBoxOpen(true);
     setIsPopoverOpen(false);
   };
@@ -67,41 +68,115 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
     ) || false
   );
 
+  // const handleCheckboxChange = useCallback(
+  //   async (checked, optionType) => {
+  //     if (!columnKey) {
+  //       console.warn("Invalid columnKey provided");
+  //       return;
+  //     }
+
+  //     try {
+  //       const updatedSettings = { ...settings };
+
+  //       const updateList = (list = []) => {
+  //         if (checked) {
+  //           // Add new entry with incremental ID
+  //           const highestId = list.reduce((max, item) => Math.max(max, item.id), 0);
+  //           return [
+  //             ...list,
+  //             { id: highestId, title: columnKey, setting: editValues },
+  //           ];
+  //         } else {
+  //           // Remove entry by title
+  //           return list.filter((item) => item.title !== columnKey);
+  //         }
+  //       };
+
+  //       if (optionType === "showInCard") {
+  //         updatedSettings.showInCard = updateList(settings.showInCard);
+  //         setShowInCardChecked(checked);
+  //       } else if (optionType === "showInProfile") {
+  //         updatedSettings.showInProfile = updateList(settings.showInProfile);
+  //         setShowInProfileChecked(checked);
+  //       }
+
+  //       // Dispatch updated settings locally
+  //       dispatch(updateSetting(updatedSettings));
+
+  //       // Update backend
+  //       const response = await axios.put(
+  //         `${HOST}/spreadsheet/${settings._id}`,
+  //         updatedSettings,
+  //         {
+  //           headers: { authorization: `Bearer ${token}` },
+  //         }
+  //       );
+
+  //       console.log("Settings updated successfully:", response.data);
+  //       dispatch(updateSetting(response.data));
+  //       notifySuccess("Settings updated successfully");
+  //     } catch (error) {
+  //       console.error("Error updating settings:", error);
+  //       notifyError("Error updating settings");
+  //     }
+  //   },
+  //   [dispatch, settings, token, columnKey]
+  // );
+  
+
   const handleCheckboxChange = useCallback(
     async (checked, optionType) => {
       if (!columnKey) {
         console.warn("Invalid columnKey provided");
         return;
       }
-
+  
       try {
         const updatedSettings = { ...settings };
-
-        const updateList = (list = []) => {
-          if (checked) {
-            // Add new entry with incremental ID
-            const newId = list.length + 1;
-            return [
-              ...list,
-              { id: newId, title: columnKey, setting: editValues },
-            ];
-          } else {
-            // Remove entry by title
-            return list.filter((item) => item.title !== columnKey);
-          }
-        };
-
-        if (optionType === "showInCard") {
-          updatedSettings.showInCard = updateList(settings.showInCard);
-          setShowInCardChecked(checked);
-        } else if (optionType === "showInProfile") {
+  
+        if (optionType === "showInProfile") {
+          // Existing logic for showInProfile
+          const updateList = (list = []) => {
+            if (checked) {
+              const highestId = list.reduce((max, item) => Math.max(max, item.id), 0);
+              return [...list, { id: highestId + 1, title: columnKey, setting: editValues }];
+            } else {
+              return list.filter((item) => item.title !== columnKey);
+            }
+          };
+  
           updatedSettings.showInProfile = updateList(settings.showInProfile);
           setShowInProfileChecked(checked);
+        } 
+        
+        else if (optionType === "showInCard") {
+          let updatedChecked = checked; // Keep track of the checkbox state
+          let found = false; // Flag to track if we already added the columnKey
+        
+          updatedSettings.showInCard = settings.showInCard.map((item) => {
+            if (checked && item.title === "" && !found) {
+              // Assign columnKey to the first empty title and stop further modifications
+              found = true; // Mark that we've made a replacement
+              return { ...item, title: columnKey };
+            }
+            if (!checked && item.title === columnKey) {
+              // Remove columnKey when unchecked
+              updatedChecked = false; // Set checked state to false only when removing
+              return { ...item, title: "" };
+            }
+            return item; // Keep other items unchanged
+          });
+        
+          // Only update the checkbox state when necessary
+          setShowInCardChecked(checked ? true : updatedChecked);
         }
-
+        
+        
+        
+  
         // Dispatch updated settings locally
         dispatch(updateSetting(updatedSettings));
-
+  
         // Update backend
         const response = await axios.put(
           `${HOST}/spreadsheet/${settings._id}`,
@@ -110,7 +185,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
             headers: { authorization: `Bearer ${token}` },
           }
         );
-
+  
         console.log("Settings updated successfully:", response.data);
         dispatch(updateSetting(response.data));
         notifySuccess("Settings updated successfully");
@@ -121,14 +196,18 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
     },
     [dispatch, settings, token, columnKey]
   );
+  
+  
   const handlePopoverClose = () => {
     if (!isEditBoxOpen) {
       setIsPopoverOpen(false);
     }
   };
   const handleSaveEdit = async () => {
+
+    console.log({showIn, columnKey, editValues});
     try {
-      const updatedShowInCard = settings?.showInCard?.map((item) =>
+      const updatedShowInCard = settings[showIn]?.map((item) =>
         item?.title === columnKey
           ? { ...item, setting: { ...item.setting, ...editValues } }
           : item
@@ -136,7 +215,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
       
       const updatedSettings = {
         ...settings,
-        showInCard: updatedShowInCard,
+        [showIn]: updatedShowInCard,
       };
 
       dispatch(updateSetting(updatedSettings));
@@ -250,6 +329,8 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
                 borderRadius: "8px",
                 padding: "10px",
                 maxWidth: "300px",
+                maxHeight: "250px",
+                overflow: "auto",
               }}
             >
               <CirclePicker
@@ -413,23 +494,20 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
     setShowCardPreview(!showCardPreview);
   }
 
-  // const [columnSettings, setColumnSettings] = useState(
-  //   settings?.showInCard
-  // );
-
-  // useEffect(() => {
-
-  // }, [settings]);
-
   const editBox = isEditBoxOpen && (
 
-    <div className="fixed inset-0 flex items-center justify-center z-[1000] cursor-pointer ">
+    <div className="fixed inset-0 flex justify-center cursor-pointer "
+      style={{
+        zIndex: 9999,
+      }}
+    >
       <div
         className="bg-white border border-gray-200 shadow-lg overflow-hidden flex"
         style={{
-          width: "889px",
-          height: "469px",
+          width: "700px",
+          height: "350px",
           borderRadius: "50px",
+          marginTop: "200px",
         }}
       >
         {/* Left menu */}
@@ -438,7 +516,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
             (option) => (
               <div
                 key={option}
-                className={`cursor-pointer p-2 rounded-md text-[30px] font-semibold font-poppins leading-none ${selectedOption === option
+                className={`cursor-pointer p-2 rounded-md text-[26px] font-semibold font-poppins leading-none ${selectedOption === option
                   ? "text-[#598931]"
                   : "text-[#CDCCCC]"
                   }`}
@@ -454,7 +532,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
         <div className="min-w-[2px] bg-[#ECECEC]"></div>
 
         {/* Center edit options */}
-        <div className="flex flex-col flex-grow p-6 w-[40%]">
+        <div className="flex flex-col flex-grow p-6 h-full w-[40%]">
           {/* Display Selected Option */}
           <div className="text-[#598931] text-[20px] font-poppins font-semibold mb-4 text-center">
             {selectedOption || "Select an Option"}
@@ -485,7 +563,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
               )
                 ? editValues.fontStyle
                 : undefined, // Apply only if it's a valid font-style
-              fontWeight: editValues.fontStyle === "bold" ? "bold" : undefined,
+                fontWeight: editValues.fontStyle === "bold" ? "bold" : "normal",
               textDecoration: [
                 "underline",
                 "line-through",
@@ -538,22 +616,6 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
           </div>
         </div>
 
-        {/* Save and Cancel buttons */}
-        {/* <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex justify-end w-full py-4 px-10 space-x-4">
-        <Button
-          onClick={handleCancelEdit}
-          className="w-[71px] rounded-md text-[#598931] font-poppins text-[14px] font-medium border leading-normal border-[#598931]"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSaveEdit}
-          type="primary"
-          className="w-[71px] rounded-md text-white font-poppins text-[14px] font-medium leading-normal border-[#598931] bg-[#598931]"
-        >
-          Save
-        </Button>
-      </div> */}
         {showCardPreview && (
           <SeeCardPreview onClose={handleShowCardPreview} settings={settings} rowData={firstRowData} />
         )}
@@ -580,7 +642,10 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
             <td>
               <button
                 className="edit-icon-button"
-                onClick={handleEditClick}
+                onClick={() => {
+                  handleEditClick();
+                  setShowIn("showInCard")
+                }}
                 disabled={!showInCardChecked} // Disable button if checkbox is not checked
                 style={{
                   cursor: showInCardChecked ? "pointer" : "not-allowed", // Change cursor style
@@ -611,7 +676,10 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData }) => {
             <td>
               <button
                 className="edit-icon-button"
-                onClick={handleEditClick}
+                onClick={() => {
+                  handleEditClick();
+                  setShowIn("showInProfile")
+                }}
                 disabled={!showInProfileChecked} // Disable button if checkbox is not checked
                 style={{
                   cursor: showInProfileChecked ? "pointer" : "not-allowed", // Change cursor style

@@ -16,14 +16,14 @@
 
 //   // Dummy data for video thumbnails
 //   const videos = [
-//     { id: 1, title: "Significance of Video Thumbnail", image: thumbnail1 },
-//     { id: 2, title: "How to Make YouTube Thumbnails", image: thumbnail2 },
-//     { id: 3, title: "Inspiring Story - Shantanoo Rane", image: thumbnail3 },
-//     { id: 4, title: "Watch My Video!", image: thumbnail4 },
-//     { id: 5, title: "YouTube Thumbnail Template", image: thumbnail5 },
-//     { id: 6, title: "Another Inspiring Story", image: thumbnail6 },
-//     { id: 7, title: "Funny Video to watch", image: thumbnail7 },
-//     { id: 8, title: "Podcast Video to Watch", image: thumbnail8 },
+//     { key_id: 1, title: "Significance of Video Thumbnail", image: thumbnail1 },
+//     { key_id: 2, title: "How to Make YouTube Thumbnails", image: thumbnail2 },
+//     { key_id: 3, title: "Inspiring Story - Shantanoo Rane", image: thumbnail3 },
+//     { key_id: 4, title: "Watch My Video!", image: thumbnail4 },
+//     { key_id: 5, title: "YouTube Thumbnail Template", image: thumbnail5 },
+//     { key_id: 6, title: "Another Inspiring Story", image: thumbnail6 },
+//     { key_id: 7, title: "Funny Video to watch", image: thumbnail7 },
+//     { key_id: 8, title: "Podcast Video to Watch", image: thumbnail8 },
 //   ];
 
 //   // Pagination logic
@@ -119,49 +119,49 @@
 
 //   const videos = [
 //     {
-//       id: 1,
+//       key_id: 1,
 //       title: "Significance of Video Thumbnail",
 //       video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
 //       image: thumbnail1,
 //     },
 //     {
-//       id: 2,
+//       key_id: 2,
 //       title: "How to Make YouTube Thumbnails",
 //       video: "https://www.youtube.com/embed/3fumBcKC6RE",
 //       image: thumbnail2,
 //     },
 //     {
-//       id: 3,
+//       key_id: 3,
 //       title: "Inspiring Story - Shantanoo Rane",
 //       video: "https://www.youtube.com/embed/VYOjWnS4cMY",
 //       image: thumbnail3,
 //     },
 //     {
-//       id: 4,
+//       key_id: 4,
 //       title: "Watch My Video!",
 //       video: "https://www.youtube.com/embed/tgbNymZ7vqY",
 //       image: thumbnail4,
 //     },
 //     {
-//       id: 5,
+//       key_id: 5,
 //       title: "YouTube Thumbnail Template",
 //       video: "https://www.youtube.com/embed/2Vv-BfVoq4g",
 //       image: thumbnail5,
 //     },
 //     {
-//       id: 6,
+//       key_id: 6,
 //       title: "Another Inspiring Story",
 //       video: "https://www.youtube.com/embed/kJQP7kiw5Fk",
 //       image: thumbnail6,
 //     },
 //     {
-//       id: 7,
+//       key_id: 7,
 //       title: "Funny Video to watch",
 //       video: "https://www.youtube.com/embed/lTTajzrSkCw",
 //       image: thumbnail7,
 //     },
 //     {
-//       id: 8,
+//       key_id: 8,
 //       title: "Podcast Video to Watch",
 //       video: "https://www.youtube.com/embed/9bZkp7q19f0",
 //       image: thumbnail8,
@@ -291,49 +291,49 @@
 
 //   const videos = [
 //     {
-//       id: 1,
+//       key_id: 1,
 //       title: "Significance of Video Thumbnail",
 //       video: "https://www.youtube.com/embed/dQw4w9WgXcQ",
 //       image: thumbnail1,
 //     },
 //     {
-//       id: 2,
+//       key_id: 2,
 //       title: "How to Make YouTube Thumbnails",
 //       video: "https://www.youtube.com/embed/3fumBcKC6RE",
 //       image: thumbnail2,
 //     },
 //     {
-//       id: 3,
+//       key_id: 3,
 //       title: "Inspiring Story - Shantanoo Rane",
 //       video: "https://www.youtube.com/embed/Oa_RSwwpPaA",
 //       image: thumbnail3,
 //     },
 //     {
-//       id: 4,
+//       key_id: 4,
 //       title: "Watch My Video!",
 //       video: "https://www.youtube.com/embed/tgbNymZ7vqY",
 //       image: thumbnail4,
 //     },
 //     {
-//       id: 5,
+//       key_id: 5,
 //       title: "YouTube Thumbnail Template",
 //       video: "https://www.youtube.com/embed/2Vv-BfVoq4g",
 //       image: thumbnail5,
 //     },
 //     {
-//       id: 6,
+//       key_id: 6,
 //       title: "Another Inspiring Story",
 //       video: "https://www.youtube.com/embed/kJQP7kiw5Fk",
 //       image: thumbnail6,
 //     },
 //     {
-//       id: 7,
+//       key_id: 7,
 //       title: "Funny Video to watch",
 //       video: "https://www.youtube.com/embed/Mv3SZDP7QUo",
 //       image: thumbnail7,
 //     },
 //     {
-//       id: 8,
+//       key_id: 8,
 //       title: "Podcast Video to Watch",
 //       video: "https://www.youtube.com/embed/1mAgelsVrHs",
 //       image: thumbnail8,
@@ -456,50 +456,50 @@
 
 //   const videos = [
     // {
-    //   id: 1,
+    //   key_id: 1,
     //   title: "Significance of Video Thumbnail",
     //   video:"https://drive.google.com/file/d/1sbiKGp8iIyTzOHACuSm0xOME4fzz29uz/view?usp=sharing",
     //   image: thumbnail1,
     //   isGoogleDrive: true, // Flag to identify Google Drive videos
     // },
     // {
-    //   id: 2,
+    //   key_id: 2,
     //   title: "How to Make YouTube Thumbnails",
     //   video: "https://www.youtube.com/embed/02kVDdzlflM",
     //   image: thumbnail2,
     // },
     // {
-    //   id: 3,
+    //   key_id: 3,
     //   title: "Inspiring Story - Shantanoo Rane",
     //   video: "https://www.youtube.com/embed/HD4IUbTZsfM",
     //   image: thumbnail3,
     // },
     // {
-    //   id: 4,
+    //   key_id: 4,
     //   title: "Watch My Video!",
     //   video: "https://www.youtube.com/embed/C0UyDNCx3qo",
     //   image: thumbnail4,
     // },
     // {
-    //   id: 5,
+    //   key_id: 5,
     //   title: "YouTube Thumbnail Template",
     //   video: "https://www.youtube.com/embed/hDZ91RzzgkY",
     //   image: thumbnail5,
     // },
     // {
-    //   id: 6,
+    //   key_id: 6,
     //   title: "Another Inspiring Story",
     //   video: "https://www.youtube.com/embed/0lAuwVLJ_nw",
     //   image: thumbnail6,
     // },
     // {
-    //   id: 7,
+    //   key_id: 7,
     //   title: "Funny Video to watch",
     //   video: "https://www.youtube.com/embed/AreWQuDjtUE",
     //   image: thumbnail7,
     // },
     // {
-    //   id: 8,
+    //   key_id: 8,
     //   title: "Podcast Video to Watch",
     //   video:"https://drive.google.com/file/d/1NCGl77J5498TNDuDp4_9g3C5cfb4RraZ/view?usp=sharing",
     //   image: thumbnail8,
@@ -625,7 +625,7 @@ const VideoGallaryPreview = () => {
   const videos = [
     // Video objects here...
     {
-      id: 1,
+      key_id: 1,
       title: "Significance of Video Thumbnail",
       video:
         "https://drive.google.com/file/d/1sbiKGp8iIyTzOHACuSm0xOME4fzz29uz/view?usp=sharing",
@@ -636,7 +636,7 @@ const VideoGallaryPreview = () => {
       subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
-      id: 2,
+      key_id: 2,
       title: "How to Make YouTube Thumbnails",
       video: "https://www.youtube.com/embed/02kVDdzlflM",
       image: thumbnail2,
@@ -646,7 +646,7 @@ const VideoGallaryPreview = () => {
       subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
-      id: 3,
+      key_id: 3,
       title: "Inspiring Story - Shantanoo Rane",
       video: "https://www.youtube.com/embed/HD4IUbTZsfM",
       image: thumbnail3,
@@ -656,7 +656,7 @@ const VideoGallaryPreview = () => {
       subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
-      id: 4,
+      key_id: 4,
       title: "Watch My Video!",
       video: "https://www.youtube.com/embed/C0UyDNCx3qo",
       image: thumbnail4,
@@ -666,7 +666,7 @@ const VideoGallaryPreview = () => {
       subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
-      id: 5,
+      key_id: 5,
       title: "YouTube Thumbnail Template",
       video: "https://www.youtube.com/embed/hDZ91RzzgkY",
       image: thumbnail5,
@@ -676,7 +676,7 @@ const VideoGallaryPreview = () => {
       subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
-      id: 6,
+      key_id: 6,
       title: "Another Inspiring Story",
       video: "https://www.youtube.com/embed/0lAuwVLJ_nw",
       image: thumbnail6,
@@ -686,7 +686,7 @@ const VideoGallaryPreview = () => {
       subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
-      id: 7,
+      key_id: 7,
       title: "Funny Video to watch",
       video: "https://www.youtube.com/embed/AreWQuDjtUE",
       image: thumbnail7,
@@ -696,7 +696,7 @@ const VideoGallaryPreview = () => {
       subtitle: "Shantanoo Rane, Roswalt Realty, CEO - Mumbai",
     },
     {
-      id: 8,
+      key_id: 8,
       title: "Podcast Video to Watch",
       video:
         "https://drive.google.com/file/d/1NCGl77J5498TNDuDp4_9g3C5cfb4RraZ/view?usp=sharing",
@@ -722,6 +722,75 @@ const VideoGallaryPreview = () => {
     navigate(`/video/${video.id}`, { state: { video } });
   };
 
+  const defaultSettings = {
+
+
+    "showInCard": [
+      {
+        "id": 6,
+        "title": "video",
+        "setting": {
+          "fontStyle": "Regular",
+          "fontColor": "#000000",
+          "fontSize": "16",
+          "fontType": "Poppins"
+        }
+      },
+      {
+        "id": 7,
+        "title": "image",
+        "setting": {
+          "fontStyle": "Regular",
+          "fontColor": "#000000",
+          "fontSize": "16",
+          "fontType": "Poppins"
+        }
+      },
+      {
+        "id": 5,
+        "title": "title",
+        "setting": {
+          "fontStyle": "Bold",
+          "fontColor": "#333131",
+          "fontSize": "20",
+          "fontType": "Poppins"
+        }
+      },
+      {
+        "id": 3,
+        "title": "category",
+        "setting": {
+          "fontStyle": "Regular",
+          "fontColor": "#B0B0B0",
+          "fontSize": "16",
+          "fontType": "Poppins"
+        }
+      },
+      {
+        "id": 8,
+        "title": "description",
+        "setting": {
+          "fontStyle": "normal",
+          "fontColor": "#333131",
+          "fontSize": "16",
+          "fontType": "Poppins"
+        }
+      },
+      {
+        "id": 2,
+        "title": "subtitle",
+        "setting": {
+          "fontStyle": "normal",
+          "fontColor": "#B0B0B0",
+          "fontSize": "16",
+          "fontType": "Poppins"
+        }
+      }
+    ],
+    "showInProfile": [],
+  
+  }
+
   return (
     <div className="px-10 py-2">
       <div>
@@ -738,11 +807,12 @@ const VideoGallaryPreview = () => {
       >
         {paginatedVideos.map((video) => (
           <VideoCard
-            key={video.id}
+            key={video.key_id}
             rowData={video}
             hoveredVideo={hoveredVideo}
             setHoveredVideo={setHoveredVideo}
             handleVideoClick={handleVideoClick}
+            settings={defaultSettings}
           />
         ))}
       </div>
