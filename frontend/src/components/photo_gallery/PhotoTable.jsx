@@ -35,9 +35,6 @@ import _, { debounce } from "lodash";
 import GlobalSearch from "../interactive_list/GlobalSearch.jsx";
 import Table from "../interactive_list/Table.jsx";
 import Loader from "../Loader.jsx";
-import VideoGallaryView from "./VideoGallaryView.jsx";
-import { FiEye } from "react-icons/fi";
-import Preview from "../Preview.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -56,7 +53,7 @@ const convertArrayToJSON = (data) => {
     return jsonData;
 };
 
-const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaData, unhideHeader }) => {
+const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaData, unhideHeader }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [rowToEdit, setRowToEdit] = useState(null);
     const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
@@ -92,7 +89,6 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
     const isEditMode = window.location.pathname.endsWith('/edit');
     const [isedit, setIsedit] = useState(false);
     const [globalCheckboxChecked, setGlobalCheckboxChecked] = useState(false);
-    const [previewModalOpen, setPreviewModalOpen] = useState(false);
     const [columnWidths, setColumnWidths] = useState(
         headers.reduce((acc, header) => {
             acc[header] = header.toLowerCase() === 'picture' ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
@@ -829,22 +825,15 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
         }
     };
 
-    const openModal = () => {
-        setPreviewModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setPreviewModalOpen(false);
-    };
 
 
     return (
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
-                    {isEditMode && <button onClick={() => navigate(-1)} title="Back">
+                    <button onClick={() => navigate(-1)} title="Back">
                         <BackIcon />
-                    </button>}
+                    </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
                 <div className="flex ">
@@ -965,7 +954,8 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                     )}
                 </div>
                 <div className="flex justify-end items-center">
-        
+
+                    {/* <FilterButton data={data} /> */}
                     {!isFilterOpen ? (
                         <button
                             onClick={toggleFilterBox}
@@ -1174,22 +1164,23 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                     <GlobalSearch data={data} setFilteredData={setFilteredData} />
 
                     {isEditMode && <div className="flex items-center">
-
                         <button onClick={handleAdd} className="mx-2" title="Add Row">
                             <Add />
                         </button>
-
                         <button className="mr-2" onClick={handleAddBukl} title="Import Data">
                             <BulkAdds />
                         </button>
 
-                        
+                        {/* {isedit ?
+                            <button onClick={handleBulkSave} className="bg-primary rounded-[4px] p-1 mx-2" title="Save">
+                                <IoSaveSharp color="white" />
+                            </button>
+                            :
+                            <button onClick={handleBulkEdit} className="bg-primary rounded-[4px] p-1 mx-2" title="Edit">
+                                <MdEdit color="white" />
+                            </button>} */}
                         <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-[5px]" title="Delete">
                             <MdDelete color="white" />
-                        </button>
-
-                        <button onClick={() => openModal()} className="bg-primary rounded-[4px] p-[5px] ml-2 text-[#fff]" title="Preview">
-                            <FiEye />
                         </button>
 
                         <Popover content={<HeaderSwitch />} title="Hide Columns" trigger="click" placement="bottomRight">
@@ -1203,58 +1194,54 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                 </div>
             </div>
 
+            {/* <DataGrid
+                columnResizeMode="onChange"
+                rows={data}
+                columns={headers.map((col) => {
+                    return {
+                        field: col,
+                        header: col,
+                        width: 200,
+                    };
 
-            {isEditMode ?
+                })}
+            /> */}
 
-                <Table
-                    data={data}
-                    headers={headers}
-                    filteredData={filteredData}
-                    setFilteredData={setFilteredData}
-                    paginatedData={paginatedData}
-                    loading={loading}
-                    isEditMode={isEditMode}
-                    isedit={isedit}
-                    setIsedit={setIsedit}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    settings={settings}
-                    freezeCol={freezeCol}
-                    setFreezeCol={setFreezeCol}
-                    globalOption={globalOption}
-                    setGlobalOption={setGlobalOption}
-                    ischecked={ischecked}
-                    setIschecked={setIschecked}
-                    EditData={EditData}
-                    setEditData={setEditData}
-                    handleBulkDelete={handleBulkDelete}
-                    headerBgColor={headerBgColor}
-                    headerTextColor={headerTextColor}
-                    headerFontSize={headerFontSize}
-                    headerFontFamily={headerFontFamily}
-                    bodyTextColor={bodyTextColor}
-                    bodyFontSize={bodyFontSize}
-                    bodyFontFamily={bodyFontFamily}
-                    tempHeader={tempHeader}
-                    formulaData={formulaData}
-                    handleBulkSave={handleBulkSave}
-                    globalCheckboxChecked={globalCheckboxChecked}
-                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-                />
-
-                :
-
-                <VideoGallaryView
-                    data={data}
-                    // headers={filterHeader}
-                    // tempHeader={tableHeader}
-                    // filteredData={filteredData}
-                    // setFilteredData={setFilteredData}
-                    // paginatedData={paginatedData}
-                    settings={settings}
-                />
-
-            }
+            <Table
+                data={data}
+                headers={headers}
+                filteredData={filteredData}
+                setFilteredData={setFilteredData}
+                paginatedData={paginatedData}
+                loading={loading}
+                isEditMode={isEditMode}
+                isedit={isedit}
+                setIsedit={setIsedit}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                settings={settings}
+                freezeCol={freezeCol}
+                setFreezeCol={setFreezeCol}
+                globalOption={globalOption}
+                setGlobalOption={setGlobalOption}
+                ischecked={ischecked}
+                setIschecked={setIschecked}
+                EditData={EditData}
+                setEditData={setEditData}
+                handleBulkDelete={handleBulkDelete}
+                headerBgColor={headerBgColor}
+                headerTextColor={headerTextColor}
+                headerFontSize={headerFontSize}
+                headerFontFamily={headerFontFamily}
+                bodyTextColor={bodyTextColor}
+                bodyFontSize={bodyFontSize}
+                bodyFontFamily={bodyFontFamily}
+                tempHeader={tempHeader}
+                formulaData={formulaData}
+                handleBulkSave={handleBulkSave}
+                globalCheckboxChecked={globalCheckboxChecked}
+                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+            />
 
             <EditRow
                 isOpen={confirmEditModalOpen}
@@ -1297,12 +1284,8 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                 spreadSheetData={selectSpreadsheet}
                 handleBuldData={handleBuldData}
             />
-
-            {previewModalOpen && (
-                <Preview closeModal={closeModal} sheetdetails={settings} />
-            )}
         </div>
     );
 };
 
-export default VideoTable;
+export default PhotoTable;

@@ -39,6 +39,8 @@ import { SortableContext, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { handleUpdateSettings } from "../APIs/index.jsx";
 import HeadingTitle from "./people_directory/HeadingTitle.jsx";
+import { MdOutlineContentCopy } from "react-icons/md";
+import { IoMdOpen } from "react-icons/io";
 
 const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
 
@@ -649,16 +651,16 @@ const ViewSettings = ({ settingsData }) => {
     const handleDeleteProfileCard = async (id) => {
       try {
         console.log({ id });
-    
+
         // Create a new settingsData object with the updated showInProfile list
         const updatedSettings = {
           ...settingsData,
           showInProfile: settingsData.showInProfile.filter((item) => item.id !== id),
         };
-    
+
         // Dispatch the updated settings locally
         dispatch(updateSetting(updatedSettings));
-    
+
         // Update backend
         const response = await axios.put(
           `${HOST}/spreadsheet/${settingsData._id}`,
@@ -667,7 +669,7 @@ const ViewSettings = ({ settingsData }) => {
             headers: { authorization: `Bearer ${token}` },
           }
         );
-    
+
         console.log("Profile card deleted successfully:", response.data);
         dispatch(updateSetting(response.data));
         notifySuccess("Profile card deleted successfully");
@@ -676,7 +678,7 @@ const ViewSettings = ({ settingsData }) => {
         notifyError("Error deleting profile card");
       }
     };
-    
+
 
     return (
       <div>
@@ -707,23 +709,23 @@ const ViewSettings = ({ settingsData }) => {
               </div>
 
               <div className="flex flex-col m-2">
-              {profileData?.map((item) => (
-                item.title ? (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log("Button clicked for ID:", item.id);
-                      handleDeleteProfileCard(item.id);
-                    }}
+                {profileData?.map((item) => (
+                  item.title ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        console.log("Button clicked for ID:", item.id);
+                        handleDeleteProfileCard(item.id);
+                      }}
 
-                    className="text-[16px] m-[6px] font-medium leading-normal text-[#111] font-[Poppins] right-0 hover:text-red-500">
-                    ✖
-                  </button>
-                ) : (
-                  <span key={item.id} className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">{"\u00A0"}</span> // Prevents layout shifting
-                )
-              ))}
-            </div>
+                      className="text-[16px] m-[6px] font-medium leading-normal text-[#111] font-[Poppins] right-0 hover:text-red-500">
+                      ✖
+                    </button>
+                  ) : (
+                    <span key={item.id} className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">{"\u00A0"}</span> // Prevents layout shifting
+                  )
+                ))}
+              </div>
 
             </div>
           </SortableContext>
@@ -1134,6 +1136,21 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     await handleSaveChanges(updatedSetting, "Table Style Reset successfully");
   };
 
+  const handleOpenViewPage = () => {
+    const url = window.location.href.replace("edit", "view");
+    window.open(url, "_blank");
+  };
+
+  const handleCopyToClipboard = () => {
+    const url = window.location.href.replace("edit", "view");
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        notifySuccess("Link copied to clipboard!");
+      })
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
+
 
   return (
     <div>
@@ -1270,10 +1287,32 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                       <span className="setting_filter_top1_text ">View Settings</span>
                       <img className="setting_filter_top1_img" src={downIcon} />
                     </div>
+
                     {/* <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body contect, You can easily revert to the original settings by clicking the Reset icon."}/> */}
                   </div>
-                  {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." />}
+
+                  {/* {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." />} */}
                 </div>
+                {addView && <div className="flex items-center gap-2">
+                  {/* New icons */}
+                  <button className="bg-primary rounded-[4px] p-1" title="Reset Table Styles"
+                    onClick={handleOpenViewPage}
+                  >
+                    <IoMdOpen
+                      className=" justify-end cursor-pointer text-xl text-white"
+                      title="Open View Page"
+                    />
+                  </button>
+
+                  <button className="bg-primary rounded-[4px] p-1" title="Reset Table Styles"
+                    onClick={handleCopyToClipboard}
+                  >
+                    <MdOutlineContentCopy
+                      className=" cursor-pointer text-xl text-white"
+                      title={"Copy View Link"}
+                    />
+                  </button>
+                </div>}
 
               </div>
               {addView && <ViewSettings settingsData={settingData} />}

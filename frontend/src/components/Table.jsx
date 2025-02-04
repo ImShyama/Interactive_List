@@ -13,6 +13,7 @@ import useSpreadSheetDetails from "../utils/useSpreadSheetDetails";
 import { UserContext } from "../context/UserContext";
 import { set } from "lodash";
 import VideoTable from "./video_gallary/VideoTable.jsx";
+import PhotoTable from "./photo_gallery/PhotoTable.jsx";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
@@ -138,6 +139,19 @@ const Table = () => {
       case "Video Gallery":
         return (
           <VideoTable
+            data={sheetData}
+            tableHeader={tableHeader}
+            headers={filterHeader}
+            settings={settings}
+            freezeIndex={freezeIndex}
+            tempHeader={tableHeader}
+            formulaData={formulaData}
+            unhideHeader={unhideHeader}
+          />
+        );
+      case "Photo Gallery":
+        return (
+          <PhotoTable
             data={sheetData}
             tableHeader={tableHeader}
             headers={filterHeader}

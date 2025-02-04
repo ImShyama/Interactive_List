@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { HiOutlineEnvelope } from "react-icons/hi2";
 import { IoCallOutline } from "react-icons/io5";
 import { CgArrowsExpandRight } from "react-icons/cg";
+import { FaWhatsapp } from "react-icons/fa";
 import { MdOutlineStar } from "react-icons/md";
 import TitleBarPreview from "../TitleBarPreview";
 import profile1 from "../../assets/images/p1.png";
@@ -25,7 +26,7 @@ export const dummyData = [
     role: "Developer",
     department: "Development",
     email: "aliberiaprince@gmail.com",
-    phone: "+91 6874521458",
+    phone: "7310676239",
     image: profile1,
     joiningDate: "20-Dec-2014",
     experience: "05",
@@ -1227,7 +1228,7 @@ export const dummyData = [
       "emergencyContact",
     ],
   },
-  
+
   // Additional dummy data...
 ];
 
@@ -1257,99 +1258,99 @@ const PeopleDirectoryPreView = () => {
       setVisitedProfiles(updatedProfiles);
       localStorage.setItem('visitedProfiles', JSON.stringify(updatedProfiles));
     }
-  
+
     // const filteredData = data.find((person) => person.key_id === id);
 
-    const filteredData = dummyData.filter((profile)=>{ return profile.id == id})[0]
+    const filteredData = dummyData.filter((profile) => { return profile.id == id })[0]
     const settings = {
       "showInCard": [
-          {
-              "id": 1,
-              "title": "Picture"
-          },
-          {
-              "id": 2,
-              "title": "Name"
-          },
-          {
-              "id": 3,
-              "title": "Role"
-          },
-          {
-              "id": 4,
-              "title": "Department"
-          },
-          {
-              "id": 5,
-              "title": "Email"
-          },
-          {
-              "id": 6,
-              "title": "Phone"
-          }
+        {
+          "id": 1,
+          "title": "Picture"
+        },
+        {
+          "id": 2,
+          "title": "Name"
+        },
+        {
+          "id": 3,
+          "title": "Role"
+        },
+        {
+          "id": 4,
+          "title": "Department"
+        },
+        {
+          "id": 5,
+          "title": "Email"
+        },
+        {
+          "id": 6,
+          "title": "Phone"
+        }
       ],
       "showInProfile": [
-          {
-              "id": 1,
-              "title": "Name"
-          },
-          {
-              "id": 2,
-              "title": "DOJ"
-          },
-          {
-              "id": 3,
-              "title": "Email"
-          },
-          {
-              "id": 4,
-              "title": "Department"
-          },
-          {
-              "id": 5,
-              "title": "Designation"
-          },
-          {
-              "id": 6,
-              "title": "Skills & Expertise"
-          },
-          {
-              "id": 7,
-              "title": "Birth date"
-          },
-          {
-              "id": 8,
-              "title": "UAN"
-          },
-          {
-              "id": 9,
-              "title": "ESI"
-          },
-          {
-              "id": 10,
-              "title": "Birth date"
-          },
-          {
-              "id": 11,
-              "title": "Branch location"
-          },
-          {
-              "id": 12,
-              "title": "Manager"
-          },
-          {
-              "id": 13,
-              "title": "Gender"
-          }
+        {
+          "id": 1,
+          "title": "Name"
+        },
+        {
+          "id": 2,
+          "title": "DOJ"
+        },
+        {
+          "id": 3,
+          "title": "Email"
+        },
+        {
+          "id": 4,
+          "title": "Department"
+        },
+        {
+          "id": 5,
+          "title": "Designation"
+        },
+        {
+          "id": 6,
+          "title": "Skills & Expertise"
+        },
+        {
+          "id": 7,
+          "title": "Birth date"
+        },
+        {
+          "id": 8,
+          "title": "UAN"
+        },
+        {
+          "id": 9,
+          "title": "ESI"
+        },
+        {
+          "id": 10,
+          "title": "Birth date"
+        },
+        {
+          "id": 11,
+          "title": "Branch location"
+        },
+        {
+          "id": 12,
+          "title": "Manager"
+        },
+        {
+          "id": 13,
+          "title": "Gender"
+        }
       ],
     }
-  
-  
-    console.log({filteredData, settings});
+
+
+    console.log({ filteredData, settings });
     // Store data and settings in localStorage
     localStorage.setItem(`profileData_${id}`, JSON.stringify(filteredData));
     localStorage.setItem(`profileSettings_${id}`, JSON.stringify(settings));
-  
+
     // Open the profile in a new tab
     window.open(`/profile/${id}`, '_blank');
   };
@@ -1452,7 +1453,7 @@ const PeopleDirectoryPreView = () => {
   // };
 
   // Pagination logic
-  
+
   const paginatedData = data.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const handlePageChange = (page, size) => {
@@ -1488,8 +1489,8 @@ const PeopleDirectoryPreView = () => {
                 )}
               </div>
 
-               {/* Profile Card */}
-               
+              {/* Profile Card */}
+
               <div className="flex flex-col items-center justify-center bg-[#FBFBFB] rounded-[24px] shadow p-4 gap-2">
                 <img
                   className="w-20 h-20 rounded-full mb-3 object-cover"
@@ -1500,15 +1501,33 @@ const PeopleDirectoryPreView = () => {
                 <p className="text-xs text-gray-600">{person.role}</p>
                 <p className="text-xs text-gray-600">{person.department}</p>
                 <div className="flex items-center w-full mt-2 gap-2">
-                  <HiOutlineEnvelope className="ml-8" />
-                  <a href={`mailto:${person.email}`} className="text-blue-500 text-xs underline">
+                  <HiOutlineEnvelope className="ml-8 shrink-0 text-gray-500" />
+                  <a
+                    href={`mailto:${person.email}`}
+                    className="text-blue-500 text-xs no-underline truncate max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"
+                    title={person.email} // Tooltip to show full email on hover
+                  >
                     {person.email}
                   </a>
                 </div>
-                <div className="flex items-center w-full mt-1 gap-2">
-                  <IoCallOutline className="ml-8"/>
-                  <p className="text-xs text-gray-600">{person.phone}</p>
+
+                <div className="flex items-center w-full mt-2 gap-2">
+                  <FaWhatsapp className="ml-8 text-gray-500" />
+                  <a
+                    href={`https://wa.me/${person.phone.replace(/\D/g, '')}`} // Removes non-numeric characters
+                    target="_blank" // Opens in a new tab
+                    rel="noopener noreferrer" // Security best practice
+                    className="text-blue-500 text-xs no-underline truncate max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"
+                    title={person.phone} // Tooltip to show full number on hover
+                  >
+                    {person.phone}
+                  </a>
                 </div>
+
+                {/* <div className="flex items-center w-full mt-1 gap-2">
+                  <IoCallOutline className="ml-8" />
+                  <p className="text-xs text-gray-600">{person.phone}</p>
+                </div> */}
               </div>
             </div>
           ))}

@@ -17,6 +17,10 @@ import profile8 from "../../assets/images/p8.png"
 import profile9 from "../../assets/images/p9.png"
 import profile10 from "../../assets/images/p10.png"
 import { data } from "../../utils/InetractiveList_DumyData";
+import { Avatar } from "antd";
+import { UserOutlined } from "@ant-design/icons";
+import { FaWhatsapp } from "react-icons/fa";
+import { StickyNote } from "../../utils/notify";
 
 export const dummyData = [
   {
@@ -410,7 +414,7 @@ export const dummyData = [
   // Additional dummy data...
 ];
 
-const PeopleDirectoryView = ({ 
+const PeopleDirectoryView = ({
   data,
   headers,
   tempHeader,
@@ -445,24 +449,36 @@ const PeopleDirectoryView = ({
       setVisitedProfiles(updatedProfiles);
       localStorage.setItem('visitedProfiles', JSON.stringify(updatedProfiles));
     }
-  
+
     const filteredData = data.find((person) => person.key_id === id);
-  
+
     // Store data and settings in localStorage
     localStorage.setItem(`profileData_${id}`, JSON.stringify(filteredData));
     localStorage.setItem(`profileSettings_${id}`, JSON.stringify(settings));
-  
+
     // Open the profile in a new tab
     window.open(`/profile/${id}`, '_blank');
   };
-  
-  
+
+
 
   // console.log("Visited Profiles:", visitedProfiles);
   const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-  console.log({ paginatedData });
+  console.log({ paginatedData, settings });
 
   const showInCard = settings?.showInCard || [];
+  const [showWarning, setShowWarning] = useState(false);
+
+  useEffect(() => {
+    if (settings) {
+      const istitle = showInCard.filter((item) => {
+        return item.title !== ""
+      })
+      if(istitle.length === 0){
+        setShowWarning(true);
+      }
+    }
+  }, [settings]);
 
   return (
     <div className="px-[50px] ">
@@ -485,24 +501,44 @@ const PeopleDirectoryView = ({
 
                 {/* Profile Card */}
                 <div className="flex flex-col items-center justify-center bg-[#FBFBFB] rounded-[24px] shadow p-4 gap-2">
-                  <img
-                    className="w-20 h-20 rounded-full mb-3 object-cover"
-                    src={person[showInCard[0]?.title.toLowerCase().replace(' ', '_')]}
-                    alt={`${person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}'s Profile`}
-                  />
-                  <h2 className="text-sm font-medium text-gray-900">{person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}</h2>
+                  {showInCard[0]?.title !== "" ?
+                    <img className="w-20 h-20 rounded-full mb-3 object-cover"
+                      src={person[showInCard[0]?.title.toLowerCase().replace(' ', '_')]}
+                      alt={person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]} />
+                    :
+                    // show avtar image
+                    <Avatar className="w-20 h-20 rounded-full mb-3 object-cover" icon={<UserOutlined />} />
+                  }
+
+
+                  <h2 className="text-sm font-medium text-gray-900">
+                    {person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}
+                  </h2>
                   <p className="text-xs text-gray-600">{person[showInCard[2]?.title.toLowerCase().replace(' ', '_')]}</p>
                   <p className="text-xs text-gray-600">{person[showInCard[3]?.title.toLowerCase().replace(' ', '_')]}</p>
-                  <div className="flex items-center w-full mt-2 gap-2">
-                    <HiOutlineEnvelope className="ml-8" />
-                    <a href={`mailto:${person[showInCard[4]?.title.toLowerCase().replace(' ', '_')]}`} className="text-blue-500 text-xs underline">
+                  {showInCard[4]?.title !== "" && <div className="flex items-center w-full mt-2 gap-2">
+                    <HiOutlineEnvelope className="ml-8 shrink-0 text-gray-500" />
+                    <a
+                      href={`mailto:${person[showInCard[4]?.title.toLowerCase().replace(' ', '_')]}`}
+                      className="text-blue-500 text-xs no-underline truncate max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"
+                      title={person[showInCard[4]?.title.toLowerCase().replace(' ', '_')]} // Tooltip to show full email on hover
+                    >
                       {person[showInCard[4]?.title.toLowerCase().replace(' ', '_')]}
                     </a>
-                  </div>
-                  <div className="flex items-center w-full mt-1 gap-2">
-                    <IoCallOutline className="ml-8" />
-                    <span className="text-xs text-gray-600">{person[showInCard[5]?.title.toLowerCase().replace(' ', '_')]}</span>
-                  </div>
+                  </div>}
+
+                  {showInCard[5]?.title !== "" && <div className="flex items-center w-full mt-2 gap-2">
+                    <FaWhatsapp className="ml-8 text-gray-500" />
+                    <a
+                      href={`https://wa.me/${person[showInCard[5]?.title?.toLowerCase().replace(' ', '_')].replace(/\D/g, '')}`} // Removes non-numeric characters
+                      target="_blank" // Opens in a new tab
+                      rel="noopener noreferrer" // Security best practice
+                      className="text-blue-500 text-xs no-underline truncate max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"
+                      title={person[showInCard[5]?.title?.toLowerCase().replace(' ', '_')]} // Tooltip to show full number on hover
+                    >
+                      {person[showInCard[5]?.title?.toLowerCase().replace(' ', '_')]}
+                    </a>
+                  </div>}
                 </div>
               </div>
             ))}
@@ -523,6 +559,11 @@ const PeopleDirectoryView = ({
           />
         </div>
       </div>
+      {showWarning &&
+        <div>
+          <StickyNote message="Please update view settings in admin side to display the People Directory!" />
+        </div>
+      }
     </div>
   );
 };

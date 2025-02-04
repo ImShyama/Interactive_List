@@ -4,9 +4,12 @@ export const CLIENT_ID = "733145859090-a841efgntmtqmpqn8u08oiulimf0leeu.apps.goo
 export const HOST = ""
 export const FRONTENDHOST = "https://interact.ceoitbox.com"
 import People_Card_Image from "../assets/images/People_Card_Image.png";
-import Video_Image from "../assets/images/Video_Card_Image.png"
+import Video_Image from "../assets/images/Video_Card_Image.png";
+import PhotoImage from "../assets/images/PhotoGallery_Card_Image.png";
 export const APPSNAME = ["Interactive List",
-  "People Directory", "Video Gallery"
+  "People Directory", 
+  "Video Gallery", 
+  // "Photo Gallery"
 ];
 export const CLIENTID = '260938166249-rv9fgk97t8b2qmrpi5nqk8hd4frd2qba.apps.googleusercontent.com';
 export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ';
@@ -15,6 +18,8 @@ export const OPTIONS = [
   { value: 'Interactive List' },
   { value: 'People Directory' },
   { value: 'Video Gallery' },
+  // { value: 'Photo Gallery' },
+  
   // { value: 'Settings Page' },
 ];
 
@@ -26,6 +31,11 @@ export const APPS = [
     description: "List all employees attendance score.",
     appID: "1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ",
     spreadSheetName: "Data",
+    multipleImage: ["imageone link", "imagetwo link"],
+    standOut: [
+      {"Heading 1": ""},
+      {"Heading 2": ""},
+    ]
   },
   {
     appName: "People Directory",
@@ -42,7 +52,15 @@ export const APPS = [
     description: "List all videos.",
     appID: "1AXbyb8PFWZ0lCqiRAxLl5ymdLERTnHhvP9SMNVjuI0A",
     spreadSheetName: "Data",
-  }
+  },
+  // {
+  //   appName: "Photo Gallery",
+  //   appView: "PhotoGalleryPreview",
+  //   appImg: PhotoImage,
+  //   description: "List all employees working remotely on a map with filters.",
+  //   appID: "1wHDKsShOppIMNtYgm5QEh2cagKVgXkktdmuRtGYRrwE",
+  //   spreadSheetName: "Data",
+  // }
 ];
 // export const CLIENTID = '210551094674-r1bvcns06j8pj06bk8dnfhl3mh6feuag.apps.googleusercontent.com';
 // export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ'; // Use correct developer key

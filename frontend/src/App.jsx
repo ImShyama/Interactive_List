@@ -26,6 +26,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProfilePage from "./components/people_directory/ProfilePage";
 import Home from "./components/Home";
+import PhotoGalleryPreview from "./components/photo_gallery/PhotoGalleryPreview";
 
 
 // Layout Component
@@ -64,6 +65,7 @@ const appRouter = createBrowserRouter([
       { path: "/peopledirectory", element: <PeopleTable /> },
       { path: "/peopleDirectoryPreview", element: <PeopleDirectoryPreview /> },
       { path: "/VideoGalleryPreview", element: <VideoGalleryPreview /> },
+      { path: "/PhotoGalleryPreview", element: <PhotoGalleryPreview /> },
       { path: "/testing1", element: <Testing1 /> },
       { path: "/profile/:id", element: <ProfilePage /> },
       { path: "/video/:id", element: <LargeVideoView /> },

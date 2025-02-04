@@ -149,7 +149,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
             draggableOpts={{ enableUserSelectHack: false }}
             handle={
                 <div
-                    className="resizeActions"
+                    className="resizeActions "
                     style={{
                         position: "absolute",
                         right: 0,
@@ -218,7 +218,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                             {title}
                         </span>
                     </div>
-                    <div className="flex items-center gap-1"
+                    <div className="flex items-center gap-1 ResizeTH"
                         style={{
                             position: "absolute",
                             right: 5,
@@ -300,34 +300,35 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                             <Freeze columnKey={columnKey} isEditMode={isEditMode} setFreezeCol={setFreezeCol} freezeCol={freezeCol} settings={settings} />
                         </div>
 
-                        <div className={isEditBoxOpen ? " " : "resizeActions"} >
-                            {isEditMode && settings.appName == "People Directory" &&
-                                <PeopleDirectoryThreeDot
-                                    headerId={columnKey}
-                                    columnKey={title}
-                                    openPopoverId={openPopoverId}
-                                    setOpenPopoverId={setOpenPopoverId}
-                                    // checkboxSelections={checkboxSelections}
-                                    // updateSelection={updateSelection}
-                                    settings={settings}
+                        {(settings?.appName == "People Directory" || settings?.appName == "Video Gallery") &&
+                            <div className={isEditBoxOpen ? " " : "resizeActions"} >
+                                {isEditMode && settings.appName == "People Directory" &&
+                                    <PeopleDirectoryThreeDot
+                                        headerId={columnKey}
+                                        columnKey={title}
+                                        openPopoverId={openPopoverId}
+                                        setOpenPopoverId={setOpenPopoverId}
+                                        // checkboxSelections={checkboxSelections}
+                                        // updateSelection={updateSelection}
+                                        settings={settings}
 
-                                />
-                            }
-                            {isEditMode && settings.appName == "Video Gallery" &&
-                                <VideoGalleryThreeDot
-                                    headerId={columnKey}
-                                    columnKey={title}
-                                    openPopoverId={openPopoverId}
-                                    setOpenPopoverId={setOpenPopoverId}
-                                    // checkboxSelections={checkboxSelections}
-                                    // updateSelection={updateSelection}
-                                    settings={settings}
-                                    firstRowData={firstRowData}
-                                    isEditBoxOpen={isEditBoxOpen}
-                                    setIsEditBoxOpen={setIsEditBoxOpen}
-                                />
-                            }
-                        </div>
+                                    />
+                                }
+                                {isEditMode && settings.appName == "Video Gallery" &&
+                                    <VideoGalleryThreeDot
+                                        headerId={columnKey}
+                                        columnKey={title}
+                                        openPopoverId={openPopoverId}
+                                        setOpenPopoverId={setOpenPopoverId}
+                                        // checkboxSelections={checkboxSelections}
+                                        // updateSelection={updateSelection}
+                                        settings={settings}
+                                        firstRowData={firstRowData}
+                                        isEditBoxOpen={isEditBoxOpen}
+                                        setIsEditBoxOpen={setIsEditBoxOpen}
+                                    />
+                                }
+                            </div>}
                     </div>
                 </div>
             </th>

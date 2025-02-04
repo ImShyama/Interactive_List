@@ -36,13 +36,6 @@ const VideoGallaryView = ({data,headers,tempHeader,filteredData,setFilteredData,
 
   return (
     <div className="px-10">
-      {/* <div>
-        <TitleBarPreview
-          appName={"Video Gallary"}
-          spreadSheetID={"1AXbyb8PFWZ0lCqiRAxLl5ymdLERTnHhvP9SMNVjuI0A"}
-          spreadSheetName={"Data"}
-        />
-      </div> */}
 
       <div
         style={{ width: "100%", overflowX: "auto", maxHeight: "70vh" }}

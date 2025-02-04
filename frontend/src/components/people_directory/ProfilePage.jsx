@@ -215,13 +215,13 @@ const ProfilePage = () => {
                 className="w-[338.18px] h-[338.18px] rounded-full bg-lightgray bg-cover bg-center bg-no-repeat mt-[44px] mx-[79px]"
               />
 
-              <div className="flex flex-col items-center gap-2">
+              <div className="flex flex-col items-center gap-2 my-2">
                 <div className="self-stretch text-[#1E1B1B] font-semibold mx-[125px] w-[309px]"
-                  style={{ fontFamily: "Montserrat", fontSize: "36.226px" }}>
+                  style={{ fontFamily: "Montserrat", fontSize: "36.226px", lineHeight: "28px", }}>
                   {data[showInCard[1]?.title.toLowerCase().replace(" ", "_")]}
                 </div>
-                <p className="self-stretch text-[#747171] font-semibold mx-[135px] w-[330px]"
-                  style={{ fontFamily: "Montserrat", fontSize: "21.127px" }}>
+                <p className="self-stretch text-[#747171] font-semibold mx-[125px] w-[330px]"
+                  style={{ fontFamily: "Montserrat", fontSize: "21.127px", lineHeight: "normal", }}>
                   {`${data[showInCard[2]?.title.toLowerCase().replace(" ", "_")]}, 
                   ${data[showInCard[3]?.title.toLowerCase().replace(" ", "_")]}`}
                 </p>

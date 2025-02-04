@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { IoMdArrowBack } from "react-icons/io";
 import { useParams } from "react-router-dom";
+import noPhoto from "../../assets/images/noPhoto.jpg";
 
 const LargeVideoView = () => {
   const navigate = useNavigate();
@@ -17,104 +18,104 @@ const LargeVideoView = () => {
     "firstSheetUrl": "https://docs.google.com/spreadsheets/d/1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc/edit#gid=1435322083",
     "firstTabDataRange": "Data!A1:N",
     "firstTabHeader": [
-        "Company name",
-        "Domain",
-        "Name",
-        "Designation",
-        "Topic",
-        "Title",
-        "Description",
-        "City",
-        "Link",
-        "Type",
-        "Designation11",
-        "Designation12",
-        "Link 2",
-        "Image"
+      "Company name",
+      "Domain",
+      "Name",
+      "Designation",
+      "Topic",
+      "Title",
+      "Description",
+      "City",
+      "Link",
+      "Type",
+      "Designation11",
+      "Designation12",
+      "Link 2",
+      "Image"
     ],
     "appName": "Video Gallery",
     "sheetDetails": [
-        {
-            "name": "Data",
-            "url": "https://docs.google.com/spreadsheets/d/1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc/edit#gid=1435322083",
-            "sheetId": 1435322083
-        },
-        {
-            "name": "HTML",
-            "url": "https://docs.google.com/spreadsheets/d/1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc/edit#gid=1940464747",
-            "sheetId": 1940464747
-        }
+      {
+        "name": "Data",
+        "url": "https://docs.google.com/spreadsheets/d/1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc/edit#gid=1435322083",
+        "sheetId": 1435322083
+      },
+      {
+        "name": "HTML",
+        "url": "https://docs.google.com/spreadsheets/d/1IBSYE3bGNBRq6hbX7f58dyXFux6Zq_cA9R-2nWquNYc/edit#gid=1940464747",
+        "sheetId": 1940464747
+      }
     ],
     "sharedWith": [],
     "tableSettings": [],
     "access": "Owner",
     "lastUpdatedDate": "Sat Feb 01 2025 22:26:21 GMT+0545 (Nepal Time)",
     "showInCard": [
-        {
-            "id": 0,
-            "title": "Link 2"
-        },
-        {
-            "id": 4,
-            "title": "Image"
-        },
-        {
-            "id": 2,
-            "title": "Company name"
-        },
-        {
-            "id": 1,
-            "title": ""
-        },
-        {
-            "id": 3,
-            "title": "Domain"
-        },
-        {
-            "id": 5,
-            "title": ""
-        }
+      {
+        "id": 0,
+        "title": "Link 2"
+      },
+      {
+        "id": 4,
+        "title": "Image"
+      },
+      {
+        "id": 2,
+        "title": "Company name"
+      },
+      {
+        "id": 1,
+        "title": ""
+      },
+      {
+        "id": 3,
+        "title": "Domain"
+      },
+      {
+        "id": 5,
+        "title": ""
+      }
     ],
     "showInProfile": [
-        {
-            "id": 1,
-            "title": "City",
-            "setting": {
-                "fontStyle": "Regular",
-                "fontColor": "#000000",
-                "fontSize": "16",
-                "fontType": "Poppins"
-            }
-        },
-        {
-            "id": 2,
-            "title": "Link",
-            "setting": {
-                "fontStyle": "Regular",
-                "fontColor": "#000000",
-                "fontSize": "16",
-                "fontType": "Poppins"
-            }
-        },
-        {
-            "id": 3,
-            "title": "Designation",
-            "setting": {
-                "fontStyle": "Regular",
-                "fontColor": "#000000",
-                "fontSize": "16",
-                "fontType": "Poppins"
-            }
+      {
+        "id": 1,
+        "title": "City",
+        "setting": {
+          "fontStyle": "Regular",
+          "fontColor": "#000000",
+          "fontSize": "16",
+          "fontType": "Poppins"
         }
+      },
+      {
+        "id": 2,
+        "title": "Link",
+        "setting": {
+          "fontStyle": "Regular",
+          "fontColor": "#000000",
+          "fontSize": "16",
+          "fontType": "Poppins"
+        }
+      },
+      {
+        "id": 3,
+        "title": "Designation",
+        "setting": {
+          "fontStyle": "Regular",
+          "fontColor": "#000000",
+          "fontSize": "16",
+          "fontType": "Poppins"
+        }
+      }
     ],
     "hiddenCol": [],
     "__v": 0
-}
+  }
   // const location = useLocation();
   // const data = location.state?.data || [];
   // const settings = location.state?.settings || dummySetting;
   const [isPlaying, setIsPlaying] = useState(false);
-  
+
 
   // const video = data?[settings?.showInCard[0]?.title.toLowerCase().replace(/\s/g, "_")]:"";
 
@@ -136,7 +137,7 @@ const LargeVideoView = () => {
     if (storedSettings) setSettings(JSON.parse(storedSettings));
   }, [id]);
 
-  if (!data ) return <p>Loading...</p>;
+  if (!data) return <p>Loading...</p>;
 
 
   console.log({ data, settings });
@@ -188,7 +189,7 @@ const LargeVideoView = () => {
       {/* Title Bar Section */}
       <div className="w-[100%] flex items-center gap-[39px] py-3">
         {/* <div> */}
-          {/* <IoMdArrowBack
+        {/* <IoMdArrowBack
             className="text-xl cursor-pointer"
             style={{ height: "45px", width: "45px", color: "#000000" }}
             onClick={() => navigate(-1)}
@@ -228,106 +229,114 @@ const LargeVideoView = () => {
 
       {/* Video Section */}
       <div className="w-full max-w-full h-[480px] flex justify-center mx-auto">
-        {!isPlaying ? (
-          <div
-            className="relative w-full h-full cursor-pointer"
-            onClick={handlePlayVideo}
-          >
-            <img
-              src={
-                (() => {
-                  const titleKey = settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
-                  const videoUrl = data?.[titleKey];
-
-                  if (!videoUrl) return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
-
-                  if (videoUrl.includes("drive.google.com")) {
-                    let driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
-                    console.log({ driveIdMatch, videoUrl });
-                    return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
-                  }
-
-                  return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
-                })()
-              }
-              alt={data[settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
-              className="w-full h-full object-cover rounded-[36.443px]"
+        {settings?.showInCard[1]?.title == "" && settings?.showInCard[0]?.title == "" ? (
+          <div className="relative w-full h-full cursor-pointer" >
+            <img src={noPhoto}
+              className="w-full h-full rounded-[36.443px]"
             />
-            {/* Custom Play Button Overlay */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-black bg-opacity-50 rounded-full p-[24px]">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-[64px] w-[64px] text-white"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+          </div>
+        )
+          :
+          (!isPlaying ? (
+            <div
+              className="relative w-full h-full cursor-pointer"
+              onClick={handlePlayVideo}
+            >
+              <img
+                src={
+                  (() => {
+                    const titleKey = settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
+                    const videoUrl = data?.[titleKey];
+
+                    if (!videoUrl) return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
+
+                    if (videoUrl.includes("drive.google.com")) {
+                      let driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
+                      console.log({ driveIdMatch, videoUrl });
+                      return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
+                    }
+
+                    return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
+                  })()
+                }
+                alt={data[settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
+                className="w-full h-full object-cover rounded-[36.443px]"
+              />
+              {/* Custom Play Button Overlay */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-black bg-opacity-50 rounded-full p-[24px]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-[64px] w-[64px] text-white"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <iframe
-             className="w-full h-full rounded-[36.443px] object-cover"
-            src={
-              (() => {
-                const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
-                const videoUrl = data?.[titleKey];
+          ) : (
+            <iframe
+              className="w-full h-full rounded-[36.443px] object-cover"
+              src={
+                (() => {
+                  const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
+                  const videoUrl = data?.[titleKey];
 
-                if (!videoUrl) return "";
+                  if (!videoUrl) return "";
 
-                if (videoUrl.includes("drive.google.com")) {
-                  const driveIdMatch = videoUrl.match(/\/d\/(.*?)(\/|$)/);
-                  return driveIdMatch ? `https://drive.google.com/file/d/${driveIdMatch[1]}/preview` : "";
-                }
+                  if (videoUrl.includes("drive.google.com")) {
+                    const driveIdMatch = videoUrl.match(/\/d\/(.*?)(\/|$)/);
+                    return driveIdMatch ? `https://drive.google.com/file/d/${driveIdMatch[1]}/preview` : "";
+                  }
 
-                if (videoUrl.includes("youtube.com/watch") || videoUrl.includes("youtu.be")) {
-                  const youtubeIdMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-                  return youtubeIdMatch ? `https://www.youtube.com/embed/${youtubeIdMatch[1]}?autoplay=1&mute=1` : "";
-                }
+                  if (videoUrl.includes("youtube.com/watch") || videoUrl.includes("youtu.be")) {
+                    const youtubeIdMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+                    return youtubeIdMatch ? `https://www.youtube.com/embed/${youtubeIdMatch[1]}?autoplay=1&mute=1` : "";
+                  }
 
-                return videoUrl; // Fallback for other video sources
-              })()
-            }
-            title={settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_") || "Video"}
-            allow="autoplay; encrypted-media"
-            frameBorder="0"
-            allowFullScreen
-          ></iframe>
-        )}
+                  return videoUrl; // Fallback for other video sources
+                })()
+              }
+              title={settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_") || "Video"}
+              allow="autoplay; encrypted-media"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+          ))}
       </div>
 
       {/* Content Section */}
       <div className="w-[100%] flex flex-col items-start gap-[16px] mt-6">
         <div className="">
           <span style={{
-           fontStyle: ["normal", "italic", "oblique"].includes(
-            settings?.showInCard[3]?.setting?.fontStyle
-          )
-            ? settings?.showInCard[3]?.setting?.fontStyle
-            : undefined, // Apply only if it's a valid font-style
-          fontWeight: settings?.showInCard[3]?.setting?.fontStyle === "bold" ? "bold" : "normal",
-          textDecoration: [
-            "underline",
-            "line-through",
-            "overline",
-          ].includes(settings?.showInCard[3]?.setting?.fontStyle)
-            ? settings?.showInCard[3]?.setting?.fontStyle
-            : undefined,
-          fontVariant:
-            settings?.showInCard[3]?.setting?.fontStyle === "small-caps"
-              ? "small-caps"
+            fontStyle: ["normal", "italic", "oblique"].includes(
+              settings?.showInCard[3]?.setting?.fontStyle
+            )
+              ? settings?.showInCard[3]?.setting?.fontStyle
+              : undefined, // Apply only if it's a valid font-style
+            fontWeight: settings?.showInCard[3]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+            textDecoration: [
+              "underline",
+              "line-through",
+              "overline",
+            ].includes(settings?.showInCard[3]?.setting?.fontStyle)
+              ? settings?.showInCard[3]?.setting?.fontStyle
               : undefined,
-          textTransform: ["uppercase", "lowercase"].includes(
-            settings?.showInCard[3]?.setting?.fontStyle
-          )
-            ? settings?.showInCard[3]?.setting?.fontStyle
-            : undefined,
+            fontVariant:
+              settings?.showInCard[3]?.setting?.fontStyle === "small-caps"
+                ? "small-caps"
+                : undefined,
+            textTransform: ["uppercase", "lowercase"].includes(
+              settings?.showInCard[3]?.setting?.fontStyle
+            )
+              ? settings?.showInCard[3]?.setting?.fontStyle
+              : undefined,
 
-          color: settings?.showInCard[3]?.setting?.fontColor || "#000000",
-          fontSize: `${settings?.showInCard[3]?.setting?.fontSize}px`,
-          fontFamily: settings?.showInCard[3]?.setting?.fontType,
+            color: settings?.showInCard[3]?.setting?.fontColor || "#000000",
+            fontSize: `${settings?.showInCard[3]?.setting?.fontSize}px`,
+            fontFamily: settings?.showInCard[3]?.setting?.fontType,
           }}>
             {data[settings?.showInCard[3]?.title.toLowerCase().replace(" ", "_")]}
           </span>
@@ -357,7 +366,7 @@ const LargeVideoView = () => {
               )
                 ? settings?.showInCard[4]?.setting?.fontStyle
                 : undefined,
-  
+
               color: settings?.showInCard[4]?.setting?.fontColor || "#000000",
               fontSize: `${settings?.showInCard[4]?.setting?.fontSize}px`,
               fontFamily: settings?.showInCard[4]?.setting?.fontType4
@@ -400,39 +409,39 @@ const LargeVideoView = () => {
 
         {settings?.showInProfile?.map((item, index) => (
           <div key={index}>
-            <span 
-            
-            style={{
-              fontStyle: ["normal", "italic", "oblique"].includes(
-                item?.setting?.fontStyle
-              )
-                ? item?.setting?.fontStyle
-                : undefined, // Apply only if it's a valid font-style
-              fontWeight: item?.setting?.fontStyle === "bold" ? "bold" : "normal",
-              textDecoration: [
-                "underline",
-                "line-through",
-                "overline",
-              ].includes(item?.setting?.fontStyle)
-                ? item?.setting?.fontStyle
-                : undefined,
-              fontVariant:
-                item?.setting?.fontStyle === "small-caps"
-                  ? "small-caps"
+            <span
+
+              style={{
+                fontStyle: ["normal", "italic", "oblique"].includes(
+                  item?.setting?.fontStyle
+                )
+                  ? item?.setting?.fontStyle
+                  : undefined, // Apply only if it's a valid font-style
+                fontWeight: item?.setting?.fontStyle === "bold" ? "bold" : "normal",
+                textDecoration: [
+                  "underline",
+                  "line-through",
+                  "overline",
+                ].includes(item?.setting?.fontStyle)
+                  ? item?.setting?.fontStyle
                   : undefined,
-              textTransform: ["uppercase", "lowercase"].includes(
-                item?.setting?.fontStyle
-              )
-                ? item?.setting?.fontStyle
-                : undefined,
-  
-              color: item?.setting?.fontColor || "#000000",
-              fontSize: `${item?.setting?.fontSize}px`,
-              fontFamily: item?.setting?.fontType,
-            }}>
+                fontVariant:
+                  item?.setting?.fontStyle === "small-caps"
+                    ? "small-caps"
+                    : undefined,
+                textTransform: ["uppercase", "lowercase"].includes(
+                  item?.setting?.fontStyle
+                )
+                  ? item?.setting?.fontStyle
+                  : undefined,
+
+                color: item?.setting?.fontColor || "#000000",
+                fontSize: `${item?.setting?.fontSize}px`,
+                fontFamily: item?.setting?.fontType,
+              }}>
               {data[item?.title.toLowerCase().replace(" ", "_")]}
             </span>
-          </div>          
+          </div>
         ))}
 
       </div>

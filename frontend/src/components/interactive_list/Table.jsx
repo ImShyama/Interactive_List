@@ -8,6 +8,7 @@ import ResizableHeader from "./ResizableHeader";
 import _, { debounce } from "lodash";
 import { IoSaveSharp, IoSave } from "react-icons/io5";
 import { UserOutlined } from "@ant-design/icons";
+import { getDriveThumbnail } from "../../utils/globalFunctions";
 
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
@@ -391,22 +392,22 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         }
     };
 
-    function getDriveThumbnail(url) {
-        if (!url) return "";
+    // function getDriveThumbnail(url) {
+    //     if (!url) return "";
 
-        if (url.includes("drive.google.com")) {
-            let driveIdMatch = url.match(/(?:id=|\/d\/)([\w-]+)/);
-            console.log({ driveIdMatch, url });
-            return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
-        }
+    //     if (url.includes("drive.google.com")) {
+    //         let driveIdMatch = url.match(/(?:id=|\/d\/)([\w-]+)/);
+    //         console.log({ driveIdMatch, url });
+    //         return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
+    //     }
 
-        return url;
-    }
+    //     return url;
+    // }
 
 
 
     const RenderImage = ({ url }) => {
-
+        
         if (settings.appName == "People Directory") {
             return (
 
@@ -424,12 +425,13 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
             )
         }
         else if (settings?.appName == "Video Gallery") {
+            console.log({ url, url1: getDriveThumbnail(url) });
             return (
                 <div className="w-full h-full flex justify-start items-center">
                     {isValidUrl(url) ? (
                         <img
                             src={getDriveThumbnail(url)}
-                            alt="profile"
+                            alt="prof"
                             className="w-12 h-12 rounded-md border-[1px] border-[#D3CBCB] object-cover"
                         />
                     ) : (
