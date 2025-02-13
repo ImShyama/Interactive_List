@@ -6,7 +6,7 @@ import { IoSaveSharp, IoSearchOutline } from "react-icons/io5";
 const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, setGlobalOption, columnKey, closePopover, index }) => {
     const [selectedValues, setSelectedValues] = useState([]);
     const [searchText, setSearchText] = useState("");
-    console.log({ filteredData, data, columnKey });
+    console.log({ filteredData, data, columnKey, globalOption, selectedValues });
 
 
     // Step 1: Create initialData with unique labels and counts
@@ -171,19 +171,41 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
     };
     
 
+    // const handleMultiSearch = () => {
+    //     if (selectedValues.length == 0 && globalOption[columnKey].length == 0) {
+    //         setFilteredData(data);
+    //         return;
+    //     }
+
+    //     const filteredDataTemp = filteredData.filter((item) => {
+    //         return globalOption[columnKey].includes(item[columnKey]) || selectedValues.includes(item[columnKey])
+    //     });
+    //     setFilteredData(filteredDataTemp);
+    //     // closePopover();
+    // };
+
     const handleMultiSearch = () => {
-        if (selectedValues.length == 0 && globalOption[columnKey].length == 0) {
-            setFilteredData(data);
+        if (selectedValues.length === 0 && globalOption[columnKey].length === 0) {
+            // Reapply filtering using all active globalOptions (excluding empty arrays)
+            const updatedFilteredData = data.filter((item) => {
+                return Object.keys(globalOption).every((key) => {
+                    // If the globalOption array for a column is empty, ignore filtering that column
+                    return globalOption[key].length === 0 || globalOption[key].includes(item[key]);
+                });
+            });
+    
+            setFilteredData(updatedFilteredData);
             return;
         }
-
-        const filteredDataTemp = filteredData.filter((item) => {
-            return globalOption[columnKey].includes(item[columnKey]) || selectedValues.includes(item[columnKey])
-        });
+    
+        const filteredDataTemp = filteredData.filter((item) => 
+            globalOption[columnKey].includes(item[columnKey]) || selectedValues.includes(item[columnKey])
+        );
+    
         setFilteredData(filteredDataTemp);
-        // closePopover();
     };
-
+    
+    
     // const handleReset = useCallback(() => {
     //     setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
     //     const globalColumn = Object.keys(globalOption).map((key) => {
@@ -422,7 +444,7 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
                     onBlur={() => setTimeout(() => setDropdownOpen(false), 200)} // Optional delay to allow click events
                     onFocus={() => setDropdownOpen(true)}
                     value={searchText}
-                    dropdownMatchSelectWidth={false} // Prevents unwanted resizing
+                    // dropdownMatchSelectWidth={false} // Prevents unwanted resizing
                     virtual // Enables virtual scrolling
                 >
                     {options.map((option) => (

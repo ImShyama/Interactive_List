@@ -35,6 +35,7 @@ import _, { debounce } from "lodash";
 import GlobalSearch from "./interactive_list/GlobalSearch.jsx";
 import Table from "./interactive_list/Table.jsx";
 import Loader from "./Loader.jsx";
+import EmptyTable from "./EmptyTable.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -1597,41 +1598,48 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                 })}
             /> */}
 
-            <Table
-                data={data}
-                headers={headers}
-                filteredData={filteredData}
-                setFilteredData={setFilteredData}
-                paginatedData={paginatedData}
-                loading={loading}
-                isEditMode={isEditMode}
-                isedit={isedit}
-                setIsedit={setIsedit}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                settings={settings}
-                freezeCol={freezeCol}
-                setFreezeCol={setFreezeCol}
-                globalOption={globalOption}
-                setGlobalOption={setGlobalOption}
-                ischecked={ischecked}
-                setIschecked={setIschecked}
-                EditData={EditData}
-                setEditData={setEditData}
-                handleBulkDelete={handleBulkDelete}
-                headerBgColor={headerBgColor}
-                headerTextColor={headerTextColor}
-                headerFontSize={headerFontSize}
-                headerFontFamily={headerFontFamily}
-                bodyTextColor={bodyTextColor}
-                bodyFontSize={bodyFontSize}
-                bodyFontFamily={bodyFontFamily}
-                tempHeader={tempHeader}
-                formulaData={formulaData}
-                handleBulkSave={handleBulkSave}
-                globalCheckboxChecked={globalCheckboxChecked}
-                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-            />
+            {!data.length && isEditMode ?
+
+                <EmptyTable sheetURL={settings?.spreadsheetUrl} />
+                
+                :
+
+                <Table
+                    data={data}
+                    headers={headers}
+                    filteredData={filteredData}
+                    setFilteredData={setFilteredData}
+                    paginatedData={paginatedData}
+                    loading={loading}
+                    isEditMode={isEditMode}
+                    isedit={isedit}
+                    setIsedit={setIsedit}
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                    settings={settings}
+                    freezeCol={freezeCol}
+                    setFreezeCol={setFreezeCol}
+                    globalOption={globalOption}
+                    setGlobalOption={setGlobalOption}
+                    ischecked={ischecked}
+                    setIschecked={setIschecked}
+                    EditData={EditData}
+                    setEditData={setEditData}
+                    handleBulkDelete={handleBulkDelete}
+                    headerBgColor={headerBgColor}
+                    headerTextColor={headerTextColor}
+                    headerFontSize={headerFontSize}
+                    headerFontFamily={headerFontFamily}
+                    bodyTextColor={bodyTextColor}
+                    bodyFontSize={bodyFontSize}
+                    bodyFontFamily={bodyFontFamily}
+                    tempHeader={tempHeader}
+                    formulaData={formulaData}
+                    handleBulkSave={handleBulkSave}
+                    globalCheckboxChecked={globalCheckboxChecked}
+                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                />
+            }
 
             <EditRow
                 isOpen={confirmEditModalOpen}

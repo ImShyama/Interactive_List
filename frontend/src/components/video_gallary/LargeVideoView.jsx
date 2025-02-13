@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { IoMdArrowBack } from "react-icons/io";
 import { useParams } from "react-router-dom";
 import noPhoto from "../../assets/images/noPhoto.jpg";
+import { handleImageError } from "../../utils/globalFunctions";
 
 const LargeVideoView = () => {
   const navigate = useNavigate();
@@ -233,6 +234,7 @@ const LargeVideoView = () => {
           <div className="relative w-full h-full cursor-pointer" >
             <img src={noPhoto}
               className="w-full h-full rounded-[36.443px]"
+              onError={(e) => handleImageError(e, noPhoto)}
             />
           </div>
         )
@@ -258,9 +260,11 @@ const LargeVideoView = () => {
 
                     return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
                   })()
+                  
                 }
                 alt={data[settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
                 className="w-full h-full object-cover rounded-[36.443px]"
+                onError={(e) => handleImageError(e, noPhoto)}
               />
               {/* Custom Play Button Overlay */}
               <div className="absolute inset-0 flex items-center justify-center">

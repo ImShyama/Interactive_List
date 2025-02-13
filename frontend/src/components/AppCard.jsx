@@ -65,8 +65,13 @@ const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, des
       <div className="flex justify-start mx-[25px]">
         <span className="text-[21.52px]">{appName}</span>
       </div>
-      <div className="flex justify-start mx-[25px] my-2">
+      {/* <div className="flex justify-start mx-[25px] my-2">
         <span className="text-[14.4px]">
+          {description}
+        </span>
+      </div> */}
+       <div className="flex justify-start mx-[25px] my-2 relative group">
+        <span className="text-[14.4px] line-clamp-2 min-h-[30px]  group-hover: whitespace-normal transition-all duration-300 ease-in-out cursor-pointer">
           {description}
         </span>
       </div>
@@ -85,7 +90,7 @@ const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, des
           </div>
         }
         <button className="border border-primary rounded-[13.99px] py-[10px] px-[15px] text-[15.07px] text-primary" onClick={handleCopy}>
-          Copy
+          Copy Template
         </button>
       </div>
     </div>

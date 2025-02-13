@@ -19,7 +19,7 @@ const TitleBarPreview = ({appName, spreadSheetID, spreadSheetName}) => {
   const { token: userToken } = useContext(UserContext);
 
   const handleCopy = () => {
-    // setLoading(true);
+    setLoading(true);
    console.log({appName, spreadSheetID, spreadSheetName});
     axios
       .post(
@@ -75,7 +75,7 @@ const TitleBarPreview = ({appName, spreadSheetID, spreadSheetName}) => {
 const handleAddSheet = (data) => {
   if (data.action === "picked") {
       console.log("data", data);
-
+      setLoading(true)
       axios
           .post(
               `${HOST}/createNewSpreadsheet`,
@@ -102,6 +102,9 @@ const handleAddSheet = (data) => {
           })
           .catch((err) => {
               console.log(err.message);
+          })
+          .finally(() => {
+            setLoading(false);
           });
   }
 };
@@ -150,6 +153,8 @@ const handleAddSheet = (data) => {
           {/* copy icon */}
         </button>
       </div>
+
+
     </div>
   );
 };

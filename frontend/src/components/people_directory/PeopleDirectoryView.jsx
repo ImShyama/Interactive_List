@@ -21,6 +21,8 @@ import { Avatar } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { FaWhatsapp } from "react-icons/fa";
 import { StickyNote } from "../../utils/notify";
+import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
+
 
 export const dummyData = [
   {
@@ -474,7 +476,7 @@ const PeopleDirectoryView = ({
       const istitle = showInCard.filter((item) => {
         return item.title !== ""
       })
-      if(istitle.length === 0){
+      if (istitle.length === 0) {
         setShowWarning(true);
       }
     }
@@ -503,8 +505,10 @@ const PeopleDirectoryView = ({
                 <div className="flex flex-col items-center justify-center bg-[#FBFBFB] rounded-[24px] shadow p-4 gap-2">
                   {showInCard[0]?.title !== "" ?
                     <img className="w-20 h-20 rounded-full mb-3 object-cover"
-                      src={person[showInCard[0]?.title.toLowerCase().replace(' ', '_')]}
-                      alt={person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]} />
+                      src={getDriveThumbnail(person[showInCard[0]?.title.toLowerCase().replace(' ', '_')])}
+                      alt={person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}
+                      onError={(e) => handleImageError(e)}
+                      />
                     :
                     // show avtar image
                     <Avatar className="w-20 h-20 rounded-full mb-3 object-cover" icon={<UserOutlined />} />
@@ -530,7 +534,7 @@ const PeopleDirectoryView = ({
                   {showInCard[5]?.title !== "" && <div className="flex items-center w-full mt-2 gap-2">
                     <FaWhatsapp className="ml-8 text-gray-500" />
                     <a
-                      href={`https://wa.me/${person[showInCard[5]?.title?.toLowerCase().replace(' ', '_')].replace(/\D/g, '')}`} // Removes non-numeric characters
+                      href={`https://wa.me/${person[showInCard[5]?.title?.toLowerCase()?.replace(' ', '_')]?.replace(/\D/g, '')}`} // Removes non-numeric characters
                       target="_blank" // Opens in a new tab
                       rel="noopener noreferrer" // Security best practice
                       className="text-blue-500 text-xs no-underline truncate max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"

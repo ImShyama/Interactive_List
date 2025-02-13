@@ -10,6 +10,8 @@ import {
   PlayCircleOutlined,
   PauseCircleOutlined,
 } from "@ant-design/icons";
+import noPhoto from "../../assets/images/noPhoto.jpg";
+import { handleImageError } from "../../utils/globalFunctions";
 
 const BiggerView = ({ photo, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -100,6 +102,7 @@ const BiggerView = ({ photo, onClose }) => {
               transform: `scale(${zoomLevel})`,
               transition: "transform 0.3s",
             }}
+            onError={(e) => handleImageError(e, noPhoto)}
           />
         </div>
 

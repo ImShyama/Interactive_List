@@ -24,6 +24,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   // const [isEditBoxOpen, setIsEditBoxOpen] = useState(false); // Track edit box visibility
   const [selectedOption, setSelectedOption] = useState("Font Style"); // Default editing option
+
   const currentStylingSettings = settings?.[showIn]?.find((item) => item?.title === columnKey);
   const [editValues, setEditValues] = useState({
     fontStyle: currentStylingSettings?.setting?.fontStyle || "Regular",
@@ -32,7 +33,16 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
     fontType: currentStylingSettings?.setting?.fontType || "Poppins",
   });
 
+  useEffect(() => {
+    setEditValues({
+      fontStyle: currentStylingSettings?.setting?.fontStyle || "Regular",
+      fontColor: currentStylingSettings?.setting?.fontColor || "#000000",
+      fontSize: currentStylingSettings?.setting?.fontSize || "16",
+      fontType: currentStylingSettings?.setting?.fontType || "Poppins",
+    })
+  }, [currentStylingSettings])
 
+  console.log({ settings: settings.showInProfile, columnKey, editValues })
   const [colorPickerVisible, setColorPickerVisible] = useState(false); // Track if color picker is visible
   const [pickerVisible, setPickerVisible] = React.useState(false); // Toggle CirclePicker visibility
   const fileInputRef = React.useRef(null); // Ref for the default color picker
@@ -41,7 +51,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
   const applyColor = (color) => {
     console.log(color);
   };
-  console.log(settings);
+
   const handleDotClick = (e) => {
     e.stopPropagation();
     // setIsPopoverOpen((prev) => !prev);
@@ -122,7 +132,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
   //   },
   //   [dispatch, settings, token, columnKey]
   // );
-  
+
 
   const handleCheckboxChange = useCallback(
     async (checked, optionType) => {
@@ -130,10 +140,10 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
         console.warn("Invalid columnKey provided");
         return;
       }
-  
+
       try {
         const updatedSettings = { ...settings };
-  
+
         if (optionType === "showInProfile") {
           // Existing logic for showInProfile
           const updateList = (list = []) => {
@@ -144,15 +154,15 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
               return list.filter((item) => item.title !== columnKey);
             }
           };
-  
+
           updatedSettings.showInProfile = updateList(settings.showInProfile);
           setShowInProfileChecked(checked);
-        } 
-        
+        }
+
         else if (optionType === "showInCard") {
           let updatedChecked = checked; // Keep track of the checkbox state
           let found = false; // Flag to track if we already added the columnKey
-        
+
           updatedSettings.showInCard = settings.showInCard.map((item) => {
             if (checked && item.title === "" && !found) {
               // Assign columnKey to the first empty title and stop further modifications
@@ -166,17 +176,17 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
             }
             return item; // Keep other items unchanged
           });
-        
+
           // Only update the checkbox state when necessary
           setShowInCardChecked(checked ? true : updatedChecked);
         }
-        
-        
-        
-  
+
+
+
+
         // Dispatch updated settings locally
         dispatch(updateSetting(updatedSettings));
-  
+
         // Update backend
         const response = await axios.put(
           `${HOST}/spreadsheet/${settings._id}`,
@@ -185,7 +195,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
             headers: { authorization: `Bearer ${token}` },
           }
         );
-  
+
         console.log("Settings updated successfully:", response.data);
         dispatch(updateSetting(response.data));
         notifySuccess("Settings updated successfully");
@@ -196,8 +206,8 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
     },
     [dispatch, settings, token, columnKey]
   );
-  
-  
+
+
   const handlePopoverClose = () => {
     if (!isEditBoxOpen) {
       setIsPopoverOpen(false);
@@ -205,14 +215,14 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
   };
   const handleSaveEdit = async () => {
 
-    console.log({showIn, columnKey, editValues});
+    console.log({ showIn, columnKey, editValues });
     try {
       const updatedShowInCard = settings[showIn]?.map((item) =>
         item?.title === columnKey
           ? { ...item, setting: { ...item.setting, ...editValues } }
           : item
       );
-      
+
       const updatedSettings = {
         ...settings,
         [showIn]: updatedShowInCard,
@@ -537,7 +547,6 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
           <div className="text-[#598931] text-[20px] font-poppins font-semibold mb-4 text-center">
             {selectedOption || "Select an Option"}
           </div>
-
           {renderEditOptionContent()}
         </div>
 
@@ -563,7 +572,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
               )
                 ? editValues.fontStyle
                 : undefined, // Apply only if it's a valid font-style
-                fontWeight: editValues.fontStyle === "bold" ? "bold" : "normal",
+              fontWeight: editValues.fontStyle === "bold" ? "bold" : "normal",
               textDecoration: [
                 "underline",
                 "line-through",

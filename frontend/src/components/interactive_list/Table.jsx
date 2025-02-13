@@ -8,7 +8,8 @@ import ResizableHeader from "./ResizableHeader";
 import _, { debounce } from "lodash";
 import { IoSaveSharp, IoSave } from "react-icons/io5";
 import { UserOutlined } from "@ant-design/icons";
-import { getDriveThumbnail } from "../../utils/globalFunctions";
+import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
+import noPhoto from "../../assets/images/noPhoto.jpg";
 
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
@@ -17,7 +18,11 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
     globalCheckboxChecked, setGlobalCheckboxChecked
 }) => {
 
-    const primaryColumn = settings?.appName == "Video Gallery" ? settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_") : settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
+    const primaryColumn = settings?.appName == "Photo Gallery"
+        ? settings?.showInProfile[0]?.title?.toLowerCase().replace(/\s/g, "_")
+        : settings?.appName == "Video Gallery"
+            ? settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")
+            : settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
 
     const reorderedHeaders = useMemo(() => {
         return [
@@ -407,7 +412,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
 
 
     const RenderImage = ({ url }) => {
-        
+
         if (settings.appName == "People Directory") {
             return (
 
@@ -417,6 +422,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             src={getDriveThumbnail(url)}
                             alt="profile"
                             className="w-12 h-12 rounded-full border-[1px] border-[#D3CBCB] object-cover"
+                            onError={(e) => handleImageError(e)} // Custom fallback
                         />
                     ) : (
                         <Avatar size={48} icon={<UserOutlined />} alt="User" />
@@ -433,14 +439,19 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             src={getDriveThumbnail(url)}
                             alt="prof"
                             className="w-12 h-12 rounded-md border-[1px] border-[#D3CBCB] object-cover"
+                            onError={(e) => handleImageError(e, noPhoto)} // Custom fallback
                         />
                     ) : (
-                        <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                        // <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                        <img 
+                         src={noPhoto}
+                         style={{height:'48px'}}
+                        />
                     )}
                 </div>
             )
         }
-        else if (settings?.appName == "Image Gallery") {
+        else if (settings?.appName == "Photo Gallery") {
             return (
                 <div className="w-full h-full flex justify-start items-center">
                     {isValidUrl(url) ? (
@@ -448,9 +459,14 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             src={getDriveThumbnail(url)}
                             alt="profile"
                             className="w-12 h-12 rounded-md border-[1px] border-[#D3CBCB] object-cover"
+                            onError={(e) => handleImageError(e, noPhoto)} // Custom fallback
                         />
                     ) : (
-                        <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                        // <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                        <img 
+                         src={noPhoto}
+                         style={{height:'48px'}}
+                        />
                     )}
                 </div>
             )

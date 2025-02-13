@@ -203,7 +203,7 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
       onOpenChange={(visible) => !visible && handlePopoverClose()}
       placement="bottomRight"
     >
-      <button className="flex items-center rounded" onClick={handleButtonClick}>
+      <button className="flex items-center rounded " onClick={handleButtonClick}>
         <BsThreeDotsVertical />
       </button>
     </Popover>

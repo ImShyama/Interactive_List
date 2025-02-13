@@ -105,9 +105,11 @@ const Table = () => {
 
   // Render the appropriate table based on appName in settings
   const renderTable = () => {
-    if (loading || !sheetData.length || !tableHeader.length) {
+    if (loading ) {
       return <Loader textToDisplay="Loading..." />;
     }
+
+    
 
     switch (settings.appName) {
       case "Interactive List":

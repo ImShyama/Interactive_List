@@ -38,6 +38,7 @@ import Loader from "../Loader.jsx";
 import VideoGallaryView from "./VideoGallaryView.jsx";
 import { FiEye } from "react-icons/fi";
 import Preview from "../Preview.jsx";
+import EmptyTable from "../EmptyTable.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -965,7 +966,7 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                     )}
                 </div>
                 <div className="flex justify-end items-center">
-        
+
                     {!isFilterOpen ? (
                         <button
                             onClick={toggleFilterBox}
@@ -1183,7 +1184,7 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                             <BulkAdds />
                         </button>
 
-                        
+
                         <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-[5px]" title="Delete">
                             <MdDelete color="white" />
                         </button>
@@ -1206,41 +1207,46 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
 
             {isEditMode ?
 
-                <Table
-                    data={data}
-                    headers={headers}
-                    filteredData={filteredData}
-                    setFilteredData={setFilteredData}
-                    paginatedData={paginatedData}
-                    loading={loading}
-                    isEditMode={isEditMode}
-                    isedit={isedit}
-                    setIsedit={setIsedit}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    settings={settings}
-                    freezeCol={freezeCol}
-                    setFreezeCol={setFreezeCol}
-                    globalOption={globalOption}
-                    setGlobalOption={setGlobalOption}
-                    ischecked={ischecked}
-                    setIschecked={setIschecked}
-                    EditData={EditData}
-                    setEditData={setEditData}
-                    handleBulkDelete={handleBulkDelete}
-                    headerBgColor={headerBgColor}
-                    headerTextColor={headerTextColor}
-                    headerFontSize={headerFontSize}
-                    headerFontFamily={headerFontFamily}
-                    bodyTextColor={bodyTextColor}
-                    bodyFontSize={bodyFontSize}
-                    bodyFontFamily={bodyFontFamily}
-                    tempHeader={tempHeader}
-                    formulaData={formulaData}
-                    handleBulkSave={handleBulkSave}
-                    globalCheckboxChecked={globalCheckboxChecked}
-                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-                />
+                !data.length ?
+
+                    <EmptyTable sheetURL={settings?.spreadsheetUrl} />
+                    :
+
+                    <Table
+                        data={data}
+                        headers={headers}
+                        filteredData={filteredData}
+                        setFilteredData={setFilteredData}
+                        paginatedData={paginatedData}
+                        loading={loading}
+                        isEditMode={isEditMode}
+                        isedit={isedit}
+                        setIsedit={setIsedit}
+                        handleEdit={handleEdit}
+                        handleDelete={handleDelete}
+                        settings={settings}
+                        freezeCol={freezeCol}
+                        setFreezeCol={setFreezeCol}
+                        globalOption={globalOption}
+                        setGlobalOption={setGlobalOption}
+                        ischecked={ischecked}
+                        setIschecked={setIschecked}
+                        EditData={EditData}
+                        setEditData={setEditData}
+                        handleBulkDelete={handleBulkDelete}
+                        headerBgColor={headerBgColor}
+                        headerTextColor={headerTextColor}
+                        headerFontSize={headerFontSize}
+                        headerFontFamily={headerFontFamily}
+                        bodyTextColor={bodyTextColor}
+                        bodyFontSize={bodyFontSize}
+                        bodyFontFamily={bodyFontFamily}
+                        tempHeader={tempHeader}
+                        formulaData={formulaData}
+                        handleBulkSave={handleBulkSave}
+                        globalCheckboxChecked={globalCheckboxChecked}
+                        setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                    />
 
                 :
 

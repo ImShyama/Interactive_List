@@ -620,7 +620,8 @@ const ViewSettings = ({ settingsData }) => {
       console.log({ response });
     };
 
-    const DraggableItem = ({ item }) => {
+    const DraggableItem = ({ item, index }) => {
+      console.log({ item, index });
       const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
 
       return (
@@ -633,6 +634,7 @@ const ViewSettings = ({ settingsData }) => {
         >
           <div className="flex items-center">
             <SixDots />
+
             <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
               {item.title}
             </span>
@@ -693,9 +695,15 @@ const ViewSettings = ({ settingsData }) => {
               <div className="flex flex-col m-2 w-[130px]">
                 {profileData.map((_, index) => (
                   <div key={index} className="flex items-center">
-                    <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
-                      Heading {index + 1}
-                    </span>
+                    {(settingsData?.appName == "Photo Gallery" && index == 0) ?
+                      <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
+                        Image
+                      </span>
+                      :
+                      <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
+                        { settingsData?.appName == "Photo Gallery" ? `Heading ${index}` : `Heading ${index + 1}` }
+                      </span>
+                    }
                   </div>
                 ))}
               </div>
@@ -703,8 +711,8 @@ const ViewSettings = ({ settingsData }) => {
               {/* Right Side (Draggable Items) */}
               <div className="flex flex-col m-2">
 
-                {profileData.map((item) => (
-                  <DraggableItem key={item.id} item={item} />
+                {profileData.map((item, index) => (
+                  <DraggableItem key={item.id} item={item} index={index} />
                 ))}
               </div>
 
@@ -1023,19 +1031,22 @@ const ViewSettings = ({ settingsData }) => {
   return (
     <div className="w-[100%]">
       {/* // show card drower */}
-      <div className="ml-[30px] mb-[20px] w-[100%]">
-        <div className="flex items-center gap-2 cursor-pointer"
-          onClick={() => setShowCard(!showCard)}
-        >
-          <span
-            className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]"
+
+      {settingsData?.appName !== "Photo Gallery" && (
+        <div className="ml-[30px] mb-[20px] w-[100%]">
+          <div className="flex items-center gap-2 cursor-pointer"
+            onClick={() => setShowCard(!showCard)}
           >
-            Card Settings
-          </span>
-          <img src={downIcon} />
+            <span
+              className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]"
+            >
+              Card Settings
+            </span>
+            <img src={downIcon} />
+          </div>
+          {showCard && <CardSettings settingsData={settingsData} />}
         </div>
-        {showCard && <CardSettings settingsData={settingsData} />}
-      </div>
+      )}
 
       {/* // show profile drower */}
       <div className="ml-[30px]">
@@ -1264,7 +1275,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           </div>
           {addData && <AddData activateSave={activateSave} isTableLoading={isTableLoading} setIsTableLoading={setIsTableLoading} />}
 
-          {(settingData?.appName == "People Directory" || settingData?.appName == "Video Gallery") &&
+          {(settingData?.appName == "People Directory" || settingData?.appName == "Video Gallery" || settingData?.appName == "Photo Gallery") &&
             <>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

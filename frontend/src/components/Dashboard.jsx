@@ -13,6 +13,7 @@ import { Input, Select } from "antd";
 import { BiSearch } from "react-icons/bi";
 import { HOST } from "../utils/constants";
 import { AutoComplete } from "antd";
+import Loader from "./Loader";
 const clientId = CLIENTID;
 const developerKey = DEVELOPERKEY;
 const options = OPTIONS;
@@ -30,6 +31,7 @@ const Dashboard = () => {
   const [isDisable, setIsDisable] = useState(true);
   const [searchQuery, setSearchQuery] = useState(""); // To store the search query
   const [searchValue, setSearchValue] = useState(""); // To store the search query
+  const [loading, setLoading] = useState(false);
 
   // {
   //   console.log("app:", apps);
@@ -82,7 +84,7 @@ const Dashboard = () => {
   const handleAddSheet = (data) => {
     if (data.action === "picked") {
       console.log({ dataselected: data });
-
+      setLoading(true);
       axios
         .post(
           `${HOST}/createNewSpreadsheet`,
@@ -110,6 +112,9 @@ const Dashboard = () => {
         .catch((err) => {
           console.log({ err });
           console.log(err.message);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     }
   };
@@ -157,6 +162,8 @@ const Dashboard = () => {
 
     setApps(filteredData);
   };
+
+  
 
   
 
@@ -319,6 +326,11 @@ const Dashboard = () => {
       )}
 
       <DashboardTable />
+      {loading && (
+            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-[999]">
+              <Loader textToDisplay="Creating a copy..." />
+            </div>
+          )}
     </div>
   );
 };

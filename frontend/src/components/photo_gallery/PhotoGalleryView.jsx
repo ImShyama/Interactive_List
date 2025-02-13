@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PhotoCard from "./PhotoCard"; // Import the new PhotoCard component
 import BiggerView from "./BiggerView"; // Import BiggerView
 
-const PhotoGalleryPreview = () => {
+const PhotoGalleryView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [hoveredPhoto, setHoveredPhoto] = useState(null);
@@ -138,4 +138,4 @@ const PhotoGalleryPreview = () => {
   );
 };
 
-export default PhotoGalleryPreview;
+export default PhotoGalleryView;

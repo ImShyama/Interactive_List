@@ -3,13 +3,13 @@ export const CLIENT_ID = "733145859090-a841efgntmtqmpqn8u08oiulimf0leeu.apps.goo
 // export const FRONTENDHOST = "http://localhost:5173"
 export const HOST = ""
 export const FRONTENDHOST = "https://interact.ceoitbox.com"
-import People_Card_Image from "../assets/images/People_Card_Image.png";
-import Video_Image from "../assets/images/Video_Card_Image.png";
+import PeopleImage from "../assets/images/People_Card_Image.png";
+import VideoImage from "../assets/images/Video_Card_Image.png";
 import PhotoImage from "../assets/images/PhotoGallery_Card_Image.png";
 export const APPSNAME = ["Interactive List",
   "People Directory", 
   "Video Gallery", 
-  // "Photo Gallery"
+  "Photo Gallery"
 ];
 export const CLIENTID = '260938166249-rv9fgk97t8b2qmrpi5nqk8hd4frd2qba.apps.googleusercontent.com';
 export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ';
@@ -18,7 +18,7 @@ export const OPTIONS = [
   { value: 'Interactive List' },
   { value: 'People Directory' },
   { value: 'Video Gallery' },
-  // { value: 'Photo Gallery' },
+  { value: 'Photo Gallery' },
   
   // { value: 'Settings Page' },
 ];
@@ -28,39 +28,102 @@ export const APPS = [
     appName: "Interactive List",
     appView: "InteractiveListView",
     appImg: "https://i.ibb.co/N1c6Djj/Screenshot-2024-10-08-125436.png",
-    description: "List all employees attendance score.",
+    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
     appID: "1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ",
     spreadSheetName: "Data",
-    multipleImage: ["imageone link", "imagetwo link"],
+    overview:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+    multipleImage: [PeopleImage, VideoImage],
     standOut: [
-      {"Heading 1": ""},
-      {"Heading 2": ""},
-    ]
+      {
+        "Heading 1":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 2":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 3":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+    ],
   },
   {
     appName: "People Directory",
     appView: "PeopleDirectoryPreview",
-    appImg: People_Card_Image,
+    appImg: PeopleImage,
     description: "List all contacts.",
-    appID: "1X4urz9wKsAuWufXzy9UZKH3KIJmyFKDEM9O8aNied8c",
+    appID: "1VIWkwCewrs9Ydbo4mTWLovsa78jX1ZJc33BJpaZ5WHg",
     spreadSheetName: "Data",
+    overview:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+    multipleImage: [PeopleImage, VideoImage],
+    standOut: [
+      {
+        "Heading 1":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 2":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 3":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+    ],
   },
   {
     appName: "Video Gallery",
     appView: "VideoGalleryPreview",
-    appImg: Video_Image,
+    appImg: VideoImage,
     description: "List all videos.",
-    appID: "1AXbyb8PFWZ0lCqiRAxLl5ymdLERTnHhvP9SMNVjuI0A",
+    appID: "1d8_iPCgw7NhMd-4Jjl4RY_aENd0kA-j3YiaB24mVe4U",
     spreadSheetName: "Data",
+    overview:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+    multipleImage: [PeopleImage, VideoImage],
+    standOut: [
+      {
+        "Heading 1":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 2":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 3":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+    ],
   },
-  // {
-  //   appName: "Photo Gallery",
-  //   appView: "PhotoGalleryPreview",
-  //   appImg: PhotoImage,
-  //   description: "List all employees working remotely on a map with filters.",
-  //   appID: "1wHDKsShOppIMNtYgm5QEh2cagKVgXkktdmuRtGYRrwE",
-  //   spreadSheetName: "Data",
-  // }
+  {
+    appName: "Photo Gallery",
+    appView: "PhotoGalleryPreview",
+    appImg: PhotoImage,
+    description: "List all employees working remotely on a map with filters.",
+    appID: "1wHDKsShOppIMNtYgm5QEh2cagKVgXkktdmuRtGYRrwE",
+    spreadSheetName: "Data",
+    overview:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+    multipleImage: [PeopleImage, VideoImage],
+    standOut: [
+      {
+        "Heading 1":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 2":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 3":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+    ],
+  }
 ];
 // export const CLIENTID = '210551094674-r1bvcns06j8pj06bk8dnfhl3mh6feuag.apps.googleusercontent.com';
 // export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ'; // Use correct developer key

@@ -39,6 +39,7 @@ const Freeze = ({ columnKey, isEditMode,setFreezeCol, freezeCol, settings }) => 
             );
 
             console.log("Settings updated successfully:", response.data);
+            
 
             // Dispatch updated settings to Redux store
             dispatch(updateSetting(response.data));

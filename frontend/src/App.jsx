@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, { useContext } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -18,7 +18,6 @@ import PeopleTable from "./components/people_directory/PeopleTable";
 import PeopleDirectoryPreview from "./components/people_directory/PeopleDirectoryPreview";
 import VideoGalleryPreview from "./components/video_gallary/VideoGallaryPreView";
 import LargeVideoView from "./components/video_gallary/LargeVideoView";
-import Testing1 from "./components/Testing1";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import { ConfigProvider } from "antd";
@@ -27,6 +26,10 @@ import "react-toastify/dist/ReactToastify.css";
 import ProfilePage from "./components/people_directory/ProfilePage";
 import Home from "./components/Home";
 import PhotoGalleryPreview from "./components/photo_gallery/PhotoGalleryPreview";
+import LandingPage from "./components/Landing_Page/LandingPage";
+import About from "./components/Landing_Page/AboutSection";
+import Products from "./components/Landing_Page/Product_Section/Products";
+import OverviewPage from "./components/Landing_Page/Product_Section/OverviewPage";
 
 
 // Layout Component
@@ -53,7 +56,11 @@ const appRouter = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      { path: "/", element: <Home /> },
+      // { path: "/", element: <Home /> },
+      { path: "/", element: <LandingPage /> },
+      { path: "/about", element: <About /> },
+      { path: "/products", element: <Products /> },
+      {path:"/products/:product", element:<OverviewPage/>},
       { path: "/signin", element: <GoogleSignin /> },
       { path: "/:id/edit", element: <Table /> },
       { path: "/:id/view", element: <Table /> },
@@ -66,7 +73,6 @@ const appRouter = createBrowserRouter([
       { path: "/peopleDirectoryPreview", element: <PeopleDirectoryPreview /> },
       { path: "/VideoGalleryPreview", element: <VideoGalleryPreview /> },
       { path: "/PhotoGalleryPreview", element: <PhotoGalleryPreview /> },
-      { path: "/testing1", element: <Testing1 /> },
       { path: "/profile/:id", element: <ProfilePage /> },
       { path: "/video/:id", element: <LargeVideoView /> },
     ],
@@ -79,7 +85,7 @@ const App = () => {
 
 
   return (
-      <RouterProvider router={appRouter} />
+    <RouterProvider router={appRouter} />
   )
 };
 

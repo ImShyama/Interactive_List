@@ -38,6 +38,7 @@ import Loader from "../Loader.jsx";
 import PeopleDirectoryView from "./PeopleDirectoryView.jsx";
 import { FiEye } from "react-icons/fi";
 import Preview from "../Preview.jsx";
+import EmptyTable from "../EmptyTable.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -1187,41 +1188,46 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
 
             {isEditMode ?
 
-                <Table
-                    data={data}
-                    headers={headers}
-                    filteredData={filteredData}
-                    setFilteredData={setFilteredData}
-                    paginatedData={paginatedData}
-                    loading={loading}
-                    isEditMode={isEditMode}
-                    isedit={isedit}
-                    setIsedit={setIsedit}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    settings={settings}
-                    freezeCol={freezeCol}
-                    setFreezeCol={setFreezeCol}
-                    globalOption={globalOption}
-                    setGlobalOption={setGlobalOption}
-                    ischecked={ischecked}
-                    setIschecked={setIschecked}
-                    EditData={EditData}
-                    setEditData={setEditData}
-                    handleBulkDelete={handleBulkDelete}
-                    headerBgColor={headerBgColor}
-                    headerTextColor={headerTextColor}
-                    headerFontSize={headerFontSize}
-                    headerFontFamily={headerFontFamily}
-                    bodyTextColor={bodyTextColor}
-                    bodyFontSize={bodyFontSize}
-                    bodyFontFamily={bodyFontFamily}
-                    tempHeader={tempHeader}
-                    formulaData={formulaData}
-                    handleBulkSave={handleBulkSave}
-                    globalCheckboxChecked={globalCheckboxChecked}
-                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-                />
+                !data.length ?
+
+                    <EmptyTable sheetURL={settings?.spreadsheetUrl} />
+                    :
+
+                    <Table
+                        data={data}
+                        headers={headers}
+                        filteredData={filteredData}
+                        setFilteredData={setFilteredData}
+                        paginatedData={paginatedData}
+                        loading={loading}
+                        isEditMode={isEditMode}
+                        isedit={isedit}
+                        setIsedit={setIsedit}
+                        handleEdit={handleEdit}
+                        handleDelete={handleDelete}
+                        settings={settings}
+                        freezeCol={freezeCol}
+                        setFreezeCol={setFreezeCol}
+                        globalOption={globalOption}
+                        setGlobalOption={setGlobalOption}
+                        ischecked={ischecked}
+                        setIschecked={setIschecked}
+                        EditData={EditData}
+                        setEditData={setEditData}
+                        handleBulkDelete={handleBulkDelete}
+                        headerBgColor={headerBgColor}
+                        headerTextColor={headerTextColor}
+                        headerFontSize={headerFontSize}
+                        headerFontFamily={headerFontFamily}
+                        bodyTextColor={bodyTextColor}
+                        bodyFontSize={bodyFontSize}
+                        bodyFontFamily={bodyFontFamily}
+                        tempHeader={tempHeader}
+                        formulaData={formulaData}
+                        handleBulkSave={handleBulkSave}
+                        globalCheckboxChecked={globalCheckboxChecked}
+                        setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                    />
 
                 :
 

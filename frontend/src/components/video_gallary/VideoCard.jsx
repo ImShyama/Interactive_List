@@ -2,7 +2,7 @@ import React from "react";
 import videoimage from "../../assets/images/thumbnail1.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getDriveThumbnail } from "../../utils/globalFunctions";
+import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
 import noPhoto from "../../assets/images/noPhoto.jpg";
 
 
@@ -171,6 +171,7 @@ const VideoCard = ({ rowData, settings }) => {
               }
               alt={videoData[settingsData?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
               className="w-full h-[200px] object-cover"
+              onError={(e) => handleImageError(e, noPhoto)}
             />
           )
         )}
@@ -183,16 +184,16 @@ const VideoCard = ({ rowData, settings }) => {
             )
               ? settingsData?.showInCard[2]?.setting?.fontStyle
               : undefined, // Apply only if it's a valid font-style
-            fontWeight: settingsData?.showInCard[2]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+            fontWeight: settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase() === "bold" ? "bold" : "normal",
             textDecoration: [
               "underline",
               "line-through",
               "overline",
-            ].includes(settingsData?.showInCard[2]?.setting?.fontStyle)
-              ? settingsData?.showInCard[2]?.setting?.fontStyle
+            ].includes(settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase())
+              ? settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase()
               : undefined,
             fontVariant:
-              settingsData?.showInCard[2]?.setting?.fontStyle === "small-caps"
+              settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase() === "small-caps"
                 ? "small-caps"
                 : undefined,
             textTransform: ["uppercase", "lowercase"].includes(
@@ -223,7 +224,7 @@ const VideoCard = ({ rowData, settings }) => {
           )
             ? settingsData?.showInCard[3]?.setting?.fontStyle
             : undefined, // Apply only if it's a valid font-style
-          fontWeight: settingsData?.showInCard[3]?.setting?.fontStyle === "bold" ? "bold" : "normal",
+          fontWeight: settingsData?.showInCard[3]?.setting?.fontStyle.toLowerCase() === "bold" ? "bold" : "normal",
           textDecoration: [
             "underline",
             "line-through",

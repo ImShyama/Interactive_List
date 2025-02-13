@@ -420,6 +420,78 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       64 + firstTabHeader.length
     )}`;
 
+    let cardSettings = [
+      { id: 0, title: "" },
+      { id: 1, title: "" },
+      { id: 2, title: "" },
+      { id: 3, title: "" },
+      { id: 4, title: "" },
+      { id: 5, title: "" },
+    ]
+
+    if (appName == "Video Gallery") {
+      cardSettings = [
+        {
+          id: 0,
+          title: "Video Link",
+
+        },
+        {
+          id: 1,
+          title: "Thumbnail"
+        },
+        {
+          id: 2, title: "Video Title",
+          setting: {
+            "fontStyle": "bold",
+            "fontColor": "#333131",
+            "fontSize": "20",
+            "fontType": "Poppins"
+          }
+        },
+        {
+          id: 3,
+          title: "Category",
+          setting: {
+            "fontStyle": "regular",
+            "fontColor": "#B0B0B0",
+            "fontSize": "16",
+            "fontType": "Poppins"
+          }
+        },
+        {
+          id: 4,
+          title: "Descriptions",
+          setting: {
+            "fontStyle": "normal",
+            "fontColor": "#333131",
+            "fontSize": "16",
+            "fontType": "Poppins"
+          }
+        },
+        {
+          id: 5,
+          title: "Sub Title",
+          setting: {
+            "fontStyle": "normal",
+            "fontColor": "#B0B0B0",
+            "fontSize": "16",
+            "fontType": "Poppins"
+          }
+        },
+      ]
+    }
+    else if (appName == "People Directory") {
+      cardSettings = [
+        { id: 0, title: "Profile Picture" },
+        { id: 1, title: "Name" },
+        { id: 2, title: "Emp Id" },
+        { id: 3, title: "DOJ" },
+        { id: 4, title: "Email Address" },
+        { id: 5, title: "Contact" },
+      ]
+    }
+
     const res = {
       spreadsheetId: newSpreadsheetId,
       spreadsheetUrl: `https://docs.google.com/spreadsheets/d/${newSpreadsheetId}/edit`,
@@ -449,14 +521,7 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       sheetDetails: res.sheetDetails,
       access: res.access, // Save access type
       lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
-      showInCard: [
-        {id: 0, title: ""},
-        {id: 1, title: ""},
-        {id: 2, title: ""},
-        {id: 3, title: ""},
-        {id: 4, title: ""},
-        {id: 5, title: ""},
-      ]
+      showInCard: cardSettings
     });
 
     return newSheet;
@@ -542,7 +607,7 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       sheetDetails: sheetDetails,
       access: access, // Add access type
       lastUpdatedDate: lastUpdatedDate, // Add last updated date
-      
+
     };
 
     // Save the sheet details to the database
@@ -561,12 +626,12 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       access: res.access, // Save access type
       lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
       showInCard: [
-        {id: 0, title: ""},
-        {id: 1, title: ""},
-        {id: 2, title: ""},
-        {id: 3, title: ""},
-        {id: 4, title: ""},
-        {id: 5, title: ""},
+        { id: 0, title: "" },
+        { id: 1, title: "" },
+        { id: 2, title: "" },
+        { id: 3, title: "" },
+        { id: 4, title: "" },
+        { id: 5, title: "" },
       ]
     });
 

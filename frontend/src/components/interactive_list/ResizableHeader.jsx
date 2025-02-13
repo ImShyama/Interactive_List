@@ -10,6 +10,7 @@ import MultiSelectFilter from "./MultiSelectFilter";
 import { IoSearchOutline } from "react-icons/io5";
 import PeopleDirectoryThreeDot from "../people_directory/PeopleDirectoryThreeDot";
 import VideoGalleryThreeDot from "../video_gallary/VideoGallaryThreeDot";
+import PhotoGalleryThreeDot from "../photo_gallery/PhotoGalleryThreeDot";
 // import { Resizable } from 're-resizable';
 
 const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFreezeCol, freezeCol, columnKey, index, headers, columnWidths, headerBgColor, headerTextColor, headerFontFamily, headerFontSize, isEditMode, handleResize,
@@ -149,7 +150,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
             draggableOpts={{ enableUserSelectHack: false }}
             handle={
                 <div
-                    className="resizeActions "
+                    className="resizeActions"
                     style={{
                         position: "absolute",
                         right: 0,
@@ -300,7 +301,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                             <Freeze columnKey={columnKey} isEditMode={isEditMode} setFreezeCol={setFreezeCol} freezeCol={freezeCol} settings={settings} />
                         </div>
 
-                        {(settings?.appName == "People Directory" || settings?.appName == "Video Gallery") &&
+                        {(settings?.appName == "People Directory" || settings?.appName == "Video Gallery" || settings?.appName == "Photo Gallery") &&
                             <div className={isEditBoxOpen ? " " : "resizeActions"} >
                                 {isEditMode && settings.appName == "People Directory" &&
                                     <PeopleDirectoryThreeDot
@@ -316,6 +317,20 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                                 }
                                 {isEditMode && settings.appName == "Video Gallery" &&
                                     <VideoGalleryThreeDot
+                                        headerId={columnKey}
+                                        columnKey={title}
+                                        openPopoverId={openPopoverId}
+                                        setOpenPopoverId={setOpenPopoverId}
+                                        // checkboxSelections={checkboxSelections}
+                                        // updateSelection={updateSelection}
+                                        settings={settings}
+                                        firstRowData={firstRowData}
+                                        isEditBoxOpen={isEditBoxOpen}
+                                        setIsEditBoxOpen={setIsEditBoxOpen}
+                                    />
+                                }
+                                {isEditMode && settings.appName == "Photo Gallery" &&
+                                    <PhotoGalleryThreeDot
                                         headerId={columnKey}
                                         columnKey={title}
                                         openPopoverId={openPopoverId}
