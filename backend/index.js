@@ -491,6 +491,13 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
         { id: 5, title: "Contact" },
       ]
     }
+    else if (appName == "Photo Gallery"){
+      cardSettings = [
+        { id: 0, title: "Image" },
+        { id: 1, title: "Title" },
+        { id: 2, title: "Topic" },
+      ]
+    }
 
     const res = {
       spreadsheetId: newSpreadsheetId,

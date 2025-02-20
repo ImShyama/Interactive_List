@@ -6,14 +6,16 @@ import { IoMdArrowBack } from "react-icons/io";
 import { FaWhatsapp } from "react-icons/fa";
 import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
 
-const defultSettings = {showInCard: [
-  {id:0, tilte:"picture"},
-  {id:0, tilte:"name"},
-  {id:0, tilte:"department"},
-  {id:0, tilte:"designation"},
-  {id:0, tilte:"email_address"},
-  {id:0, tilte:"contact"},
-]}
+const defultSettings = {
+  showInCard: [
+    { id: 0, tilte: "picture" },
+    { id: 0, tilte: "name" },
+    { id: 0, tilte: "department" },
+    { id: 0, tilte: "designation" },
+    { id: 0, tilte: "email_address" },
+    { id: 0, tilte: "contact" },
+  ]
+}
 const ProfilePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -59,7 +61,7 @@ const ProfilePage = () => {
                 onError={(e) => handleImageError(e)}
               />
 
-              <div className="flex flex-col items-center gap-2 my-2">
+              <div className="flex flex-col items-center gap-2 mt-2">
                 <div className="self-stretch text-[#1E1B1B] font-semibold mx-[125px] w-[309px] my-1"
                   style={{ fontFamily: "Montserrat", fontSize: "36.226px", lineHeight: "28px", }}>
                   {data[showInCard[1]?.title.toLowerCase().replace(" ", "_")]}
@@ -73,37 +75,37 @@ const ProfilePage = () => {
                     data[showInCard[3]?.title?.toLowerCase().replace(" ", "_")] || ""
                   ].filter(Boolean).join(", ")}
                 </p>
-
               </div>
-            </div>
 
-            {/* Contact Details */}
-            <div className="flex flex-col items-start w-[100%] gap-[16.212px] mt-[16.212px]">
-              {showInCard[4].title !== "" && (
-                <div className="flex items-center gap-[18.374px] ml-[83px] mr-[105px]">
-                  <HiOutlineEnvelope className="ml-8 text-gray-500" />
-                  <a
-                    href={`mailto:${data[showInCard[4]?.title.toLowerCase().replace(" ", "_")]}`}
-                    className="text-blue-500 text-md no-underline truncate max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"
-                  >
-                    {data[showInCard[4]?.title.toLowerCase().replace(" ", "_")]}
-                  </a>
-                </div>
-              )}
-              {showInCard[5].title !== "" && (
-                <div className="w-full max-w-[600px] flex items-center gap-[18.374px] ml-[83px] mr-[223px]">
-                  <FaWhatsapp className="ml-8 text-gray-500" />
-                  <a
-                    href={`https://wa.me/${data[showInCard[5]?.title?.toLowerCase().replace(' ', '_')].replace(/\D/g, '')}`} // Removes non-numeric characters
-                    target="_blank" // Opens in a new tab
-                    rel="noopener noreferrer" // Security best practice
-                    className="text-blue-500 text-md no-underline truncate max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"
-                    title={data[showInCard[5]?.title?.toLowerCase().replace(' ', '_')]} // Tooltip to show full number on hover
-                  >
-                    {data[showInCard[5]?.title?.toLowerCase().replace(' ', '_')]}
-                  </a>
-                </div>
-              )}
+
+              {/* Contact Details */}
+              <div className="flex flex-col items-start w-[100%] gap-[16.212px]">
+                {showInCard[4].title !== "" && (
+                  <div className="flex items-center gap-[18.374px] ml-[83px] mr-[105px]">
+                    <HiOutlineEnvelope className="ml-8 text-gray-500" />
+                    <a
+                      href={`mailto:${data[showInCard[4]?.title.toLowerCase().replace(" ", "_")]}`}
+                      className="text-blue-500 text-md no-underline truncate max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"
+                    >
+                      {data[showInCard[4]?.title.toLowerCase().replace(" ", "_")]}
+                    </a>
+                  </div>
+                )}
+                {showInCard[5].title !== "" && (
+                  <div className="w-full max-w-[600px] flex items-center gap-[18.374px] ml-[83px] mr-[223px]">
+                    <FaWhatsapp className="ml-8 text-gray-500" />
+                    <a
+                      href={`https://wa.me/${data[showInCard[5]?.title?.toLowerCase().replace(' ', '_')].replace(/\D/g, '')}`} // Removes non-numeric characters
+                      target="_blank" // Opens in a new tab
+                      rel="noopener noreferrer" // Security best practice
+                      className="text-blue-500 text-md no-underline truncate max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"
+                      title={data[showInCard[5]?.title?.toLowerCase().replace(' ', '_')]} // Tooltip to show full number on hover
+                    >
+                      {data[showInCard[5]?.title?.toLowerCase().replace(' ', '_')]}
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -112,21 +114,23 @@ const ProfilePage = () => {
             <h2 className="self-stretch text-[#9F9F9F] font-[Montserrat] text-[30px] font-medium normal-case leading-normal border-b-2 pb-2 mb-6 mx-[47px] mt-[36px]">
               {settings?.peopleDirectory?.HeaderTitle || "Details"}
             </h2>
-            <div className="space-y-4 text-sm ml-[51px] pr-[183.31px]">
+            <div className="space-y-4 text-sm ml-[51px]">
               <div className="grid grid-cols-1 sm:grid-cols-[240px_50px_1fr] gap-y-4">
-                {showInProfile.map((profile, index) => (
-                  <React.Fragment key={index}>
-                    <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                      {profile.title}
-                    </div>
-                    <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
-                      :
-                    </div>
-                    <div className="text-[#808080] font-Montserrat text-[19.696px] leading-normal">
-                      {data[profile.title.toLowerCase().replace(" ", "_")]}
-                    </div>
-                  </React.Fragment>
-                ))}
+                {showInProfile.map((profile, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
+                        {profile.title}
+                      </div>
+                      <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
+                        :
+                      </div>
+                      <div className="text-[#808080] font-Montserrat text-[19.696px] leading-normal mr-2">
+                        {data[profile.title.toLowerCase().replace(/ /g, "_")]}
+                      </div>
+                    </React.Fragment>
+                  )
+                })}
               </div>
             </div>
           </div>

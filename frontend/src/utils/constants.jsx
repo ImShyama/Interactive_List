@@ -6,10 +6,12 @@ export const FRONTENDHOST = "https://interact.ceoitbox.com"
 import PeopleImage from "../assets/images/People_Card_Image.png";
 import VideoImage from "../assets/images/Video_Card_Image.png";
 import PhotoImage from "../assets/images/PhotoGallery_Card_Image.png";
+import InteractiveMapImage from "../assets/images/InteractiveMap_Card_Image.png"
 export const APPSNAME = ["Interactive List",
-  "People Directory", 
-  "Video Gallery", 
-  "Photo Gallery"
+  "People Directory",
+  "Video Gallery",
+  "Photo Gallery",
+  "Interactive Map"
 ];
 export const CLIENTID = '260938166249-rv9fgk97t8b2qmrpi5nqk8hd4frd2qba.apps.googleusercontent.com';
 export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ';
@@ -19,8 +21,7 @@ export const OPTIONS = [
   { value: 'People Directory' },
   { value: 'Video Gallery' },
   { value: 'Photo Gallery' },
-  
-  // { value: 'Settings Page' },
+  { value: 'Interactive Map' },
 ];
 
 export const APPS = [
@@ -104,7 +105,7 @@ export const APPS = [
     appView: "PhotoGalleryPreview",
     appImg: PhotoImage,
     description: "List all employees working remotely on a map with filters.",
-    appID: "1wHDKsShOppIMNtYgm5QEh2cagKVgXkktdmuRtGYRrwE",
+    appID: "1U8KFBe4oEtO5RmA3J2aj5F0zUIgghDRq5Y3JIi8VVq4",
     spreadSheetName: "Data",
     overview:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
@@ -123,7 +124,32 @@ export const APPS = [
           "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
       },
     ],
-  }
+  },
+  {
+    appName: "Interactive Map",
+    appView: "InteractiveMapPreview",
+    appImg: InteractiveMapImage,
+    description: "List all employees working remotely on a map with filters.",
+    appID: "1IDvlKAFVt5xc06RGtHXZ9I5SDoBbIGAPBe8N4o0O6oQ",
+    spreadSheetName: "Data",
+    overview:
+      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+    multipleImage: [PeopleImage, VideoImage],
+    standOut: [
+      {
+        "Heading 1":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 2":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+      {
+        "Heading 3":
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+      },
+    ],
+  },
 ];
 // export const CLIENTID = '210551094674-r1bvcns06j8pj06bk8dnfhl3mh6feuag.apps.googleusercontent.com';
 // export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ'; // Use correct developer key

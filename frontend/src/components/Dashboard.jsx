@@ -191,6 +191,7 @@ const Dashboard = () => {
                   placeholder="Search"
                   value={searchValue}
                   onChange={handleSearch}
+                  allowClear
                 />
               </div>
               <div className="flex items-center">
@@ -210,7 +211,9 @@ const Dashboard = () => {
                   <Input style={{
                     width: 200,
                     height: 44,
-                  }} size="large" />
+                  }} size="large" 
+                  allowClear
+                  />
                 </AutoComplete>
               </div>
             </div>

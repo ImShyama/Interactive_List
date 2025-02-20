@@ -508,16 +508,21 @@ const PeopleDirectoryView = ({
                       src={getDriveThumbnail(person[showInCard[0]?.title.toLowerCase().replace(' ', '_')])}
                       alt={person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}
                       onError={(e) => handleImageError(e)}
-                      />
+                    />
                     :
                     // show avtar image
                     <Avatar className="w-20 h-20 rounded-full mb-3 object-cover" icon={<UserOutlined />} />
                   }
 
+                  <div className="w-[100%]">
+                    <h2 className="text-center text-sm font-medium text-gray-900 truncate  max-w-[150px] sm:max-w-[250px] md:max-w-[300px] overflow-hidden whitespace-nowrap"
+                    title={person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}
+                    >
+                      {person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}
+                    </h2>
+                  </div>
 
-                  <h2 className="text-sm font-medium text-gray-900">
-                    {person[showInCard[1]?.title.toLowerCase().replace(' ', '_')]}
-                  </h2>
+
                   <p className="text-xs text-gray-600">{person[showInCard[2]?.title.toLowerCase().replace(' ', '_')]}</p>
                   <p className="text-xs text-gray-600">{person[showInCard[3]?.title.toLowerCase().replace(' ', '_')]}</p>
                   {showInCard[4]?.title !== "" && <div className="flex items-center w-full mt-2 gap-2">

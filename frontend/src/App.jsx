@@ -30,6 +30,8 @@ import LandingPage from "./components/Landing_Page/LandingPage";
 import About from "./components/Landing_Page/AboutSection";
 import Products from "./components/Landing_Page/Product_Section/Products";
 import OverviewPage from "./components/Landing_Page/Product_Section/OverviewPage";
+import PrivacyPolicy from "./components/Landing_Page/PrivacyPolicy";
+import InteractiveMapPreview from "./components/interactive_map/InteractiveMapPreview";
 
 
 // Layout Component
@@ -60,6 +62,7 @@ const appRouter = createBrowserRouter([
       { path: "/", element: <LandingPage /> },
       { path: "/about", element: <About /> },
       { path: "/products", element: <Products /> },
+      { path: "/privacy-policy", element: <PrivacyPolicy /> },
       {path:"/products/:product", element:<OverviewPage/>},
       { path: "/signin", element: <GoogleSignin /> },
       { path: "/:id/edit", element: <Table /> },
@@ -73,6 +76,7 @@ const appRouter = createBrowserRouter([
       { path: "/peopleDirectoryPreview", element: <PeopleDirectoryPreview /> },
       { path: "/VideoGalleryPreview", element: <VideoGalleryPreview /> },
       { path: "/PhotoGalleryPreview", element: <PhotoGalleryPreview /> },
+      { path: "/InteractiveMapPreview", element: <InteractiveMapPreview /> },
       { path: "/profile/:id", element: <ProfilePage /> },
       { path: "/video/:id", element: <LargeVideoView /> },
     ],

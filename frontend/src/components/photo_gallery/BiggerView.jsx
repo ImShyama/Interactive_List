@@ -11,9 +11,10 @@ import {
   PauseCircleOutlined,
 } from "@ant-design/icons";
 import noPhoto from "../../assets/images/noPhoto.jpg";
-import { handleImageError } from "../../utils/globalFunctions";
+import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
+import { notifySuccess } from "../../utils/notify";
 
-const BiggerView = ({ photo, onClose }) => {
+const BiggerView = ({ photo, onClose, settings }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1); // Initial zoom level is 1 (100%)
   const [isAutoPlay, setIsAutoPlay] = useState(false); // Track if auto-play is active
@@ -22,6 +23,14 @@ const BiggerView = ({ photo, onClose }) => {
   if (!photo) {
     return null; // Handle case if no photo is passed
   }
+
+  
+
+  const image = getDriveThumbnail(photo[settings?.showInCard[0].title.toLowerCase().replace(" ", "_")]) 
+  const title = photo[settings?.showInCard[1].title.toLowerCase().replace(" ", "_")] || "";
+  const subTitle = photo[settings?.showInCard[2].title.toLowerCase().replace(" ", "_")] || "";
+
+  console.log({image});
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
@@ -39,9 +48,10 @@ const BiggerView = ({ photo, onClose }) => {
   const handleCopyLink = () => {
     const currentUrl = window.location.href; // Get the current page URL
     navigator.clipboard
-      .writeText(currentUrl)
+      .writeText(image)
       .then(() => {
-        alert("Page link copied to clipboard!"); // Optionally, show an alert or a message
+        // alert("Page link copied to clipboard!"); // Optionally, show an alert or a message
+        notifySuccess("Link copied to clipboard!");
       })
       .catch((error) => {
         console.error("Failed to copy link: ", error);
@@ -95,8 +105,8 @@ const BiggerView = ({ photo, onClose }) => {
         <div className="relative w-[90vw] max-w-[800px] aspect-[16/9] flex-shrink-0 rounded-[28px]">
           {/* Image */}
           <img
-            src={photo.images[currentIndex]}
-            alt={`Slide ${currentIndex + 1}`}
+            src={image}
+            // alt={`Slide ${currentIndex + 1}`}
             className="w-full h-full object-cover rounded-[28px]"
             style={{
               transform: `scale(${zoomLevel})`,
@@ -120,7 +130,7 @@ const BiggerView = ({ photo, onClose }) => {
             opacity: zoomLevel > 1 ? 0 : 1, // Hide description when zoomed in
           }}
         >
-          {photo.description}
+          {title}
         </div>
       </div>
 
@@ -141,9 +151,8 @@ const BiggerView = ({ photo, onClose }) => {
         </button> */}
         <button
           onClick={handleZoomOut}
-          className={`rounded-full ${
-            zoomLevel > 1 ? "text-white" : "text-gray-500 bg-transparent"
-          }`}
+          className={`rounded-full ${zoomLevel > 1 ? "text-white" : "text-gray-500 bg-transparent"
+            }`}
           disabled={zoomLevel <= 1} // Disable button at min zoom
         >
           <ZoomOutOutlined />
@@ -151,9 +160,8 @@ const BiggerView = ({ photo, onClose }) => {
 
         <button
           onClick={handleZoomIn}
-          className={`rounded-full ${
-            zoomLevel < 2 ? "text-white" : "text-gray-500 bg-transparent"
-          }`}
+          className={`rounded-full ${zoomLevel < 2 ? "text-white" : "text-gray-500 bg-transparent"
+            }`}
           disabled={zoomLevel >= 2} // Disable button at max zoom
         >
           <ZoomInOutlined />

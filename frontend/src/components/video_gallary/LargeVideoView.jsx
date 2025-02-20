@@ -341,6 +341,7 @@ const LargeVideoView = () => {
             color: settings?.showInCard[3]?.setting?.fontColor || "#000000",
             fontSize: `${settings?.showInCard[3]?.setting?.fontSize}px`,
             fontFamily: settings?.showInCard[3]?.setting?.fontType,
+            whiteSpace: "pre-line", // Preserve line breaks
           }}>
             {data[settings?.showInCard[3]?.title.toLowerCase().replace(" ", "_")]}
           </span>
@@ -373,7 +374,8 @@ const LargeVideoView = () => {
 
               color: settings?.showInCard[4]?.setting?.fontColor || "#000000",
               fontSize: `${settings?.showInCard[4]?.setting?.fontSize}px`,
-              fontFamily: settings?.showInCard[4]?.setting?.fontType4
+              fontFamily: settings?.showInCard[4]?.setting?.fontType4,
+              whiteSpace: "pre-line", // Preserve line breaks
             }}
           >
             {data[settings?.showInCard[4]?.title?.toLowerCase().replace(/\s/g, "_")]}
@@ -407,6 +409,7 @@ const LargeVideoView = () => {
             color: settings?.showInCard[5]?.setting?.fontColor || "#000000",
             fontSize: `${settings?.showInCard[5]?.setting?.fontSize}px`,
             fontFamily: settings?.showInCard[5]?.setting?.fontType,
+            whiteSpace: "pre-line", // Preserve line breaks
           }}>{data[settings?.showInCard[5]?.title.toLowerCase().replace(" ", "_")]}
           </span>
         </div>
@@ -442,6 +445,7 @@ const LargeVideoView = () => {
                 color: item?.setting?.fontColor || "#000000",
                 fontSize: `${item?.setting?.fontSize}px`,
                 fontFamily: item?.setting?.fontType,
+                whiteSpace: "pre-line", // Preserve line breaks
               }}>
               {data[item?.title.toLowerCase().replace(" ", "_")]}
             </span>

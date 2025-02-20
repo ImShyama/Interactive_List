@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import PhotoCard from "./PhotoCard"; // Import the new PhotoCard component
 import BiggerView from "./BiggerView"; // Import BiggerView
 
-const PhotoGalleryView = () => {
+const PhotoGalleryView = ({ settings, data }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [hoveredPhoto, setHoveredPhoto] = useState(null);
@@ -21,64 +21,66 @@ const PhotoGalleryView = () => {
   const photo8 = "https://drive.google.com/file/d/1K680yMFCs__bOM5ZHBfd3ZFqcOSIbDcR/view?usp=sharing";
 
   // Sample photos data
-  const photos = [
-    {
-      id: 1,
-      images: [photo1, photo2, photo3],
-      description:
-        "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
-      date: "October 2024",
-    },
-    {
-      id: 2,
-      images: [photo2, photo3, photo4],
-      description:
-        "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
-      date: "October 2024",
-    },
-    {
-      id: 3,
-      images: [photo3, photo4, photo5],
-      description:
-        "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
-      date: "October 2024",
-    },
-    {
-      id: 4,
-      images: [photo4, photo5, photo6],
-      description:
-        "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
-      date: "October 2024",
-    },
-    {
-      id: 5,
-      images: [photo5, photo6, photo7],
-      description:
-        "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
-      date: "October 2024",
-    },
-    {
-      id: 6,
-      images: [photo6, photo7, photo8],
-      description:
-        "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
-      date: "October 2024",
-    },
-    {
-      id: 7,
-      images: [photo7, photo8, photo1],
-      description:
-        "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
-      date: "October 2024",
-    },
-    {
-      id: 8,
-      images: [photo8, photo1, photo2],
-      description:
-        "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
-      date: "October 2024",
-    },
-  ];
+  const photos = data;
+
+    // [
+    //   {
+    //     id: 1,
+    //     images: [photo1, photo2, photo3],
+    //     description:
+    //       "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
+    //     date: "October 2024",
+    //   },
+    //   {
+    //     id: 2,
+    //     images: [photo2, photo3, photo4],
+    //     description:
+    //       "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
+    //     date: "October 2024",
+    //   },
+    //   {
+    //     id: 3,
+    //     images: [photo3, photo4, photo5],
+    //     description:
+    //       "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
+    //     date: "October 2024",
+    //   },
+    //   {
+    //     id: 4,
+    //     images: [photo4, photo5, photo6],
+    //     description:
+    //       "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
+    //     date: "October 2024",
+    //   },
+    //   {
+    //     id: 5,
+    //     images: [photo5, photo6, photo7],
+    //     description:
+    //       "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
+    //     date: "October 2024",
+    //   },
+    //   {
+    //     id: 6,
+    //     images: [photo6, photo7, photo8],
+    //     description:
+    //       "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
+    //     date: "October 2024",
+    //   },
+    //   {
+    //     id: 7,
+    //     images: [photo7, photo8, photo1],
+    //     description:
+    //       "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
+    //     date: "October 2024",
+    //   },
+    //   {
+    //     id: 8,
+    //     images: [photo8, photo1, photo2],
+    //     description:
+    //       "Tech Friday | Want More Sales This Festive Season? Try These Simple Steps!",
+    //     date: "October 2024",
+    //   },
+    // ];
 
   const paginatedPhotos = photos.slice(
     (currentPage - 1) * pageSize,
@@ -110,11 +112,12 @@ const PhotoGalleryView = () => {
       >
         {paginatedPhotos.map((photo) => (
           <PhotoCard
-            key={photo.id}
+            key={photo.key_id}
             photo={photo}
+            settings={settings}
             hoveredPhoto={hoveredPhoto}
             setHoveredPhoto={setHoveredPhoto}
-            handlePhotoClick={handlePhotoClick} // Pass handlePhotoClick to PhotoCard
+            handlePhotoClick={handlePhotoClick} 
           />
         ))}
       </div>

@@ -1,0 +1,41 @@
+/* Footer.jsx */
+@media (max-width: 768px) {
+    .footerContainer {
+      display: grid !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
+    .logo-div {
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+    }
+    .footer-subtext {
+      width: 100%;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .footerItemBox {
+      display: grid !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 20px !important;
+      margin-top: 20px;
+    }
+    .needHelpBox {
+      text-align: center !important;
+    }
+  }
+  
+  .socialIcons {
+    transition: color 0.3s ease-in-out !important;
+  }
+  
+  .socialIcons:hover {
+    color: #fff !important;
+  }
+  
+  .footerLinksItems:hover {
+    color: #21c0f9 !important;
+  }

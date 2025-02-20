@@ -228,6 +228,7 @@ const DashboardTable = () => {
                 style={{ width: "200px" }}
                 className="min-w-[150px]"
                 placeholder="Search by Spreadsheet Name"
+                allowClear
               />
             </div>
             {/* <div className="flex">
@@ -261,7 +262,9 @@ const DashboardTable = () => {
                 style={{
                   width: 200,
                   height: 44,
-                }} size="large" />
+                }} size="large" 
+                allowClear
+                />
               </AutoComplete>
             </div>
           </div>

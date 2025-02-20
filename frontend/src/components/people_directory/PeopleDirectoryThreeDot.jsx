@@ -110,6 +110,8 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
         } 
         
         else if (optionType === "showInCard") {
+
+          
           let updatedChecked = checked; // Keep track of the checkbox state
           let found = false; // Flag to track if we already added the columnKey
         
@@ -202,6 +204,7 @@ const PeopleDirectoryThreeDot = ({ columnKey, settings }) => {
       open={isPopoverOpen}
       onOpenChange={(visible) => !visible && handlePopoverClose()}
       placement="bottomRight"
+      zIndex={999}
     >
       <button className="flex items-center rounded " onClick={handleButtonClick}>
         <BsThreeDotsVertical />

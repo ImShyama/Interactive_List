@@ -14,6 +14,7 @@ import { UserContext } from "../context/UserContext";
 import { set } from "lodash";
 import VideoTable from "./video_gallary/VideoTable.jsx";
 import PhotoTable from "./photo_gallery/PhotoTable.jsx";
+import IntractMapTable from "./interactive_map/IntractMapTable.jsx";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
@@ -154,6 +155,19 @@ const Table = () => {
       case "Photo Gallery":
         return (
           <PhotoTable
+            data={sheetData}
+            tableHeader={tableHeader}
+            headers={filterHeader}
+            settings={settings}
+            freezeIndex={freezeIndex}
+            tempHeader={tableHeader}
+            formulaData={formulaData}
+            unhideHeader={unhideHeader}
+          />
+        );
+      case "Interactive Map":
+        return (
+          <IntractMapTable
             data={sheetData}
             tableHeader={tableHeader}
             headers={filterHeader}

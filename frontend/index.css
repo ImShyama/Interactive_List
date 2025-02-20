@@ -366,3 +366,8 @@ button:disabled {
   opacity: 1; /* Show on hover/focus */
   visibility: visible; /* Make it interactable */
 }
+
+
+.ant-popover {
+  z-index: 999 !important;
+}

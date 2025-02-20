@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Pagination } from "antd";
 import TitleBarPreview from "../TitleBarPreview";
-import PhotoCard from "./PhotoCard"; 
+import PhotoCard from "./PhotoCard";
 
-import { getDriveThumbnail } from "../../utils/globalFunctions"; 
+import { getDriveThumbnail } from "../../utils/globalFunctions";
 
 // Sample photo URLs from Google Drive (replace with actual URLs)
 const photo1 = "https://drive.google.com/file/d/1he_7YkWxonjUYPxS8nvVkTGdCUqyH5zj/view?usp=sharing";
@@ -125,9 +125,14 @@ const PhotoGalleryPreview = () => {
         style={{ width: "100%", overflowX: "auto", maxHeight: "600px" }}
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 px-4 gap-4 mt-4"
       >
-        {paginatedPhotos.map((photo) => (
-          <PhotoCard key={photo.id} photo={photo} />
-        ))}
+        {paginatedPhotos.map((photo) => {
+
+          const image = getDriveThumbnail(photo.images);
+          const title = photo.description || "";
+          const subTitle = photo.date || "";
+
+          return (<PhotoCard key={photo.id} image={image} title={title} subTitle={subTitle} />)
+        })}
       </div>
 
       {/* Pagination */}

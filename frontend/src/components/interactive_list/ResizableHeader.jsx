@@ -11,6 +11,7 @@ import { IoSearchOutline } from "react-icons/io5";
 import PeopleDirectoryThreeDot from "../people_directory/PeopleDirectoryThreeDot";
 import VideoGalleryThreeDot from "../video_gallary/VideoGallaryThreeDot";
 import PhotoGalleryThreeDot from "../photo_gallery/PhotoGalleryThreeDot";
+import InteractiveMapThreeDot from "../interactive_map/InteractiveMapThreeDot";
 // import { Resizable } from 're-resizable';
 
 const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFreezeCol, freezeCol, columnKey, index, headers, columnWidths, headerBgColor, headerTextColor, headerFontFamily, headerFontSize, isEditMode, handleResize,
@@ -301,7 +302,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                             <Freeze columnKey={columnKey} isEditMode={isEditMode} setFreezeCol={setFreezeCol} freezeCol={freezeCol} settings={settings} />
                         </div>
 
-                        {(settings?.appName == "People Directory" || settings?.appName == "Video Gallery" || settings?.appName == "Photo Gallery") &&
+                        {(settings?.appName == "People Directory" || settings?.appName == "Video Gallery" || settings?.appName == "Photo Gallery" || settings?.appName == "Interactive Map") &&
                             <div className={isEditBoxOpen ? " " : "resizeActions"} >
                                 {isEditMode && settings.appName == "People Directory" &&
                                     <PeopleDirectoryThreeDot
@@ -331,6 +332,20 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                                 }
                                 {isEditMode && settings.appName == "Photo Gallery" &&
                                     <PhotoGalleryThreeDot
+                                        headerId={columnKey}
+                                        columnKey={title}
+                                        openPopoverId={openPopoverId}
+                                        setOpenPopoverId={setOpenPopoverId}
+                                        // checkboxSelections={checkboxSelections}
+                                        // updateSelection={updateSelection}
+                                        settings={settings}
+                                        firstRowData={firstRowData}
+                                        isEditBoxOpen={isEditBoxOpen}
+                                        setIsEditBoxOpen={setIsEditBoxOpen}
+                                    />
+                                }
+                                {isEditMode && settings.appName == "Interactive Map" &&
+                                    <InteractiveMapThreeDot
                                         headerId={columnKey}
                                         columnKey={title}
                                         openPopoverId={openPopoverId}

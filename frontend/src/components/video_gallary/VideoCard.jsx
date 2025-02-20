@@ -152,27 +152,58 @@ const VideoCard = ({ rowData, settings }) => {
             ></iframe>
 
           ) : (
-            <img
-              src={
-                (() => {
-                  const titleKey = settingsData?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
-                  const videoUrl = videoData?.[titleKey];
+            settingsData?.showInCard[1]?.title == "" ?
 
-                  if (!videoUrl) return videoData[settingsData?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
+              <iframe
+                width="100%"
+                height="200px"
+                src={
+                  (() => {
+                    const titleKey = settingsData?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
+                    const videoUrl = videoData?.[titleKey];
 
-                  if (videoUrl.includes("drive.google.com")) {
-                    let driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
-                    console.log({ driveIdMatch, videoUrl });
-                    return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
-                  }
+                    if (!videoUrl) return "";
 
-                  return videoData[settingsData?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
-                })()
-              }
-              alt={videoData[settingsData?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
-              className="w-full h-[200px] object-cover"
-              onError={(e) => handleImageError(e, noPhoto)}
-            />
+                    if (videoUrl.includes("drive.google.com")) {
+                      const driveIdMatch = videoUrl.match(/\/d\/(.*?)(\/|$)/);
+                      return driveIdMatch ? `https://drive.google.com/file/d/${driveIdMatch[1]}/preview` : "";
+                    }
+
+                    if (videoUrl.includes("youtube.com/watch") || videoUrl.includes("youtu.be")) {
+                      const youtubeIdMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+                      return youtubeIdMatch ? `https://www.youtube.com/embed/${youtubeIdMatch[1]}?autoplay=1&mute=1` : "";
+                    }
+
+                    return videoUrl; // Fallback for other video sources
+                  })()
+                }
+                title={settingsData?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_") || "Video"}
+                // allow="autoplay; encrypted-media"
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+              :
+              <img
+                src={
+                  (() => {
+                    const titleKey = settingsData?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
+                    const videoUrl = videoData?.[titleKey];
+
+                    if (!videoUrl) return videoData[settingsData?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
+
+                    if (videoUrl.includes("drive.google.com")) {
+                      let driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
+                      console.log({ driveIdMatch, videoUrl });
+                      return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
+                    }
+
+                    return videoData[settingsData?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
+                  })()
+                }
+                alt={videoData[settingsData?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
+                className="w-full h-[200px] object-cover"
+              // onError={(e) => handleImageError(e, noPhoto)}
+              />
           )
         )}
       <div className="p-4 flex flex-col gap-[10px] cursor-pointer">
@@ -205,6 +236,7 @@ const VideoCard = ({ rowData, settings }) => {
             color: settingsData?.showInCard[2]?.setting?.fontColor || "#000000",
             fontSize: `${settingsData?.showInCard[2]?.setting?.fontSize}px`,
             fontFamily: settingsData?.showInCard[2]?.setting?.fontType,
+            whiteSpace: "pre-line", // Preserve line breaks
           }}
 
         // style={{
@@ -245,6 +277,7 @@ const VideoCard = ({ rowData, settings }) => {
           color: settingsData?.showInCard[3]?.setting?.fontColor || "#000000",
           fontSize: `${settingsData?.showInCard[3]?.setting?.fontSize}px`,
           fontFamily: settingsData?.showInCard[3]?.setting?.fontType,
+          whiteSpace: "pre-line", // Preserve line breaks
         }}>
           {videoData[settingsData?.showInCard[3]?.title.toLowerCase().replace(" ", "_")]}
         </span>
@@ -282,6 +315,7 @@ const VideoCard = ({ rowData, settings }) => {
             WebkitLineClamp: 3,
             overflow: "hidden",
             textOverflow: "ellipsis",
+            whiteSpace: "pre-line", // Preserve line breaks
           }}
         >
           {videoData[settingsData?.showInCard[4]?.title?.toLowerCase().replace(/\s/g, "_")]}
@@ -315,6 +349,7 @@ const VideoCard = ({ rowData, settings }) => {
           color: settingsData?.showInCard[5]?.setting?.fontColor || "#000000",
           fontSize: `${settingsData?.showInCard[5]?.setting?.fontSize}px`,
           fontFamily: settingsData?.showInCard[5]?.setting?.fontType,
+          whiteSpace: "pre-line", // Preserve line breaks
         }}>{videoData[settingsData?.showInCard[5]?.title.toLowerCase().replace(" ", "_")]}
         </span>
       </div>

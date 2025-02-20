@@ -1,0 +1,193 @@
+import mapphoto from "../assets/images/detailimg.png";
+import photo1 from "../assets/images/p1.png";
+import photo2 from "../assets/images/p2.png";
+import photo3 from "../assets/images/p3.png";
+
+export const headers = [
+    "Sr._No.",
+    "City",
+    "State",
+    "Brand",
+    "Store_Manager",
+    "Market_Segment",
+    "Latitude",
+    "Longitude",
+    // "Address",
+    // "Phone",
+    // "PIN_Code",
+    // "Fuel_Available",
+    // "Pharmacy_Available",
+    "Images"
+  ];
+  
+
+
+// ["Country","Region","Population","GDP (USD Billions)","GDP Per Capita","Life Expectancy","Literacy Rate","Internet Users %","Urbanization %","CO2 Emissions (tons)","Renewable Energy %","Trade Balance (USD M)","FDI Inflow (USD M)","Tourism Revenue (USD M)","Healthcare Spending %","R&D Investment %","Youth Population %","Export Value (USD M)","Import Value (USD M)","Education Spending %"]
+
+
+// InteractiveMap_dummydata.jsx
+
+export const data = [
+    {
+      "sr_no": "1",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "39.37323",
+      "longitude": "-99.37323",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images": [mapphoto, photo1, photo2, photo3]
+    },
+    {
+      "sr_no": "2",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "35.37323",
+      "longitude": "-97.37323",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images": [mapphoto, photo1, photo2, photo3]
+    },
+    {
+      "sr_no": "3",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "28.5032606",
+      "longitude": "-77.1838258",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images": [mapphoto, photo1, photo2, photo3]
+    },
+    {
+      "sr_no": "4",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "42.3226819",
+      "longitude": "-71.3887851",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images": [mapphoto, photo1, photo2, photo3]
+    },
+    {
+      "sr_no": "5",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "38.5223504",
+      "longitude": "-90.3366627",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images": [mapphoto, photo1, photo2, photo3]
+    },
+    {
+      "sr_no": "6",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "42.37323",
+      "longitude": "-99.37323",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images": [mapphoto, photo1, photo2, photo3]
+    },
+    {
+      "sr_no": "7",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "39.4952",
+      "longitude": "-76.6486",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images": [mapphoto, photo1, photo2, photo3]
+    },
+    {
+      "sr_no": "8",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "46.4952",
+      "longitude": "-99.6486",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images":[mapphoto, photo1, photo2, photo3]
+    },
+    {
+      "sr_no": "9",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "49.37323",
+      "longitude": "-89.37323",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images": [mapphoto, photo1, photo2, photo3]
+    },
+    {
+      "sr_no": "10",
+      "city": "Framingham",
+      "state": "MA",
+      "brand": "SUGAR LOVERS",
+      "store_manager": "Stanislas Levy",
+      "market_segment": "RURAL",
+      "latitude": "43.37323",
+      "longitude": "-92.37323",
+      "address": "70 S Locust St",
+      "phone_number": "111-111-1111",
+      "pin_code": "18201",
+      "fuel": "Yes",
+      "pharmacy": "Yes",
+      "images": [mapphoto, photo1, photo2, photo3]
+    },
+
+  ];
+  

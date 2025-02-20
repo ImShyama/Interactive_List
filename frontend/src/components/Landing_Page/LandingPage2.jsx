@@ -8,7 +8,6 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import HeroSection from "./HeroSection";
 import ContentSection from "./ContentSection";
-import FooterSection from "./FooterSection";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -77,7 +76,6 @@ const LandingPage = () => {
     <div className="landing-page">
        <HeroSection />
        <ContentSection />
-       <FooterSection />
     </div>
   );
 };

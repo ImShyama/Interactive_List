@@ -41,6 +41,7 @@ import { handleUpdateSettings } from "../APIs/index.jsx";
 import HeadingTitle from "./people_directory/HeadingTitle.jsx";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { IoMdOpen } from "react-icons/io";
+import Settings from "./product_catalogue/settings/Settings.jsx";
 
 const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
 
@@ -701,7 +702,7 @@ const ViewSettings = ({ settingsData }) => {
                       </span>
                       :
                       <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
-                        { settingsData?.appName == "Photo Gallery" ? `Heading ${index}` : `Heading ${index + 1}` }
+                        {settingsData?.appName == "Photo Gallery" ? `Heading ${index}` : `Heading ${index + 1}`}
                       </span>
                     }
                   </div>
@@ -889,6 +890,12 @@ const ViewSettings = ({ settingsData }) => {
               <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Title</span>
             </div>}
 
+            {settingsData?.appName == "Photo Gallery" && <div className="flex flex-col m-2 w-[130px]">
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Photo Link</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Title</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Title</span>
+            </div>}
+
             {/* Right Column (Draggable Items) */}
             <div className="flex flex-col m-2">
               {cardData?.map((item) => (
@@ -1030,38 +1037,39 @@ const ViewSettings = ({ settingsData }) => {
 
   return (
     <div className="w-[100%]">
+
       {/* // show card drower */}
-
-      {settingsData?.appName !== "Photo Gallery" && (
-        <div className="ml-[30px] mb-[20px] w-[100%]">
-          <div className="flex items-center gap-2 cursor-pointer"
-            onClick={() => setShowCard(!showCard)}
-          >
-            <span
-              className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]"
-            >
-              Card Settings
-            </span>
-            <img src={downIcon} />
-          </div>
-          {showCard && <CardSettings settingsData={settingsData} />}
-        </div>
-      )}
-
-      {/* // show profile drower */}
-      <div className="ml-[30px]">
+      {settingsData?.appName !== "Interactive Map" && <div className="ml-[30px] mb-[20px] w-[100%]">
         <div className="flex items-center gap-2 cursor-pointer"
-          onClick={() => setShowProfile(!showProfile)}
+          onClick={() => setShowCard(!showCard)}
         >
           <span
             className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]"
           >
-            Profile Settings
+            Card Settings
           </span>
           <img src={downIcon} />
         </div>
-        {showProfile && <ProfileSettings settingsData={settingsData} />}
-      </div>
+        {showCard && <CardSettings settingsData={settingsData} />}
+      </div>}
+
+
+      {/* // show profile drower */}
+      {settingsData?.appName !== "Photo Gallery" && (
+        <div className="ml-[30px]">
+          <div className="flex items-center gap-2 cursor-pointer"
+            onClick={() => setShowProfile(!showProfile)}
+          >
+            <span
+              className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]"
+            >
+              {settingsData?.appName !== "Interactive Map" ? `Profile Settings` : `Details View Settings`}
+            </span>
+            <img src={downIcon} />
+          </div>
+          {showProfile && <ProfileSettings settingsData={settingsData} />}
+        </div>
+      )}
     </div>
   )
 }
@@ -1165,6 +1173,12 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
   return (
     <div>
+      {settingData?.appName == "Product Catalogue"
+      
+      ?
+      <Settings />
+      :
+      <div>
       <div className="setting_drawer">
         <div className="setting_icons">
           <div className="setting_icons_top">
@@ -1275,7 +1289,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           </div>
           {addData && <AddData activateSave={activateSave} isTableLoading={isTableLoading} setIsTableLoading={setIsTableLoading} />}
 
-          {(settingData?.appName == "People Directory" || settingData?.appName == "Video Gallery" || settingData?.appName == "Photo Gallery") &&
+          {(settingData?.appName == "People Directory" || settingData?.appName == "Video Gallery" || settingData?.appName == "Photo Gallery" || settingData?.appName == "Interactive Map") &&
             <>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -1336,6 +1350,8 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
         onConfirm={handleResetChange}
         sheetName={"Are you sure you want to reset table styling."} // Optional: Provide a dynamic name
       />
+      </div>
+      }
     </div>
   );
 };

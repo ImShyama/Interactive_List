@@ -3,6 +3,8 @@ import { Carousel } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import BiggerView from "./BiggerView"; // Import BiggerView
 import defaultImage from "../../assets/images/Photo1.png";
+import noPhoto from "../../assets/images/noPhoto.jpg";
+import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
 
 const defaultPhoto = {
   id: "default",
@@ -11,11 +13,18 @@ const defaultPhoto = {
   date: "October 2024",
 };
 
-const PhotoCard = ({ photo }) => {
-  const photoData = photo || defaultPhoto;
+const PhotoCard = ({ image, title, subTitle }) => {
+  // console.log({photo, settings})
+  // const photoData = photo || defaultPhoto;
   const [isHovered, setIsHovered] = useState(false);
   const [showBiggerView, setShowBiggerView] = useState(false);
   const carouselRef = useRef(null);
+  
+  // const image = getDriveThumbnail(photoData[settings?.showInCard[0].title.toLowerCase().replace(" ","_")]);
+  // const title = photoData[settings?.showInCard[1].title.toLowerCase().replace(" ","_")] || "";
+  // const subTitle = photoData[settings?.showInCard[2].title.toLowerCase().replace(" ","_")] || "";
+
+  // console.log({photo, settings, image, title, subTitle});
 
   return (
     <>
@@ -29,11 +38,17 @@ const PhotoCard = ({ photo }) => {
         {/* Carousel for Photo Swiping */}
         <div className="absolute inset-0 w-full h-full">
           <Carousel ref={carouselRef} autoplay={false} dots={false} className="w-full h-full">
-            {photoData.images.map((img, index) => (
+            {/* {photoData.image.tostring().splite(",").map((img, index) => (
               <div key={index} className="relative w-full h-full">
                 <img src={img} alt={`Slide ${index + 1}`} className="w-full h-full object-cover" />
               </div>
-            ))}
+            ))} */}
+            <img src={image} 
+            // alt={`Slide ${index + 1}`} 
+            className="w-full h-full object-cover" 
+            // onError={(e)=>{handleImageError(e,noPhoto)}}
+            />
+            
           </Carousel>
         </div>
 
@@ -67,13 +82,13 @@ const PhotoCard = ({ photo }) => {
 
         {/* Description */}
         <div className="absolute bottom-1 left-4 right-4">
-          <p className="text-white font-poppins text-[16px] font-normal leading-normal">{photoData.description}</p>
-          <p className="text-[#DEDEDE] font-poppins text-[13.823px] font-normal leading-normal">{photoData.date}</p>
+          <p className="text-white font-poppins text-[16px] font-normal leading-normal">{title}</p>
+          <p className="text-[#DEDEDE] font-poppins text-[13.823px] font-normal leading-normal">{subTitle}</p>
         </div>
       </div>
 
       {/* BiggerView (Opens when Photo is Clicked) */}
-      {showBiggerView && <BiggerView photo={photoData} onClose={() => setShowBiggerView(false)} />}
+      {showBiggerView && <BiggerView photo={image} title={title} onClose={() => setShowBiggerView(false)} />}
     </>
   );
 };

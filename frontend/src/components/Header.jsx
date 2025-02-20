@@ -238,6 +238,7 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation(); // Access the current route
   const isEditMode = window.location.pathname.endsWith("/edit");
+  const isViewMode = window.location.pathname.endsWith("/view");
   const profileRef = useRef(null); // Ref for the Profile component
   const profileImageRef = useRef(null); // Ref for the profile image
 
@@ -373,7 +374,7 @@ const Header = () => {
             </div>
             <div className="interact-parent">
               <div className="interact">Interact</div>
-              {settings?.appName && (
+              {(settings?.appName && (isViewMode || isEditMode)) && (
                 <div className="interactive-table">{settings?.appName}</div>
               )}
             </div>

@@ -10,6 +10,7 @@ import { IoSaveSharp, IoSave } from "react-icons/io5";
 import { UserOutlined } from "@ant-design/icons";
 import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
 import noPhoto from "../../assets/images/noPhoto.jpg";
+import avatar from "../../assets/images/avatar.png";
 
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
@@ -19,7 +20,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
 }) => {
 
     const primaryColumn = settings?.appName == "Photo Gallery"
-        ? settings?.showInProfile[0]?.title?.toLowerCase().replace(/\s/g, "_")
+        ? settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_")
         : settings?.appName == "Video Gallery"
             ? settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")
             : settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
@@ -425,7 +426,11 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             onError={(e) => handleImageError(e)} // Custom fallback
                         />
                     ) : (
-                        <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                        // <Avatar size={48} icon={<UserOutlined />} alt="User" />
+                        <img 
+                         src={avatar}
+                         style={{height:'48px'}}
+                        />
                     )}
                 </div>
             )

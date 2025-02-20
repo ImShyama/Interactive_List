@@ -35,7 +35,7 @@ import _, { debounce } from "lodash";
 import GlobalSearch from "../interactive_list/GlobalSearch.jsx";
 import Table from "../interactive_list/Table.jsx";
 import Loader from "../Loader.jsx";
-import PhotoGalleryView from "./PhotoGalleryView.jsx";
+import InteractiveMapView from "./InteractiveMapView.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -54,7 +54,7 @@ const convertArrayToJSON = (data) => {
     return jsonData;
 };
 
-const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaData, unhideHeader }) => {
+const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaData, unhideHeader }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [rowToEdit, setRowToEdit] = useState(null);
     const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
@@ -755,7 +755,7 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
 
             // if(globalCheckboxChecked){
             //     notifyError("Select all works only for delete option");
-            //     return;
+            //     return;  
             // }
             // Call the backend API to update rows in Google Sheets
             const spreadSheetID = settings.spreadsheetId;
@@ -832,9 +832,9 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
-                    {isEditMode && <button onClick={() => navigate(-1)} title="Back">
+                    <button onClick={() => navigate(-1)} title="Back">
                         <BackIcon />
-                    </button>}
+                    </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
                 <div className="flex ">
@@ -1208,55 +1208,83 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                 })}
             /> */}
 
-            {isEditMode ?
+           {!isEditMode ?
+           <div>
+           <InteractiveMapView data={filteredData} headers={headers} settings={settings} />
 
+           <Table
+                data={data}
+                headers={headers}
+                filteredData={filteredData}
+                setFilteredData={setFilteredData}
+                paginatedData={paginatedData}
+                loading={loading}
+                isEditMode={isEditMode}
+                isedit={isedit}
+                setIsedit={setIsedit}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                settings={settings}
+                freezeCol={freezeCol}
+                setFreezeCol={setFreezeCol}
+                globalOption={globalOption}
+                setGlobalOption={setGlobalOption}
+                ischecked={ischecked}
+                setIschecked={setIschecked}
+                EditData={EditData}
+                setEditData={setEditData}
+                handleBulkDelete={handleBulkDelete}
+                headerBgColor={headerBgColor}
+                headerTextColor={headerTextColor}
+                headerFontSize={headerFontSize}
+                headerFontFamily={headerFontFamily}
+                bodyTextColor={bodyTextColor}
+                bodyFontSize={bodyFontSize}
+                bodyFontFamily={bodyFontFamily}
+                tempHeader={tempHeader}
+                formulaData={formulaData}
+                handleBulkSave={handleBulkSave}
+                globalCheckboxChecked={globalCheckboxChecked}
+                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+            />
+            </div>
+           : <Table
+                data={data}
+                headers={headers}
+                filteredData={filteredData}
+                setFilteredData={setFilteredData}
+                paginatedData={paginatedData}
+                loading={loading}
+                isEditMode={isEditMode}
+                isedit={isedit}
+                setIsedit={setIsedit}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                settings={settings}
+                freezeCol={freezeCol}
+                setFreezeCol={setFreezeCol}
+                globalOption={globalOption}
+                setGlobalOption={setGlobalOption}
+                ischecked={ischecked}
+                setIschecked={setIschecked}
+                EditData={EditData}
+                setEditData={setEditData}
+                handleBulkDelete={handleBulkDelete}
+                headerBgColor={headerBgColor}
+                headerTextColor={headerTextColor}
+                headerFontSize={headerFontSize}
+                headerFontFamily={headerFontFamily}
+                bodyTextColor={bodyTextColor}
+                bodyFontSize={bodyFontSize}
+                bodyFontFamily={bodyFontFamily}
+                tempHeader={tempHeader}
+                formulaData={formulaData}
+                handleBulkSave={handleBulkSave}
+                globalCheckboxChecked={globalCheckboxChecked}
+                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+            />
 
-
-
-                <Table
-                    data={data}
-                    headers={headers}
-                    filteredData={filteredData}
-                    setFilteredData={setFilteredData}
-                    paginatedData={paginatedData}
-                    loading={loading}
-                    isEditMode={isEditMode}
-                    isedit={isedit}
-                    setIsedit={setIsedit}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    settings={settings}
-                    freezeCol={freezeCol}
-                    setFreezeCol={setFreezeCol}
-                    globalOption={globalOption}
-                    setGlobalOption={setGlobalOption}
-                    ischecked={ischecked}
-                    setIschecked={setIschecked}
-                    EditData={EditData}
-                    setEditData={setEditData}
-                    handleBulkDelete={handleBulkDelete}
-                    headerBgColor={headerBgColor}
-                    headerTextColor={headerTextColor}
-                    headerFontSize={headerFontSize}
-                    headerFontFamily={headerFontFamily}
-                    bodyTextColor={bodyTextColor}
-                    bodyFontSize={bodyFontSize}
-                    bodyFontFamily={bodyFontFamily}
-                    tempHeader={tempHeader}
-                    formulaData={formulaData}
-                    handleBulkSave={handleBulkSave}
-                    globalCheckboxChecked={globalCheckboxChecked}
-                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-                />
-
-                :
-                <PhotoGalleryView
-                    data={data}
-                    settings={settings}
-                />
-
-            }
-
+}
             <EditRow
                 isOpen={confirmEditModalOpen}
                 onClose={handleEditCancel}
@@ -1302,4 +1330,4 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
     );
 };
 
-export default PhotoTable;
+export default IntractMapTable;

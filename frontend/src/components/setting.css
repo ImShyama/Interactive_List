@@ -10,7 +10,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 9000;
   transform: translateX(0);
   /* overflow-y: auto; */
 }

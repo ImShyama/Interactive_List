@@ -583,12 +583,12 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
           <tr className="flex items-center w-[150px]">
             <td>
               <Checkbox
-                checked={showInProfileChecked}
+                checked={showInCardChecked}
                 onChange={(e) =>
-                  handleCheckboxChange(e.target.checked, "showInProfile")
+                  handleCheckboxChange(e.target.checked, "showInCard")
                 }
               >
-                Show in Profile
+                Show in Card
               </Checkbox>
             </td>
             {/* <td>
