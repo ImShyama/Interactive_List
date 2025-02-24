@@ -5,8 +5,10 @@ import { Input, Select, Space } from 'antd';
 import { notifyError, notifySuccess } from "../utils/notify";
 import { CiEdit } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
+import { useDispatch, useSelector} from "react-redux";
+import { updateSetting } from "../utils/settingSlice";
 
-const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWith }) => {
+const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWith, settings }) => {
   const [email, setEmail] = useState("");
   const [access, setAccess] = useState("View");
   const [emails, setEmails] = useState([]);
@@ -14,8 +16,10 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
   const [tooltip, setTooltip] = useState("");
   const [saveTooltip, setSaveTooltip] = useState("");
   const { token } = useContext(UserContext);
-  console.log(spreadsheetId, emails);
-  console.log(sharedWith);
+  const dispatch = useDispatch();
+  
+  
+  console.log({settings, sharedWith});
 
   useEffect(() => {
     if (isOpen) {
@@ -38,35 +42,35 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
       const data = await response.json();
 
       if (response.ok) {
-        // console.log('Emails added successfully:', data);
-        // setSaveTooltip("Saved!"); // Show tooltip
-        // setTimeout(() => setSaveTooltip(""), 2000);
-        // You can update the UI or show a success message to the user here
         updateSharedWith(emails, spreadsheetId);
         notifySuccess("Emails saved successfully!");
         onClose();
       } else {
         console.error('Error:', data.message || 'An error occurred');
-        // Handle the error response, show error message to the user
       }
     } catch (error) {
       console.error('Request failed:', error);
-      // Handle the network or other errors
     }
   }
 
   const handleCopy = () => {
-    const linkToCopy = `${FRONTENDHOST}/${spreadsheetId}/view`; // The link you want to copy
+    const linkToCopy = `${FRONTENDHOST}/${spreadsheetId}/view`; 
     navigator.clipboard.writeText(linkToCopy).then(() => {
-      // setTooltip("Copied!"); // Show tooltip
-      // setTimeout(() => setTooltip(""), 2000); // Hide tooltip after 2 seconds
       notifySuccess("Link copied successfully!");
     });
   };
 
   // Function to remove an email from the list
   const removeEmail = (emailToRemove) => {
-    setEmails(emails.filter(item => item.email !== emailToRemove));
+    const tempEmails = emails.filter(item => item.email !== emailToRemove)
+    setEmails(tempEmails);
+    const updatedSettings = {
+      ...settings,
+      sharedWith: tempEmails,
+    };
+
+    // Dispatch the updated settings locally
+    dispatch(updateSetting(updatedSettings));
     notifySuccess("Email removed successfully!");
   };
 

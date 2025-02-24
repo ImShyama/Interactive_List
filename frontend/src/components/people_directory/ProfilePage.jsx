@@ -63,7 +63,7 @@ const ProfilePage = () => {
 
               <div className="flex flex-col items-center gap-2 mt-2">
                 <div className="self-stretch text-[#1E1B1B] font-semibold mx-[125px] w-[309px] my-1"
-                  style={{ fontFamily: "Montserrat", fontSize: "36.226px", lineHeight: "28px", }}>
+                  style={{ fontFamily: "Montserrat", fontSize: "36.226px", lineHeight: "32px", }}>
                   {data[showInCard[1]?.title.toLowerCase().replace(" ", "_")]}
                 </div>
                 <p

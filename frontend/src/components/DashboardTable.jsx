@@ -35,6 +35,7 @@ const DashboardTable = () => {
   const [showModal, setShowModal] = useState(false);
   const [spreadsheetIdForShare, setSpreadsheetIdForShare] = useState(null);
   const [sheetSharedWith, setSheetSharedWith] = useState(null);
+  const [settings, setSettings] = useState(null);
 
   useEffect(() => {
     axios
@@ -61,11 +62,11 @@ const DashboardTable = () => {
       });
   }, []);
 
-  const handleShare = (spreadsheetId, sharedWith) => {
-    console.log("sharedWith", sharedWith);
+  const handleShare = (spreadsheetId, sharedWith, settings) => {
     setSpreadsheetIdForShare(spreadsheetId); // Set the selected spreadsheetId
     setShowModal(true); // Open the modal
     setSheetSharedWith(sharedWith);
+    setSettings(settings);
   };
 
   const updateSharedWith = (emails, spreadsheetId) => {
@@ -480,7 +481,7 @@ const DashboardTable = () => {
                     {sheet.access == "owner" && (
                       <button
                         className="icons"
-                        onClick={() => handleShare(sheet._id, sheet.sharedWith)}
+                        onClick={() => handleShare(sheet._id, sheet.sharedWith, sheet)}
                         disabled={sheet.access == "view"}
                       >
                         <svg
@@ -556,6 +557,7 @@ const DashboardTable = () => {
             spreadsheetId={spreadsheetIdForShare}
             sharedWith={sheetSharedWith}
             updateSharedWith={updateSharedWith}
+            settings={settings}
           />
         )}
 

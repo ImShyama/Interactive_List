@@ -75,7 +75,7 @@ const Table = () => {
         // Redirect to view mode if permissions are restricted
         if (res.permissions.toLowerCase() === "view") {
           navigate(`/${id}/view`);
-          return;
+          // return;
         }
 
         // Process sheet data

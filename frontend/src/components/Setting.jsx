@@ -636,7 +636,9 @@ const ViewSettings = ({ settingsData }) => {
           <div className="flex items-center">
             <SixDots />
 
-            <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
+            <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins] truncate"
+             title={item.title}
+            >
               {item.title}
             </span>
           </div>
@@ -695,8 +697,8 @@ const ViewSettings = ({ settingsData }) => {
               {/* Left Side (Headings) */}
               <div className="flex flex-col m-2 w-[130px]">
                 {profileData.map((_, index) => (
-                  <div key={index} className="flex items-center">
-                    {(settingsData?.appName == "Photo Gallery" && index == 0) ?
+                  <div key={index} className="flex items-center w-[130px]">
+                    {((settingsData?.appName == "Photo Gallery" || settingsData?.appName == "Interactive Map") && index == 0) ?
                       <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
                         Image
                       </span>
@@ -710,7 +712,7 @@ const ViewSettings = ({ settingsData }) => {
               </div>
 
               {/* Right Side (Draggable Items) */}
-              <div className="flex flex-col m-2">
+              <div className="flex flex-col my-2 w-[240px]">
 
                 {profileData.map((item, index) => (
                   <DraggableItem key={item.id} item={item} index={index} />
@@ -812,7 +814,9 @@ const ViewSettings = ({ settingsData }) => {
         >
           {/* <div className="flex items-center"> */}
           <SixDots />
-          <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
+          <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins] truncate"
+          title={item.title}
+          >
             {item.title || "\u00A0"}
           </span>
           {/* </div> */}
@@ -897,7 +901,7 @@ const ViewSettings = ({ settingsData }) => {
             </div>}
 
             {/* Right Column (Draggable Items) */}
-            <div className="flex flex-col m-2">
+            <div className="flex flex-col my-2 w-[240px]">
               {cardData?.map((item) => (
                 <DraggableItem key={item?.id} item={item} />
               ))}

@@ -1,0 +1,62 @@
+setting = {
+
+    key_id: 0,
+    data: {},
+    headers: [],
+    showInCards: [],
+    showInDetails: [],
+
+    headerSettings: {
+        headerText: "CBXTREE Header",
+        headerFont: "popines",
+        headerFontColor: "#fff000",
+        headerFontSize: "16px",
+        bg: "#fffonw",
+        logo: "driveURL", //OR logo:"cloudneryURL" for uploads
+        tabTitleName: "",
+        reset: false,
+        search: true
+    },
+
+
+    cardSettings: {
+        titles: {
+            Title_1: {
+                fontType: "Poppins",
+                fontColor: "#000000",
+                fontSize: "16px",
+            },
+            Title_2: {
+                fontType: "Poppins",
+                fontColor: "#000000",
+                fontSize: "16px",
+            },
+            Title_3: {
+                fontType: "Poppins",
+                fontColor: "#000000",
+                fontSize: "16px",
+            }
+        },
+        noOfRows: 3,
+        noOfColumns: 3
+    },
+
+
+    footerSettings: {
+        footers: {
+
+        },
+        socialMedia: {
+            fb: "nsjkdnsajkd",
+            sm1: "dncsdcd",
+            sm2: "csjkdcjsdk",
+        },
+        bgColor: "#fff",
+        contectSettings: {
+            address: "address",
+            email: "email",
+            phone: "phone",
+        }
+    },
+
+}

@@ -597,9 +597,18 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
     });
     const firstTabHeader = firstSheetDataResponse.data.values[0];
 
-    const firstTabDataRange = `${firstSheetName}!A1:${String.fromCharCode(
-      64 + firstTabHeader.length
-    )}`;
+    const columnToLetter = (columnNumber) => {
+      let columnLetter = "";
+      while (columnNumber > 0) {
+        let remainder = (columnNumber - 1) % 26;
+        columnLetter = String.fromCharCode(65 + remainder) + columnLetter;
+        columnNumber = Math.floor((columnNumber - 1) / 26);
+      }
+      return columnLetter;
+    };
+    
+    const lastColumnLetter = columnToLetter(firstTabHeader.length);
+    const firstTabDataRange = `${firstSheetName}!A1:${lastColumnLetter}`;
 
     const res = {
       spreadsheetId: sheet_id,
@@ -1302,26 +1311,98 @@ app.put('/spreadsheet/:id', authenticateToken, async (req, res) => {
 });
 
 
-app.post('/addEmails/:id', authenticateToken, async (req, res) => {
-  try {
-    const { emails } = req.body;
-    const SheetId = req.params.id; // Get the ID from the request params
+// app.post('/addEmails/:id', authenticateToken, async (req, res) => {
+//   try {
+//     const { emails } = req.body;
+//     const SheetId = req.params.id; // Get the ID from the request params
 
-    // Update the settings document in MongoDB
-    const updatedSetting = await Sheet.findByIdAndUpdate(SheetId, { sharedWith: emails }, { new: true });
+//     console.log({emails});
 
-    if (!updatedSetting) {
-      return res.status(404).json({ message: "Setting not found" });
-    }
+//     // Update the settings document in MongoDB
+//     const updatedSetting = await Sheet.findByIdAndUpdate(SheetId, { sharedWith: emails }, { new: true });
 
-    // Return the updated settings
-    res.status(200).json(updatedSetting);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-})
+//     if (!updatedSetting) {
+//       return res.status(404).json({ message: "Setting not found" });
+//     }
+
+//     // Return the updated settings
+//     res.status(200).json(updatedSetting);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// })
+
+
 
 // Function to get sheet details including the actual data range of the first sheet
+
+
+app.post("/addEmails/:id", authenticateToken, async (req, res) => {
+  try {
+    const { emails } = req.body;
+    const SheetId = req.params.id;
+
+    console.log({ emails });
+
+    // Fetch spreadsheet details from MongoDB
+    const sheetData = await Sheet.findById(SheetId);
+    if (!sheetData) {
+      return res.status(404).json({ message: "Sheet not found" });
+    }
+
+    const { spreadsheetId } = sheetData;
+
+    // Create an OAuth2 client with stored credentials
+    const authClient = new google.auth.OAuth2(
+      process.env.CLIENT_ID,
+      process.env.CLIENT_SECRET,
+      process.env.REDIRECT_URI
+    );
+
+    // Set the user's refresh token
+    authClient.setCredentials({
+      refresh_token: req.user.googleRefreshToken,
+    });
+
+    // Initialize Google Drive API with authenticated OAuth client
+    const drive = google.drive({ version: "v3", auth: authClient });
+
+    // Loop through emails and add permissions
+    for (const { email, permission } of emails) {
+      let role = permission.toLowerCase() === "edit" ? "writer" : "reader";
+
+      try {
+        await drive.permissions.create({
+          fileId: spreadsheetId,
+          requestBody: {
+            type: "user",
+            role: role,
+            emailAddress: email,
+          },
+          fields: "id",
+        });
+
+        console.log(`✅ Shared sheet with ${email} as ${role}`);
+      } catch (error) {
+        console.error(`❌ Failed to share with ${email}:`, error.message);
+      }
+    }
+
+    // Update MongoDB to store shared emails
+    const updatedSetting = await Sheet.findByIdAndUpdate(
+      SheetId,
+      { sharedWith: emails },
+      { new: true }
+    );
+
+    res.status(200).json(updatedSetting);
+  } catch (error) {
+    console.error("❌ Error in /addEmails:", error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 async function getSheetDetails(authClient, spreadSheetID) {
   const sheets = google.sheets({ version: 'v4', auth: authClient });
 
