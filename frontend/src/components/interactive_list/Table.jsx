@@ -427,9 +427,9 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                         />
                     ) : (
                         // <Avatar size={48} icon={<UserOutlined />} alt="User" />
-                        <img 
-                         src={avatar}
-                         style={{height:'48px'}}
+                        <img
+                            src={avatar}
+                            style={{ height: '48px' }}
                         />
                     )}
                 </div>
@@ -448,9 +448,9 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                         />
                     ) : (
                         // <Avatar size={48} icon={<UserOutlined />} alt="User" />
-                        <img 
-                         src={noPhoto}
-                         style={{height:'48px'}}
+                        <img
+                            src={noPhoto}
+                            style={{ height: '48px' }}
                         />
                     )}
                 </div>
@@ -468,15 +468,48 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                         />
                     ) : (
                         // <Avatar size={48} icon={<UserOutlined />} alt="User" />
-                        <img 
-                         src={noPhoto}
-                         style={{height:'48px'}}
+                        <img
+                            src={noPhoto}
+                            style={{ height: '48px' }}
                         />
                     )}
                 </div>
             )
         }
     }
+
+
+    const RenderText = ({ text, bodyFontFamily, bodyFontSize }) => {
+        if (!text) return null;
+      
+        // Regular expression to detect URLs (http, https, www)
+        const urlRegex = /(https?:\/\/[^\s,]+|www\.[^\s,]+)/g;
+        
+        // Check if the text contains URLs
+        const parts = text?.toString().split(urlRegex);
+      
+        return (
+          <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>
+            {parts.map((part, index) => {
+              if (part.match(urlRegex)) {
+                return (
+                  <a
+                    key={index}
+                    href={part.startsWith("http") ? part : `https://${part}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 underline ml-1 no-underline hover:underline"
+                  >
+                    Click Here
+                  </a>
+                );
+              }
+              return <span key={index}>{part}</span>;
+            })}
+          </span>
+        );
+      };
+      
 
 
 
@@ -610,11 +643,12 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                 >
                                     {header.toLowerCase().replace(" ", "_") === primaryColumn ?
 
-
                                         <RenderImage url={item[header]} />
 
                                         : (
-                                            <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header]}</span>
+                                            <RenderText text={item[header]} bodyFontFamily={bodyFontFamily} bodyFontSize={bodyFontSize} />
+
+                                            // <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header]}</span>
                                         )}
                                 </div>
                             )}

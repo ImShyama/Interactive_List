@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 
-const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading, formulaData}) => {
+const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading, formulaData }) => {
   const [editedRow, setEditedRow] = useState({});
   const [isDisabled, setIsDisabled] = useState(true);
-  
+
 
   // Initialize the state with the row data on mount
   useEffect(() => {
@@ -34,10 +34,10 @@ const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading, formulaD
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-[999]">
-      <div className="w-[600px] flex-shrink-0">
-        <div className="flex justify-center w-[600px] flex-shrink-0 rounded-[20px] bg-white shadow-lg">
+      <div className="w-[800px] flex-shrink-0">
+        <div className="flex justify-center w-[800px] flex-shrink-0 rounded-[20px] bg-white shadow-lg">
           <div className="flex flex-col p-6">
-            <div className="flex w-[600px] px-6 mb-3 justify-between">
+            <div className="flex w-[800px] px-6 mb-3 justify-between">
               <div className="flex justify-start items-center">
                 <span className='text-xl font-medium font-poppins'>{modelName}</span>
               </div>
@@ -70,26 +70,36 @@ const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading, formulaD
             </div>
 
             {/* Form Content */}
-            <div className="flex w-[560px] max-h-[60vh] mx-[auto] overflow-y-auto px-[8px] flex-wrap">
+            <div className="flex w-[760px] max-h-[60vh] mx-[auto] overflow-y-auto px-[8px] flex-wrap">
               {fields.map((field, index) => {
-                if(formulaData?.[field] == false) return <></>
-              return(
-                <div key={index} className="w-1/2 mb-4">
-                  <div>
-                    <label className="text-[#111] font-poppins text-[14px] px-[2px] font-medium leading-normal">
-                      {field.replace(/_/g, ' ').replace(/\(.*?\)/, '').toUpperCase()}  {/* Clean up field name for label */}
-                    </label>
+                if (formulaData?.[field] == false) return <></>
+                return (
+                  <div key={index} className="w-1/2 mb-4 pr-5">
+                    <div>
+                      <label className="text-[#111] font-poppins text-[14px] px-[2px] font-medium leading-normal">
+                        {field.replace(/_/g, ' ').replace(/\(.*?\)/, '').toUpperCase()} 
+                      </label>
+                    </div>
+                    <div>
+                      {editedRow[field].length > 60 ? (
+                        <textarea
+                        className='thinScroll w-[100%] flex p-[10px] px-[16px] flex-col justify-center items-start gap-[27px] rounded-[8px] bg-[#F6F6F6] border border-transparent focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
+                          rows={3}
+                          type="text"
+                          value={editedRow[field] || ''}  // Populate the input with the corresponding row value
+                          onChange={(e) => handleInputChange(field, e.target.value)}  // Update state on change
+                        />
+                      ) :
+                        <input
+                          className="w-[100%] flex p-[10px] px-[16px] flex-col justify-center items-start gap-[27px] rounded-[8px] bg-[#F6F6F6] border border-transparent focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                          type="text"
+                          value={editedRow[field] || ''}  // Populate the input with the corresponding row value
+                          onChange={(e) => handleInputChange(field, e.target.value)}  // Update state on change
+                        />}
+                    </div>
                   </div>
-                  <div>
-                    <input
-                      className="flex p-[10px] px-[16px] flex-col justify-center items-start gap-[27px] rounded-[8px] bg-[#F6F6F6] border border-transparent focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-                      type="text"
-                      value={editedRow[field] || ''}  // Populate the input with the corresponding row value
-                      onChange={(e) => handleInputChange(field, e.target.value)}  // Update state on change
-                    />
-                  </div>
-                </div>
-              )})}
+                )
+              })}
             </div>
 
             {/* Save Button */}

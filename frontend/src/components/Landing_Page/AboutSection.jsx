@@ -8,17 +8,17 @@ const AboutSection = () => {
 
   return (
     <div className="w-full h-screen flex flex-col items-start justify-start bg-white px-12 pt-[80px]">
-      <div className="text-[#598931] font-poppins text-[59.755px] font-semibold leading-normal self-stretch">
+      <div className="text-[#598931] font-poppins text-[42.755px] font-semibold leading-normal self-stretch">
         About Our Product
       </div>
 
-      <p className="mt-0 mb-0 text-[#353535] font-poppins text-[20.514px] font-normal leading-normal transform rotate-[0.02deg] self-stretch max-w-3xl">
+      <p className="mt-0 mb-0 text-[#353535] font-poppins text-[18px] font-normal leading-normal transform rotate-[0.02deg] self-stretch max-w-3xl">
         Welcome to [Your App Name], the ultimate solution for transforming
         disorganized Google Sheets into sleek, interactive applications. Our
         mission is simple: to make your data more accessible, organized, and
         visually appealing, no matter the purpose.
       </p>
-      <p className=" text-[#353535] font-poppins text-[20.514px] font-normal leading-normal transform rotate-[0.02deg] self-stretch max-w-3xl mb-0 mt-0">
+      <p className=" text-[#353535] font-poppins text-[18px] font-normal leading-normal transform rotate-[0.02deg] self-stretch max-w-3xl mb-0 mt-0">
         At [Your App Name], we believe that sharing data shouldn’t be a hassle.
         We’ve created a platform that turns your spreadsheets into functional
         and user-friendly apps.
@@ -28,12 +28,12 @@ const AboutSection = () => {
           className="mt-[42px] py-[1rem] px-[2rem] flex justify-center items-center gap-[4px] rounded-[16px] bg-[#598931] flex-shrink-0"
           onClick={() => navigate("/explore")}
         >
-          <span className="text-white font-poppins text-[25px] font-medium leading-normal">
+          <span className="text-white font-poppins text-[20px] font-medium leading-normal">
             Explore Now
           </span>
         </button>
      
-      <div className="absolute right-[160px] top-[280px] z-10">
+      <div className="absolute right-[160px] top-[220px] z-10">
         <motion.img
           src={Star}
           alt="App Logo"
@@ -49,7 +49,7 @@ const AboutSection = () => {
           }}
         />
       </div>
-      <div className="absolute right-[230px] top-[280px] transform scale-150">
+      <div className="absolute right-[230px] top-[220px] transform scale-150">
         <img src={SmallCircle} alt="Small Circle"/>
       </div>
     </div>

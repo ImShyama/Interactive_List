@@ -48,7 +48,7 @@ const HeroSection = () => {
         </div>
        
         <button
-          className="mt-[56px] py-[1rem] px-[2rem] flex justify-center items-center gap-[4px] rounded-[16px] bg-[#598931] flex-shrink-0"
+          className="mt-[56px] py-[0.7rem] px-[1.2rem] flex justify-center items-center gap-[4px] rounded-[10px] bg-[#598931] flex-shrink-0"
           // onClick={() => navigate("/home")}
           onClick={() => {
             if (token) {
@@ -58,7 +58,7 @@ const HeroSection = () => {
             }
           }}
         >
-          <span className="text-white font-poppins text-[28px] font-medium leading-normal">
+          <span className="text-white font-poppins text-[26px] font-medium leading-normal">
             Explore Now
           </span>
         </button>

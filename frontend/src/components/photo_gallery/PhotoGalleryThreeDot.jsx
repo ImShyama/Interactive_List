@@ -67,6 +67,15 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
       settings?.showInProfile?.map((i) => i?.title).includes(columnKey)
     ) || false
   );
+
+  useEffect(() => {
+    setShowInCardChecked(settings.showInCard?.some((item) =>
+      settings?.showInCard?.map((i) => i?.title).includes(columnKey)
+    ) || false);
+    setShowInProfileChecked(settings.showInProfile?.some((item) =>
+      settings?.showInProfile?.map((i) => i?.title).includes(columnKey)
+    ) || false);
+  }, [settings]);
   
 
   const handleCheckboxChange = useCallback(

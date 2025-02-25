@@ -98,11 +98,11 @@ const DashboardTable = () => {
   
   const handleSearchDropdown = (query) => {
     const searchQuery = query.toLowerCase();
-    console.log(searchQuery);
+    console.log({searchQuery, spreadsheet});
     setSearchQuery(searchQuery);
   
     const filteredData = spreadsheet.filter((sheet) => {
-      const sheetName = sheet.spreadsheetName || sheet.firstSheetName;
+      const sheetName = sheet.appName;
       return sheetName.toLowerCase().includes(searchQuery);
     });
   

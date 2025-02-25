@@ -7,6 +7,12 @@ import PeopleImage from "../assets/images/People_Card_Image.png";
 import VideoImage from "../assets/images/Video_Card_Image.png";
 import PhotoImage from "../assets/images/PhotoGallery_Card_Image.png";
 import InteractiveMapImage from "../assets/images/InteractiveMap_Card_Image.png"
+import InteractiveList from "../assets/images/InteractiveList.png"
+import InteractiveMap from "../assets/images/InteractiveMap.png"
+import PeopleDirectory from "../assets/images/PeopleDirectoryCard.png"
+import PhotoGallery from "../assets/images/PhotoGallery.png"
+import ProductCatalogue from "../assets/images/ProductCatalogue.png"
+import VideoGallery from "../assets/images/VideoGallery.png"
 export const APPSNAME = ["Interactive List",
   "People Directory",
   "Video Gallery",
@@ -28,7 +34,7 @@ export const APPS = [
   {
     appName: "Interactive List",
     appView: "InteractiveListView",
-    appImg: "https://i.ibb.co/N1c6Djj/Screenshot-2024-10-08-125436.png",
+    appImg: InteractiveList,
     description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
     appID: "1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ",
     spreadSheetName: "Data",
@@ -53,7 +59,7 @@ export const APPS = [
   {
     appName: "People Directory",
     appView: "PeopleDirectoryPreview",
-    appImg: PeopleImage,
+    appImg: PeopleDirectory,
     description: "List all contacts.",
     appID: "1VIWkwCewrs9Ydbo4mTWLovsa78jX1ZJc33BJpaZ5WHg",
     spreadSheetName: "Data",
@@ -78,7 +84,7 @@ export const APPS = [
   {
     appName: "Video Gallery",
     appView: "VideoGalleryPreview",
-    appImg: VideoImage,
+    appImg: VideoGallery,
     description: "List all videos.",
     appID: "1d8_iPCgw7NhMd-4Jjl4RY_aENd0kA-j3YiaB24mVe4U",
     spreadSheetName: "Data",
@@ -103,7 +109,7 @@ export const APPS = [
   {
     appName: "Photo Gallery",
     appView: "PhotoGalleryPreview",
-    appImg: PhotoImage,
+    appImg: PhotoGallery,
     description: "List all employees working remotely on a map with filters.",
     appID: "1U8KFBe4oEtO5RmA3J2aj5F0zUIgghDRq5Y3JIi8VVq4",
     spreadSheetName: "Data",
@@ -128,7 +134,7 @@ export const APPS = [
   {
     appName: "Interactive Map",
     appView: "InteractiveMapPreview",
-    appImg: InteractiveMapImage,
+    appImg: InteractiveMap,
     description: "List all employees working remotely on a map with filters.",
     appID: "1IDvlKAFVt5xc06RGtHXZ9I5SDoBbIGAPBe8N4o0O6oQ",
     spreadSheetName: "Data",

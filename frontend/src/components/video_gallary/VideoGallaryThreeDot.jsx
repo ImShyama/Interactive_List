@@ -78,60 +78,14 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
     ) || false
   );
 
-  // const handleCheckboxChange = useCallback(
-  //   async (checked, optionType) => {
-  //     if (!columnKey) {
-  //       console.warn("Invalid columnKey provided");
-  //       return;
-  //     }
-
-  //     try {
-  //       const updatedSettings = { ...settings };
-
-  //       const updateList = (list = []) => {
-  //         if (checked) {
-  //           // Add new entry with incremental ID
-  //           const highestId = list.reduce((max, item) => Math.max(max, item.id), 0);
-  //           return [
-  //             ...list,
-  //             { id: highestId, title: columnKey, setting: editValues },
-  //           ];
-  //         } else {
-  //           // Remove entry by title
-  //           return list.filter((item) => item.title !== columnKey);
-  //         }
-  //       };
-
-  //       if (optionType === "showInCard") {
-  //         updatedSettings.showInCard = updateList(settings.showInCard);
-  //         setShowInCardChecked(checked);
-  //       } else if (optionType === "showInProfile") {
-  //         updatedSettings.showInProfile = updateList(settings.showInProfile);
-  //         setShowInProfileChecked(checked);
-  //       }
-
-  //       // Dispatch updated settings locally
-  //       dispatch(updateSetting(updatedSettings));
-
-  //       // Update backend
-  //       const response = await axios.put(
-  //         `${HOST}/spreadsheet/${settings._id}`,
-  //         updatedSettings,
-  //         {
-  //           headers: { authorization: `Bearer ${token}` },
-  //         }
-  //       );
-
-  //       console.log("Settings updated successfully:", response.data);
-  //       dispatch(updateSetting(response.data));
-  //       notifySuccess("Settings updated successfully");
-  //     } catch (error) {
-  //       console.error("Error updating settings:", error);
-  //       notifyError("Error updating settings");
-  //     }
-  //   },
-  //   [dispatch, settings, token, columnKey]
-  // );
+  useEffect(() => {
+      setShowInCardChecked(settings.showInCard?.some((item) =>
+        settings?.showInCard?.map((i) => i?.title).includes(columnKey)
+      ) || false);
+      setShowInProfileChecked(settings.showInProfile?.some((item) =>
+        settings?.showInProfile?.map((i) => i?.title).includes(columnKey)
+      ) || false);
+    }, [settings]);
 
 
   const handleCheckboxChange = useCallback(

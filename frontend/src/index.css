@@ -179,6 +179,25 @@
   ;
 }
 
+.thinScroll::-webkit-scrollbar {
+  width: 3px !important;
+  height: 3px !important;
+}
+
+/* .custom::-webkit-scrollbar-track {
+  background: var(--scrollbar-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-bg);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--scrollbar-color);
+  ;
+} */
+
 /* ::-webkit-scrollbar-thumb:hover {
  background: #555;
 } */

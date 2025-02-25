@@ -12,8 +12,8 @@ import AppCard from "./AppCard"; // Importing the AppCard component
 const Products = () => {
   return (
     <div>
-      <div className="text-black font-[Poppins] text-[42.607px] font-medium leading-none flex-item-start ml-10 mb-4">
-        Discover Our Complete Suite of Digital Tools:
+      <div className="text-black font-[Poppins] text-[32.607px] font-medium leading-none flex justify-center ml-10 mb-4">
+        Discover Our Complete Suite of Digital Tools
       </div>
 
       <div className="flex flex-wrap justify-center">

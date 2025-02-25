@@ -107,6 +107,10 @@ const VideoCard = ({ rowData, settings }) => {
     window.open(`/video/${rowData.key_id}`, '_blank');
   };
 
+  const titleKeyTemp = settingsData?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
+  const videoUrlTemp = videoData?.[titleKeyTemp];
+  console.log({ videoUrlTemp });
+
   return (
     <div
       className="bg-white shadow-md rounded-lg"
@@ -152,7 +156,7 @@ const VideoCard = ({ rowData, settings }) => {
             ></iframe>
 
           ) : (
-            settingsData?.showInCard[1]?.title == "" ?
+            (settingsData?.showInCard[1]?.title == "" || !videoUrlTemp) ?
 
               <iframe
                 width="100%"
