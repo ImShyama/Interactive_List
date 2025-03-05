@@ -9,6 +9,7 @@ import Cookies from "js-cookie";
 import HeroSection from "./HeroSection";
 import ContentSection from "./ContentSection";
 import FooterSection from "./FooterSection";
+import { notifyError } from "../../utils/notify";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const LandingPage = () => {
         .then(({ data: res }) => {
           if (res.error) {
             nav("/");
-            alert(res.error);
+            notifyError(res.error);
             return;
           }
           console.log("res", res);

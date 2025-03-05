@@ -35,7 +35,7 @@ import _, { debounce } from "lodash";
 import GlobalSearch from "./interactive_list/GlobalSearch.jsx";
 import Table from "./interactive_list/Table.jsx";
 import Loader from "./Loader.jsx";
-import EmptyTable from "./EmptyTable.jsx";
+import EmptyTable from "./component/EmptyTable.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -1140,7 +1140,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     }
 
     const handleBulkSave = async () => {
-
+        
         try {
 
             // if(globalCheckboxChecked){

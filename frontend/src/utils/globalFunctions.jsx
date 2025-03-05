@@ -1,14 +1,14 @@
 export function getDriveThumbnail(url) {
-    if (!url) return "";
+    if (!url) return '';
 
-    if (url.includes("drive.google.com")) {
-        let driveIdMatch = url.match(/(?:id=|\/d\/)([\w-]+)/);
-        console.log({ driveIdMatch, url });
-        return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
+    if (url.includes('drive.google.com')) {
+      let driveIdMatch = url.match(/(?:id=|\/d\/)([\w-]+)/);
+      return driveIdMatch
+        ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}&sz=w1000`
+        : '';
     }
-
     return url;
-}
+  }
 
 import Avatar from "../assets/images/avatar.png";
 export const handleImageError = (e, fallbackImage = Avatar) => {

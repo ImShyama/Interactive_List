@@ -14,17 +14,9 @@ const defaultPhoto = {
 };
 
 const PhotoCard = ({ image, title, subTitle }) => {
-  // console.log({photo, settings})
-  // const photoData = photo || defaultPhoto;
   const [isHovered, setIsHovered] = useState(false);
   const [showBiggerView, setShowBiggerView] = useState(false);
   const carouselRef = useRef(null);
-  
-  // const image = getDriveThumbnail(photoData[settings?.showInCard[0].title.toLowerCase().replace(" ","_")]);
-  // const title = photoData[settings?.showInCard[1].title.toLowerCase().replace(" ","_")] || "";
-  // const subTitle = photoData[settings?.showInCard[2].title.toLowerCase().replace(" ","_")] || "";
-
-  // console.log({photo, settings, image, title, subTitle});
 
   return (
     <>
@@ -38,16 +30,16 @@ const PhotoCard = ({ image, title, subTitle }) => {
         {/* Carousel for Photo Swiping */}
         <div className="absolute inset-0 w-full h-full">
           <Carousel ref={carouselRef} autoplay={false} dots={false} className="w-full h-full">
-            {/* {photoData.image.tostring().splite(",").map((img, index) => (
+            {image.map((img, index) => (
               <div key={index} className="relative w-full h-full">
                 <img src={img} alt={`Slide ${index + 1}`} className="w-full h-full object-cover" />
               </div>
-            ))} */}
-            <img src={image} 
-            // alt={`Slide ${index + 1}`} 
+            ))}
+            {/* <img src={image} 
+            alt={`Slide ${index + 1}`} 
             className="w-full h-full object-cover" 
             // onError={(e)=>{handleImageError(e,noPhoto)}}
-            />
+            /> */}
             
           </Carousel>
         </div>

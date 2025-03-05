@@ -49,7 +49,6 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
         );
     }, [index, firstColWidth, headers, columnWidths]);
 
-
     const handlePopoverVisibility = (key, isVisible) => {
         setVisiblePopover((prev) => ({
             ...prev,

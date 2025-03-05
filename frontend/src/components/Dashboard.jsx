@@ -14,6 +14,7 @@ import { BiSearch } from "react-icons/bi";
 import { HOST } from "../utils/constants";
 import { AutoComplete } from "antd";
 import Loader from "./Loader";
+import AdminBtn from "./component/AdminBtn";
 const clientId = CLIENTID;
 const developerKey = DEVELOPERKEY;
 const options = OPTIONS;
@@ -138,7 +139,7 @@ const Dashboard = () => {
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
-    console.log({query, APPS});
+    console.log({ query, APPS });
     setSearchQuery(query);
     setSearchValue(query);
 
@@ -149,10 +150,10 @@ const Dashboard = () => {
 
     setApps(filteredData);
   };
-  
+
   const handleSearchDropdown = (query) => {
     const searchQuery = query.toLowerCase();
-    console.log({query, APPS});
+    console.log({ query, APPS });
     setSearchQuery(searchQuery);
 
     const filteredData = APPS.filter((app) => {
@@ -162,10 +163,6 @@ const Dashboard = () => {
 
     setApps(filteredData);
   };
-
-  
-
-  
 
   return (
     <div className="mt-[80px]">
@@ -201,7 +198,7 @@ const Dashboard = () => {
                     height: 44,
                   }}
                   options={options}
-                  placeholder="Select App Name"
+
                   size="large"
                   filterOption={(inputValue, option) =>
                     option.value.toLowerCase().includes(inputValue.toLowerCase())
@@ -211,8 +208,10 @@ const Dashboard = () => {
                   <Input style={{
                     width: 200,
                     height: 44,
-                  }} size="large" 
-                  allowClear
+                  }}
+                    size="large"
+                    placeholder="Select App Name"
+                    allowClear
                   />
                 </AutoComplete>
               </div>
@@ -268,7 +267,7 @@ const Dashboard = () => {
 
             <div className="flex flex-col justify-center items-center text-center gap-[15px] w-[380px]">
               <select
-                className="rounded-[17px] border-2 border-[#FFA500] focus:outline-none focus:border-[#FFA500] px-4 py-2 w-[380px]"
+                className="rounded-[17px] border-2 border-primary focus:outline-none focus:border-primary px-4 py-2 w-[380px]"
                 value={selectedOption}
                 onChange={handleSelectChange}
               >
@@ -279,7 +278,7 @@ const Dashboard = () => {
               </select>
 
               <button
-                className="rounded-[17px] bg-[#FFA500] text-[white] px-4 py-2 w-[380px]"
+                className="rounded-[17px] bg-primary text-[white] px-4 py-2 w-[380px]"
                 onClick={handleOpenPicker}
                 disabled={isDisable}
               >
@@ -313,27 +312,48 @@ const Dashboard = () => {
       )}
 
       {showAppCard && (
-        <div className="flex flex-wrap justify-center">
+        // <div className="flex flex-wrap justify-center">
+        //   {apps.map((app, index) => (
+        //     <AppCard
+        //       key={index}
+        //       appName={app.appName}
+        //       spreadSheetName={app.spreadSheetName}
+        //       spreadSheetID={app.appID}
+        //       appView={app.appView}
+        //       appImg={app.appImg}
+        //       description={app.description}
+        //     />
+        //   ))}
+        // </div>
+        <div className="flex flex-wrap justify-center mx-[100px]">
           {apps.map((app, index) => (
-            <AppCard
-              key={index}
-              appName={app.appName}
-              spreadSheetName={app.spreadSheetName}
-              spreadSheetID={app.appID}
-              appView={app.appView}
-              appImg={app.appImg}
-              description={app.description}
-            />
+            <div className="flex justify-center w-full sm:w-1/2 lg:w-1/3">
+              <AppCard
+                key={index}
+                appName={app.appName}
+                spreadSheetName={app.spreadSheetName}
+                spreadSheetID={app.appID}
+                appView={app.appView}
+                appImg={app.appImg}
+                description={app.description}
+              />
+            </div>
           ))}
         </div>
+
+
+
       )}
+
+
 
       <DashboardTable />
       {loading && (
-            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-[999]">
-              <Loader textToDisplay="Creating a copy..." />
-            </div>
-          )}
+        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75 z-[999]">
+          <Loader textToDisplay="Creating a copy..." />
+        </div>
+      )}
+      {/* <AdminBtn /> */}
     </div>
   );
 };

@@ -32,10 +32,15 @@ import Products from "./components/Landing_Page/Product_Section/Products";
 import OverviewPage from "./components/Landing_Page/Product_Section/OverviewPage";
 import PrivacyPolicy from "./components/Landing_Page/PrivacyPolicy";
 import InteractiveMapPreview from "./components/interactive_map/InteractiveMapPreview";
+import UsersDashboard from "./components/AdminDashboard/UsersDashboard";
+import AdminBtn from "./components/component/AdminBtn";
 
 
 // Layout Component
-const Layout = () => (
+const Layout = () => {
+  const { role } = useContext(UserContext);
+
+  return(
   <Provider store={appStore}>
     <ConfigProvider
       theme={{
@@ -46,12 +51,18 @@ const Layout = () => (
     >
       <Header />
       <ToastContainer position="top-right" autoClose={3000} />
-      <div className="mt-[80px]">
+      <div className="mt-[80px] relative">
         <Outlet />
+        {role === "admin" && ( // Show AdminBtn only if role is 'admin'
+          <div className="fixed bottom-6 right-6 z-50">
+            <AdminBtn />
+          </div>
+        )}
       </div>
     </ConfigProvider>
   </Provider>
-);
+  )
+};
 
 // Define the router configuration
 const appRouter = createBrowserRouter([
@@ -62,8 +73,9 @@ const appRouter = createBrowserRouter([
       { path: "/", element: <LandingPage /> },
       { path: "/about", element: <About /> },
       { path: "/products", element: <Products /> },
+      { path: "/admin", element: <UsersDashboard /> },
       { path: "/privacy-policy", element: <PrivacyPolicy /> },
-      {path:"/products/:product", element:<OverviewPage/>},
+      { path: "/products/:product", element: <OverviewPage /> },
       { path: "/signin", element: <GoogleSignin /> },
       { path: "/:id/edit", element: <Table /> },
       { path: "/:id/view", element: <Table /> },
@@ -86,8 +98,6 @@ const appRouter = createBrowserRouter([
 
 // App Component
 const App = () => {
-
-
   return (
     <RouterProvider router={appRouter} />
   )

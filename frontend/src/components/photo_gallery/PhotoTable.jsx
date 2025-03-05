@@ -36,6 +36,9 @@ import GlobalSearch from "../interactive_list/GlobalSearch.jsx";
 import Table from "../interactive_list/Table.jsx";
 import Loader from "../Loader.jsx";
 import PhotoGalleryView from "./PhotoGalleryView.jsx";
+import EmptyTable from "../component/EmptyTable.jsx";
+import Preview from "../Preview.jsx";
+import { FiEye } from "react-icons/fi";
 
 
 const convertArrayToJSON = (data) => {
@@ -90,6 +93,7 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
     const isEditMode = window.location.pathname.endsWith('/edit');
     const [isedit, setIsedit] = useState(false);
     const [globalCheckboxChecked, setGlobalCheckboxChecked] = useState(false);
+    const [previewModalOpen, setPreviewModalOpen] = useState(false);
     const [columnWidths, setColumnWidths] = useState(
         headers.reduce((acc, header) => {
             acc[header] = header.toLowerCase() === 'picture' ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
@@ -796,6 +800,14 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
         }
     };
 
+    const openModal = () => {
+        setPreviewModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setPreviewModalOpen(false);
+    };
+
     const handleConfirmDelete = async () => {
         try {
             // Close the confirmation modal
@@ -1184,6 +1196,10 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                             <MdDelete color="white" />
                         </button>
 
+                        <button onClick={() => openModal()} className="bg-primary rounded-[4px] p-[5px] ml-2 text-[#fff]" title="Preview">
+                            <FiEye />
+                        </button>
+
                         <Popover content={<HeaderSwitch />} title="Hide Columns" trigger="click" placement="bottomRight">
                             <button className="mx-2" title="Hide Columns">
                                 <div className="bg-primary rounded-[4px] p-1">
@@ -1195,59 +1211,47 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                 </div>
             </div>
 
-            {/* <DataGrid
-                columnResizeMode="onChange"
-                rows={data}
-                columns={headers.map((col) => {
-                    return {
-                        field: col,
-                        header: col,
-                        width: 200,
-                    };
-
-                })}
-            /> */}
-
             {isEditMode ?
 
+                !data.length ?
 
-
-
-                <Table
-                    data={data}
-                    headers={headers}
-                    filteredData={filteredData}
-                    setFilteredData={setFilteredData}
-                    paginatedData={paginatedData}
-                    loading={loading}
-                    isEditMode={isEditMode}
-                    isedit={isedit}
-                    setIsedit={setIsedit}
-                    handleEdit={handleEdit}
-                    handleDelete={handleDelete}
-                    settings={settings}
-                    freezeCol={freezeCol}
-                    setFreezeCol={setFreezeCol}
-                    globalOption={globalOption}
-                    setGlobalOption={setGlobalOption}
-                    ischecked={ischecked}
-                    setIschecked={setIschecked}
-                    EditData={EditData}
-                    setEditData={setEditData}
-                    handleBulkDelete={handleBulkDelete}
-                    headerBgColor={headerBgColor}
-                    headerTextColor={headerTextColor}
-                    headerFontSize={headerFontSize}
-                    headerFontFamily={headerFontFamily}
-                    bodyTextColor={bodyTextColor}
-                    bodyFontSize={bodyFontSize}
-                    bodyFontFamily={bodyFontFamily}
-                    tempHeader={tempHeader}
-                    formulaData={formulaData}
-                    handleBulkSave={handleBulkSave}
-                    globalCheckboxChecked={globalCheckboxChecked}
-                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-                />
+                    <EmptyTable sheetURL={settings?.spreadsheetUrl} />
+                    :
+                    <Table
+                        data={data}
+                        headers={headers}
+                        filteredData={filteredData}
+                        setFilteredData={setFilteredData}
+                        paginatedData={paginatedData}
+                        loading={loading}
+                        isEditMode={isEditMode}
+                        isedit={isedit}
+                        setIsedit={setIsedit}
+                        handleEdit={handleEdit}
+                        handleDelete={handleDelete}
+                        settings={settings}
+                        freezeCol={freezeCol}
+                        setFreezeCol={setFreezeCol}
+                        globalOption={globalOption}
+                        setGlobalOption={setGlobalOption}
+                        ischecked={ischecked}
+                        setIschecked={setIschecked}
+                        EditData={EditData}
+                        setEditData={setEditData}
+                        handleBulkDelete={handleBulkDelete}
+                        headerBgColor={headerBgColor}
+                        headerTextColor={headerTextColor}
+                        headerFontSize={headerFontSize}
+                        headerFontFamily={headerFontFamily}
+                        bodyTextColor={bodyTextColor}
+                        bodyFontSize={bodyFontSize}
+                        bodyFontFamily={bodyFontFamily}
+                        tempHeader={tempHeader}
+                        formulaData={formulaData}
+                        handleBulkSave={handleBulkSave}
+                        globalCheckboxChecked={globalCheckboxChecked}
+                        setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                    />
 
                 :
                 <PhotoGalleryView
@@ -1298,6 +1302,9 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                 spreadSheetData={selectSpreadsheet}
                 handleBuldData={handleBuldData}
             />
+            {previewModalOpen && (
+                <Preview closeModal={closeModal} sheetdetails={settings} />
+            )}
         </div>
     );
 };

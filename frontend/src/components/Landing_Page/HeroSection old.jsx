@@ -43,14 +43,13 @@ const HeroSection = () => {
           showSections ? "slide-in" : ""
         }`}
       >
-        <div className="text-[#353535] font-poppins text-[2.5vw] font-normal leading-normal w-[100%]">
+        <div className="text-[#353535] font-poppins text-[3vw] font-normal leading-normal w-[120%]">
           Bring Google Sheets to Life with Our Custom App.
         </div>
        
         <button
-          className="mt-[56px] flex  justify-center items-center gap-[10px] rounded-[14px] bg-[#598931] leading-normal text-white"
+          className="mt-[56px] flex h-[67px] justify-center items-center gap-[10px] rounded-[19px] bg-[#598931] leading-normal"
           // onClick={() => navigate("/home")}
-          style={{padding: "10px 45px", fontWeight:"400", fontSize:"18px"}}
           onClick={() => {
             if (token) {
               navigate("/dashboard"); // Redirect to appView if user is signed in
@@ -59,9 +58,9 @@ const HeroSection = () => {
             }
           }}
         >
-          {/* <span className="text-white font-poppins leading-normal"> */}
+          <span className="text-white font-poppins text-[26px] font-medium leading-normal">
             Explore Now
-          {/* </span> */}
+          </span>
         </button>
       </div>
 
@@ -76,8 +75,8 @@ const HeroSection = () => {
             src={GoogleSlide1}
             alt="Google Slide 1"
             // className="absolute left-[60px] bottom-[210px] w-80 h-55"
-            className="absolute w-[19vw] h-[13vw]"
-            style={{ marginRight: "48%", marginBottom: "-12%" }}
+            className="absolute w-[21vw] h-[14vw]"
+            style={{ marginRight: "50%", marginBottom: "-12%" }}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 2, delay: 0.5, ease: "easeOut" }}
@@ -87,8 +86,8 @@ const HeroSection = () => {
             src={GoogleSlide2}
             alt="Google Slide 2"
             // className="absolute bottom-[120px] w-90 h-60 z-10"
-            className="absolute w-[22vw] h-[15vw] z-10"
-            style={{ marginRight: "3%", marginBottom: "-30%" }}
+            className="absolute w-[25vw] h-[16vw] z-10"
+            style={{ marginRight: "5%", marginBottom: "-30%" }}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 2, delay: 0.5, ease: "easeOut" }}
@@ -98,8 +97,8 @@ const HeroSection = () => {
             src={GoogleSlide3}
             alt="Google Slide 3"
             // className="absolute right-[60px] bottom-[210px] w-80 h-55"
-            className="absolute w-[19vw] h-[13vw]"
-            style={{ marginLeft: "48%", marginBottom: "-12%" }}
+            className="absolute w-[21vw] h-[14vw]"
+            style={{ marginLeft: "50%", marginBottom: "-12%" }}
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 2, delay: 0.5, ease: "easeOut" }}
@@ -109,8 +108,8 @@ const HeroSection = () => {
             src={GoogleSlide4}
             alt="Google Slide 4"
             // className="absolute left-[220px] bottom-[460px] w-80 h-55"
-            className=" w-[22vw] h-[15vw]"
-            style={{ marginRight: "32%", marginBottom: "70%" }}
+            className=" w-[25vw] h-[16vw]"
+            style={{ marginRight: "34%", marginBottom: "70%" }}
             initial={{ opacity: 0, y: 20, rotate: -20 }} // Start with a slight tilt
             animate={{ opacity: 1, y: 0, rotate: 0 }} // Rotate back to normal
             transition={{ duration: 2, delay: 1, ease: "easeOut" }}
@@ -164,7 +163,7 @@ const HeroSection = () => {
             alt="Upper Arrow"
             className="absolute"
             style={{
-              right: "20.5vw", 
+              right: "20vw", 
               bottom: "82vh", 
               width: "5.5vw", 
               height: "6vh", 

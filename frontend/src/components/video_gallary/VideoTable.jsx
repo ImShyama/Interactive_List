@@ -38,7 +38,7 @@ import Loader from "../Loader.jsx";
 import VideoGallaryView from "./VideoGallaryView.jsx";
 import { FiEye } from "react-icons/fi";
 import Preview from "../Preview.jsx";
-import EmptyTable from "../EmptyTable.jsx";
+import EmptyTable from "../component/EmptyTable.jsx";
 
 
 const convertArrayToJSON = (data) => {

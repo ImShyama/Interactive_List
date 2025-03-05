@@ -21,7 +21,7 @@ const SheetSchema = new mongoose.Schema({
     freezeCol: String,
     hiddenCol: Array,
     peopleDirectory: Object,
-});
+},{ timestamps: true });
 
 
 module.exports = mongoose.model("Sheet", SheetSchema);

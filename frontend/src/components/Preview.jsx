@@ -10,6 +10,7 @@ import PeopleDirectoryView from "./people_directory/PeopleDirectoryView";
 import { filter } from "lodash";
 import VideoGallaryView from "./video_gallary/VideoGallaryView";
 import PhotoGalleryView from "./photo_gallery/PhotoGalleryView";
+import { IoCopyOutline } from "react-icons/io5";
 
 const Preview = ({ closeModal, sheetdetails }) => {
 
@@ -221,6 +222,7 @@ const Preview = ({ closeModal, sheetdetails }) => {
                     </div>
                 )
             }
+            
         </div>
     )
 }

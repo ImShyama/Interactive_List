@@ -1,0 +1,158 @@
+.admin-heading {
+  background: var(
+    --Gradation,
+    linear-gradient(96deg, #4579ff -12.79%, #4801bb 103.21%)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* DataTable.tsx */
+.ant-table-content {
+  overflow-x: auto !important;
+  scrollbar-width: thin !important;
+}
+
+.ant-table-content::-webkit-scrollbar-track {
+  background: #eae7e7 !important;
+}
+
+.ant-table-content::-webkit-scrollbar-thumb {
+  background: #4564f3 !important;
+}
+.admin-custom-table th.ant-table-cell {
+  font-size: 15px;
+  background: #fff !important;
+  color: #767a8f !important;
+  padding: 10px 20px !important;
+  text-wrap: nowrap;
+  font-weight: 500 !important;
+}
+
+.admin-custom-table td.ant-table-cell {
+  font-size: 14px;
+  background: #fff !important;
+  color: #111 !important;
+  padding: 5px 20px !important;
+  letter-spacing: 0.28px !important;
+  font-weight: 500;
+  max-width: 200px !important;
+}
+.adminCustomTable td.ant-table-cell {
+  font-size: 14px;
+  background: #fff !important;
+  color: #111 !important;
+  padding: 2px 20px !important;
+  letter-spacing: 0.28px !important;
+  font-weight: 500;
+}
+
+.admin-custom-table .ant-table-footer {
+  background: #fff !important;
+  border: none !important;
+}
+
+.admin-custom-table .ant-table-container table {
+  border-collapse: collapse;
+}
+
+.admin-custom-table .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #e5e9f0 !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: none !important;
+}
+
+.admin-custom-table .ant-table-thead > tr > th {
+  border-bottom: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: none !important;
+  background-color: #ffffff;
+}
+
+.admin-custom-table .ant-table-thead > tr > th {
+  border-bottom: 1px solid #e5e9f0 !important;
+  background-color: #ffffff;
+}
+
+.admin-custom-table .ant-table {
+  border: none !important;
+}
+
+.admin-custom-table .even-row .ant-table-cell {
+  background-color: #f5f8fb !important;
+}
+
+.admin-custom-table .odd-row .ant-table-cell {
+  background-color: #fff !important;
+}
+
+.admin-custom-table .ant-table-row:hover .ant-table-cell {
+  background-color: #f5f8fb !important;
+}
+
+.table-cell-text {
+  max-width: 220px;
+  margin-right: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.table-cell-text::-webkit-scrollbar {
+  width: 1px !important;
+  height: 0px !important;
+}
+
+.table-cell-text::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  width: 0px !important;
+}
+
+/* Checkbox custom css (admin-table)*/
+.custom-checkbox input[type="checkbox"] {
+  width: 19px;
+  height: 19px;
+  border-radius: 4.586px;
+  border: 2px solid #e1e2e9;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  position: relative;
+  background-color: white;
+}
+
+.custom-checkbox input[type="checkbox"]:checked {
+  background: #598931;
+  border: none;
+}
+
+.custom-checkbox input[type="checkbox"]:checked::after {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="8" height="7" viewBox="0 0 8 7" fill="none"><path d="M1 3.5L3 5.5L7 1.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* New */
+.headerName {
+  font-size: 16px;
+}
+
+.headerCell {
+  width: 100%;
+  text-align: left;
+}
+
+.custom-pagination {
+  padding-right: 10px !important;
+}

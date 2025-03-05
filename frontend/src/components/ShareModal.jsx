@@ -175,7 +175,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
           <button
             className={`rounded-lg px-4 py-1 ${email == ""
               ? 'bg-gray-200 cursor-not-allowed'
-              : 'bg-[#FFA500] text-white'
+              : 'bg-primary text-white'
               }`}
             onClick={addEmail}
             disabled={email == ""}
@@ -242,7 +242,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
         <div className="flex justify-between items-center">
           {/* Link section */}
           <button
-            className="text-[#FFA500] underline cursor-pointer"
+            className="text-primary underline cursor-pointer"
             onClick={handleCopy}
           >
             Copy Link!
@@ -257,12 +257,12 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
           <button
             className={`rounded-lg px-4 py-2 ${emails.length === 0
               ? 'bg-gray-200 cursor-not-allowed'  // Gray background and not-allowed cursor when disabled
-              : 'bg-[#FFA500] text-white'         // Default orange background when enabled
+              : 'bg-primary text-white'         // Default orange background when enabled
               }`}
             onClick={() => addEmails()}
             disabled={emails.length === 0}
           >
-            Save
+            Save``
           </button>
           {saveTooltip && (
             <span className="absolute bg-[#fed17c] text-white text-xs rounded py-1 px-2 right-[100px] mt-1">

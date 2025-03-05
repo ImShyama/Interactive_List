@@ -11,9 +11,10 @@ import Cookies from 'js-cookie';
 import { Resizable } from 'react-resizable';
 import './table.css';
 import { BackIcon } from '../assets/svgIcons';
-import { headers, data } from '../utils/InetractiveList_DumyData';
+import { headers, data, filterHeader } from '../utils/InetractiveList_DumyData';
 import Table from './interactive_list/Table';
 import TitleBarPreview from './TitleBarPreview';
+import CopyBtn from './component/CopyBtn';
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
@@ -35,28 +36,7 @@ const ResizableTitle = (props) => {
     );
 };
 
-const filterHeader = [
-    "country",
-    "region",
-    "population",
-    "gdp_(usd_billions)",
-    "gdp_per_capita",
-    "life_expectancy",
-    "literacy_rate",
-    "internet_users_%",
-    "urbanization_%",
-    "co2_emissions_(tons)",
-    "renewable_energy_%",
-    "trade_balance_(usd_m)",
-    "fdi_inflow_(usd_m)",
-    "tourism_revenue_(usd_m)",
-    "healthcare_spending_%",
-    "r&d_investment_%",
-    "youth_population_%",
-    "export_value_(usd_m)",
-    "import_value_(usd_m)",
-    "education_spending_%"
-]
+
 
 const isNumeric = (value) => !isNaN(parseFloat(value)) && isFinite(value);
 
@@ -395,13 +375,15 @@ const InteractiveListView = () => {
     };
 
     return (
-        <div>
+        <div className='relative'>
             <div className='w-full px-[30px]'>
-            <TitleBarPreview 
-            appName={"Interactive List"} 
-            spreadSheetID={"1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ"} 
-            spreadSheetName={"Data"} 
-            />
+                <TitleBarPreview
+                    appName={"Interactive List"}
+                    spreadSheetID={"1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ"}
+                    spreadSheetName={"Data"}
+                />
+
+                
             </div>
 
             <Table
@@ -411,30 +393,32 @@ const InteractiveListView = () => {
                 filteredData={filteredData}
                 setFilteredData={setFilteredData}
                 paginatedData={paginatedData}
-                // loading={loading}
-                // isEditMode={isEditMode}
-                // isedit={isedit}
-                // setIsedit={setIsedit}
-                // handleEdit={handleEdit}
-                // handleDelete={handleDelete}
-                // settings={settings}
-                // freezeCol={freezeCol}
-                // setFreezeCol={setFreezeCol}
-                // globalOption={globalOption}
-                // setGlobalOption={setGlobalOption}
-                // ischecked={ischecked}
-                // setIschecked={setIschecked}
-                // EditData={EditData}
-                // setEditData={setEditData}
-                // handleBulkDelete={handleBulkDelete}
-                // headerBgColor={headerBgColor}
-                // headerTextColor={headerTextColor}
-                // headerFontSize={headerFontSize}
-                // headerFontFamily={headerFontFamily}
-                // bodyTextColor={bodyTextColor}
-                // bodyFontSize={bodyFontSize}
-                // bodyFontFamily={bodyFontFamily}
+            // loading={loading}
+            // isEditMode={isEditMode}
+            // isedit={isedit}
+            // setIsedit={setIsedit}
+            // handleEdit={handleEdit}
+            // handleDelete={handleDelete}
+            // settings={settings}
+            // freezeCol={freezeCol}
+            // setFreezeCol={setFreezeCol}
+            // globalOption={globalOption}
+            // setGlobalOption={setGlobalOption}
+            // ischecked={ischecked}
+            // setIschecked={setIschecked}
+            // EditData={EditData}
+            // setEditData={setEditData}
+            // handleBulkDelete={handleBulkDelete}
+            // headerBgColor={headerBgColor}
+            // headerTextColor={headerTextColor}
+            // headerFontSize={headerFontSize}
+            // headerFontFamily={headerFontFamily}
+            // bodyTextColor={bodyTextColor}
+            // bodyFontSize={bodyFontSize}
+            // bodyFontFamily={bodyFontFamily}
             />
+
+
         </div>
     )
 };

@@ -251,7 +251,7 @@ const DashboardTable = () => {
                   height: 44,
                 }}
                 options={options}
-                placeholder="Select App Name"
+                
                 size="large"
                 filterOption={(inputValue, option) =>
                   option.value.toLowerCase().includes(inputValue.toLowerCase())
@@ -260,6 +260,7 @@ const DashboardTable = () => {
               >
                 <Input 
                 // onChange={handleSearch}
+                placeholder="Select App Name"
                 style={{
                   width: 200,
                   height: 44,

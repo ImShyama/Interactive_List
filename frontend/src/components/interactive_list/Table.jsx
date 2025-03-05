@@ -11,6 +11,7 @@ import { UserOutlined } from "@ant-design/icons";
 import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
 import noPhoto from "../../assets/images/noPhoto.jpg";
 import avatar from "../../assets/images/avatar.png";
+import { notifyError } from "../../utils/notify";
 
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
@@ -59,6 +60,8 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         console.log("loading column width: ", JSON.parse(savedWidths));
         return savedWidths ? JSON.parse(savedWidths) : null;
     };
+
+    const isPreview = location.pathname.includes("InteractiveListView");
 
     // const handleCheckboxChange = async (columnKey, option, event) => {
     //     const isChecked = event.target.checked;
@@ -398,21 +401,14 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         }
     };
 
-    // function getDriveThumbnail(url) {
-    //     if (!url) return "";
-
-    //     if (url.includes("drive.google.com")) {
-    //         let driveIdMatch = url.match(/(?:id=|\/d\/)([\w-]+)/);
-    //         console.log({ driveIdMatch, url });
-    //         return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
-    //     }
-
-    //     return url;
-    // }
-
-
+    const handleAlert = (msg) => {
+        notifyError(msg);
+    }
 
     const RenderImage = ({ url }) => {
+
+        const imageURL = getDriveThumbnail(url);
+        console.log({url,imageURL});
 
         if (settings.appName == "People Directory") {
             return (
@@ -420,7 +416,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 <div className="w-full h-full flex justify-start items-center">
                     {isValidUrl(url) ? (
                         <img
-                            src={getDriveThumbnail(url)}
+                            src={imageURL}
                             alt="profile"
                             className="w-12 h-12 rounded-full border-[1px] border-[#D3CBCB] object-cover"
                             onError={(e) => handleImageError(e)} // Custom fallback
@@ -436,12 +432,11 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
             )
         }
         else if (settings?.appName == "Video Gallery") {
-            console.log({ url, url1: getDriveThumbnail(url) });
             return (
                 <div className="w-full h-full flex justify-start items-center">
                     {isValidUrl(url) ? (
                         <img
-                            src={getDriveThumbnail(url)}
+                            src={imageURL}
                             alt="prof"
                             className="w-12 h-12 rounded-md border-[1px] border-[#D3CBCB] object-cover"
                             onError={(e) => handleImageError(e, noPhoto)} // Custom fallback
@@ -461,10 +456,10 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 <div className="w-full h-full flex justify-start items-center">
                     {isValidUrl(url) ? (
                         <img
-                            src={getDriveThumbnail(url)}
+                            src={imageURL}
                             alt="profile"
                             className="w-12 h-12 rounded-md border-[1px] border-[#D3CBCB] object-cover"
-                            onError={(e) => handleImageError(e, noPhoto)} // Custom fallback
+                            // onError={(e) => handleImageError(e, noPhoto)} // Custom fallback
                         />
                     ) : (
                         // <Avatar size={48} icon={<UserOutlined />} alt="User" />
@@ -478,47 +473,43 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         }
     }
 
-
     const RenderText = ({ text, bodyFontFamily, bodyFontSize }) => {
         if (!text) return null;
-      
+
         // Regular expression to detect URLs (http, https, www)
         const urlRegex = /(https?:\/\/[^\s,]+|www\.[^\s,]+)/g;
-        
+
         // Check if the text contains URLs
         const parts = text?.toString().split(urlRegex);
-      
+
         return (
-          <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>
-            {parts.map((part, index) => {
-              if (part.match(urlRegex)) {
-                return (
-                  <a
-                    key={index}
-                    href={part.startsWith("http") ? part : `https://${part}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline ml-1 no-underline hover:underline"
-                  >
-                    Click Here
-                  </a>
-                );
-              }
-              return <span key={index}>{part}</span>;
-            })}
-          </span>
+            <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px || 12px` }}>
+                {parts.map((part, index) => {
+                    if (part.match(urlRegex)) {
+                        return (
+                            <a
+                                key={index}
+                                href={part.startsWith("http") ? part : `https://${part}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 underline ml-1 no-underline hover:underline"
+                            >
+                                Click Here
+                            </a>
+                        );
+                    }
+                    return <span key={index}>{part}</span>;
+                })}
+            </span>
         );
-      };
-      
-
-
+    };
 
     const renderedRows = useMemo(() => (
         paginatedData.map((item) => (
             <tr key={item.key_id} className="hover:bg-gray-50 truncate"
 
             >
-                {isEditMode && (
+                {(isEditMode || isPreview) && (
                     <td
                         className="px-4 py-2 border-y border-gray-300"
                         style={{
@@ -532,13 +523,18 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                     >
                         <div className="flex gap-[10px] align-center">
                             <Checkbox
-                                checked={ischecked.includes(item.key_id)}
+                                checked={ischecked?.includes(item.key_id)}
                                 onChange={(e) => handleStatusChanges(e.target.checked, item)}
                                 value={item.key_id}
+                                disabled={isPreview}
                             />
                             <button
                                 className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
                                 onClick={() => {
+                                    if(isPreview){
+                                        handleAlert("Not available in preview!");
+                                        return;
+                                    }
                                     if (ischecked.length > 0 && isEditMode) {
                                         handleDoubleClick(item.key_id, item);
                                     } else {
@@ -551,6 +547,10 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             <button
                                 className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
                                 onClick={() => {
+                                    if(isPreview){
+                                        handleAlert("Not available in preview!");
+                                        return;
+                                    }
                                     if (ischecked.length > 0 && isEditMode) {
                                         handleBulkDelete();
                                     } else {
@@ -683,7 +683,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                         <thead className="sticky top-0 bg-gray-100 z-20">
                             <tr className="text-gray-700 text-left"
                                 style={{ backgroundColor: headerBgColor, color: headerTextColor }}>
-                                {isEditMode &&
+                                {(isEditMode || isPreview) &&
                                     <th
                                         className="px-4 py-4 flex items-center"
                                         style={{
@@ -702,18 +702,29 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                     >
                                         {/* Actions */}
                                         <Checkbox
-                                            checked={globalCheckboxChecked}
-                                            indeterminate={ischecked.length > 0 && ischecked.length < paginatedData.length}
-                                            onChange={(e) => handleGlobalCheckboxChange(e.target.checked)}
+                                            onClick={(e) => {
+                                                globalCheckboxChecked
+                                            }}
+                                            onChange={(e) => {
+                                                handleGlobalCheckboxChange(e.target.checked);
+                                            }}
+                                            indeterminate={ ischecked?.length > 0 && ischecked.length < paginatedData.length}
+                                            disabled={isPreview}
                                         />
                                         {/* <button onClick={handleBulkSave} className="rounded-[4px] mx-2" title="Save">
                                             <IoSaveSharp color="#598931" size={18} />
                                         </button> */}
                                         <button
-                                            onClick={handleBulkSave}
-                                            className={`rounded-[4px] mx-2 ${ischecked.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#598931] hover:bg-[#598931]'}`}
+                                            onClick={() => {
+                                                if (isPreview) {
+                                                    handleAlert("Not available in preview!")
+                                                    return;
+                                                }
+                                                handleBulkSave()
+                                            }}
+                                            className={`rounded-[4px] mx-2 ${ischecked?.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#598931] hover:bg-[#598931]'}`}
                                             title="Save"
-                                            disabled={ischecked.length === 0}
+                                            disabled={ischecked?.length === 0}
                                         >
                                             <IoSaveSharp color="#ffffff" size={18} />
                                         </button>

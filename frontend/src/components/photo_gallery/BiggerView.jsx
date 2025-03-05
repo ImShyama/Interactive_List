@@ -14,7 +14,7 @@ import noPhoto from "../../assets/images/noPhoto.jpg";
 import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
 import { notifySuccess } from "../../utils/notify";
 
-const BiggerView = ({ photo, onClose, settings }) => {
+const BiggerView = ({ title, onClose, photo }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(1); // Initial zoom level is 1 (100%)
   const [isAutoPlay, setIsAutoPlay] = useState(false); // Track if auto-play is active
@@ -24,23 +24,23 @@ const BiggerView = ({ photo, onClose, settings }) => {
     return null; // Handle case if no photo is passed
   }
 
+  console.log({photo, title});
   
 
-  const image = getDriveThumbnail(photo[settings?.showInCard[0].title.toLowerCase().replace(" ", "_")]) 
-  const title = photo[settings?.showInCard[1].title.toLowerCase().replace(" ", "_")] || "";
-  const subTitle = photo[settings?.showInCard[2].title.toLowerCase().replace(" ", "_")] || "";
+  // const image = getDriveThumbnail(photo[settings?.showInCard[0].title.toLowerCase().replace(" ", "_")]) 
+  // const title = photo[settings?.showInCard[1].title.toLowerCase().replace(" ", "_")] || "";
+  // const subTitle = photo[settings?.showInCard[2].title.toLowerCase().replace(" ", "_")] || "";
 
-  console.log({image});
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? photo.images.length - 1 : prevIndex - 1
+      prevIndex === 0 ? photo.length - 1 : prevIndex - 1
     );
   };
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === photo.images.length - 1 ? 0 : prevIndex + 1
+      prevIndex === photo.length - 1 ? 0 : prevIndex + 1
     );
   };
 
@@ -105,8 +105,8 @@ const BiggerView = ({ photo, onClose, settings }) => {
         <div className="relative w-[90vw] max-w-[800px] aspect-[16/9] flex-shrink-0 rounded-[28px]">
           {/* Image */}
           <img
-            src={image}
-            // alt={`Slide ${currentIndex + 1}`}
+            src={photo}
+            alt={`Slide ${currentIndex + 1}`}
             className="w-full h-full object-cover rounded-[28px]"
             style={{
               transform: `scale(${zoomLevel})`,

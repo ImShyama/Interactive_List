@@ -13,6 +13,7 @@ import copyIcon from "../assets/copyIcon.svg";
 import shareIcon from "../assets/shareIcon.svg";
 import logoutIcon from "../assets/logoutIcon.svg";
 import downIcon from "../assets/downIcon.svg";
+import upIcon from "../assets/upIcon.svg";
 import filterIcon from "../assets/filterIcon.svg";
 import sheetIcon from "../assets/sheetIcon.svg";
 import openIcon from "../assets/openIcon.svg";
@@ -42,6 +43,7 @@ import HeadingTitle from "./people_directory/HeadingTitle.jsx";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { IoMdOpen } from "react-icons/io";
 import Settings from "./product_catalogue/settings/Settings.jsx";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
 
@@ -931,111 +933,6 @@ const ViewSettings = ({ settingsData }) => {
     );
   };
 
-  // const CardSettings = ({ settingsData }) => {
-  //   const [cardData, setCardData] = useState(settingsData?.showInCard || []);
-
-  //   // Generate default order from showInCard and ensure it includes 1-6
-  //   const generateDefaultOrder = () => {
-  //     let existingIds = settingsData?.showInCard?.map((item) => item.id) || [];
-  //     let completeOrder = Array.from({ length: 6 }, (_, i) => i + 1); // ["id1", "id2", ..., "id6"]
-
-  //     // Merge, keeping the order from showInCard but ensuring 1-6 exists
-  //     return completeOrder.map((id) => (existingIds.includes(id) ? id : id));
-  //   };
-
-  //   const [defaultOrder, setDefaultOrder] = useState(generateDefaultOrder());
-
-  //   useEffect(() => {
-  //     setDefaultOrder(generateDefaultOrder());
-  //   }, [cardData]);
-
-  //   const handleDragEnd = async (event) => {
-  //     const { active, over } = event;
-  //     if (!over || active.id === over.id) return;
-
-  //     const oldIndex = defaultOrder.indexOf(active.id);
-  //     const newIndex = defaultOrder.indexOf(over.id);
-
-  //     // Reorder defaultOrder list
-  //     const updatedOrder = arrayMove(defaultOrder, oldIndex, newIndex);
-  //     setDefaultOrder(updatedOrder);
-
-  //     // Reorder the cardData based on the new defaultOrder
-  //     const updatedData = updatedOrder
-  //       .map((id) => cardData.find((item) => item.id === id) || null) // Keep null for missing items
-  //       .filter(Boolean); // Remove null values before saving
-
-  //     setCardData(updatedData);
-
-  //     // Save updated settings
-  //     const updatedSetting = { ...settingsData, showInCard: updatedData };
-  //     const response = await handleUpdateSettings(updatedSetting, token, dispatch);
-  //     console.log({ response });
-  //   };
-
-  //   // Draggable Item Component
-  //   const DraggableItem = ({ item }) => {
-  //     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
-
-  //     return (
-  //       <div
-  //         ref={setNodeRef}
-  //         {...attributes}
-  //         {...listeners}
-  //         style={{ transform: CSS.Transform.toString(transform), transition }}
-  //         className="flex items-center cursor-grab"
-  //       >
-  //         <SixDots />
-  //         <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins]">
-  //           {item.title}
-  //         </span>
-  //       </div>
-  //     );
-  //   };
-
-  //   return (
-  //     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-  //       <SortableContext items={defaultOrder}>
-  //         <div className="flex w-[100%]">
-  //           {/* Left Column (Fixed) */}
-  //           {settingsData?.appName === "People Directory" && (
-  //             <div className="flex flex-col m-2 w-[130px]">
-  //               {["Profile", "Name", "Sub Header 1", "Sub Header 2", "Email", "Contact"].map((label) => (
-  //                 <span key={label} className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
-  //                   {label}
-  //                 </span>
-  //               ))}
-  //             </div>
-  //           )}
-
-  //           {settingsData?.appName === "Video Gallery" && (
-  //             <div className="flex flex-col m-2 w-[130px]">
-  //               {["Video Link", "Thumbnail", "Video Title", "Category", "Descriptions", "Sub Title"].map((label) => (
-  //                 <span key={label} className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
-  //                   {label}
-  //                 </span>
-  //               ))}
-  //             </div>
-  //           )}
-
-  //           {/* Right Column (Draggable Items with Order & Placeholder) */}
-  //           <div className="flex flex-col m-2">
-  //             {defaultOrder.map((id) => {
-  //               const item = cardData.find((data) => data.id === id);
-  //               return item ? (
-  //                 <DraggableItem key={id} item={item} />
-  //               ) : (
-  //                 <div key={id} className="m-[6px] text-[16px] font-medium leading-normal text-gray-400 italic">
-  //                   (Empty)
-  //                 </div>
-  //               );
-  //             })}
-  //           </div>
-  //         </div>
-  //       </SortableContext>
-  //     </DndContext>
-  //   );
-  // };
 
 
 
@@ -1052,7 +949,7 @@ const ViewSettings = ({ settingsData }) => {
           >
             Card Settings
           </span>
-          <img src={downIcon} />
+          {!showCard ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
         </div>
         {showCard && <CardSettings settingsData={settingsData} />}
       </div>}
@@ -1069,7 +966,7 @@ const ViewSettings = ({ settingsData }) => {
             >
               {settingsData?.appName !== "Interactive Map" ? `Profile Settings` : `Details View Settings`}
             </span>
-            <img src={downIcon} />
+            {!showProfile ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
           </div>
           {showProfile && <ProfileSettings settingsData={settingsData} />}
         </div>
@@ -1230,7 +1127,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 <span className="setting_filter_bottom_span">
                   Spreadsheet Settings
                 </span>
-                <img src={downIcon} />
+                {!addSheet ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
               </div>
               <div>
 
@@ -1272,7 +1169,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   }}
                 >
                   <span className="setting_filter_top1_text">Table Settings</span>
-                  <img className="setting_filter_top1_img" src={downIcon} />
+                  {!addData ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
                 </div>
                 <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body content, You can easily revert to the original settings by clicking the Reset icon."} />
               </div>
@@ -1314,7 +1211,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                       }}
                     >
                       <span className="setting_filter_top1_text ">View Settings</span>
-                      <img className="setting_filter_top1_img" src={downIcon} />
+                      {!addView ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
                     </div>
 
                     {/* <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body contect, You can easily revert to the original settings by clicking the Reset icon."}/> */}

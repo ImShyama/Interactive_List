@@ -21,12 +21,6 @@ export const headers = [
   ];
   
 
-
-// ["Country","Region","Population","GDP (USD Billions)","GDP Per Capita","Life Expectancy","Literacy Rate","Internet Users %","Urbanization %","CO2 Emissions (tons)","Renewable Energy %","Trade Balance (USD M)","FDI Inflow (USD M)","Tourism Revenue (USD M)","Healthcare Spending %","R&D Investment %","Youth Population %","Export Value (USD M)","Import Value (USD M)","Education Spending %"]
-
-
-// InteractiveMap_dummydata.jsx
-
 export const data = [
     {
       "sr_no": "1",

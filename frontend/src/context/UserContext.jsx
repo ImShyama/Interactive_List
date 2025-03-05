@@ -5,10 +5,12 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [token, setToken] = useState(Cookies.get("token") || null);
+  const [role, setRole] = useState(null);
 
   return (
-    <UserContext.Provider value={{ profile, setProfile, token, setToken }}>
+    <UserContext.Provider value={{ profile, setProfile, token, setToken, role, setRole }}>
       {children}
     </UserContext.Provider>
   );
 };
+

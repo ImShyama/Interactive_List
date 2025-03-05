@@ -85,7 +85,7 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
         return;
       }
 
-      if(settings.showInProfile?.length >= 3){
+      if(settings.showInCard?.length >= 3){
         notifyError("You can only have 3 profile cards");
         return;
       }

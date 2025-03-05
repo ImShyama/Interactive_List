@@ -35,7 +35,7 @@ export const APPS = [
     appName: "Interactive List",
     appView: "InteractiveListView",
     appImg: InteractiveList,
-    description: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+    description: "Transform raw data into an interactive, searchable, and customizable table.",
     appID: "1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ",
     spreadSheetName: "Data",
     overview:
@@ -60,7 +60,7 @@ export const APPS = [
     appName: "People Directory",
     appView: "PeopleDirectoryPreview",
     appImg: PeopleDirectory,
-    description: "List all contacts.",
+    description: "Convert your employee database into an interactive format.",
     appID: "1VIWkwCewrs9Ydbo4mTWLovsa78jX1ZJc33BJpaZ5WHg",
     spreadSheetName: "Data",
     overview:
@@ -85,7 +85,7 @@ export const APPS = [
     appName: "Video Gallery",
     appView: "VideoGalleryPreview",
     appImg: VideoGallery,
-    description: "List all videos.",
+    description: "Transform scattered videos into a visually appealing and structured gallery.",
     appID: "1d8_iPCgw7NhMd-4Jjl4RY_aENd0kA-j3YiaB24mVe4U",
     spreadSheetName: "Data",
     overview:
@@ -110,7 +110,7 @@ export const APPS = [
     appName: "Photo Gallery",
     appView: "PhotoGalleryPreview",
     appImg: PhotoGallery,
-    description: "List all employees working remotely on a map with filters.",
+    description: "Easily organize and explore images in a structured gallery with zoom and slideshow features.",
     appID: "1U8KFBe4oEtO5RmA3J2aj5F0zUIgghDRq5Y3JIi8VVq4",
     spreadSheetName: "Data",
     overview:
@@ -135,7 +135,7 @@ export const APPS = [
     appName: "Interactive Map",
     appView: "InteractiveMapPreview",
     appImg: InteractiveMap,
-    description: "List all employees working remotely on a map with filters.",
+    description: "Create an interactive map to display multiple locations with details, images, and search filters.",
     appID: "1IDvlKAFVt5xc06RGtHXZ9I5SDoBbIGAPBe8N4o0O6oQ",
     spreadSheetName: "Data",
     overview:

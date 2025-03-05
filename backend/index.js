@@ -31,6 +31,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(bodyParser.json());
 
 app.use(cookieParser());
@@ -43,7 +44,6 @@ app.use(express.static(path.join(__dirname, "../frontend/dist")));
 app.use("/", authRoute);
 
 // app.use(authenticateToken);
-
 
 async function getMetaSheetData({ sheets, spreadSheetID, range }) {
   const formulaResponse = await sheets.spreadsheets.values.get({
@@ -83,73 +83,6 @@ async function getMetaSheetData({ sheets, spreadSheetID, range }) {
   console.log({ obj });
   return obj;
 }
-
-// app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
-
-//   const { sheetID } = req.body;
-//   const sheetDetails = await Sheet.findById(sheetID).lean();
-//   const sheetOwner = await User.findById(sheetDetails.userId).lean();
-//   const spreadSheetID = sheetDetails.spreadsheetId;
-//   const spreadSheeSharedWith = sheetDetails.sharedWith;
-//   const range = sheetDetails.firstTabDataRange;
-//   const sheetName = range.split("!")[0];
-
-//   const user = sheetOwner
-//   const refreshToken = user.googleRefreshToken;
-
-//   // Create an OAuth2 client with the given credentials
-//   const authClient = new google.auth.OAuth2(
-//     process.env.CLIENT_ID,
-//     process.env.CLIENT_SECRET,
-//     process.env.REDIRECT_URI
-//   );
-
-//   // Set the refresh token for the OAuth2 client
-//   authClient.setCredentials({
-//     refresh_token: refreshToken,
-//   });
-
-//   const sheets = google.sheets({ version: "v4", auth: authClient });
-
-
-
-//   try {
-//     const response = await sheets.spreadsheets.values.get({
-//       spreadsheetId: spreadSheetID,
-//       range: range,
-//     });
-
-
-
-//     const rows = response.data.values;
-//     if (!rows || rows.length === 0) {
-//       res.status(404).json({ error: "No data found." });
-//       return;
-//     }
-
-//     const formulaData = await getMetaSheetData({ sheets, spreadSheetID, range: sheetName });
-
-//     // Extract hidden column from Sheet 
-//     const hiddenCol = sheetDetails.hiddenCol;
-
-//     const jsonData = convertArrayToJSON(rows, hiddenCol);
-
-//     let permissions = "edit";
-
-//     if (sheetOwner?._id.toString() !== req?.user?._id.toString()) {
-//       const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
-//       permissions = tempAccess.permission
-//       res.status(200).json({ rows, permissions, jsonData, hiddenCol });
-//       return;
-//     }
-//     // const permissions = "view";
-
-//     return res.status(200).json({ rows, permissions, jsonData, hiddenCol, formulaData });
-//   } catch (error) {
-//     console.error("Error fetching spreadsheet data:", error);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
 
 app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
   try {
@@ -240,8 +173,6 @@ app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
   }
 });
 
-
-
 app.get("/getSheetDetails/:id", authenticateToken, async (req, res) => {
   try {
     const sheetId = req.params.id;
@@ -261,6 +192,191 @@ app.get("/getSheetDetails/:id", authenticateToken, async (req, res) => {
 app.get("/getUserData", authenticateToken, (req, res) => {
   res.send(req.user);
 });
+
+
+app.get("/getallusers",authenticateToken, async (req, res) => {
+  console.log("API Hit: /getallusers");
+  try {
+    // Fetch all users
+    const users = await User.find({}).lean();
+
+    console.log({ requser: req.user, isAdmin: req.user.role === "admin" });
+    if(!req.user || req.user.role !== "admin") {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // Count the number of sheets per user
+    const sheetCounts = await Sheet.aggregate([
+      {
+        $group: {
+          _id: "$userId",
+          appsCount: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Convert the sheetCounts array into an object for quick lookup
+    const sheetCountsMap = {};
+    sheetCounts.forEach(item => {
+      sheetCountsMap[item._id] = item.appsCount;
+    });
+
+    // Attach appsCount to each user
+    const usersWithAppsCount = users.map(user => ({
+      ...user,
+      appsCount: sheetCountsMap[user._id] || 0 // Default to 0 if no sheets found
+    }));
+
+    res.status(200).json(usersWithAppsCount);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.put("/auth/approve", async (req, res) => {
+  console.log("API Hit: /auth/approve");
+
+  try {
+    const { _id } = req.body;
+
+    if (!_id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    const user = await User.findById(_id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.isApproved = !user.isApproved; // Toggle approval status
+    await user.save();
+    const updatedUsers = await User.find({});
+
+    // Count the number of sheets per user
+    const sheetCounts = await Sheet.aggregate([
+      {
+        $group: {
+          _id: "$userId",
+          appsCount: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Convert the sheetCounts array into an object for quick lookup
+    const sheetCountsMap = {};
+    sheetCounts.forEach(item => {
+      sheetCountsMap[item._id] = item.appsCount;
+    });
+
+    // Attach appsCount to each user
+    const usersWithAppsCount = updatedUsers.map(user => ({
+      ...user.toObject(),
+      appsCount: sheetCountsMap[user._id.toString()] || 0 // Default to 0 if no sheets found
+    }));
+
+    res.status(200).json({ message: "User approval status updated", usersWithAppsCount });
+  } catch (error) {
+    console.error("Error updating approval status:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+app.put("/auth/updateRole/:id", async (req, res) => {
+
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    console.log({ id, role });
+
+    if (!id || !role) {
+      return res.status(400).json({ message: "User ID and role are required" });
+    }
+
+    const user = await User.findByIdAndUpdate(id, { role }, { new: true });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const updatedUsers = await User.find({}); // Fetch updated user list
+
+    // Count the number of sheets per user
+    const sheetCounts = await Sheet.aggregate([
+      {
+        $group: {
+          _id: "$userId",
+          appsCount: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Convert the sheetCounts array into an object for quick lookup
+    const sheetCountsMap = {};
+    sheetCounts.forEach(item => {
+      sheetCountsMap[item._id] = item.appsCount;
+    });
+
+    // Attach appsCount to each user
+    const usersWithAppsCount = updatedUsers.map(user => ({
+      ...user.toObject(),
+      appsCount: sheetCountsMap[user._id.toString()] || 0 // Default to 0 if no sheets found
+    }));
+
+    return res.status(200).json({ message: "User role updated", clients: usersWithAppsCount });
+  } catch (error) {
+    console.error("Error updating role:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
+app.delete("/auth/deleteUser/:id", async (req, res) => {
+  console.log("API Hit: /auth/deleteUser");
+
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    let user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const updatedUsers = await User.find({});
+
+    const sheetCounts = await Sheet.aggregate([
+      {
+        $group: {
+          _id: "$userId",
+          appsCount: { $sum: 1 }
+        }
+      }
+    ]);
+
+    // Convert the sheetCounts array into an object for quick lookup
+    const sheetCountsMap = {};
+    sheetCounts.forEach(item => {
+      sheetCountsMap[item._id] = item.appsCount;
+    });
+
+    // Attach appsCount to each user
+    const usersWithAppsCount = updatedUsers.map(user => ({
+      ...user.toObject(),
+      appsCount: sheetCountsMap[user._id.toString()] || 0 // Default to 0 if no sheets found
+    }));
+
+    res.status(200).json({ message: "User deleted successfully", usersWithAppsCount });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+
 
 const convertArrayToJSON = (data, hiddenCol) => {
   // The first array contains the keys (headers)
@@ -484,11 +600,11 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
     else if (appName == "People Directory") {
       cardSettings = [
         { id: 0, title: "Profile Picture" },
-        { id: 1, title: "Name" },
-        { id: 2, title: "Emp Id" },
-        { id: 3, title: "DOJ" },
-        { id: 4, title: "Email Address" },
-        { id: 5, title: "Contact" },
+        { id: 1, title: "First Name" },
+        { id: 2, title: "Job Title" },
+        { id: 3, title: "Department" },
+        { id: 4, title: "Email" },
+        { id: 5, title: "Mobile" },
       ]
     }
     else if (appName == "Photo Gallery"){
@@ -1289,7 +1405,6 @@ app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
 
-
 // Update sheet details route (PUT request)
 app.put('/spreadsheet/:id', authenticateToken, async (req, res) => {
   try {
@@ -1309,33 +1424,6 @@ app.put('/spreadsheet/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
-
-// app.post('/addEmails/:id', authenticateToken, async (req, res) => {
-//   try {
-//     const { emails } = req.body;
-//     const SheetId = req.params.id; // Get the ID from the request params
-
-//     console.log({emails});
-
-//     // Update the settings document in MongoDB
-//     const updatedSetting = await Sheet.findByIdAndUpdate(SheetId, { sharedWith: emails }, { new: true });
-
-//     if (!updatedSetting) {
-//       return res.status(404).json({ message: "Setting not found" });
-//     }
-
-//     // Return the updated settings
-//     res.status(200).json(updatedSetting);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// })
-
-
-
-// Function to get sheet details including the actual data range of the first sheet
-
 
 app.post("/addEmails/:id", authenticateToken, async (req, res) => {
   try {
@@ -1401,7 +1489,6 @@ app.post("/addEmails/:id", authenticateToken, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 async function getSheetDetails(authClient, spreadSheetID) {
   const sheets = google.sheets({ version: 'v4', auth: authClient });
@@ -1487,8 +1574,6 @@ app.post("/getSpreadsheetDetails", authenticateToken, async (req, res) => {
   }
 });
 
-
-
 async function appendBulkDataAndGetUpdatedData(authClient, originalSheetId, originalSheetName, bulkData) {
   const sheets = google.sheets({ version: 'v4', auth: authClient });
 
@@ -1553,16 +1638,6 @@ app.post("/bulkCopyFromAnotherSheet", authenticateToken, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-
-
-
-
-
-
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
-// });
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));

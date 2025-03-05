@@ -1,0 +1,136 @@
+.logs-card {
+  width: 284px !important;
+  border-radius: 5px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  background-color: #fff !important;
+  padding: 1rem !important;
+  transition: transform 0.3s ease !important;
+}
+
+.logs-card:hover {
+  transform: translateY(-5px) !important;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-content small {
+  color: #666;
+}
+
+.card-content h3 {
+  margin-top: 10px;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.card-container {
+  display: flex;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+h2 {
+  font-size: 21px;
+}
+
+.first-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.first-line svg {
+  background-color: #e4faff;
+  padding: 5px;
+  color: #378ba3;
+  font-size: 1.5rem;
+  border-radius: 5px;
+}
+
+.second-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.second-line small {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+
+  border-radius: 5px;
+}
+
+.increase {
+  color: #378ba3;
+  background-color: #e4faff;
+}
+
+.decrease {
+  background-color: #ffe4e4;
+  color: #aa3939;
+}
+
+.prev {
+  color: gray;
+}
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #e4faff;
+  border-radius: 2px;
+}
+
+.progress {
+  height: 100%;
+  width: 0;
+  background-color: #378ba3;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* Graph styling */
+
+.bar-graph {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 3rem;
+  gap: 2rem;
+  align-items: center;
+}
+
+.bar-graph div {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  padding: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.bar-graph div:hover {
+  transform: translateY(-5px);
+}
+
+.bar-graph {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.bar-graph > div {
+  flex: 1;
+  min-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .bar-graph > div {
+    min-width: 100%;
+  }
+}

@@ -27,8 +27,8 @@ const SocialIcons = () => {
           marginLeft: "50px",
         }}
       >
-        <span style={{ fontSize: "18px", fontWeight: 500 }}>©</span>2024
-        INTERACT All Rights Reserved
+        <span style={{ fontSize: "18px", fontWeight: 500 }}>©</span>2025
+        CEOITBOX All Rights Reserved
       </div>
       <div
         style={{

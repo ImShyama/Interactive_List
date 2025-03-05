@@ -5,8 +5,11 @@ const userSchema = new mongoose.Schema({
   name: String,
   email: String,
   profileUrl: String,
-  googleRefreshToken: { type: String, required: true }
-});
+  googleRefreshToken: { type: String, required: false },
+  role: { type: String, default: "user", enum: ["user", "admin"] },
+  isApproved: { type: Boolean, default: true },
+}, { timestamps: true } );
+
 
 
 module.exports = mongoose.model("Users", userSchema);

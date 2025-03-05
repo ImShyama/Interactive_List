@@ -7,6 +7,7 @@ import { handleImageError } from "../../utils/globalFunctions";
 
 const LargeVideoView = () => {
   const navigate = useNavigate();
+
   // const video = location.state?.video;
   const dummySetting = {
     "_id": "679e4eb7145f160ae5f9a287",
@@ -129,6 +130,51 @@ const LargeVideoView = () => {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [settings, setSettings] = useState(dummySetting);
+
+  const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
+  const videoUrl = data?.[titleKey];
+
+  const getEmbeddedVideoURL = (url) => {
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+      return url.includes("embed")
+        ? url
+        : `https://www.youtube.com/embed/${url.split("v=")[1].split("&")[0]}`;
+    }
+
+    if (url.includes("drive.google.com")) {
+      return `https://drive.google.com/file/d/${url.split("/d/")[1].split("/")[0]
+        }/preview`;
+    }
+
+    if (url.includes("vimeo.com")) {
+      const videoId = url.split("/").pop();
+      return `https://player.vimeo.com/video/${videoId}`;
+    }
+
+    if (url.includes("dailymotion.com")) {
+      const videoId = url.split("/video/")[1]?.split("_")[0];
+      return `https://www.dailymotion.com/embed/video/${videoId}`;
+    }
+
+    if (url.includes("facebook.com")) {
+      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
+        url
+      )}`;
+    }
+    if (url.includes("instagram.com")) {
+      // https://www.instagram.com/reel/C5lSU9qNl0n/?utm_source=ig_web_button_share_sheet
+      // https://www.instagram.com/p/BdJRABkDbXU/embed/
+      // url = "https://www.instagram.com/reel/C5lSU9qNl0n/"
+      return `https://www.instagram.com/p/${url.split("/")[4]}/embed/`;
+    }
+
+
+    if (url.endsWith(".mp4") || url.endsWith(".webm") || url.endsWith(".ogg")) {
+      return url; // Direct video link
+    }
+
+    return url; // Default case (returns same URL if unknown format)
+  };
 
   useEffect(() => {
     const storedData = localStorage.getItem(`profileData_${id}`);
@@ -260,7 +306,7 @@ const LargeVideoView = () => {
 
                     return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
                   })()
-                  
+
                 }
                 alt={data[settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
                 className="w-full h-full object-cover rounded-[36.443px]"
@@ -283,25 +329,25 @@ const LargeVideoView = () => {
           ) : (
             <iframe
               className="w-full h-full rounded-[36.443px] object-cover"
-              src={
-                (() => {
-                  const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
-                  const videoUrl = data?.[titleKey];
+              src={ getEmbeddedVideoURL(videoUrl)
+                // (() => {
+                //   const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
+                //   const videoUrl = data?.[titleKey];
 
-                  if (!videoUrl) return "";
+                //   if (!videoUrl) return "";
 
-                  if (videoUrl.includes("drive.google.com")) {
-                    const driveIdMatch = videoUrl.match(/\/d\/(.*?)(\/|$)/);
-                    return driveIdMatch ? `https://drive.google.com/file/d/${driveIdMatch[1]}/preview` : "";
-                  }
+                //   if (videoUrl.includes("drive.google.com")) {
+                //     const driveIdMatch = videoUrl.match(/\/d\/(.*?)(\/|$)/);
+                //     return driveIdMatch ? `https://drive.google.com/file/d/${driveIdMatch[1]}/preview` : "";
+                //   }
 
-                  if (videoUrl.includes("youtube.com/watch") || videoUrl.includes("youtu.be")) {
-                    const youtubeIdMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-                    return youtubeIdMatch ? `https://www.youtube.com/embed/${youtubeIdMatch[1]}?autoplay=1&mute=1` : "";
-                  }
+                //   if (videoUrl.includes("youtube.com/watch") || videoUrl.includes("youtu.be")) {
+                //     const youtubeIdMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+                //     return youtubeIdMatch ? `https://www.youtube.com/embed/${youtubeIdMatch[1]}?autoplay=1&mute=1` : "";
+                //   }
 
-                  return videoUrl; // Fallback for other video sources
-                })()
+                //   return videoUrl; // Fallback for other video sources
+                // })()
               }
               title={settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_") || "Video"}
               allow="autoplay; encrypted-media"

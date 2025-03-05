@@ -6,6 +6,7 @@ export const data = [
         "description": "In this week’s Tech Friday: \n✅ Simplify sales, finance & operations with AI\n✅ Enhance visibility & control effortlessly\n✅ Boost growth without hiring hassles",
         "month": "January 2024",
         "link": "https://www.youtube.com/embed/oGjSZK_Z_6I",
+        // "link": "https://www.instagram.com/reel/C5lSU9qNl0n/",
         "drive_image_url": "https://drive.google.com/file/d/1qer5H_oyi1KEs3XzKk16UVM4LVDxASaY/view?usp=drive_link",
         "image": "https://drive.google.com/file/d/1qer5H_oyi1KEs3XzKk16UVM4LVDxASaY/view?usp=drive_link"
     },

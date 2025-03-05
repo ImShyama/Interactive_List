@@ -38,7 +38,7 @@ import Loader from "../Loader.jsx";
 import PeopleDirectoryView from "./PeopleDirectoryView.jsx";
 import { FiEye } from "react-icons/fi";
 import Preview from "../Preview.jsx";
-import EmptyTable from "../EmptyTable.jsx";
+import EmptyTable from "../component/EmptyTable.jsx";
 
 
 const convertArrayToJSON = (data) => {
