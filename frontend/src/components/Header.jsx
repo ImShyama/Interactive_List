@@ -12,6 +12,7 @@ import { HOST } from "../utils/constants";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { handleImageError } from "../utils/globalFunctions";
+import { notifyError } from "../utils/notify";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -95,13 +96,13 @@ const Header = () => {
         console.error("Error fetching user data:", err?.response?.data?.error);
 
         // navigate("/signin");
-        if (
-          err?.response?.data?.error === "Token expired. Please log in again." || "User not found. Access denied."
-        ) {
+        if ( err?.response?.data?.error === "Token expired. Please log in again." ) {
           Cookies.remove("token");
           setToken(null);
           navigate("/signin"); // Redirect to login page
         }
+
+        
       });
   }, [token]);
 

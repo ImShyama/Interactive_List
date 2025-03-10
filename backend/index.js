@@ -7,7 +7,7 @@ const cookieParser = require("cookie-parser");
 const authRoute = require("./Routes/AuthRoute");
 const { MONGO_URL, PORT } = process.env;
 const bodyParser = require("body-parser");
-const { authenticateToken } = require("./Middlewares/AuthenticateToken");
+const { authenticateToken, authenticateTokenPrivate } = require("./Middlewares/AuthenticateToken");
 const { google } = require("googleapis");
 const Sheet = require("./Models/SheetModel.js");
 const User = require("./Models/UserModel.js");
@@ -44,11 +44,25 @@ app.use(express.static(path.join(__dirname, "../frontend/dist")));
 app.use("/", authRoute);
 
 // Function to conditionally apply authentication
-const optionalAuth = async (req, res, next) => {
-  if (req.query.access === "public") {
-      return next(); // Skip authentication
+const dynamicAuth = async (req, res, next) => {
+  try {
+    const { sheetID } = req.body;
+    if (!sheetID) return res.status(400).json({ error: "Sheet ID is required." });
+
+    // Fetch sheet settings from DB
+    const sheetDetails = await Sheet.findById(sheetID).lean();
+    if (!sheetDetails) return res.status(404).json({ error: "Sheet not found." });
+
+    // Check if the sheet is public or private
+    if (sheetDetails?.accessType?.type === "public") {
+      return next(); // Skip authentication for public sheets
+    }
+
+    authenticateTokenPrivate(req, res, next); // Apply authentication for private sheets
+  } catch (error) {
+    console.error("Authentication check error:", error);
+    res.status(500).json({ error: "Internal server error." });
   }
-  authenticateToken(req, res, next); // Apply authentication
 };
 
 // app.use(authenticateToken);
@@ -92,7 +106,7 @@ async function getMetaSheetData({ sheets, spreadSheetID, range }) {
   return obj;
 }
 
-app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
+app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
   try {
     const { sheetID } = req.body;
 
@@ -160,9 +174,11 @@ app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
     const jsonData = convertArrayToJSON(rows, hiddenCol);
 
     let permissions = "edit";
-    if (sheetOwner?._id.toString() !== req?.user?._id.toString()) {
+    if (sheetOwner?._id.toString() !== req?.user?._id.toString() && sheetDetails?.accessType?.type === "private") {
       const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
-      permissions = tempAccess?.permission || "view";
+      permissions = tempAccess?.permission;
+    }else{
+      permissions = "view";
     }
 
     // Return full updated sheet details from MongoDB

@@ -7,11 +7,14 @@ import { CiEdit } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
 import { useDispatch, useSelector} from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
+import GeneralAccess from "./component/GeneralAccess";
+import useSpreadSheetDetails from "../utils/useSpreadSheetDetails";
 
 const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWith, settings }) => {
   const [email, setEmail] = useState("");
   const [access, setAccess] = useState("View");
-  const [emails, setEmails] = useState([]);
+  const setting = useSpreadSheetDetails(spreadsheetId);
+  const [emails, setEmails] = useState(setting?.sharedWith);
   const [error, setError] = useState('');
   const [tooltip, setTooltip] = useState("");
   const [saveTooltip, setSaveTooltip] = useState("");
@@ -22,12 +25,10 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
   console.log({settings, sharedWith});
 
   useEffect(() => {
-    if (isOpen) {
       setEmails(sharedWith);
-    }
-  }, [isOpen]);
+  }, [settings]);
 
-  async function addEmails() {
+  async function addEmails(emails, message) {
     try {
       const response = await fetch(`${HOST}/addEmails/${spreadsheetId}`, {
         method: 'POST',
@@ -43,8 +44,10 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
 
       if (response.ok) {
         updateSharedWith(emails, spreadsheetId);
-        notifySuccess("Emails saved successfully!");
-        onClose();
+        notifySuccess(message);
+        if(message == "Emails saved successfully!") {
+          onClose();
+        }
       } else {
         console.error('Error:', data.message || 'An error occurred');
       }
@@ -71,7 +74,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
 
     // Dispatch the updated settings locally
     dispatch(updateSetting(updatedSettings));
-    notifySuccess("Email removed successfully!");
+    addEmails(tempEmails, "Email removed successfully!");
   };
 
   function isValidEmail(email) {
@@ -187,7 +190,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
         {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 
         <div className="max-h-[200px] my-2 flex flex-wrap overflow-y-scroll">
-          {emails.map((entry, index) => (
+          {emails?.map((entry, index) => (
             <div key={index} className="flex justify-between bg-orange-50 w-[100%] p-1 m-[2px] rounded-lg px-2 items-center">
               <div className="">
                 <span>{entry.email}</span>
@@ -237,6 +240,8 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
           ))}
         </div>
 
+        <GeneralAccess sheetId={spreadsheetId} />
+
 
 
         <div className="flex justify-between items-center">
@@ -255,14 +260,14 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
 
           {/* Save button */}
           <button
-            className={`rounded-lg px-4 py-2 ${emails.length === 0
+            className={`rounded-lg px-4 py-2 ${emails?.length === 0
               ? 'bg-gray-200 cursor-not-allowed'  // Gray background and not-allowed cursor when disabled
               : 'bg-primary text-white'         // Default orange background when enabled
               }`}
-            onClick={() => addEmails()}
-            disabled={emails.length === 0}
+            onClick={() => addEmails(emails,"Emails saved successfully!")}
+            disabled={emails?.length === 0}
           >
-            Save``
+            Save
           </button>
           {saveTooltip && (
             <span className="absolute bg-[#fed17c] text-white text-xs rounded py-1 px-2 right-[100px] mt-1">

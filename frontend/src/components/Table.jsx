@@ -15,6 +15,7 @@ import { set } from "lodash";
 import VideoTable from "./video_gallary/VideoTable.jsx";
 import PhotoTable from "./photo_gallery/PhotoTable.jsx";
 import IntractMapTable from "./interactive_map/IntractMapTable.jsx";
+import { notifyError } from "../utils/notify.jsx";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
@@ -73,6 +74,11 @@ const Table = () => {
         }
 
         console.log({res});
+        if(!res.permissions){
+          notifyError("You don't have permission to view this tool");
+          navigate("/dashboard");
+          return;
+        }
 
         // Redirect to view mode if permissions are restricted
         if (res.permissions.toLowerCase() === "view") {
@@ -99,8 +105,12 @@ const Table = () => {
         setLoading(false);
       })
       .catch((err) => {
-        // console.error("Error fetching sheet data:", err.message);
+        console.error("Error fetching sheet data:", err);
         setLoading(false);
+        if(err.response.status === 403) {
+          notifyError("You don't have permission to view this tool.");  
+          navigate("/signin");
+        }
       });
   }, [id, token, navigate]);
 
