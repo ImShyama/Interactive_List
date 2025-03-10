@@ -72,6 +72,8 @@ const Table = () => {
           return;
         }
 
+        console.log({res});
+
         // Redirect to view mode if permissions are restricted
         if (res.permissions.toLowerCase() === "view") {
           navigate(`/${id}/view`);
@@ -97,7 +99,7 @@ const Table = () => {
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Error fetching sheet data:", err.message);
+        // console.error("Error fetching sheet data:", err.message);
         setLoading(false);
       });
   }, [id, token, navigate]);

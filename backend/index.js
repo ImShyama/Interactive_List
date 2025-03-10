@@ -43,6 +43,14 @@ app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 app.use("/", authRoute);
 
+// Function to conditionally apply authentication
+const optionalAuth = async (req, res, next) => {
+  if (req.query.access === "public") {
+      return next(); // Skip authentication
+  }
+  authenticateToken(req, res, next); // Apply authentication
+};
+
 // app.use(authenticateToken);
 
 async function getMetaSheetData({ sheets, spreadSheetID, range }) {
@@ -154,7 +162,7 @@ app.post("/getSheetDataWithID", authenticateToken, async (req, res) => {
     let permissions = "edit";
     if (sheetOwner?._id.toString() !== req?.user?._id.toString()) {
       const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
-      permissions = tempAccess.permission;
+      permissions = tempAccess?.permission || "view";
     }
 
     // Return full updated sheet details from MongoDB
@@ -192,7 +200,6 @@ app.get("/getSheetDetails/:id", authenticateToken, async (req, res) => {
 app.get("/getUserData", authenticateToken, (req, res) => {
   res.send(req.user);
 });
-
 
 app.get("/getallusers",authenticateToken, async (req, res) => {
   console.log("API Hit: /getallusers");

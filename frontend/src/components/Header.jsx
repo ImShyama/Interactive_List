@@ -79,25 +79,27 @@ const Header = () => {
       })
       .then(({ data: res }) => {
         if (res.error) {
-          // Handle server-sent error messages
           alert(res.error);
           if (res.error === "Token expired. Please log in again.") {
-            // Clear token and redirect to login if the token has expired
             localStorage.removeItem("token"); // Assuming token is stored in localStorage
+            setToken(null);
             navigate("/signin"); // Redirect to login page
           }
           return;
         }
+        console.log({ res });
         setUser(res); // Set user data if successful
         setRole(res.role);
       })
       .catch((err) => {
-        // Handle network or unexpected errors
         console.error("Error fetching user data:", err?.response?.data?.error);
+
+        // navigate("/signin");
         if (
-          err?.response?.data?.error === "Token expired. Please log in again."
+          err?.response?.data?.error === "Token expired. Please log in again." || "User not found. Access denied."
         ) {
           Cookies.remove("token");
+          setToken(null);
           navigate("/signin"); // Redirect to login page
         }
       });
@@ -171,57 +173,55 @@ const Header = () => {
               isAboutPage ||
               isProductsPage ||
               isOverviewPage) && (
-              // <div className="flex gap-6 text-[26px] font-[500] tracking-[0.78px] font-poppins text-[#A0A0A0]">
-              //   <button
-              //     className="hover:text-[var(--Button-color,#598931)] transition-colors duration-200"
-              //     onClick={() => navigate("/")}
-              //   >
-              //     Home
-              //   </button>
-              //   <button
-              //     className="hover:text-[var(--Button-color,#598931)] transition-colors duration-200"
-              //     onClick={() => navigate("/products")}
-              //   >
-              //     Products
-              //   </button>
-              //   <button
-              //     className="hover:text-[var(--Button-color,#598931)] transition-colors duration-200"
-              //     onClick={() => navigate("/about")}
-              //   >
-              //     About
-              //   </button>
-              //   <button
-              //     className="hover:text-[var(--Button-color,#598931)] transition-colors duration-200"
-              //     onClick={() => navigate("/support")}
-              //   >
-              //     Support
-              //   </button>
-              // </div>
-              <div className="flex gap-6 text-[22px] font-[500] tracking-[0.78px] font-poppins text-[#A0A0A0]">
-                {["/", "/products"].map((path) => (
-                  <button
-                    key={path}
-                    className={`relative transition-colors duration-200 ${
-                      activeButton === path
-                        ? "text-[#598931]"
-                        : "text-[#A0A0A0]"
-                    } hover:text-[#598931]`}
-                    onClick={() => handleClick(path)}
-                  >
-                    {path === "/"
-                      ? "Home"
-                      : path.replace("/", "").charAt(0).toUpperCase() +
+                // <div className="flex gap-6 text-[26px] font-[500] tracking-[0.78px] font-poppins text-[#A0A0A0]">
+                //   <button
+                //     className="hover:text-[var(--Button-color,#598931)] transition-colors duration-200"
+                //     onClick={() => navigate("/")}
+                //   >
+                //     Home
+                //   </button>
+                //   <button
+                //     className="hover:text-[var(--Button-color,#598931)] transition-colors duration-200"
+                //     onClick={() => navigate("/products")}
+                //   >
+                //     Products
+                //   </button>
+                //   <button
+                //     className="hover:text-[var(--Button-color,#598931)] transition-colors duration-200"
+                //     onClick={() => navigate("/about")}
+                //   >
+                //     About
+                //   </button>
+                //   <button
+                //     className="hover:text-[var(--Button-color,#598931)] transition-colors duration-200"
+                //     onClick={() => navigate("/support")}
+                //   >
+                //     Support
+                //   </button>
+                // </div>
+                <div className="flex gap-6 text-[22px] font-[500] tracking-[0.78px] font-poppins text-[#A0A0A0]">
+                  {["/", "/products"].map((path) => (
+                    <button
+                      key={path}
+                      className={`relative transition-colors duration-200 ${activeButton === path
+                          ? "text-[#598931]"
+                          : "text-[#A0A0A0]"
+                        } hover:text-[#598931]`}
+                      onClick={() => handleClick(path)}
+                    >
+                      {path === "/"
+                        ? "Home"
+                        : path.replace("/", "").charAt(0).toUpperCase() +
                         path.slice(2)}
-                    {/* Underline Effect */}
-                    <span
-                      className={`absolute left-0 -bottom-1 h-[2px] bg-[#598931] transition-all duration-200 ${
-                        activeButton === path ? "w-full" : "w-0"
-                      }`}
-                    ></span>
-                  </button>
-                ))}
-              </div>
-            )}
+                      {/* Underline Effect */}
+                      <span
+                        className={`absolute left-0 -bottom-1 h-[2px] bg-[#598931] transition-all duration-200 ${activeButton === path ? "w-full" : "w-0"
+                          }`}
+                      ></span>
+                    </button>
+                  ))}
+                </div>
+              )}
           </div>
 
           {token ? (

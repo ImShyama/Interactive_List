@@ -63,55 +63,6 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
 
     const isPreview = location.pathname.includes("InteractiveListView");
 
-    // const handleCheckboxChange = async (columnKey, option, event) => {
-    //     const isChecked = event.target.checked;
-
-    //     let updatedSettings = {};  // Declare the updatedSettings variable
-
-    //     if (option === 'showInCard') {
-    //         setShowInCard((prevState) => {
-    //             const updatedState = isChecked
-    //                 ? [...prevState, columnKey] // Add columnKey if checked
-    //                 : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-
-    //             updatedSettings = {
-    //                 showInCard: updatedState,
-    //                 showInProfile,  // Assuming this is being set somewhere else in your state
-    //             };
-
-    //             // Dispatch with updated state
-    //             dispatch(updateSetting(updatedSettings));
-    //             // console.log({ updatedSettings });
-
-    //             return updatedState;
-    //         });
-    //     } else if (option === 'showInProfileView') {
-    //         setShowInProfile((prevState) => {
-    //             const updatedState = isChecked
-    //                 ? [...prevState, columnKey] // Add columnKey if checked
-    //                 : prevState.filter((item) => item !== columnKey); // Remove columnKey if unchecked
-
-    //             updatedSettings = {
-    //                 showInCard,  // Assuming this is being set somewhere else in your state
-    //                 showInProfile: updatedState,
-    //             };
-
-    //             // Dispatch with updated state
-    //             dispatch(updateSetting(updatedSettings));
-    //             // console.log({ updatedSettings });
-
-    //             return updatedState;
-    //         });
-    //     }
-
-    //     // console.log({ updatedSettings });
-    //     // // Now call handleSaveChanges with the updatedSettings
-    //     // const response = await handleSaveChanges(settings, token, dispatch,updatedSettings);
-    //     // console.log({ response });
-    //     const response = await handleSaveChanges(updatedSettings);
-    //     console.log({ response });
-    // };
-
     const saveColumnWidthsToCookies = (columnWidthsTemp) => {
         if (!settings || !settings._id || !settings.firstSheetName) {
             console.warn("Missing settings for generating the storage key.");

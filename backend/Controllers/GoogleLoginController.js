@@ -27,7 +27,7 @@ const checkLicenseValidity = async (email, sheetID) => {
     try {
         const url = `https://auth.ceoitbox.com/checkauth/${sheetID}/${email}/${sheetID}/NA/NA`;
         const response = await axios.get(url);
-        
+
         if (response.data && response.data.valid === "Active" && response.data.status === "Active") {
             return true;
         }
@@ -57,12 +57,15 @@ exports.HandleGoogleLogin = async (req, res) => {
         // if (!isLicenseValid) return res.send({ error: "Unfortunately you are not authorised to access this app. Please connect with CEOITBOX team at access@ceoitbox.in."        })
 
         const existingUser = await UsersModel.findOne({ email }).lean();
+        console.log({existingUser});
         if (existingUser) {
             let updatedUser = await UsersModel.findOneAndUpdate({ email }, {
+                name: userName,
+                profileUrl: payload.picture,
                 googleRefreshToken: tokens.refresh_token,
             }).lean();
 
-            if(!updatedUser.isApproved) return res.send({ error: "User is not Approved. Please connect with CEOITBOX team at access@ceoitbox.in." });
+            if (!updatedUser.isApproved) return res.send({ error: "User is not Approved. Please connect with CEOITBOX team at access@ceoitbox.in." });
 
             const token = createSecretToken(existingUser._id);
             delete existingUser.password;
@@ -76,16 +79,17 @@ exports.HandleGoogleLogin = async (req, res) => {
         else {
             let newUser = await UsersModel.create({
                 name: userName,
-                email,  
+                email,
                 profileUrl: payload.picture,
                 googleRefreshToken: tokens.refresh_token,
-                role:"user",
+                role: "user",
             })
             newUser = JSON.parse(JSON.stringify(newUser))
 
-            if(!newUser.isApproved) return res.send({ error: "User is not Approved. Please connect with CEOITBOX team at access@ceoitbox.in." });
+            if (!newUser.isApproved) return res.send({ error: "User is not Approved. Please connect with CEOITBOX team at access@ceoitbox.in." });
 
-            const token = createSecretToken(existingUser._id);
+            console.log({newUser});
+            const token = createSecretToken(newUser._id);
             delete newUser.password;
             delete newUser.googleRefreshToken;
             delete newUser.OTP;
