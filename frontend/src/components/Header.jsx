@@ -96,13 +96,13 @@ const Header = () => {
         console.error("Error fetching user data:", err?.response?.data?.error);
 
         // navigate("/signin");
-        if ( err?.response?.data?.error === "Token expired. Please log in again." ) {
+        if (err?.response?.data?.error === "Token expired. Please log in again.") {
           Cookies.remove("token");
           setToken(null);
           navigate("/signin"); // Redirect to login page
         }
 
-        
+
       });
   }, [token]);
 
@@ -160,9 +160,29 @@ const Header = () => {
               />
             </div>
             <div className="interact-parent">
-              <div className="interact">Interact</div>
+              {/* <div className="interact">Interact<span
+                className={`h-[2px] bg-[#598931] w-full}`}
+              ></span></div> */}
+              <div className="interact flex gap-6 text-[22px] font-[500] tracking-[0.78px] font-poppins text-[#A0A0A0]">
+                {["/"].map((path) => (
+                  <button
+                    key={path}
+                    className="relative transition-colors duration-200 text-[#598931]"
+                    onClick={() => handleClick(path)}
+                  >
+                    {path === "/"
+                      ? "Interact"
+                      : path.replace("/", "").charAt(0).toUpperCase() +
+                      path.slice(2)}
+                    {/* Underline Effect */}
+                    <span
+                      className="absolute left-0 -bottom-[1px] h-[2px] bg-[#598931] transition-all duration-200 w-full"
+                    ></span>
+                  </button>
+                ))}
+              </div>
               {(settings?.appName && (isViewMode || isEditMode)) && (
-                <div className="interactive-table">{settings?.appName}</div>
+                <div className="interactive-table "><span className="interactive-table ">{settings?.appName}</span></div>
               )}
             </div>
           </div>
@@ -205,8 +225,8 @@ const Header = () => {
                     <button
                       key={path}
                       className={`relative transition-colors duration-200 ${activeButton === path
-                          ? "text-[#598931]"
-                          : "text-[#A0A0A0]"
+                        ? "text-[#598931]"
+                        : "text-[#A0A0A0]"
                         } hover:text-[#598931]`}
                       onClick={() => handleClick(path)}
                     >
@@ -271,7 +291,7 @@ const Header = () => {
                 }}
               >
                 <span className="text-[#F5F6F7] font-poppins text-[16px] font-medium leading-normal ">
-                  Sign in
+                  Create user
                 </span>
               </button>
             </div>

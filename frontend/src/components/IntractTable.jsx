@@ -1222,9 +1222,9 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
-                    <button onClick={() => navigate(-1)} title="Back">
+                    {isedit && <button onClick={() => navigate(-1)} title="Back">
                         <BackIcon />
-                    </button>
+                    </button>}
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
                 <div className="flex ">

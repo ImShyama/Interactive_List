@@ -37,11 +37,10 @@
   font-size: 24px;
   font-style: normal;
   font-weight: 500;
-  line-height: normal;
 }
 
 .interactive-table {
-  color: var(--text, #787D89);
+  color: #626272;
   font-family: Poppins;
   font-size: 14px;
   font-style: normal;
