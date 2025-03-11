@@ -81,7 +81,7 @@ const Table = () => {
         }
 
         // Redirect to view mode if permissions are restricted
-        if (res.permissions.toLowerCase() === "view") {
+        if (res.permissions.toLowerCase() === "view" && (res.settings.access !== "Owner" || res.settings.access === "Edit")) {
           navigate(`/${id}/view`);
           // return;
         }
