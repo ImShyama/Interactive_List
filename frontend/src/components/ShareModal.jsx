@@ -5,10 +5,18 @@ import { Input, Select, Space } from 'antd';
 import { notifyError, notifySuccess } from "../utils/notify";
 import { CiEdit } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
-import { useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateSetting } from "../utils/settingSlice";
 import GeneralAccess from "./component/GeneralAccess";
 import useSpreadSheetDetails from "../utils/useSpreadSheetDetails";
+import { RiDeleteBinLine } from "react-icons/ri";
+import {
+  Box,
+  Typography,
+  Modal,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 
 const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWith, settings }) => {
   const [email, setEmail] = useState("");
@@ -20,16 +28,22 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
   const [saveTooltip, setSaveTooltip] = useState("");
   const { token } = useContext(UserContext);
   const dispatch = useDispatch();
-  
-  
-  console.log({settings, sharedWith});
+  const [loading, setLoading] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
+
+
+  console.log({ settings, sharedWith });
 
   useEffect(() => {
-      setEmails(sharedWith);
+    setEmails(sharedWith);
   }, [settings]);
 
   async function addEmails(emails, message) {
     try {
+      if (message == "Emails saved successfully!") {
+        setLoading(true);
+      }
+      
       const response = await fetch(`${HOST}/addEmails/${spreadsheetId}`, {
         method: 'POST',
         headers: {
@@ -45,19 +59,22 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
       if (response.ok) {
         updateSharedWith(emails, spreadsheetId);
         notifySuccess(message);
-        if(message == "Emails saved successfully!") {
+        if (message == "Emails saved successfully!") {
           onClose();
         }
       } else {
         console.error('Error:', data.message || 'An error occurred');
       }
+
+      setLoading(false);
     } catch (error) {
       console.error('Request failed:', error);
+      setLoading(false);
     }
   }
 
   const handleCopy = () => {
-    const linkToCopy = `${FRONTENDHOST}/${spreadsheetId}/view`; 
+    const linkToCopy = `${FRONTENDHOST}/${spreadsheetId}/view`;
     navigator.clipboard.writeText(linkToCopy).then(() => {
       notifySuccess("Link copied successfully!");
     });
@@ -98,6 +115,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
     setEmail(''); // Clear the input field after adding
     setAccess("View");
     setError(''); // Clear any previous error
+    setLoadingSave(true);
   };
 
   const updateAccess = (emailToUpdate, newAccess) => {
@@ -118,15 +136,16 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
   const iconOptions = [
     {
       value: 'Edit',
-      label: <CiEdit size={22} color="#FFA500" />,
+      label: <CiEdit size={20} className="text-primary" />,
     },
     {
       value: 'View',
-      label: <IoEyeOutline size={20} color="#FFA500" />,
+      label: <IoEyeOutline size={18} className="text-primary" />,
     },
   ];
 
   if (!isOpen) return null;
+  console.log({ emails });
 
   return (
     <div className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex justify-center items-center">
@@ -164,7 +183,10 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
             className={`border px-2 py-1 w-full rounded-lg ${error ? 'border-red-500' : 'border-gray-300'}`}
           /> */}
 
-          <Input type="email" placeholder="Enter email address" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '80%' }} />
+          <Input type="email" placeholder="Enter email address" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '80%' }}
+            className="border rounded placeholder:text-[12px]"
+          />
+
           <Select defaultValue="View" options={options} onChange={(value) => setAccess(value)} style={{ width: '25%' }} />
 
           {/* Error message */}
@@ -176,7 +198,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
           </button> */}
 
           <button
-            className={`rounded-lg px-4 py-1 ${email == ""
+            className={`rounded-lg px-4 py-[6px] ${email == ""
               ? 'bg-gray-200 cursor-not-allowed'
               : 'bg-primary text-white'
               }`}
@@ -189,24 +211,25 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
         </div>
         {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
 
-        <div className="max-h-[200px] my-2 flex flex-wrap overflow-y-scroll">
+        <div className="max-h-[40vh] my-2 flex flex-wrap overflow-y-scroll">
           {emails?.map((entry, index) => (
-            <div key={index} className="flex justify-between bg-orange-50 w-[100%] p-1 m-[2px] rounded-lg px-2 items-center">
+            <div key={index} className="flex justify-between bg-gray-100 w-[100%] m-[2px] rounded-lg px-2 items-center">
               <div className="">
-                <span>{entry.email}</span>
+                <span className="text-[12px]">{entry.email}</span>
               </div>
               <div className="flex gap-[10px] items-center">
                 <div>
                   <Select defaultValue={entry.permission} options={iconOptions} onChange={(value) => updateAccess(entry.email, value)} bordered={false}
-                    style={{ 
-                      backgroundColor: 'transparent', 
-                      border: 'none', 
+                    style={{
+                      backgroundColor: 'transparent',
+                      border: 'none',
                       boxShadow: 'none'  // removes any default shadow if present
                     }}
-                    />
+                  />
                 </div>
                 <div className="cursor-pointer flex align-center">
                   <button onClick={() => removeEmail(entry.email)} className="text-red-600 hover:text-red-800">
+                    <RiDeleteBinLine size={16}  className="text-primary" />
                     {/* <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -221,7 +244,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
                         d="M6 18L18 6M6 6l12 12"
                       />
                     </svg> */}
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    {/* <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g id="Frame">
                         <path id="Vector" d="M3 6H21" stroke="#FFA500" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path id="Vector_2" d="M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6" stroke="#FFA500" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -229,7 +252,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
                         <path id="Vector_4" d="M10 11V17" stroke="#FFA500" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         <path id="Vector_5" d="M14 11V17" stroke="#FFA500" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </g>
-                    </svg>
+                    </svg> */}
 
                   </button>
                 </div>
@@ -259,26 +282,38 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
           )}
 
           {/* Save button */}
-          <button
-            className={`rounded-lg px-4 py-2 ${emails?.length === 0
-              ? 'bg-gray-200 cursor-not-allowed'  // Gray background and not-allowed cursor when disabled
-              : 'bg-primary text-white'         // Default orange background when enabled
-              }`}
-            onClick={() => addEmails(emails,"Emails saved successfully!")}
-            disabled={emails?.length === 0}
-          >
-            Save
-          </button>
-          {saveTooltip && (
+          {loading ?
+
+            <button
+            className="rounded-lg px-4 py-2 bg-gray-200 cursor-not-allowed text-white"
+            disabled={true}
+            >
+              <CircularProgress
+                size={15}
+                sx={{ color: "#fff", marginRight: "5px" }}
+              />{" "}
+              Saving...
+            </button>
+            : <button
+              className={`rounded-lg px-4 py-2 ${ !loadingSave
+                ? 'bg-gray-200 cursor-not-allowed'  // Gray background and not-allowed cursor when disabled
+                : 'bg-primary text-white'         // Default orange background when enabled
+                }`}
+              onClick={() => addEmails(emails, "Emails saved successfully!")}
+              disabled={emails?.length === 0}
+            >
+              Save
+            </button>}
+          {/* {saveTooltip && (
             <span className="absolute bg-[#fed17c] text-white text-xs rounded py-1 px-2 right-[100px] mt-1">
               {saveTooltip}
             </span>
-          )}
+          )} */}
 
         </div>
 
       </div>
-    </div>
+    </div >
   );
 };
 

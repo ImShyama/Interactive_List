@@ -54,7 +54,7 @@ const dynamicAuth = async (req, res, next) => {
     if (!sheetDetails) return res.status(404).json({ error: "Sheet not found." });
 
     // Check if the sheet is public or private
-    if (sheetDetails?.accessType?.type === "public") {
+    if (sheetDetails?.accessType?.type !== "private") {
       return next(); // Skip authentication for public sheets
     }
 

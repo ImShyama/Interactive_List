@@ -17,50 +17,52 @@ const GeneralAccess = ({ sheetId }) => {
 
     useEffect(() => {
         setGeneralAccess(setting?.accessType?.type);
-    },[setting])
+    }, [setting])
     console.log({ generalAccess });
 
-    const handleSaveChanges = async(e) => {
+    const handleSaveChanges = async (e) => {
         console.log(e);
         setGeneralAccess(e);
 
         // try {
-            // Use the passed settings or fallback to the Redux state
-            const settingsToSave =  {...setting, accessType: {type: e}};
-            console.log({ settingsToSave })
-      
-            const response = await axios.put(
-              `${HOST}/spreadsheet/${settingsToSave._id}`,
-              settingsToSave,
-              {
+        // Use the passed settings or fallback to the Redux state
+        const settingsToSave = { ...setting, accessType: { type: e } };
+        console.log({ settingsToSave })
+
+        const response = await axios.put(
+            `${HOST}/spreadsheet/${settingsToSave._id}`,
+            settingsToSave,
+            {
                 headers: {
-                  authorization: "Bearer " + token,
+                    authorization: "Bearer " + token,
                 },
-              }
-            );
-      
-            console.log("Settings updated successfully:", response.data);
+            }
+        );
+
+        console.log("Settings updated successfully:", response.data);
         //   } catch (error) {
         //     console.error("Error updating settings in DB:", error);
         //   }
-        
+
     }
 
     return (
         <div>
-            <span className="font-small text-[#1f1f1f] text-[14px]">General access</span>
-            <div className="flex justify-between items-center bg-slate-100 p-2 my-2 rounded-md">
+            <span className="font-small text-gray-600 text-[13px]">General access</span>
+            <div className="flex justify-between items-center bg-slate-100 py-1 px-2 my-2 rounded-md">
                 <div className="flex items-center w-[75%] gap-2">
                     <div className="flex gap-2 bg-white p-1 rounded-full">
                         {generalAccess == "public" ? <BsGlobeCentralSouthAsia className="text-primary " /> : <TiLockClosed className="text-primary" />}
                     </div>
                     <div className="truncate mr-2">
-                        {setting?.spreadsheetName}
+                        <span className="font-small text-[#1f1f1f] text-[14px]">
+                            {setting?.spreadsheetName}
+                        </span>
                     </div>
 
                 </div>
 
-                <div className="w-[25%]">
+                <div className="w-[25%] ">
                     <Select value={generalAccess}
                         options={[
                             { value: 'public', label: 'Public' },
