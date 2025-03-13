@@ -285,13 +285,13 @@ const Header = () => {
           ) : (
             <div className="flex items-center">
               <button
-                className="flex w-[140px] p-[10px] justify-center items-center gap-[10px] rounded-[14px] bg-[#598931] ml-[69px]"
+                className="flex py-[10px] px-[25px] justify-center items-center gap-[10px] rounded-[14px] bg-[#598931] ml-[69px]"
                 onClick={(e) => {
                   navigate("/signin");
                 }}
               >
                 <span className="text-[#F5F6F7] font-poppins text-[16px] font-medium leading-normal ">
-                  Create user
+                  {isViewMode ? "Create Account" : "Sign In"}
                 </span>
               </button>
             </div>

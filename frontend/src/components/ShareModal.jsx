@@ -58,7 +58,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
 
       if (response.ok) {
         updateSharedWith(emails, spreadsheetId);
-        notifySuccess(message);
+        notifySuccess("Saved Successfully");
         if (message == "Emails saved successfully!") {
           onClose();
         }
