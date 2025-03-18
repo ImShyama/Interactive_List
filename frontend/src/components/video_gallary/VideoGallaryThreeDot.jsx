@@ -287,7 +287,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
             <div
               style={{
                 position: "relative",
-                zIndex: "1000",
+                zIndex: "10",
                 background: "#fff",
                 boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                 borderRadius: "8px",

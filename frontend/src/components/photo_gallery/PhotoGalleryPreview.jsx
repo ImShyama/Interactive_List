@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Pagination } from "antd";
 import TitleBarPreview from "../TitleBarPreview";
 import PhotoCard from "./PhotoCard";
+import {APPS} from "../../utils/constants";
 
 import { getDriveThumbnail } from "../../utils/globalFunctions";
 
@@ -111,12 +112,14 @@ const PhotoGalleryPreview = () => {
     currentPage * pageSize
   );
 
+  const appsDetails = APPS[3];
+
   return (
     <div className="px-10 py-2">
       <TitleBarPreview
-        appName="Photo Gallery"
-        spreadSheetID="1wHDKsShOppIMNtYgm5QEh2cagKVgXkktdmuRtGYRrwE"
-        spreadSheetName="Data"
+        appName={appsDetails.appName}
+        spreadSheetID={appsDetails.appID}
+        spreadSheetName={appsDetails.spreadSheetName}
       />
 
       {/* Photo Gallery Grid */}

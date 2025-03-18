@@ -26,7 +26,7 @@ const EditableSpreadsheetName = ({ settings }) => {
 
   const handleSave = async () => {
     const newname = editedName;
-    const sheetId = settings.spreadsheetId;
+    const sheetId = settings._id;
     setIsLoading(true);
     try {
       // Call your backend API to update the spreadsheet name

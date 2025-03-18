@@ -76,7 +76,7 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
       settings?.showInProfile?.map((i) => i?.title).includes(columnKey)
     ) || false);
   }, [settings]);
-  
+
 
   const handleCheckboxChange = useCallback(
     async (checked, optionType) => {
@@ -85,14 +85,15 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
         return;
       }
 
-      if(settings.showInCard?.length >= 3){
-        notifyError("You can only have 3 profile cards");
+      if (settings.showInCard?.every(card => card.title.trim() !== "")) {
+        notifyError("You can only have 3 profile cards.");
         return;
       }
-  
+
+
       try {
         const updatedSettings = { ...settings };
-  
+
         if (optionType === "showInProfile") {
           // Existing logic for showInProfile
           const updateList = (list = []) => {
@@ -103,15 +104,15 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
               return list.filter((item) => item.title !== columnKey);
             }
           };
-  
+
           updatedSettings.showInProfile = updateList(settings.showInProfile);
           setShowInProfileChecked(checked);
-        } 
-        
+        }
+
         else if (optionType === "showInCard") {
           let updatedChecked = checked; // Keep track of the checkbox state
           let found = false; // Flag to track if we already added the columnKey
-        
+
           updatedSettings.showInCard = settings.showInCard.map((item) => {
             if (checked && item.title === "" && !found) {
               // Assign columnKey to the first empty title and stop further modifications
@@ -125,17 +126,17 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
             }
             return item; // Keep other items unchanged
           });
-        
+
           // Only update the checkbox state when necessary
           setShowInCardChecked(checked ? true : updatedChecked);
         }
-        
-        
-        
-  
+
+
+
+
         // Dispatch updated settings locally
         dispatch(updateSetting(updatedSettings));
-  
+
         // Update backend
         const response = await axios.put(
           `${HOST}/spreadsheet/${settings._id}`,
@@ -144,7 +145,7 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
             headers: { authorization: `Bearer ${token}` },
           }
         );
-  
+
         console.log("Settings updated successfully:", response.data);
         dispatch(updateSetting(response.data));
         notifySuccess("Settings updated successfully");
@@ -155,8 +156,8 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
     },
     [dispatch, settings, token, columnKey]
   );
-  
-  
+
+
   const handlePopoverClose = () => {
     if (!isEditBoxOpen) {
       setIsPopoverOpen(false);
@@ -164,14 +165,14 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
   };
   const handleSaveEdit = async () => {
 
-    console.log({showIn, columnKey, editValues});
+    console.log({ showIn, columnKey, editValues });
     try {
       const updatedShowInCard = settings[showIn]?.map((item) =>
         item?.title === columnKey
           ? { ...item, setting: { ...item.setting, ...editValues } }
           : item
       );
-      
+
       const updatedSettings = {
         ...settings,
         [showIn]: updatedShowInCard,
@@ -522,7 +523,7 @@ const PhotoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
               )
                 ? editValues.fontStyle
                 : undefined, // Apply only if it's a valid font-style
-                fontWeight: editValues.fontStyle === "bold" ? "bold" : "normal",
+              fontWeight: editValues.fontStyle === "bold" ? "bold" : "normal",
               textDecoration: [
                 "underline",
                 "line-through",

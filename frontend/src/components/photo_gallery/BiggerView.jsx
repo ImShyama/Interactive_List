@@ -48,7 +48,7 @@ const BiggerView = ({ title, onClose, photo }) => {
   const handleCopyLink = () => {
     const currentUrl = window.location.href; // Get the current page URL
     navigator.clipboard
-      .writeText(image)
+      .writeText(photo[currentIndex])
       .then(() => {
         // alert("Page link copied to clipboard!"); // Optionally, show an alert or a message
         notifySuccess("Link copied to clipboard!");
@@ -67,7 +67,7 @@ const BiggerView = ({ title, onClose, photo }) => {
 
   // Handle opening the image in a new tab
   const handleExpand = () => {
-    const imageUrl = photo.images[currentIndex];
+    const imageUrl = photo[currentIndex];
     window.open(imageUrl, "_blank"); // Open image in new tab
   };
 
@@ -105,14 +105,14 @@ const BiggerView = ({ title, onClose, photo }) => {
         <div className="relative w-[90vw] max-w-[800px] aspect-[16/9] flex-shrink-0 rounded-[28px]">
           {/* Image */}
           <img
-            src={photo}
+            src={photo[currentIndex]}
             alt={`Slide ${currentIndex + 1}`}
             className="w-full h-full object-cover rounded-[28px]"
             style={{
               transform: `scale(${zoomLevel})`,
               transition: "transform 0.3s",
             }}
-            onError={(e) => handleImageError(e, noPhoto)}
+            // onError={(e) => handleImageError(e, noPhoto)}
           />
         </div>
 

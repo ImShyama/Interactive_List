@@ -749,6 +749,85 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
     const lastColumnLetter = columnToLetter(firstTabHeader.length);
     const firstTabDataRange = `${firstSheetName}!A1:${lastColumnLetter}`;
 
+    let cardSettings = [
+      { id: 0, title: "" },
+      { id: 1, title: "" },
+      { id: 2, title: "" },
+      { id: 3, title: "" },
+      { id: 4, title: "" },
+      { id: 5, title: "" },
+    ]
+
+    if (appName == "Video Gallery") {
+      cardSettings = [
+        {
+          id: 0,
+          title: "",
+
+        },
+        {
+          id: 1,
+          title: ""
+        },
+        {
+          id: 2, title: "",
+          setting: {
+            "fontStyle": "bold",
+            "fontColor": "#333131",
+            "fontSize": "20",
+            "fontType": "Poppins"
+          }
+        },
+        {
+          id: 3,
+          title: "",
+          setting: {
+            "fontStyle": "regular",
+            "fontColor": "#B0B0B0",
+            "fontSize": "16",
+            "fontType": "Poppins"
+          }
+        },
+        {
+          id: 4,
+          title: "",
+          setting: {
+            "fontStyle": "normal",
+            "fontColor": "#333131",
+            "fontSize": "16",
+            "fontType": "Poppins"
+          }
+        },
+        {
+          id: 5,
+          title: "",
+          setting: {
+            "fontStyle": "normal",
+            "fontColor": "#B0B0B0",
+            "fontSize": "16",
+            "fontType": "Poppins"
+          }
+        },
+      ]
+    }
+    else if (appName == "People Directory") {
+      cardSettings = [
+        { id: 0, title: "" },
+        { id: 1, title: "" },
+        { id: 2, title: "" },
+        { id: 3, title: "" },
+        { id: 4, title: "" },
+        { id: 5, title: "" },
+      ]
+    }
+    else if (appName == "Photo Gallery"){
+      cardSettings = [
+        { id: 0, title: "" },
+        { id: 1, title: "" },
+        { id: 2, title: "" },
+      ]
+    }
+
     const res = {
       spreadsheetId: sheet_id,
       spreadsheetUrl: `https://docs.google.com/spreadsheets/d/${sheet_id}/edit`,
@@ -780,14 +859,7 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       sheetDetails: sheetDetails,
       access: res.access, // Save access type
       lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
-      showInCard: [
-        { id: 0, title: "" },
-        { id: 1, title: "" },
-        { id: 2, title: "" },
-        { id: 3, title: "" },
-        { id: 4, title: "" },
-        { id: 5, title: "" },
-      ]
+      showInCard: cardSettings
     });
 
     return newSheet;
@@ -1035,7 +1107,7 @@ app.post("/renameSpreadsheet/:id", authenticateToken, async (req, res) => {
 
     // Find the document in MongoDB and update its settings
     const updatedSheetSetting = await Sheet.findOneAndUpdate(
-      { spreadsheetId: spreadSheetID, userId },  // Find by sheet and user
+      { _id: spreadSheetID },  // Find by sheet and user
       { $set: { spreadsheetName: newName } },  // Update the sheet name in the DB
       { new: true, upsert: true }   // Return the updated document
     );
