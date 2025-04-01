@@ -35,10 +35,7 @@ import _, { debounce } from "lodash";
 import GlobalSearch from "../interactive_list/GlobalSearch.jsx";
 import Table from "../interactive_list/Table.jsx";
 import Loader from "../Loader.jsx";
-import PhotoGalleryView from "./PhotoGalleryView.jsx";
-import EmptyTable from "../component/EmptyTable.jsx";
-import Preview from "../Preview.jsx";
-import { FiEye } from "react-icons/fi";
+import ProductCatalogueView from "./ProductCatalogueView.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -57,7 +54,7 @@ const convertArrayToJSON = (data) => {
     return jsonData;
 };
 
-const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaData, unhideHeader }) => {
+const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaData, unhideHeader, setShowTable }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [rowToEdit, setRowToEdit] = useState(null);
     const [confirmEditModalOpen, setConfirmEditModalOpen] = useState(false);
@@ -93,9 +90,8 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
     const isEditMode = window.location.pathname.endsWith('/edit');
     const [isedit, setIsedit] = useState(false);
     const [globalCheckboxChecked, setGlobalCheckboxChecked] = useState(false);
-    const [previewModalOpen, setPreviewModalOpen] = useState(false);
     const [columnWidths, setColumnWidths] = useState(
-        headers.reduce((acc, header) => {
+        headers?.reduce((acc, header) => {
             acc[header] = header.toLowerCase() === 'picture' ? '80px' : '200px'; // Set 80px for "picture", 200px otherwise
             return acc;
         }, { actions: '125px' }) // Default action column width
@@ -267,7 +263,7 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
     };
 
     // Calculate minWidth dynamically based on columnWidths
-    const minWidth = Object.values(columnWidths).reduce((sum, width) => sum + width, 0);
+    // const minWidth = Object?.values(columnWidths)?.reduce((sum, width) => sum + width, 0);
 
     useEffect(() => {
         if (data) {
@@ -543,7 +539,7 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
         }
     };
 
-    const [hiddenCol, setHiddenCol] = useState(settings.hiddenCol || []);
+    const [hiddenCol, setHiddenCol] = useState(settings?.hiddenCol || []);
 
     const handleHeaderSwitch = async (checked, header) => {
         console.log({ checked, header, hiddenCol });
@@ -759,7 +755,7 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
 
             // if(globalCheckboxChecked){
             //     notifyError("Select all works only for delete option");
-            //     return;
+            //     return;  
             // }
             // Call the backend API to update rows in Google Sheets
             const spreadSheetID = settings.spreadsheetId;
@@ -800,14 +796,6 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
         }
     };
 
-    const openModal = () => {
-        setPreviewModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setPreviewModalOpen(false);
-    };
-
     const handleConfirmDelete = async () => {
         try {
             // Close the confirmation modal
@@ -844,9 +832,9 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
-                    {isEditMode && <button onClick={() => navigate(-1)} title="Back">
+                    <button onClick={() => setShowTable(false)} title="Back">
                         <BackIcon />
-                    </button>}
+                    </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
                 <div className="flex ">
@@ -1196,10 +1184,6 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                             <MdDelete color="white" />
                         </button>
 
-                        <button onClick={() => openModal()} className="bg-primary rounded-[4px] p-[5px] ml-2 text-[#fff]" title="Preview">
-                            <FiEye />
-                        </button>
-
                         <Popover content={<HeaderSwitch />} title="Hide Columns" trigger="click" placement="bottomRight">
                             <button className="mx-2" title="Hide Columns">
                                 <div className="bg-primary rounded-[4px] p-1">
@@ -1211,56 +1195,96 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                 </div>
             </div>
 
-            {isEditMode ?
+            {/* <DataGrid
+                columnResizeMode="onChange"
+                rows={data}
+                columns={headers.map((col) => {
+                    return {
+                        field: col,
+                        header: col,
+                        width: 200,
+                    };
 
-                !data.length ?
+                })}
+            /> */}
 
-                    <EmptyTable sheetURL={settings?.spreadsheetUrl} />
-                    :
-                    <Table
-                        data={data}
-                        headers={headers}
-                        filteredData={filteredData}
-                        setFilteredData={setFilteredData}
-                        paginatedData={paginatedData}
-                        loading={loading}
-                        isEditMode={isEditMode}
-                        isedit={isedit}
-                        setIsedit={setIsedit}
-                        handleEdit={handleEdit}
-                        handleDelete={handleDelete}
-                        settings={settings}
-                        freezeCol={freezeCol}
-                        setFreezeCol={setFreezeCol}
-                        globalOption={globalOption}
-                        setGlobalOption={setGlobalOption}
-                        ischecked={ischecked}
-                        setIschecked={setIschecked}
-                        EditData={EditData}
-                        setEditData={setEditData}
-                        handleBulkDelete={handleBulkDelete}
-                        headerBgColor={headerBgColor}
-                        headerTextColor={headerTextColor}
-                        headerFontSize={headerFontSize}
-                        headerFontFamily={headerFontFamily}
-                        bodyTextColor={bodyTextColor}
-                        bodyFontSize={bodyFontSize}
-                        bodyFontFamily={bodyFontFamily}
-                        tempHeader={tempHeader}
-                        formulaData={formulaData}
-                        handleBulkSave={handleBulkSave}
-                        globalCheckboxChecked={globalCheckboxChecked}
-                        setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-                    />
+           {!isEditMode ?
+           <div>
+           <ProductCatalogueView data={filteredData} headers={headers} settings={settings} />
 
-                :
-                <PhotoGalleryView
-                    data={filteredData}
-                    settings={settings}
-                />
+           <Table
+                data={data}
+                headers={headers}
+                filteredData={filteredData}
+                setFilteredData={setFilteredData}
+                paginatedData={paginatedData}
+                loading={loading}
+                isEditMode={isEditMode}
+                isedit={isedit}
+                setIsedit={setIsedit}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                settings={settings}
+                freezeCol={freezeCol}
+                setFreezeCol={setFreezeCol}
+                globalOption={globalOption}
+                setGlobalOption={setGlobalOption}
+                ischecked={ischecked}
+                setIschecked={setIschecked}
+                EditData={EditData}
+                setEditData={setEditData}
+                handleBulkDelete={handleBulkDelete}
+                headerBgColor={headerBgColor}
+                headerTextColor={headerTextColor}
+                headerFontSize={headerFontSize}
+                headerFontFamily={headerFontFamily}
+                bodyTextColor={bodyTextColor}
+                bodyFontSize={bodyFontSize}
+                bodyFontFamily={bodyFontFamily}
+                tempHeader={tempHeader}
+                formulaData={formulaData}
+                handleBulkSave={handleBulkSave}
+                globalCheckboxChecked={globalCheckboxChecked}
+                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+            />
+            </div>
+           : <Table
+                data={data}
+                headers={headers}
+                filteredData={filteredData}
+                setFilteredData={setFilteredData}
+                paginatedData={paginatedData}
+                loading={loading}
+                isEditMode={isEditMode}
+                isedit={isedit}
+                setIsedit={setIsedit}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                settings={settings}
+                freezeCol={freezeCol}
+                setFreezeCol={setFreezeCol}
+                globalOption={globalOption}
+                setGlobalOption={setGlobalOption}
+                ischecked={ischecked}
+                setIschecked={setIschecked}
+                EditData={EditData}
+                setEditData={setEditData}
+                handleBulkDelete={handleBulkDelete}
+                headerBgColor={headerBgColor}
+                headerTextColor={headerTextColor}
+                headerFontSize={headerFontSize}
+                headerFontFamily={headerFontFamily}
+                bodyTextColor={bodyTextColor}
+                bodyFontSize={bodyFontSize}
+                bodyFontFamily={bodyFontFamily}
+                tempHeader={tempHeader}
+                formulaData={formulaData}
+                handleBulkSave={handleBulkSave}
+                globalCheckboxChecked={globalCheckboxChecked}
+                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+            />
 
-            }
-
+}
             <EditRow
                 isOpen={confirmEditModalOpen}
                 onClose={handleEditCancel}
@@ -1302,11 +1326,19 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                 spreadSheetData={selectSpreadsheet}
                 handleBuldData={handleBuldData}
             />
-            {previewModalOpen && (
-                <Preview closeModal={closeModal} sheetdetails={settings} />
-            )}
         </div>
     );
 };
 
-export default PhotoTable;
+export default ProductCatalogueTable;
+
+
+
+// import React from "react";
+
+// const ProductCatalogueTable = () => {
+//   console.log("ProductCatalogueTable rendered!");
+//   return <div>Product Catalogue Table is now visible!</div>;
+// };
+
+// export default ProductCatalogueTable;

@@ -17,8 +17,7 @@ import { notifyError } from "../utils/notify";
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
-  const [user, setUser] = useState(null);
-  const { token, setToken, setProfile, setRole } = useContext(UserContext);
+  const { token, setToken, setProfile, setRole, user, setUser } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation(); // Access the current route
   const isEditMode = window.location.pathname.endsWith("/edit");

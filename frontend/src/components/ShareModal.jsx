@@ -119,6 +119,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
   };
 
   const updateAccess = (emailToUpdate, newAccess) => {
+    setLoadingSave(true);
     setEmails(emails.map(entry => entry.email === emailToUpdate ? { ...entry, permission: newAccess } : entry));
   };
 

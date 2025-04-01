@@ -1232,7 +1232,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                 :
 
                 <PeopleDirectoryView
-                    data={data}
+                    data={filteredData}
                     headers={headers}
                     tempHeader={tempHeader}
                     filteredData={filteredData}

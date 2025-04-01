@@ -20,7 +20,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
     globalCheckboxChecked, setGlobalCheckboxChecked
 }) => {
 
-    const primaryColumn = settings?.appName == "Photo Gallery"
+    const primaryColumn = (settings?.appName == "Photo Gallery" || settings?.appName == "Interactive Map")
         ? settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_")
         : settings?.appName == "Video Gallery"
             ? settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios, { spread } from "axios";
 import "./setting.css";
+import CatalogueSettings from "./product_catalogue/settings/Setting.jsx";
 import settingIcon from "../assets/settingIcon.svg";
 import cancelIcon from "../assets/cancelIcon.svg";
 import searchIcon from "../assets/searchIcon.svg";
@@ -42,7 +43,6 @@ import { handleUpdateSettings } from "../APIs/index.jsx";
 import HeadingTitle from "./people_directory/HeadingTitle.jsx";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { IoMdOpen } from "react-icons/io";
-import Settings from "./product_catalogue/settings/Settings.jsx";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
@@ -639,9 +639,9 @@ const ViewSettings = ({ settingsData }) => {
             <SixDots />
 
             <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins] truncate"
-             title={item.title}
+              title={item.title}
             >
-              {item.title}
+              {item.title || "\u00A0"}
             </span>
           </div>
           {/* <div className="flex items-center">
@@ -655,14 +655,40 @@ const ViewSettings = ({ settingsData }) => {
       );
     };
 
-    const handleDeleteProfileCard = async (id) => {
+    const handleDeleteProfileCard = async (id, index) => {
       try {
-        console.log({ id });
+        console.log({ id, index, appName: settingsData.appName });
+        // let showInProfile = settingsData.showInProfile
+        // if(settingsData?.appName == "Interactive Map" && index == 0){
+        //   showInProfile[0].title = "";
+        // }else{
+        //   showInProfile = settingsData.showInProfile.filter((item) => item.id !== id);
+        // }
+        // // Create a new settingsData object with the updated showInProfile list
+        // const updatedSettings = {
+        //   ...settingsData,
+        //   showInProfile: showInProfile,
+        // };
+
+        // Create a new copy of showInProfile
+        let showInProfile = [...settingsData.showInProfile];
+
+        // if (settingsData?.appName === "Interactive Map" && index === 0) {
+        //   // Replace the first item with a new object that has an empty title
+        //   showInProfile = showInProfile.map((item, idx) =>
+        //     idx === 0 ? { ...item, title: "" } : item
+        //   );
+        // } else {
+        //   // Filter out the item based on id
+        //   showInProfile = showInProfile.filter((item) => item.id !== id);
+        // }
+
+        showInProfile = showInProfile.filter((item) => item.id !== id);
 
         // Create a new settingsData object with the updated showInProfile list
         const updatedSettings = {
           ...settingsData,
-          showInProfile: settingsData.showInProfile.filter((item) => item.id !== id),
+          showInProfile,
         };
 
         // Dispatch the updated settings locally
@@ -700,7 +726,7 @@ const ViewSettings = ({ settingsData }) => {
               <div className="flex flex-col m-2 w-[130px]">
                 {profileData.map((_, index) => (
                   <div key={index} className="flex items-center w-[130px]">
-                    {((settingsData?.appName == "Photo Gallery" || settingsData?.appName == "Interactive Map") && index == 0) ?
+                    {((settingsData?.appName == "Photo Gallery") && index == 0) ?
                       <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
                         Image
                       </span>
@@ -722,13 +748,12 @@ const ViewSettings = ({ settingsData }) => {
               </div>
 
               <div className="flex flex-col m-2">
-                {profileData?.map((item) => (
+                {profileData?.map((item, index) => (
                   item.title ? (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        console.log("Button clicked for ID:", item.id);
-                        handleDeleteProfileCard(item.id);
+                        handleDeleteProfileCard(item.id, index);
                       }}
 
                       className="text-[16px] m-[6px] font-medium leading-normal text-[#111] font-[Poppins] right-0 hover:text-red-500">
@@ -817,7 +842,7 @@ const ViewSettings = ({ settingsData }) => {
           {/* <div className="flex items-center"> */}
           <SixDots />
           <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins] truncate"
-          title={item.title}
+            title={item.title}
           >
             {item.title || "\u00A0"}
           </span>
@@ -901,6 +926,11 @@ const ViewSettings = ({ settingsData }) => {
               <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Title</span>
               <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sub Title</span>
             </div>}
+            {settingsData?.appName == "Interactive Map" && <div className="flex flex-col m-2 w-[130px]">
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Photo Link</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Longitude</span>
+              <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Latitude</span>
+            </div>}
 
             {/* Right Column (Draggable Items) */}
             <div className="flex flex-col my-2 w-[240px]">
@@ -940,16 +970,16 @@ const ViewSettings = ({ settingsData }) => {
     <div className="w-[100%]">
 
       {/* // show card drower */}
-      {settingsData?.appName !== "Interactive Map" && <div className="ml-[30px] mb-[20px] w-[100%]">
+      {<div className="ml-[30px] mb-[20px] w-[100%]">
         <div className="flex items-center gap-2 cursor-pointer"
           onClick={() => setShowCard(!showCard)}
         >
           <span
             className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]"
           >
-            Card Settings
+            {settingsData?.appName !== "Interactive Map" ? `Card Settings` : `Map View Settings`}
           </span>
-          {!showCard ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
+          {!showCard ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" />}
         </div>
         {showCard && <CardSettings settingsData={settingsData} />}
       </div>}
@@ -966,7 +996,7 @@ const ViewSettings = ({ settingsData }) => {
             >
               {settingsData?.appName !== "Interactive Map" ? `Profile Settings` : `Details View Settings`}
             </span>
-            {!showProfile ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
+            {!showProfile ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" />}
           </div>
           {showProfile && <ProfileSettings settingsData={settingsData} />}
         </div>
@@ -1075,123 +1105,79 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   return (
     <div>
       {settingData?.appName == "Product Catalogue"
-      
-      ?
-      <Settings />
-      :
-      <div>
-      <div className="setting_drawer">
-        <div className="setting_icons">
-          <div className="setting_icons_top">
-            <div className="setting_icons_top_left">
-              <div className="setting_icons_top_left_img">
-                <img src={settingIcon} />
-              </div>
-              <div>
-                <span className="setting_icons_top_left_span">Settings</span>
-              </div>
-            </div>
-            <div className="setting_icons_top_right">
-              <button
-                className="submit_btn"
-                onClick={() => handleSaveChanges(settingData, "Settings saved successfully, Reloading...")}
-                disabled={!isSaveChanges}
-              >
-                {/* {isLoading ? (
+        ?
+        <CatalogueSettings />
+        :
+        <div>
+          <div className="setting_drawer">
+            <div className="setting_icons">
+              <div className="setting_icons_top">
+                <div className="setting_icons_top_left">
+                  <div className="setting_icons_top_left_img">
+                    <img src={settingIcon} />
+                  </div>
+                  <div>
+                    <span className="setting_icons_top_left_span">Settings</span>
+                  </div>
+                </div>
+                <div className="setting_icons_top_right">
+                  <button
+                    className="submit_btn"
+                    onClick={() => handleSaveChanges(settingData, "Settings saved successfully, Reloading...")}
+                    disabled={!isSaveChanges}
+                  >
+                    {/* {isLoading ? (
                   <span className="span_btn">
                     <Loader textToDisplay="" />  
                   </span>
                 ) : ( */}
-                <span className="span_btn">Save Changes</span>
-                {/* )} */}
-              </button>
-              <div
-                className="setting_icons_top_right_inner"
-                onClick={() => handleToggleDrawer()}
-              >
-                {/* <span>Cancel</span> */}
-                <img src={cancelIcon} />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="setting_filter">
-          <div className="setting_filter_bottom flex justify-between items-center w-[100%]">
-            <div className="flex items-center">
-              <div
-                className="setting_filter_bottom_inner"
-                onClick={() => {
-                  setAddSheet(!addSheet);
-                }}
-              >
-                <span className="setting_filter_bottom_span">
-                  Spreadsheet Settings
-                </span>
-                {!addSheet ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
-              </div>
-              <div>
-
-              </div>
-              <Info info={"With these settings, you can manage your spreadsheet options, including fetching a spreadsheet directly from Google Drive and selecting the desired data range."} />
-            </div>
-            <div>
-              {addSheet &&
-                <button onClick={
-                  () => {
-                    window.location.reload();
-                  }
-                } className="bg-primary rounded-[4px] p-1" title="Refresh Spreadsheet">
-                  <Reset />
-                </button>
-              }
-            </div>
-
-          </div>
-          {addSheet && <SpreadsheetSettings activateSave={activateSave} />}
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="472"
-            height="2"
-            viewBox="0 0 472 2"
-            fill="none"
-          >
-            <path d="M0 1.21265H621" stroke="#EDEEF3" />
-          </svg>
-
-          <div className="flex justify-between items-center w-[100%]">
-            <div className="flex justify-center items-center">
-              <div className="flex items-center">
-                <div
-                  className="setting_filter_top1"
-                  onClick={() => {
-                    setAddData(!addData);
-                  }}
-                >
-                  <span className="setting_filter_top1_text">Table Settings</span>
-                  {!addData ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
+                    <span className="span_btn">Save Changes</span>
+                    {/* )} */}
+                  </button>
+                  <div
+                    className="setting_icons_top_right_inner"
+                    onClick={() => handleToggleDrawer()}
+                  >
+                    {/* <span>Cancel</span> */}
+                    <img src={cancelIcon} />
+                  </div>
                 </div>
-                <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body content, You can easily revert to the original settings by clicking the Reset icon."} />
               </div>
-              {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." />}
             </div>
-            <div>
-              {addData &&
-                <button onClick={
-                  () => {
-                    setIsTableLoading(true);
-                    handleResetChange();
-                  }
-                } className="bg-primary rounded-[4px] p-1" title="Reset Table Styles">
-                  <Reset />
-                </button>
-              }
-            </div>
-          </div>
-          {addData && <AddData activateSave={activateSave} isTableLoading={isTableLoading} setIsTableLoading={setIsTableLoading} />}
+            <div className="setting_filter">
+              <div className="setting_filter_bottom flex justify-between items-center w-[100%]">
+                <div className="flex items-center">
+                  <div
+                    className="setting_filter_bottom_inner"
+                    onClick={() => {
+                      setAddSheet(!addSheet);
+                    }}
+                  >
+                    <span className="setting_filter_bottom_span">
+                      Spreadsheet Settings
+                    </span>
+                    {!addSheet ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" />}
+                  </div>
+                  <div>
 
-          {(settingData?.appName == "People Directory" || settingData?.appName == "Video Gallery" || settingData?.appName == "Photo Gallery" || settingData?.appName == "Interactive Map") &&
-            <>
+                  </div>
+                  <Info info={"With these settings, you can manage your spreadsheet options, including fetching a spreadsheet directly from Google Drive and selecting the desired data range."} />
+                </div>
+                <div>
+                  {addSheet &&
+                    <button onClick={
+                      () => {
+                        window.location.reload();
+                      }
+                    } className="bg-primary rounded-[4px] p-1" title="Refresh Spreadsheet">
+                      <Reset />
+                    </button>
+                  }
+                </div>
+
+              </div>
+              {addSheet && <SpreadsheetSettings activateSave={activateSave} />}
+
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="472"
@@ -1201,57 +1187,100 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               >
                 <path d="M0 1.21265H621" stroke="#EDEEF3" />
               </svg>
+
               <div className="flex justify-between items-center w-[100%]">
                 <div className="flex justify-center items-center">
                   <div className="flex items-center">
                     <div
                       className="setting_filter_top1"
                       onClick={() => {
-                        setAddView(!addView);
+                        setAddData(!addData);
                       }}
                     >
-                      <span className="setting_filter_top1_text ">View Settings</span>
-                      {!addView ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" /> }
+                      <span className="setting_filter_top1_text">Table Settings</span>
+                      {!addData ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" />}
                     </div>
-
-                    {/* <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body contect, You can easily revert to the original settings by clicking the Reset icon."}/> */}
+                    <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body content, You can easily revert to the original settings by clicking the Reset icon."} />
                   </div>
-
-                  {/* {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." />} */}
+                  {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." />}
                 </div>
-                {addView && <div className="flex items-center gap-2">
-                  {/* New icons */}
-                  <button className="bg-primary rounded-[4px] p-1" title="Reset Table Styles"
-                    onClick={handleOpenViewPage}
-                  >
-                    <IoMdOpen
-                      className=" justify-end cursor-pointer text-xl text-white"
-                      title="Open View Page"
-                    />
-                  </button>
-
-                  <button className="bg-primary rounded-[4px] p-1" title="Reset Table Styles"
-                    onClick={handleCopyToClipboard}
-                  >
-                    <MdOutlineContentCopy
-                      className=" cursor-pointer text-xl text-white"
-                      title={"Copy View Link"}
-                    />
-                  </button>
-                </div>}
-
+                <div>
+                  {addData &&
+                    <button onClick={
+                      () => {
+                        setIsTableLoading(true);
+                        handleResetChange();
+                      }
+                    } className="bg-primary rounded-[4px] p-1" title="Reset Table Styles">
+                      <Reset />
+                    </button>
+                  }
+                </div>
               </div>
-              {addView && <ViewSettings settingsData={settingData} />}
-            </>}
+              {addData && <AddData activateSave={activateSave} isTableLoading={isTableLoading} setIsTableLoading={setIsTableLoading} />}
+
+              {(settingData?.appName == "People Directory" || settingData?.appName == "Video Gallery" || settingData?.appName == "Photo Gallery" || settingData?.appName == "Interactive Map") &&
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="472"
+                    height="2"
+                    viewBox="0 0 472 2"
+                    fill="none"
+                  >
+                    <path d="M0 1.21265H621" stroke="#EDEEF3" />
+                  </svg>
+                  <div className="flex justify-between items-center w-[100%]">
+                    <div className="flex justify-center items-center">
+                      <div className="flex items-center">
+                        <div
+                          className="setting_filter_top1"
+                          onClick={() => {
+                            setAddView(!addView);
+                          }}
+                        >
+                          <span className="setting_filter_top1_text ">View Settings</span>
+                          {!addView ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" />}
+                        </div>
+
+                        {/* <Info info={"These settings allow you to customize the view of your table, including options to modify the color, size and font of both the header and body contect, You can easily revert to the original settings by clicking the Reset icon."}/> */}
+                      </div>
+
+                      {/* {isTableLoading && <ImSpinner2 className="animate-spin" color="#598931" title="Saving..." />} */}
+                    </div>
+                    {addView && <div className="flex items-center gap-2">
+                      {/* New icons */}
+                      <button className="bg-primary rounded-[4px] p-1" title="Reset Table Styles"
+                        onClick={handleOpenViewPage}
+                      >
+                        <IoMdOpen
+                          className=" justify-end cursor-pointer text-xl text-white"
+                          title="Open View Page"
+                        />
+                      </button>
+
+                      <button className="bg-primary rounded-[4px] p-1" title="Reset Table Styles"
+                        onClick={handleCopyToClipboard}
+                      >
+                        <MdOutlineContentCopy
+                          className=" cursor-pointer text-xl text-white"
+                          title={"Copy View Link"}
+                        />
+                      </button>
+                    </div>}
+
+                  </div>
+                  {addView && <ViewSettings settingsData={settingData} />}
+                </>}
+            </div>
+          </div>
+          <DeleteAlert
+            isOpen={confirmModalOpen}
+            onClose={() => setConfirmModalOpen(false)}
+            onConfirm={handleResetChange}
+            sheetName={"Are you sure you want to reset table styling."} // Optional: Provide a dynamic name
+          />
         </div>
-      </div>
-      <DeleteAlert
-        isOpen={confirmModalOpen}
-        onClose={() => setConfirmModalOpen(false)}
-        onConfirm={handleResetChange}
-        sheetName={"Are you sure you want to reset table styling."} // Optional: Provide a dynamic name
-      />
-      </div>
       }
     </div>
   );

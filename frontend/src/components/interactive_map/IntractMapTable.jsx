@@ -832,9 +832,9 @@ const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, for
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
-                    <button onClick={() => navigate(-1)} title="Back">
+                    {isEditMode && <button onClick={() => navigate(-1)} title="Back">
                         <BackIcon />
-                    </button>
+                    </button>}
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
                 <div className="flex ">
@@ -1249,7 +1249,7 @@ const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, for
             />
             </div>
            : <Table
-                data={data}
+                data={filteredData}
                 headers={headers}
                 filteredData={filteredData}
                 setFilteredData={setFilteredData}

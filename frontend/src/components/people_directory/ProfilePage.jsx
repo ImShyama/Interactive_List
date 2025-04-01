@@ -4,7 +4,7 @@ import { HiOutlineEnvelope } from "react-icons/hi2";
 import { IoCallOutline } from "react-icons/io5";
 import { IoMdArrowBack } from "react-icons/io";
 import { FaWhatsapp } from "react-icons/fa";
-import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
+import { getDriveThumbnail, handleImageError, RenderText } from "../../utils/globalFunctions";
 
 const defultSettings = {
   showInCard: [
@@ -125,8 +125,9 @@ const ProfilePage = () => {
                       <div className="text-[#2F2F2F] font-Montserrat font-semibold text-[20px] leading-normal">
                         :
                       </div>
-                      <div className="text-[#808080] font-Montserrat text-[19.696px] leading-normal mr-2">
+                      <div className="text-[#808080] font-Montserrat text-[19.696px] leading-normal mr-2 line-clamp-4">
                         {data[profile.title.toLowerCase().replace(/ /g, "_")]}
+                        {/* <RenderText text={data[profile.title.toLowerCase().replace(/ /g, "_")]} /> */}
                       </div>
                     </React.Fragment>
                   )

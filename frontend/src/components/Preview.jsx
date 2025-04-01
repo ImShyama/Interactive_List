@@ -10,6 +10,7 @@ import PeopleDirectoryView from "./people_directory/PeopleDirectoryView";
 import { filter } from "lodash";
 import VideoGallaryView from "./video_gallary/VideoGallaryView";
 import PhotoGalleryView from "./photo_gallery/PhotoGalleryView";
+import InteractiveMapView from "./interactive_map/InteractiveMapView";
 import { IoCopyOutline } from "react-icons/io5";
 
 const Preview = ({ closeModal, sheetdetails }) => {
@@ -203,6 +204,19 @@ const Preview = ({ closeModal, sheetdetails }) => {
                                                             settings={sheetdetails}
                                                         />
                                                     );
+                                                case "Interactive Map":
+                                                    return (
+                                                        <InteractiveMapView
+                                                            data={sheetData}
+                                                            headers={filterHeader}
+                                                            tempHeader={tableHeader}
+                                                            filteredData={filteredData}
+                                                            setFilteredData={setFilteredData}
+                                                            paginatedData={paginatedData}
+                                                            settings={sheetdetails}
+                                                        />
+                                                    );
+                                                    
                                                 default:
                                                     return null;
                                             }

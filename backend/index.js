@@ -53,8 +53,13 @@ const dynamicAuth = async (req, res, next) => {
     const sheetDetails = await Sheet.findById(sheetID).lean();
     if (!sheetDetails) return res.status(404).json({ error: "Sheet not found." });
 
+    const authHeader = req?.headers?.authorization;
+    const token = req?.cookies?.token || (authHeader && authHeader?.split(' ')[1]);
+    console.log({ token, access: sheetDetails?.accessType?.type });
+
     // Check if the sheet is public or private
-    if (sheetDetails?.accessType?.type !== "private") {
+    if (sheetDetails?.accessType?.type !== "private" && token=="null") {
+      console.log("Skipping authentication for public sheet");
       return next(); // Skip authentication for public sheets
     }
 
@@ -166,21 +171,31 @@ app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
       return res.status(404).json({ error: "No data found." });
     }
 
-    console.log({ sheets, spreadSheetID, range: sheetName });
     const formulaData = await getMetaSheetData({ sheets, spreadSheetID, range: sheetName });
 
     // Extract hidden columns from Sheet
     const hiddenCol = sheetDetails.hiddenCol;
     const jsonData = convertArrayToJSON(rows, hiddenCol);
 
-    let permissions = "edit";
-    if (sheetOwner?._id.toString() !== req?.user?._id.toString() && sheetDetails?.accessType?.type === "private") {
-      const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
-      permissions = tempAccess?.permission;
-    }else{
+    const tempAccess = spreadSheeSharedWith?.find((entry) => entry?.email === req?.user?.email);
+    let permissions = tempAccess?.permission;
+
+    // let permissions = "edit";
+    // if (sheetDetails?.accessType?.type === "public") {
+    //   permissions = "public";
+    // }
+    if(sheetDetails?.accessType?.type === "public" && !permissions) {
       permissions = "view";
     }
+    // else if (sheetDetails?.accessType?.type === "private" || sheetDetails?.accessType?.type === "public") {
+    //   const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
+    //   permissions = tempAccess?.permission;
+    // }
+    // else {
+    //   permissions = "view";
+    // }
 
+    console.log({ user: req.user });
     // Return full updated sheet details from MongoDB
     return res.status(200).json({
       rows,
@@ -188,7 +203,8 @@ app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
       jsonData,
       hiddenCol,
       formulaData,
-      settings: sheetDetails  // Returning the full latest sheet settings from MongoDB
+      settings: sheetDetails,  // Returning the full latest sheet settings from MongoDB
+      user: req.user
     });
 
   } catch (error) {
@@ -217,14 +233,14 @@ app.get("/getUserData", authenticateToken, (req, res) => {
   res.send(req.user);
 });
 
-app.get("/getallusers",authenticateToken, async (req, res) => {
+app.get("/getallusers", authenticateToken, async (req, res) => {
   console.log("API Hit: /getallusers");
   try {
     // Fetch all users
     const users = await User.find({}).lean();
 
     console.log({ requser: req.user, isAdmin: req.user.role === "admin" });
-    if(!req.user || req.user.role !== "admin") {
+    if (!req.user || req.user.role !== "admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -630,11 +646,18 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
         { id: 5, title: "Mobile" },
       ]
     }
-    else if (appName == "Photo Gallery"){
+    else if (appName == "Photo Gallery") {
       cardSettings = [
         { id: 0, title: "Image" },
         { id: 1, title: "Title" },
         { id: 2, title: "Topic" },
+      ]
+    }
+    else if (appName == "Interactive Map") {
+      cardSettings = [
+        { id: 0, title: "Image" },
+        { id: 1, title: "Longitude" },
+        { id: 2, title: "Latitude" },
       ]
     }
 
@@ -745,7 +768,7 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       }
       return columnLetter;
     };
-    
+
     const lastColumnLetter = columnToLetter(firstTabHeader.length);
     const firstTabDataRange = `${firstSheetName}!A1:${lastColumnLetter}`;
 
@@ -820,7 +843,14 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
         { id: 5, title: "" },
       ]
     }
-    else if (appName == "Photo Gallery"){
+    else if (appName == "Photo Gallery") {
+      cardSettings = [
+        { id: 0, title: "" },
+        { id: 1, title: "" },
+        { id: 2, title: "" },
+      ]
+    }
+    else if (appName == "Interactive Map") {
       cardSettings = [
         { id: 0, title: "" },
         { id: 1, title: "" },

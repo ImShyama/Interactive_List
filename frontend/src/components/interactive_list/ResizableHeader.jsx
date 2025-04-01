@@ -143,14 +143,14 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
 
     return (
         <Resizable
-            className="truncate ResizeTH"
+            className="truncate "
             width={columnWidths[columnKey]}
             height={0}
             onResize={handleResize(columnKey)} // Immediate DOM updates
             draggableOpts={{ enableUserSelectHack: false }}
             handle={
                 <div
-                    className="resizeActions"
+                    // className="resizeActions ResizeTH"
                     style={{
                         position: "absolute",
                         right: 0,
@@ -160,9 +160,11 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                         display: "flex", // Allows icon alignment
                         alignItems: "center",
                         justifyContent: "center",
-                        width: "15px", // Adjust based on the size of your icon
+                        width: "10px", // Adjust based on the size of your icon
                         height: "100%",
                         marginRight: "5px",
+                        marginLeft: "5px",
+                        padding: "2px",
                         backgroundColor: headerBgColor || "#f1f1f1",
                     }}
                 >
@@ -200,7 +202,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                             right: 0,
                             top: 0,
                             bottom: 0,
-                            width: "4px ",
+                            width: "4px",
                             minWidth: "4px ",
                             backgroundColor: "#ccc",
                             zIndex: 15, // Ensure it stays above other elements
@@ -214,7 +216,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                         position: "relative", // Keep elements aligned
                     }}
                 >
-                    <div title={title}>
+                    <div title={title} className="flex items-center">
                         <span className="truncate" style={{ fontFamily: headerFontFamily, fontSize: `${headerFontSize}px` }}>
                             {title}
                         </span>
@@ -222,7 +224,7 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                     <div className="flex items-center gap-1 ResizeTH"
                         style={{
                             position: "absolute",
-                            right: 5,
+                            right: 7,
                             bottom: 0,
                             cursor: "col-resize", // Keeps the resizing cursor
                             zIndex: 5, // Ensure it stays above other elements
@@ -297,11 +299,17 @@ const ResizableHeader = React.memo(({ data, filteredData, setFilteredData, setFr
                                 </button>
                             ))
                         } */}
-                        <div className="resizeActions">
-                            <Freeze columnKey={columnKey} isEditMode={isEditMode} setFreezeCol={setFreezeCol} freezeCol={freezeCol} settings={settings} />
-                        </div>
 
-                        {(settings?.appName == "People Directory" || settings?.appName == "Video Gallery" || settings?.appName == "Photo Gallery" || settings?.appName == "Interactive Map") &&
+                        {isEditMode &&
+                            (
+                                <div className="resizeActions">
+                                    <Freeze columnKey={columnKey} isEditMode={isEditMode} setFreezeCol={setFreezeCol} freezeCol={freezeCol} settings={settings} />
+                                </div>
+                            )
+                        }
+
+
+                        {((settings?.appName == "People Directory" || settings?.appName == "Video Gallery" || settings?.appName == "Photo Gallery" || settings?.appName == "Interactive Map") && isEditMode) &&
                             <div className={isEditBoxOpen ? " " : "resizeActions"} >
                                 {isEditMode && settings.appName == "People Directory" &&
                                     <PeopleDirectoryThreeDot

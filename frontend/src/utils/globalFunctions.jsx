@@ -16,6 +16,42 @@ export const handleImageError = (e, fallbackImage = Avatar) => {
     e.target.src = fallbackImage; // Set the fallback/default image
 };
 
+export const RenderText = ({ text }) => {
+  if (!text) return null;
+
+  // Regular expression to detect URLs (http, https, www)
+  const urlRegex = /(https?:\/\/[^\s,]+|www\.[^\s,]+)/g;
+
+  // Check if the text contains URLs
+  const parts = text?.toString().split(urlRegex);
+
+  return (
+      <span className="truncate" >
+          {parts.map((part, index) => {
+              if (part.match(urlRegex)) {
+                  return (
+                      <a
+                          key={index}
+                          href={part.startsWith("http") ? part : `https://${part}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline ml-1 no-underline hover:underline"
+                      >
+                          Click Here
+                      </a>
+                  );
+              }
+              return part;
+          })}
+      </span>
+  );
+};
+
+export const formatHeader= ({header}) => {
+    return header
+      ?.replace(/_/g, " ").split(" ").slice(0, -1).join(" ")
+  }
+
 // export function getDriveThumbnail(url) {
 //     if (!url) return "";
 

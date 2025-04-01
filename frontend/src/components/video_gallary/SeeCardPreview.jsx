@@ -10,7 +10,7 @@ const SeeCardPreview = ({ onClose, settings, rowData }) => {
             // width: "700px",
             // height: "350px",
             // borderRadius: "50px",
-            marginTop: "200px",
+            // marginTop: "200px",
           }}
         >
             <div className="bg-white rounded-2xl shadow-lg w-96 p-6 relative ">

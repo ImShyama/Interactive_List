@@ -1251,7 +1251,7 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                 :
 
                 <VideoGallaryView
-                    data={data}
+                    data={filteredData}
                     // headers={filterHeader}
                     // tempHeader={tableHeader}
                     // filteredData={filteredData}

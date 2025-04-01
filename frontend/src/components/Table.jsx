@@ -16,6 +16,7 @@ import VideoTable from "./video_gallary/VideoTable.jsx";
 import PhotoTable from "./photo_gallery/PhotoTable.jsx";
 import IntractMapTable from "./interactive_map/IntractMapTable.jsx";
 import { notifyError } from "../utils/notify.jsx";
+import ProductCatalogueDashboard from "./product_catalogue/product_catalogue_dashboard/ProductCatalogueDashboard.jsx";
 
 const Table = () => {
   const [sheetData, setSheetData] = useState([]);
@@ -73,15 +74,19 @@ const Table = () => {
           return;
         }
 
-        console.log({res});
-        if(!res.permissions){
+        console.log({ res });
+        if (!res.permissions && (res.settings?.userId !== res.user?._id)) {
           notifyError("You don't have permission to view this tool");
           navigate("/dashboard");
           return;
         }
 
+
+        console.log({permissions:res?.permissions?.toLowerCase(), sheetUserID:res.settings?.userId, userID:res.user?._id})
+        
         // Redirect to view mode if permissions are restricted
-        if (res.permissions.toLowerCase() === "view" && (res.settings.access !== "Owner" || res.settings.access === "Edit")) {
+        if (res?.permissions?.toLowerCase() === "view" && (res.settings?.userId !== res.user?._id)) {
+          console.log("redirected")
           navigate(`/${id}/view`);
           // return;
         }
@@ -107,22 +112,22 @@ const Table = () => {
       .catch((err) => {
         console.error("Error fetching sheet data:", err);
         setLoading(false);
-        if(err.response.status === 403) {
-          notifyError("You don't have permission to view this tool.");  
+        if (err.response.status === 403) {
+          notifyError("You don't have permission to view this tool.");
           navigate("/signin");
         }
       });
   }, [id, token, navigate]);
 
-  console.log({sheetData, tableHeader, filterHeader})
+  console.log({ sheetData, tableHeader, filterHeader })
 
   // Render the appropriate table based on appName in settings
   const renderTable = () => {
-    if (loading ) {
+    if (loading) {
       return <Loader textToDisplay="Loading..." />;
     }
 
-    
+
 
     switch (settings.appName) {
       case "Interactive List":
@@ -180,6 +185,19 @@ const Table = () => {
       case "Interactive Map":
         return (
           <IntractMapTable
+            data={sheetData}
+            tableHeader={tableHeader}
+            headers={filterHeader}
+            settings={settings}
+            freezeIndex={freezeIndex}
+            tempHeader={tableHeader}
+            formulaData={formulaData}
+            unhideHeader={unhideHeader}
+          />
+        );
+      case "Product Catalogue":
+        return (
+          <ProductCatalogueDashboard
             data={sheetData}
             tableHeader={tableHeader}
             headers={filterHeader}

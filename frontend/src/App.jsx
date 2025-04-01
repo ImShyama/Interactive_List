@@ -11,7 +11,6 @@ import Table from "./components/Table";
 import Setting from "./components/Setting";
 import Dashboard from "./components/Dashboard";
 import TestLogin from "./components/TestLogin";
-import Portfolio from "./components/Portfolio";
 import InteractiveList from "./components/InteractiveList";
 import InteractiveListView from "./components/InteractiveListView";
 import PeopleTable from "./components/people_directory/PeopleTable";
@@ -34,6 +33,9 @@ import PrivacyPolicy from "./components/Landing_Page/PrivacyPolicy";
 import InteractiveMapPreview from "./components/interactive_map/InteractiveMapPreview";
 import UsersDashboard from "./components/AdminDashboard/UsersDashboard";
 import AdminBtn from "./components/component/AdminBtn";
+import ProductCataloguePreview from "./components/product_catalogue/ProductCataloguePreview";
+import ProductCatalogueView from "./components/product_catalogue/ProductCatalogueView";
+import ProductCatalogueBiggerView from "./components/product_catalogue/ProductCatalogueBiggerView"
 
 
 // Layout Component
@@ -91,9 +93,11 @@ const appRouter = createBrowserRouter([
       { path: "/InteractiveMapPreview", element: <InteractiveMapPreview /> },
       { path: "/profile/:id", element: <ProfilePage /> },
       { path: "/video/:id", element: <LargeVideoView /> },
+      { path: "/ProductCataloguePreview", element: <ProductCataloguePreview /> },
+      { path: "/ProductCatalogueView", element: <ProductCatalogueView /> },
+      { path: "/ProductCatalogueBiggerView", element: <ProductCatalogueBiggerView /> },
     ],
   },
-  { path: "/Test", element: <Portfolio /> },
 ]);
 
 // App Component
