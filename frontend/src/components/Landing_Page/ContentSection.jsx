@@ -375,7 +375,7 @@ const ContentSection = () => {
           </button>
           <button
             className="border border-[#598931] text-[#598931] px-10 py-3 text-lg  rounded-xl shadow-lg"
-            onClick={() => navigate("/about")}
+            // onClick={() => navigate("/products")}
           >
             Learn more about this
           </button>

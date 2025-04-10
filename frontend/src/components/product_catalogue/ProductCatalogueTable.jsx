@@ -596,7 +596,7 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
     const HeaderSwitch = () => {
         console.log({ unhideHeader, hiddenCol });
         return (
-            <div className="flex-row max-h-[300px] overflow-auto">
+            <div className="flex-row max-h-[300px] overflow-auto px-2">
                 {unhideHeader.map((header, index) => {
                     let tempHeader = header.toLowerCase().split(" ").join("_");
                     return (
@@ -983,8 +983,8 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
                             {/* Dropdown for Number */}
                             {isNumberDropdownOpen && (
                                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <p className="text-sm font-medium text-gray-700 text-center w-full">
+                                    <div className="flex items-center justify-between gap-2 my-2">
+                                        <p className="text-sm font-medium text-gray-700 text-center leading-none m-0">
                                             Number Options
                                         </p>
                                         <button
@@ -1075,8 +1075,8 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
                             {/* Dropdown for Date */}
                             {isDateDropdownOpen && (
                                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <p className="text-sm font-medium text-gray-700 text-center w-full">
+                                    <div className="flex items-center justify-between gap-2 my-2">
+                                        <p className="text-sm font-medium text-gray-700 text-center leading-none m-0">
                                             Date Options
                                         </p>
                                         <button

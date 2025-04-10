@@ -12,6 +12,7 @@ import Loader from "./Loader";
 import { notifySuccess } from "../utils/notify";
 import PreviewBtn from "./component/PreviewBtn";
 import CopyBtn from "./component/CopyBtn";
+import {APPS} from '../utils/constants'
 const TitleBarPreview = ({ appName, spreadSheetID, spreadSheetName }) => {
   const navigate = useNavigate(); // Initialize the navigate function
   const [openPicker, authResponse] = useDrivePicker();
@@ -20,6 +21,8 @@ const TitleBarPreview = ({ appName, spreadSheetID, spreadSheetName }) => {
   const token = Cookies.get('token');
   const [loading, setLoading] = useState(false);
   const { token: userToken } = useContext(UserContext);
+  const currentApp = APPS.find((app) => app.appName === appName);
+  console.log({currentApp, appName, spreadSheetID, spreadSheetName});
 
   const handleCopy = () => {
     setLoading(true);
@@ -158,8 +161,8 @@ const TitleBarPreview = ({ appName, spreadSheetID, spreadSheetName }) => {
         <div className='fixed bottom-6 right-20 z-50 mr-2'>
           <CopyBtn
             appName={appName}
-            spreadSheetID={spreadSheetID}
-            spreadSheetName={spreadSheetName}
+            spreadSheetID={currentApp?.appID}
+            spreadSheetName={currentApp?.Data}
           />
         </div>
       </div>
@@ -167,8 +170,6 @@ const TitleBarPreview = ({ appName, spreadSheetID, spreadSheetName }) => {
       <div className="flex items-center justify-end gap-[8px]">
         <PreviewBtn />
       </div>
-
-
 
     </div>
   );

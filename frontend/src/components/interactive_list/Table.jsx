@@ -5,19 +5,20 @@ import { RxDividerVertical } from "react-icons/rx";
 import { Resizable } from "react-resizable";
 import "react-resizable/css/styles.css";
 import ResizableHeader from "./ResizableHeader";
-import _, { debounce } from "lodash";
+import _, { debounce, set } from "lodash";
 import { IoSaveSharp, IoSave } from "react-icons/io5";
 import { UserOutlined } from "@ant-design/icons";
 import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
 import noPhoto from "../../assets/images/noPhoto.jpg";
 import avatar from "../../assets/images/avatar.png";
 import { notifyError } from "../../utils/notify";
+import Loader from "../Loader";
 
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
     handleDelete, handleEdit, handleBulkDelete, ischecked, setIschecked, EditData, setEditData, headerBgColor, headerTextColor, headerFontSize, headerFontFamily,
     bodyTextColor, bodyFontSize, bodyFontFamily, isEditMode, minWidth, tempHeader, formulaData, handleBulkSave,
-    globalCheckboxChecked, setGlobalCheckboxChecked
+    globalCheckboxChecked, setGlobalCheckboxChecked, loading, setLoading,
 }) => {
 
     const primaryColumn = (settings?.appName == "Photo Gallery" || settings?.appName == "Interactive Map")
@@ -41,6 +42,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
     // const [ischecked, setIschecked] = useState([]);
     const [globalOption, setGlobalOption] = useState({});
     const [visiblePopover, setVisiblePopover] = useState({});
+    const [loader, setLoader] = useState(false);
     // const [EditData, setEditData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -358,8 +360,11 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
 
     const RenderImage = ({ url }) => {
 
-        const imageURL = getDriveThumbnail(url);
-        console.log({url,imageURL});
+        let imageURL = getDriveThumbnail(url);
+        console.log({ url, imageURL });
+        // if(imageURL.includes(",")){
+        //     imageURL = imageURL.split(",")[0];
+        // }
 
         if (settings.appName == "People Directory") {
             return (
@@ -402,7 +407,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 </div>
             )
         }
-        else if (settings?.appName == "Photo Gallery") {
+        else if (settings?.appName == "Photo Gallery" || settings?.appName == "Interactive Map") {
             return (
                 <div className="w-full h-full flex justify-start items-center">
                     {isValidUrl(url) ? (
@@ -410,7 +415,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             src={imageURL}
                             alt="profile"
                             className="w-12 h-12 rounded-md border-[1px] border-[#D3CBCB] object-cover"
-                            // onError={(e) => handleImageError(e, noPhoto)} // Custom fallback
+                        // onError={(e) => handleImageError(e, noPhoto)} // Custom fallback
                         />
                     ) : (
                         // <Avatar size={48} icon={<UserOutlined />} alt="User" />
@@ -482,7 +487,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             <button
                                 className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
                                 onClick={() => {
-                                    if(isPreview){
+                                    if (isPreview) {
                                         handleAlert("Not available in preview!");
                                         return;
                                     }
@@ -498,7 +503,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             <button
                                 className="rounded-full bg-[#DDDCDB] flex w-[28px] h-[28px] justify-center items-center"
                                 onClick={() => {
-                                    if(isPreview){
+                                    if (isPreview) {
                                         handleAlert("Not available in preview!");
                                         return;
                                     }
@@ -610,7 +615,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
         ))
     ), [paginatedData, headers, columnWidths, isEditMode, bodyTextColor, bodyFontFamily, bodyFontSize, freezeCol, isedit, ischecked]);
 
-
+    console.log({ischecked})
     return (
         <div className="px-[50px] py-[10px]">
             <div className="overflow-x-auto">
@@ -659,19 +664,29 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                             onChange={(e) => {
                                                 handleGlobalCheckboxChange(e.target.checked);
                                             }}
-                                            indeterminate={ ischecked?.length > 0 && ischecked.length < paginatedData.length}
+                                            checked={ischecked.length === paginatedData.length && paginatedData.length > 0}
+                                            indeterminate={ischecked?.length > 0 && ischecked.length < paginatedData.length}
                                             disabled={isPreview}
                                         />
                                         {/* <button onClick={handleBulkSave} className="rounded-[4px] mx-2" title="Save">
                                             <IoSaveSharp color="#598931" size={18} />
                                         </button> */}
                                         <button
-                                            onClick={() => {
+                                            onClick={async () => {
                                                 if (isPreview) {
-                                                    handleAlert("Not available in preview!")
+                                                    handleAlert("Not available in preview!");
                                                     return;
                                                 }
-                                                handleBulkSave()
+                                            
+                                                setLoader(true);
+                                            
+                                                try {
+                                                    await handleBulkSave(); // ⏳ Wait for the async function to finish
+                                                } catch (err) {
+                                                    console.error("Error during bulk save:", err);
+                                                } finally {
+                                                    setLoader(false); // ✅ Always runs after
+                                                }
                                             }}
                                             className={`rounded-[4px] mx-2 ${ischecked?.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#598931] hover:bg-[#598931]'}`}
                                             title="Save"
@@ -712,8 +727,42 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 // )}
                 />
             </div>
+
+            {loader && (
+                <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75"
+                    style={{ zIndex: 100, overflow: 'hidden' }}
+                >
+                    <Loader textToDisplay="Updating changes ..." />
+                </div>
+            )}
         </div>
     )
 }
 
-export default memo(Table);
+export default memo(Table, (prevProps, nextProps) => {
+  // Return false if we want the component to update
+  // Return true if we want to prevent the update
+  return (
+    prevProps.loading === nextProps.loading &&
+    prevProps.data === nextProps.data &&
+    prevProps.filteredData === nextProps.filteredData &&
+    prevProps.headers === nextProps.headers &&
+    prevProps.settings === nextProps.settings &&
+    prevProps.isedit === nextProps.isedit &&
+    prevProps.freezeCol === nextProps.freezeCol &&
+    prevProps.globalOption === nextProps.globalOption &&
+    prevProps.ischecked === nextProps.ischecked &&
+    prevProps.EditData === nextProps.EditData &&
+    prevProps.headerBgColor === nextProps.headerBgColor &&
+    prevProps.headerTextColor === nextProps.headerTextColor &&
+    prevProps.headerFontSize === nextProps.headerFontSize &&
+    prevProps.headerFontFamily === nextProps.headerFontFamily &&
+    prevProps.bodyTextColor === nextProps.bodyTextColor &&
+    prevProps.bodyFontSize === nextProps.bodyFontSize &&
+    prevProps.bodyFontFamily === nextProps.bodyFontFamily &&
+    prevProps.isEditMode === nextProps.isEditMode &&
+    prevProps.tempHeader === nextProps.tempHeader &&
+    prevProps.formulaData === nextProps.formulaData &&
+    prevProps.globalCheckboxChecked === nextProps.globalCheckboxChecked
+  );
+});

@@ -436,7 +436,7 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
                 </AutoComplete> */}
 
                 <AutoComplete
-                    style={{ width: 200 }}
+                    style={{ maxWidth: 200, width: 200, minWidth: 0 }}
                     placeholder="Search here"
                     filterOption={false}
                     onSearch={handleSearch}
@@ -444,11 +444,21 @@ const MultiSelectFilter = ({ data, filteredData, setFilteredData, globalOption, 
                     onBlur={() => setTimeout(() => setDropdownOpen(false), 200)} // Optional delay to allow click events
                     onFocus={() => setDropdownOpen(true)}
                     value={searchText}
-                    // dropdownMatchSelectWidth={false} // Prevents unwanted resizing
+                    dropdownMatchSelectWidth={false} // Prevents unwanted resizing
                     virtual // Enables virtual scrolling
                 >
                     {options.map((option) => (
-                        <AutoComplete.Option key={option.value}>
+                        <AutoComplete.Option key={option.value}
+                        style={{
+                            maxWidth: 250,
+                            minWidth: 0,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                        }}
+                        className="truncate"
+                        // title={option.label}
+                        >
                             <Checkbox
                                 onChange={(e) => handleSelect(option.value, e.target.checked)}
                                 checked={selectedValues.includes(option.value)}

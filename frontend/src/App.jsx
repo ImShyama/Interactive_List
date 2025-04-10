@@ -23,7 +23,7 @@ import { ConfigProvider } from "antd";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProfilePage from "./components/people_directory/ProfilePage";
-import Home from "./components/Home";
+// import Home from "./components/Home";
 import PhotoGalleryPreview from "./components/photo_gallery/PhotoGalleryPreview";
 import LandingPage from "./components/Landing_Page/LandingPage";
 import About from "./components/Landing_Page/AboutSection";

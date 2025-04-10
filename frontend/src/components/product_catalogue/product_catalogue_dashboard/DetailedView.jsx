@@ -276,7 +276,17 @@ const DetailedView = ({ tableHeader, settings }) => {
                   key={field.id}
                   className="relative flex items-center border-2 border-[#598931] rounded-[8px] px-4 py-2"
                 >
-                  <span className="text-[18px] font-medium font-[Poppins]">
+                  <button
+                    onClick={() => toggleDropdown(column.id)}
+                    className="flex items-center gap-2 hover:text-[#598931]"
+                  >
+                    <span className="text-[18px] font-medium font-[Poppins]">
+                      Select From List
+                    </span>
+                    <FaChevronDown className="text-[#598931]" />
+                  </button>
+
+                  {/* <span className="text-[18px] font-medium font-[Poppins]">
                     Select From List
                   </span>
                   <button
@@ -284,7 +294,7 @@ const DetailedView = ({ tableHeader, settings }) => {
                     className="ml-2 text-[#598931]"
                   >
                     <FaChevronDown />
-                  </button>
+                  </button> */}
 
                   {dropdownOpen[field.id] && (
                     // Existing dropdown content

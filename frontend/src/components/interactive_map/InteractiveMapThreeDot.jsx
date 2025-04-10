@@ -87,7 +87,6 @@ const InteractiveMapThreeDot = ({ columnKey, settings }) => {
 
         else if (optionType === "showInCard") {
 
-
           let updatedChecked = checked; // Keep track of the checkbox state
           let found = false; // Flag to track if we already added the columnKey
 
@@ -102,8 +101,14 @@ const InteractiveMapThreeDot = ({ columnKey, settings }) => {
               updatedChecked = false; // Set checked state to false only when removing
               return { ...item, title: "" };
             }
+            
             return item; // Keep other items unchanged
           });
+
+          if (!found && checked) {
+            notifyError("Please remove columns from Map View Settings, Limit reaced to 3");
+            return;
+          }
 
           // Only update the checkbox state when necessary
           setShowInCardChecked(checked ? true : updatedChecked);
@@ -143,7 +148,7 @@ const InteractiveMapThreeDot = ({ columnKey, settings }) => {
     // >
     //   Add in detail View
     // </Checkbox>
-    <table className="w-[180px]">
+    <table className="w-[185px]">
       <tbody>
         <tr>
           <td>
@@ -151,7 +156,7 @@ const InteractiveMapThreeDot = ({ columnKey, settings }) => {
               checked={showInCardChecked}
               onChange={(e) => handleCheckboxChange(e.target.checked, "showInCard")}
             >
-              Show in Card
+              Map View Settings
             </Checkbox>
           </td>
         </tr>
@@ -161,7 +166,7 @@ const InteractiveMapThreeDot = ({ columnKey, settings }) => {
               checked={showInProfileChecked}
               onChange={(e) => handleCheckboxChange(e.target.checked, "showInProfile")}
             >
-              Show in Profile
+              Details View Settings
             </Checkbox>
           </td>
         </tr>

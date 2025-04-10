@@ -31,7 +31,7 @@ import { ImCancelCircle } from "react-icons/im";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css"; // Import slider styles
 import { RxDividerVertical } from "react-icons/rx";
-import _, { debounce } from "lodash";
+import _, { debounce, set } from "lodash";
 import GlobalSearch from "./interactive_list/GlobalSearch.jsx";
 import Table from "./interactive_list/Table.jsx";
 import Loader from "./Loader.jsx";
@@ -986,7 +986,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     const HeaderSwitch = () => {
         console.log({ unhideHeader, hiddenCol });
         return (
-            <div className="flex-row max-h-[300px] overflow-auto">
+            <div className="flex-row max-h-[300px] overflow-auto px-2">
                 {unhideHeader.map((header, index) => {
                     let tempHeader = header.toLowerCase().split(" ").join("_");
                     return (
@@ -1139,9 +1139,11 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
         }
     }
 
-    const handleBulkSave = async () => {
-        
+
+    const handleBulkSave =  useCallback(async () => {
+
         try {
+            setLoading(true);
 
             // if(globalCheckboxChecked){
             //     notifyError("Select all works only for delete option");
@@ -1168,15 +1170,17 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
 
         } catch (err) {
             console.error("Error updating rows:", err.message);
+            setLoading(false);
             notifyError(err.message);
         } finally {
             // Reset edit and selection state
+            setLoading(false);
             setIsedit(!isedit);
             setIschecked([]);
             setEditData([]);
             setGlobalCheckboxChecked(false);
         }
-    };
+    }, [setLoading]);
 
     const handleBulkDelete = () => {
         if (ischecked.length > 0) {
@@ -1373,8 +1377,8 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                             {/* Dropdown for Number */}
                             {isNumberDropdownOpen && (
                                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <p className="text-sm font-medium text-gray-700 text-center w-full">
+                                    <div className="flex items-center justify-between gap-2 my-2">
+                                        <p className="text-sm font-medium text-gray-700 text-center leading-none m-0">
                                             Number Options
                                         </p>
                                         <button
@@ -1465,8 +1469,8 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                             {/* Dropdown for Date */}
                             {isDateDropdownOpen && (
                                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
-                                    <div className="flex items-center justify-between gap-2">
-                                        <p className="text-sm font-medium text-gray-700 text-center w-full">
+                                    <div className="flex items-center justify-between gap-2 my-2">
+                                        <p className="text-sm font-medium text-gray-700 text-center leading-none m-0">
                                             Date Options
                                         </p>
                                         <button
@@ -1601,7 +1605,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             {!data.length && isEditMode ?
 
                 <EmptyTable sheetURL={settings?.spreadsheetUrl} />
-                
+
                 :
 
                 <Table
@@ -1611,6 +1615,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                     setFilteredData={setFilteredData}
                     paginatedData={paginatedData}
                     loading={loading}
+                    setLoading={setLoading}
                     isEditMode={isEditMode}
                     isedit={isedit}
                     setIsedit={setIsedit}
@@ -1640,6 +1645,8 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                     setGlobalCheckboxChecked={setGlobalCheckboxChecked}
                 />
             }
+
+            
 
             <EditRow
                 isOpen={confirmEditModalOpen}

@@ -13,18 +13,19 @@ import Profile from "../../Profile"; // Import Profile component
 import dividerIcon from "../../../assets/dividerIcon.svg";
 import ProductTitle from "./ProductTitle";
 
-const HeaderSection = ({ isPopup = false }) => {
+const HeaderSection = ({ isPopup = false, settings }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const profileRef = useRef(null);
   const profileImageRef = useRef(null);
+  const headerSettings = settings?.productCatalogue?.headerSettings || {};
 
   const { token, setRole } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
   const isEditMode = window.location.pathname.endsWith("/edit");
-  const settings = useSelector((state) => state.setting.settings);
+  // const settings = useSelector((state) => state.setting.settings);
 
   const closeDrawer = () => setIsDrawerOpen(false);
   const handleToggleDrawer = () => {

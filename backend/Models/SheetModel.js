@@ -22,6 +22,7 @@ const SheetSchema = new mongoose.Schema({
     freezeCol: String,
     hiddenCol: Array,
     peopleDirectory: Object,
+    productCatalogue: Object,
     accessType: {type: Object, default: {type: "public", password: ""}},
 },{ timestamps: true });
 

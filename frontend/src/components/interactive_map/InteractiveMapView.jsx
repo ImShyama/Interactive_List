@@ -12,7 +12,8 @@ import L from "leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster"; // Import Cluster Group
 import { getDriveThumbnail } from "../../utils/globalFunctions";
 
-var center = [21.1458, 79.0882];
+// var center = [40.57402898172323, 74.51454199738905];
+// var center = [21.1458, 79.0882];
 
 // Custom Zoom Buttons
 const CustomZoomControl = () => {
@@ -46,6 +47,7 @@ const InteractiveMapView = ({ data, headers, settings }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [showMap, setShowMap] = useState(false);
   const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -67,17 +69,88 @@ const InteractiveMapView = ({ data, headers, settings }) => {
     setFilteredData(data);
   }, [data]);
 
+  // let totalLat = 0;
+  // let totalLng = 0;
+  // let count = 0;
+
+  // data.forEach(item => {
+  //   const lat = parseFloat(item.latitude);
+  //   const lng = parseFloat(item.longitude);
+
+  //   if (!isNaN(lat) && !isNaN(lng)) {
+  //     totalLat += lat;
+  //     totalLng += lng;
+  //     count++;
+  //   }
+  // });
+
+  // const center = count > 0
+  //   ? [totalLat / count, totalLng / count]
+  //   : [21.1458, 79.0882]; // fallback default if nothing valid
+
+  // console.log("🗺️ Center of the map:", center);
+
+
   const showInProfile = settings?.showInProfile || [];
   const showInCard = settings?.showInCard || [];
-  console.log({ showInProfile, selectedStore, data, settings, showInCard, selectedStore, image: showInCard[0].title });
+  console.log({  showInProfile, selectedStore, data, settings, showInCard, selectedStore, image: showInCard[0].title });
 
   // const showInDetails = showInProfile.
+
+  const SetMapCenter = ({ center }) => {
+    const map = useMap();
+
+    useEffect(() => {
+      if (center) {
+        map.setView(center); // This updates the map center dynamically
+      }
+    }, [center, map]);
+
+    return null;
+  };
+
+  const [mapCenter, setMapCenter] = useState(null); // null initially
+
+  useEffect(() => {
+    let totalLat = 0;
+    let totalLng = 0;
+    let count = 0;
+  
+    data.forEach((item) => {
+      const lat = parseFloat(item[showInCard[2].title.replace(" ", "_").toLowerCase()]);
+      const lng = parseFloat(item[showInCard[1].title.replace(" ", "_").toLowerCase()]);
+  
+      if (!isNaN(lat) && !isNaN(lng)) {
+        totalLat += lat;
+        totalLng += lng;
+        count++;
+      }
+    });
+  
+    // if (count > 0) {
+    //   const calculatedCenter = [totalLat / count, totalLng / count];
+    //   console.log("🗺️ Center of the map:", calculatedCenter);
+    //   setMapCenter(calculatedCenter);
+    // }
+
+    if (count > 0) {
+      setMapCenter([totalLat / count, totalLng / count]);
+    } else {
+      setMapCenter([21.1458, 79.0882]); // fallback
+    }
+
+    // Delay showing the map to prevent jitter
+  setTimeout(() => setShowMap(true), 2000);
+  }, [data, showInCard]);
+  
+
+
 
   return (
     <div>
       <div className="flex flex-col items-center">
         <div className="w-full relative">
-          <MapContainer
+          {/* <MapContainer
             center={center}
             zoom={5}
             style={{
@@ -98,6 +171,8 @@ const InteractiveMapView = ({ data, headers, settings }) => {
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
+            <SetMapCenter center={center} />
+
             <CustomZoomControl />
 
             <MarkerClusterGroup>
@@ -116,7 +191,54 @@ const InteractiveMapView = ({ data, headers, settings }) => {
                   />
                 ))}
             </MarkerClusterGroup>
-          </MapContainer>
+          </MapContainer> */}
+
+          {(mapCenter && showMap) ? (
+            <MapContainer
+              center={mapCenter}
+              zoom={5}
+              style={{
+                width: "100%",
+                height: "800px",
+                position: "relative",
+                zIndex: 0,
+              }}
+              zoomControl={false}
+              scrollWheelZoom={false}
+              whenReady={(map) => {
+                map.target.scrollWheelZoom.disable();
+                map.target.on("click", () => map.target.scrollWheelZoom.enable());
+                map.target.on("mouseout", () => map.target.scrollWheelZoom.disable());
+              }}
+            >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              <SetMapCenter center={mapCenter} />
+              <CustomZoomControl />
+              <MarkerClusterGroup>
+                {data
+                  .filter((store) => store.latitude && store.longitude)
+                  .map((store, index) => (
+                    <Marker
+                      key={index}
+                      position={[
+                        parseFloat(store[showInCard[2]?.title?.replace(" ", "_").toLowerCase()]),
+                        parseFloat(store[showInCard[1]?.title?.replace(" ", "_").toLowerCase()])
+                      ]}
+                      zIndexOffset={selectedStore?.key_id === index + 1 ? 1000 : 0}
+                      opacity={selectedStore?.key_id === index + 1 ? 0.6 : 1}
+                      eventHandlers={{
+                        click: () => setSelectedStore(store),
+                      }}
+                    />
+                  ))}
+              </MarkerClusterGroup>
+            </MapContainer>
+          ) :
+            <div className="flex justify-center items-center h-[800px]">
+              <span className="text-gray-500 text-lg">Loading map...</span>
+            </div>
+          }
+
 
           {selectedStore && (
             <div className="absolute top-4 left-20 bg-white p-4 rounded shadow-md max-h-[600px] w-[300px] z-50">
@@ -196,7 +318,6 @@ const InteractiveMapView = ({ data, headers, settings }) => {
                 <hr />
                 <div className="grid grid-cols-[auto_auto_1fr] gap-y-4 gap-x-4 mt-2 text-[#595959] font-poppins text-[15px] font-medium leading-normal">
                   {showInProfile
-                    .slice(1)
                     .filter((item) => item.title.trim() !== "")
                     .map((item, i) => (
                       <React.Fragment key={i}>

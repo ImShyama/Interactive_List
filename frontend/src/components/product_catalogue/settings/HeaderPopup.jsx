@@ -3,8 +3,9 @@ import ReactDOM from "react-dom";
 import { IoClose } from "react-icons/io5";
 import HeaderSection from "../product_catalogue_preview/HeaderSection";
 
-const HeaderPopup = ({ isOpen, onClose }) => {
+const HeaderPopup = ({ isOpen, onClose, settings }) => {
   if (!isOpen) return null;
+  
 
   return ReactDOM.createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
@@ -19,7 +20,7 @@ const HeaderPopup = ({ isOpen, onClose }) => {
 
         {/* Render HeaderSection */}
         <div className="flex-1 overflow-auto">
-          <HeaderSection isPopup={true} />
+          <HeaderSection isPopup={true} settings={settings} />
         </div>
       </div>
     </div>,

@@ -76,7 +76,7 @@ const AppCard = ({
       </div> */}
 
       <div className="flex justify-start mx-[25px] my-2 relative group">
-        <span className="text-[14.4px] line-clamp-2 min-h-[30px]  group-hover: whitespace-normal transition-all duration-300 ease-in-out cursor-pointer">
+        <span className="text-[14.4px] line-clamp-3 min-h-[30px]  group-hover: whitespace-normal transition-all duration-300 ease-in-out cursor-pointer">
           {description}
         </span>
       </div>

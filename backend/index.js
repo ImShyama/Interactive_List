@@ -58,7 +58,7 @@ const dynamicAuth = async (req, res, next) => {
     console.log({ token, access: sheetDetails?.accessType?.type });
 
     // Check if the sheet is public or private
-    if (sheetDetails?.accessType?.type !== "private" && token=="null") {
+    if (sheetDetails?.accessType?.type !== "private" && token == "null") {
       console.log("Skipping authentication for public sheet");
       return next(); // Skip authentication for public sheets
     }
@@ -184,7 +184,7 @@ app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
     // if (sheetDetails?.accessType?.type === "public") {
     //   permissions = "public";
     // }
-    if(sheetDetails?.accessType?.type === "public" && !permissions) {
+    if (sheetDetails?.accessType?.type === "public" && !permissions) {
       permissions = "view";
     }
     // else if (sheetDetails?.accessType?.type === "private" || sheetDetails?.accessType?.type === "public") {
@@ -660,6 +660,9 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
         { id: 2, title: "Latitude" },
       ]
     }
+    else if (appName == "Product Catalogue") {
+      cardSettings = []
+    }
 
     const res = {
       spreadsheetId: newSpreadsheetId,
@@ -690,7 +693,140 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       sheetDetails: res.sheetDetails,
       access: res.access, // Save access type
       lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
-      showInCard: cardSettings
+      showInCard: cardSettings,
+      productCatalogue: {
+        headerSettings: {
+          headerText: "CBXTREE Header",
+          headerFont: "Poppins",
+          headerFontColor: "#fff000",
+          headerFontSize: "16px",
+          bg: "#ffffff",
+          logoURL: "",
+          tabTitle: "",
+          reset: false,
+          search: true,
+        },
+        cardSettings: {
+          titles: {
+            Title_1: {
+              cardFont: "Poppins",
+              cardFontColor: "#fff000",
+              cardFontSize: "16px",
+              numberOfRows: "",
+              numberOfColumns: "",
+            },
+            Title_2: {
+              cardFont: "Poppins",
+              cardFontColor: "#fff000",
+              cardFontSize: "16px",
+              numberOfRows: "",
+              numberOfColumns: "",
+            },
+            Title_3: {
+              cardFont: "Poppins",
+              cardFontColor: "#fff000",
+              cardFontSize: "16px",
+            },
+            Title_4: {
+              cardFont: "Poppins",
+              cardFontColor: "#fff000",
+              cardFontSize: "16px",
+            },
+            Title_5: {
+              cardFont: "Poppins",
+              cardFontColor: "#fff000",
+              cardFontSize: "16px",
+            },
+          },
+          numberOfColumns: "4",
+          numberOfRows: "3",
+        },
+        footerSettings: {
+          footers: {
+            Footer_1: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif", // Add default font
+              footerFontSize: "16px", // Add default size
+              footerFontColor: "#000000", // Add default color
+              bg: "#ffffff", // Add default background
+            },
+            Footer_2: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif",
+              footerFontSize: "16px",
+              footerFontColor: "#000000",
+              bg: "#ffffff",
+            },
+            Footer_3: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif",
+              footerFontSize: "16px",
+              footerFontColor: "#000000",
+              bg: "#ffffff",
+            },
+            Footer_4: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif",
+              footerFontSize: "16px",
+              footerFontColor: "#000000",
+              bg: "#ffffff",
+            },
+            Footer_5: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif",
+              footerFontSize: "16px",
+              footerFontColor: "#000000",
+              bg: "#ffffff",
+            },
+          },
+          socialMediaSettings: {
+            facebook: "",
+            youtube: "",
+            twitter: "",
+            linkedin: "",
+            instagram: "",
+            socialMedia1: "",
+          },
+          mainFooter: "",
+          footerColor: "",
+          footerBackground: "",
+          contactSettings: {
+            address: "",
+            phone: "",
+            email: "",
+          },
+        }
+      },
     });
 
     return newSheet;
@@ -852,9 +988,9 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
     }
     else if (appName == "Interactive Map") {
       cardSettings = [
-        { id: 0, title: "" },
-        { id: 1, title: "" },
-        { id: 2, title: "" },
+        { id: 0, title: "Image" },
+        { id: 1, title: "Longitude" },
+        { id: 2, title: "Latitude" },
       ]
     }
 

@@ -37,7 +37,7 @@ import { SixDots } from "../../../assets/svgIcons.jsx";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import { SortableContext, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { handleUpdateSettings } from "../../../APIs/index.jsx";
+import { handleSaveChanges, handleUpdateSettings } from "../../../APIs/index.jsx";
 import HeadingTitle from "../../people_directory/HeadingTitle.jsx";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { IoMdOpen } from "react-icons/io";
@@ -87,25 +87,32 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const [showFooterPopup, setShowFooterPopup] = useState(false); // State for modal visibility
   const [uploading, setUploading] = useState(false);
 
-  const [headerSettings, setHeaderSettings] = useState({
-    headerText: "CBXTREE Header",
-    headerFont: "Poppins",
-    headerFontColor: "#fff000",
-    headerFontSize: "16px",
-    bg: "#ffffff",
-    logoURL: "",
-    tabTitle: "",
-    reset: false,
-    search: true,
-  });
+  const [headerSettings, setHeaderSettings] = useState(
+    settingData?.productCatalogue?.headerSettings || {}
+  );
 
-  const handleHeaderChange = (e) => {
-    const { name, type, checked } = e.target;
-    setHeaderSettings((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? !prev[name] : e.target.value,
-    }));
-  };
+  const [cardSettings, setCardSettings] = useState(
+    settingData?.productCatalogue?.cardSettings || {}
+  );
+
+  const [footerSettings, setFooterSettings] = useState(
+    settingData?.productCatalogue?.footerSettings || {}
+  );
+
+
+  // const [headerSettings, setHeaderSettings] = useState({
+  //   headerText: "CBXTREE Header",
+  //   headerFont: "Poppins",
+  //   headerFontColor: "#fff000",
+  //   headerFontSize: "16px",
+  //   bg: "#ffffff",
+  //   logoURL: "",
+  //   tabTitle: "",
+  //   reset: false,
+  //   search: true,
+  // });
+
+
 
   const [addHeaderSettings, setAddHeaderSettings] = useState(false);
   const fileInputRef = useRef(null);
@@ -170,45 +177,45 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   //   }
   // };
 
-  const [cardSettings, setCardSettings] = useState({
-    titles: {
-      Title_1: {
-        cardFont: "Poppins",
-        cardFontColor: "#fff000",
-        cardFontSize: "16px",
-        numberOfRows: "",
-        numberOfColumns: "",
-      },
-      Title_2: {
-        cardFont: "Poppins",
-        cardFontColor: "#fff000",
-        cardFontSize: "16px",
-        numberOfRows: "",
-        numberOfColumns: "",
-      },
-      Title_3: {
-        cardFont: "Poppins",
-        cardFontColor: "#fff000",
-        cardFontSize: "16px",
-        numberOfRows: "",
-        numberOfColumns: "",
-      },
-      Title_4: {
-        cardFont: "Poppins",
-        cardFontColor: "#fff000",
-        cardFontSize: "16px",
-        numberOfRows: "",
-        numberOfColumns: "",
-      },
-      Title_5: {
-        cardFont: "Poppins",
-        cardFontColor: "#fff000",
-        cardFontSize: "16px",
-        numberOfRows: "",
-        numberOfColumns: "",
-      },
-    },
-  });
+  // const [cardSettings, setCardSettings] = useState({
+  //   titles: {
+  //     Title_1: {
+  //       cardFont: "Poppins",
+  //       cardFontColor: "#fff000",
+  //       cardFontSize: "16px",
+  //       numberOfRows: "",
+  //       numberOfColumns: "",
+  //     },
+  //     Title_2: {
+  //       cardFont: "Poppins",
+  //       cardFontColor: "#fff000",
+  //       cardFontSize: "16px",
+  //       numberOfRows: "",
+  //       numberOfColumns: "",
+  //     },
+  //     Title_3: {
+  //       cardFont: "Poppins",
+  //       cardFontColor: "#fff000",
+  //       cardFontSize: "16px",
+  //       numberOfRows: "",
+  //       numberOfColumns: "",
+  //     },
+  //     Title_4: {
+  //       cardFont: "Poppins",
+  //       cardFontColor: "#fff000",
+  //       cardFontSize: "16px",
+  //       numberOfRows: "",
+  //       numberOfColumns: "",
+  //     },
+  //     Title_5: {
+  //       cardFont: "Poppins",
+  //       cardFontColor: "#fff000",
+  //       cardFontSize: "16px",
+  //       numberOfRows: "",
+  //       numberOfColumns: "",
+  //     },
+  //   },
+  // });
 
   const [selectedTitle, setSelectedTitle] = useState("Title_1");
 
@@ -217,102 +224,127 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     setSelectedTitle(newTitle);
   };
 
+  // const handleCardChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setCardSettings((prev) => ({
+  //     ...prev,
+  //     titles: {
+  //       ...prev.titles,
+  //       [selectedTitle]: {
+  //         ...prev.titles[selectedTitle],
+  //         [name]: value,
+  //       },
+  //     },
+  //   }));
+  // };
+
   const handleCardChange = (e) => {
     const { name, value } = e.target;
-    setCardSettings((prev) => ({
-      ...prev,
-      titles: {
-        ...prev.titles,
-        [selectedTitle]: {
-          ...prev.titles[selectedTitle],
-          [name]: value,
+
+    // Handle noOfRows and noOfColumns directly
+    if (name === "numberOfRows" || name === "numberOfColumns") {
+      setCardSettings((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+    // Otherwise, assume it's inside titles[selectedTitle]
+    else {
+      setCardSettings((prev) => ({
+        ...prev,
+        titles: {
+          ...prev.titles,
+          [selectedTitle]: {
+            ...(prev.titles?.[selectedTitle] || {}),
+            [name]: value,
+          },
         },
-      },
-    }));
+      }));
+    }
   };
 
   const [addCardSettings, setAddCardSettings] = useState(false);
 
-  const [footerSettings, setFooterSettings] = useState({
-    footers: {
-      Footer_1: {
-        Heading: {
-          SubHeading1: "",
-          SubHeading2: "",
-          SubHeading3: "",
-          SubHeading4: "",
-        },
-        footerFont: "Arial, sans-serif", // Add default font
-        footerFontSize: "16px", // Add default size
-        footerFontColor: "#000000", // Add default color
-        bg: "#ffffff", // Add default background
-      },
-      Footer_2: {
-        Heading: {
-          SubHeading1: "",
-          SubHeading2: "",
-          SubHeading3: "",
-          SubHeading4: "",
-        },
-        footerFont: "Arial, sans-serif",
-        footerFontSize: "16px",
-        footerFontColor: "#000000",
-        bg: "#ffffff",
-      },
-      Footer_3: {
-        Heading: {
-          SubHeading1: "",
-          SubHeading2: "",
-          SubHeading3: "",
-          SubHeading4: "",
-        },
-        footerFont: "Arial, sans-serif",
-        footerFontSize: "16px",
-        footerFontColor: "#000000",
-        bg: "#ffffff",
-      },
-      Footer_4: {
-        Heading: {
-          SubHeading1: "",
-          SubHeading2: "",
-          SubHeading3: "",
-          SubHeading4: "",
-        },
-        footerFont: "Arial, sans-serif",
-        footerFontSize: "16px",
-        footerFontColor: "#000000",
-        bg: "#ffffff",
-      },
-      Footer_5: {
-        Heading: {
-          SubHeading1: "",
-          SubHeading2: "",
-          SubHeading3: "",
-          SubHeading4: "",
-        },
-        footerFont: "Arial, sans-serif",
-        footerFontSize: "16px",
-        footerFontColor: "#000000",
-        bg: "#ffffff",
-      },
-    },
-    socialMediaSettings: {
-      facebook: "",
-      youtube: "",
-      twitter: "",
-      linkedin: "",
-      instagram: "",
-      socialMedia1: "",
-    },
-    mainFooter: "",
-    footerColor: "",
-    footerBackground: "",
-    contactSettings: {
-      address: "",
-      phone: "",
-      email: "",
-    },
-  });
+  // const [footerSettings, setFooterSettings] = useState({
+  //   footers: {
+  //     Footer_1: {
+  //       Heading: {
+  //         SubHeading1: "",
+  //         SubHeading2: "",
+  //         SubHeading3: "",
+  //         SubHeading4: "",
+  //       },
+  //       footerFont: "Arial, sans-serif", // Add default font
+  //       footerFontSize: "16px", // Add default size
+  //       footerFontColor: "#000000", // Add default color
+  //       bg: "#ffffff", // Add default background
+  //     },
+  //     Footer_2: {
+  //       Heading: {
+  //         SubHeading1: "",
+  //         SubHeading2: "",
+  //         SubHeading3: "",
+  //         SubHeading4: "",
+  //       },
+  //       footerFont: "Arial, sans-serif",
+  //       footerFontSize: "16px",
+  //       footerFontColor: "#000000",
+  //       bg: "#ffffff",
+  //     },
+  //     Footer_3: {
+  //       Heading: {
+  //         SubHeading1: "",
+  //         SubHeading2: "",
+  //         SubHeading3: "",
+  //         SubHeading4: "",
+  //       },
+  //       footerFont: "Arial, sans-serif",
+  //       footerFontSize: "16px",
+  //       footerFontColor: "#000000",
+  //       bg: "#ffffff",
+  //     },
+  //     Footer_4: {
+  //       Heading: {
+  //         SubHeading1: "",
+  //         SubHeading2: "",
+  //         SubHeading3: "",
+  //         SubHeading4: "",
+  //       },
+  //       footerFont: "Arial, sans-serif",
+  //       footerFontSize: "16px",
+  //       footerFontColor: "#000000",
+  //       bg: "#ffffff",
+  //     },
+  //     Footer_5: {
+  //       Heading: {
+  //         SubHeading1: "",
+  //         SubHeading2: "",
+  //         SubHeading3: "",
+  //         SubHeading4: "",
+  //       },
+  //       footerFont: "Arial, sans-serif",
+  //       footerFontSize: "16px",
+  //       footerFontColor: "#000000",
+  //       bg: "#ffffff",
+  //     },
+  //   },
+  //   socialMediaSettings: {
+  //     facebook: "",
+  //     youtube: "",
+  //     twitter: "",
+  //     linkedin: "",
+  //     instagram: "",
+  //     socialMedia1: "",
+  //   },
+  //   mainFooter: "",
+  //   footerColor: "",
+  //   footerBackground: "",
+  //   contactSettings: {
+  //     address: "",
+  //     phone: "",
+  //     email: "",
+  //   },
+  // });
 
   const [selectedFooters, setSelectedFooters] = useState("Footer_1");
 
@@ -321,19 +353,75 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     setSelectedFooters(newFooters);
   };
 
+  // const handleFooterChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   if (!selectedFooters) return; // Ensure a footer is selected
+
+  //   setFooterSettings((prev) => ({
+  //     ...prev,
+  //     footers: {
+  //       ...prev.footers,
+  //       [selectedFooters]: {
+  //         ...prev.footers[selectedFooters],
+  //         Heading: {
+  //           ...prev.footers[selectedFooters].Heading,
+  //           [name]: value,
+  //         },
+  //       },
+  //     },
+  //   }));
+  // };
+
   const handleFooterChange = (e) => {
     const { name, value } = e.target;
 
-    if (!selectedFooters) return; // Ensure a footer is selected
+    // Handle contact settings
+    if (["address", "phone", "email"].includes(name)) {
+      setFooterSettings((prev) => ({
+        ...prev,
+        contactSettings: {
+          ...prev.contactSettings,
+          [name]: value,
+        },
+      }));
+      return;
+    }
+
+    // Handle social media settings (static only)
+    if (
+      ["facebook", "youtube", "twitter", "linkedin", "instagram"].includes(name)
+    ) {
+      setFooterSettings((prev) => ({
+        ...prev,
+        socialMediaSettings: {
+          ...prev.socialMediaSettings,
+          [name]: value,
+        },
+      }));
+      return;
+    }
+
+    // Handle flat footer settings
+    if (["footerColor", "footerBackground"].includes(name)) {
+      setFooterSettings((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+      return;
+    }
+
+    // Handle footer headings
+    if (!selectedFooters) return;
 
     setFooterSettings((prev) => ({
       ...prev,
       footers: {
         ...prev.footers,
         [selectedFooters]: {
-          ...prev.footers[selectedFooters],
+          ...prev.footers?.[selectedFooters],
           Heading: {
-            ...prev.footers[selectedFooters].Heading,
+            ...(prev.footers?.[selectedFooters]?.Heading || {}),
             [name]: value,
           },
         },
@@ -341,24 +429,69 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     }));
   };
 
+
   const [addFooterSettings, setAddFooterSettings] = useState(false);
 
-  const [socialMediaLinks, setSocialMediaLinks] = useState([
-    { id: 1, name: "Social media 1", link: "", isEditing: false },
-  ]);
+  const getDynamicSocialLinks = () => {
+    return Object.entries(footerSettings.socialMediaSettings)
+      .filter(([key]) => key.startsWith("socialMedia"))
+      .map(([key, value], index) => ({
+        id: key,
+        name: `Social Media ${index + 1}`,
+        link: value,
+      }));
+  };
+
+  const [socialMediaLinks, setSocialMediaLinks] = useState(getDynamicSocialLinks() || []);
+
+
+  // const handleAddSocialMedia = () => {
+  //   const newId = socialMediaLinks.length + 1;
+  //   setSocialMediaLinks([
+  //     ...socialMediaLinks,
+  //     { id: newId, name: `Social media ${newId}`, link: "", isEditing: false },
+  //   ]);
+  // };
 
   const handleAddSocialMedia = () => {
-    const newId = socialMediaLinks.length + 1;
+    // Generate new ID based on the last entry, or set to 1 if no links exist
+    const newId = socialMediaLinks.length > 0 ? socialMediaLinks[socialMediaLinks.length - 1].id + 1 : 1;
+  
+    // Add the new social media link to the socialMediaLinks state
     setSocialMediaLinks([
       ...socialMediaLinks,
       { id: newId, name: `Social media ${newId}`, link: "", isEditing: false },
     ]);
+  
+    // Add the new social media link to footerSettings as well
+    setFooterSettings((prev) => ({
+      ...prev,
+      socialMediaSettings: {
+        ...prev.socialMediaSettings,
+        [`socialMedia${newId}`]: { link: "", label: `Social Media ${newId}` },
+      },
+    }));
   };
+  
+
+  
+  // const handleRemoveSocialMedia = (id) => {
+  //   setSocialMediaLinks(socialMediaLinks.filter((item) => item.id !== id));
+  // };
 
   const handleRemoveSocialMedia = (id) => {
+    // Remove the social media link from socialMediaLinks state
     setSocialMediaLinks(socialMediaLinks.filter((item) => item.id !== id));
+  
+    // Remove the social media link from footerSettings
+    setFooterSettings((prev) => {
+      const updatedSocialMediaSettings = { ...prev.socialMediaSettings };
+      delete updatedSocialMediaSettings[id]; // Remove the link from socialMediaSettings
+      return { ...prev, socialMediaSettings: updatedSocialMediaSettings };
+    });
   };
 
+  
   const handleChange = (id, field, value) => {
     setSocialMediaLinks((prevLinks) =>
       prevLinks.map((item) =>
@@ -406,41 +539,41 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     setIsSaveChanges(true);
   };
 
-  const handleSaveChanges = async (updatedSetting, message) => {
-    setIsLoading(true);
-    try {
-      console.log({ updatedSetting, settingData });
-      // Use the passed settings or fallback to the Redux state
-      const settingsToSave = updatedSetting || settingData;
-      console.log({ settingsToSave });
+  // const handleSaveChanges = async (updatedSetting, message) => {
+  //   setIsLoading(true);
+  //   try {
+  //     console.log({ updatedSetting, settingData });
+  //     // Use the passed settings or fallback to the Redux state
+  //     const settingsToSave = updatedSetting || settingData;
+  //     console.log({ settingsToSave });
 
-      const response = await axios.put(
-        `${HOST}/spreadsheet/${settingData._id}`,
-        settingsToSave,
-        {
-          headers: {
-            authorization: "Bearer " + token,
-          },
-        }
-      );
+  //     const response = await axios.put(
+  //       `${HOST}/spreadsheet/${settingData._id}`,
+  //       settingsToSave,
+  //       {
+  //         headers: {
+  //           authorization: "Bearer " + token,
+  //         },
+  //       }
+  //     );
 
-      console.log("Settings updated successfully:", response.data);
-      dispatch(updateSetting(response.data));
-      setIsLoading(false);
-      setIsSaveChanges(false);
-      notifySuccess(message);
-      setIsTableLoading(false);
-      closeDrawer();
+  //     console.log("Settings updated successfully:", response.data);
+  //     dispatch(updateSetting(response.data));
+  //     setIsLoading(false);
+  //     setIsSaveChanges(false);
+  //     notifySuccess(message);
+  //     setIsTableLoading(false);
+  //     // closeDrawer();
 
-      // Refresh the page
-      window.location.reload();
-    } catch (error) {
-      console.error("Error updating settings in DB:", error);
-      setIsTableLoading(false);
-      setIsLoading(false);
-      setIsSaveChanges(false);
-    }
-  };
+  //     // Refresh the page
+  //     // window.location.reload();
+  //   } catch (error) {
+  //     console.error("Error updating settings in DB:", error);
+  //     setIsTableLoading(false);
+  //     setIsLoading(false);
+  //     setIsSaveChanges(false);
+  //   }
+  // };
 
   const handleResetChange = async () => {
     setIsTableLoading(true);
@@ -467,6 +600,37 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     await handleSaveChanges(updatedSetting, "Table Style Reset successfully");
   };
 
+  const handleHeaderChange = (e) => {
+    const { name, type, checked } = e.target;
+    setHeaderSettings((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? !prev[name] : e.target.value,
+    }));
+  };
+
+  const saveProductCatalogueSettings = async () => {
+    console.log({ headerSettings, cardSettings, footerSettings });
+    const updatedSettings = {
+      productCatalogue: {
+        headerSettings,
+        cardSettings,
+        footerSettings,
+      },
+    };
+
+    console.log("Saving productCatalogue settings:", updatedSettings);
+
+    const result = await handleSaveChanges(settingData, token, dispatch, updatedSettings);
+
+    if (result) {
+      notifySuccess("Product Catalogue settings saved successfully!");
+      // setAddHeaderSettings(false);
+      // setAddCardSettings(false);
+      // setAddFooterSettings(false);
+    }
+  };
+
+
   const saveHeaderSettings = () => {
     console.log(headerSettings); // Latest settings
     setAddHeaderSettings(false); // Collapse settings
@@ -474,16 +638,18 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   };
 
   const saveCardSettings = () => {
-    console.log(cardSettings); 
-    setAddCardSettings(false); 
-    
+    console.log(cardSettings);
+    setAddCardSettings(false);
+
   };
 
   const saveFooterSettings = () => {
-    console.log(footerSettings); 
-    setAddFooterSettings(false); 
+    console.log(footerSettings);
+    setAddFooterSettings(false);
     // May send data to backend or local storage
   };
+
+
   const handleOpenViewPage = () => {
     const url = window.location.href.replace("edit", "view");
     window.open(url, "_blank");
@@ -589,6 +755,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
             <HeaderPopup
               isOpen={showHeaderPopup}
               onClose={() => setShowHeaderPopup(false)}
+              settings={settingData}
             />
           </div>
 
@@ -862,7 +1029,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               </div>
 
               {/* Reset Toggle */}
-            
+
               <div className="flex items-center gap-2">
                 <label className="w-[40%] flex items-center text-[#1E1B1B] font-poppins text-[17px] font-medium">
                   Reset:
@@ -947,7 +1114,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
               <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
-                onClick={saveHeaderSettings}
+                onClick={saveProductCatalogueSettings}
               >
                 Save Changes
               </button>
@@ -978,7 +1145,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   </span>
                   <img className="setting_filter_top1_img" src={downIcon} />
                 </div>
-               
+
                 {/* LuEye Icon to Open Full-Screen Card Popup */}
                 <LuEye
                   className="w-5 h-5 text-[#598931] cursor-pointer"
@@ -1179,25 +1346,6 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               </div>
 
               <div className="flex items-center gap-2">
-                <label className="w-[40%] flex items-center text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  No. of Rows:
-                  <span className="ml-1">
-                    {" "}
-                    <Info info="Choose how much rows shall be in card view!" />
-                  </span>
-                </label>
-
-                <input
-                  type="text"
-                  name="numberOfRows"
-                  value={cardSettings.numberOfRows}
-                  onChange={handleCardChange}
-                  placeholder="Enter Text"
-                  className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
                 <label className="w-[40%] flex items-center text-[#1E1B1B] font-poppins text-[16px] font-medium">
                   No. of Columns:
                   <span className="ml-1">
@@ -1216,6 +1364,27 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 />
               </div>
 
+              <div className="flex items-center gap-2">
+                <label className="w-[40%] flex items-center text-[#1E1B1B] font-poppins text-[17px] font-medium">
+                  No. of Rows:
+                  <span className="ml-1">
+                    {" "}
+                    <Info info="Choose how much rows shall be in card view!" />
+                  </span>
+                </label>
+
+                <input
+                  type="text"
+                  name="numberOfRows"
+                  value={cardSettings.numberOfRows}
+                  onChange={handleCardChange}
+                  placeholder="Enter Text"
+                  className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
+                />
+              </div>
+
+
+
               {/* <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
                 onClick={handleSaveChanges}
@@ -1224,7 +1393,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               </button> */}
               <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
-                onClick={saveCardSettings}
+                onClick={saveProductCatalogueSettings}
               >
                 Save Changes
               </button>
@@ -1257,7 +1426,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   </span>
                   <img className="setting_filter_top1_img" src={downIcon} />
                 </div>
-               
+
                 {/* LuEye Icon to Open Full-Screen Footer Popup */}
                 <LuEye
                   className="w-5 h-5 text-[#598931] cursor-pointer"
@@ -1354,21 +1523,6 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
                 <input
                   type="text"
-                  name="heading"
-                  value={footerSettings.heading}
-                  onChange={handleFooterChange}
-                  placeholder="Enter Text"
-                  className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Sub-heading1
-                </label>
-
-                <input
-                  type="text"
                   name="SubHeading1"
                   value={
                     footerSettings.footers[selectedFooters]?.Heading
@@ -1382,7 +1536,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
               <div className="flex items-center gap-2">
                 <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Sub-heading2
+                  Sub-heading1
                 </label>
 
                 <input
@@ -1400,7 +1554,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
               <div className="flex items-center gap-2">
                 <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Sub-heading3
+                  Sub-heading2
                 </label>
 
                 <input
@@ -1418,7 +1572,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
               <div className="flex items-center gap-2">
                 <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Sub-heading4
+                  Sub-heading3
                 </label>
 
                 <input
@@ -1433,6 +1587,65 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
               </div>
+
+              <div className="flex items-center gap-2">
+                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
+                  Sub-heading4
+                </label>
+
+                <input
+                  type="text"
+                  name="SubHeading5"
+                  value={
+                    footerSettings.footers[selectedFooters]?.Heading
+                      ?.SubHeading5 || ""
+                  }
+                  onChange={handleFooterChange}
+                  placeholder="Enter Text"
+                  className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
+                />
+              </div>
+              <hr />
+
+              <div className="flex items-center gap-2">
+                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
+                  Footer Color:
+                </label>
+
+                <input
+                  type="color"
+                  name="footerColor"
+                  value={footerSettings?.footerColor}
+                  onChange={(e) =>
+                    setFooterSettings({
+                      ...footerSettings,
+                      footerColor: e.target.value,
+                    })
+                  }
+                  // className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[33px] w-full max-h-[33px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
+                  className="custom-color-input"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
+                  Footer Bg Color:
+                </label>
+
+                <input
+                  type="color"
+                  name="footerBackground"
+                  value={footerSettings?.footerBackground}
+                  onChange={(e) =>
+                    setFooterSettings({
+                      ...footerSettings,
+                      footerBackground: e.target.value,
+                    })
+                  }
+                  // className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[33px] w-full max-h-[33px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
+                  className="custom-color-input"
+                />
+              </div>
+
               <hr />
 
               {/* Social Media Settings Header */}
@@ -1461,7 +1674,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 <input
                   type="text"
                   name="facebook"
-                  value={footerSettings.facebook}
+                  value={footerSettings?.socialMediaSettings?.facebook}
                   onChange={handleFooterChange}
                   placeholder="Enter Link"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
@@ -1475,8 +1688,8 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
                 <input
                   type="text"
-                  name="youTube"
-                  value={footerSettings.youTube}
+                  name="youtube"
+                  value={footerSettings?.socialMediaSettings?.youtube}
                   onChange={handleFooterChange}
                   placeholder="Enter Link"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
@@ -1491,7 +1704,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 <input
                   type="text"
                   name="twitter"
-                  value={footerSettings.twitter}
+                  value={footerSettings?.socialMediaSettings?.twitter}
                   onChange={handleFooterChange}
                   placeholder="Enter Link"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
@@ -1505,8 +1718,8 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
                 <input
                   type="text"
-                  name="linkedIn"
-                  value={footerSettings.linkedIn}
+                  name="linkedin"
+                  value={footerSettings?.socialMediaSettings?.linkedin}
                   onChange={handleFooterChange}
                   placeholder="Enter Link"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
@@ -1521,7 +1734,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 <input
                   type="text"
                   name="instagram"
-                  value={footerSettings.instagram}
+                  value={footerSettings?.socialMediaSettings?.instagram}
                   onChange={handleFooterChange}
                   placeholder="Enter Link"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
@@ -1538,7 +1751,16 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                       type="text"
                       value={social.name}
                       onChange={(e) =>
-                        handleChange(social.id, "name", e.target.value)
+                        setFooterSettings((prev) => ({
+                          ...prev,
+                          socialMediaSettings: {
+                            ...prev.socialMediaSettings,
+                            [`socialMedia${social.id}`]: {
+                              ...prev.socialMediaSettings[`socialMedia${social.id}`],
+                              name: e.target.value,
+                            },
+                          },
+                        }))
                       }
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
@@ -1554,18 +1776,39 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     </label>
                   )}
 
-                  {/* Link Input */}
+
                   <input
                     type="text"
                     value={social.link}
-                    onChange={(e) =>
-                      handleChange(social.id, "link", e.target.value)
-                    }
+                    onChange={(e) => {
+                      const updatedLink = e.target.value;
+                    
+                      // Update socialMediaLinks
+                      setSocialMediaLinks((prevLinks) =>
+                        prevLinks.map((social) =>
+                          social.id === social.id
+                            ? { ...social, link: updatedLink }
+                            : social
+                        )
+                      );
+                    
+                      // Update footerSettings
+                      setFooterSettings((prev) => ({
+                        ...prev,
+                        socialMediaSettings: {
+                          ...prev.socialMediaSettings,
+                          [`socialMedia${social.id}`]: {
+                            ...prev.socialMediaSettings[`socialMedia${social.id}`],
+                            link: updatedLink,
+                          },
+                        },
+                      }));
+                    }}
+                    
                     placeholder="Enter Link"
                     className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
                   />
 
-                  {/* Edit Icon - Toggles Edit Mode */}
                   <button
                     onClick={() => handleEditToggle(social.id)}
                     className="text-[#1E1B1B] hover:text-[#598931]"
@@ -1573,7 +1816,6 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     <CiEdit />
                   </button>
 
-                  {/* Remove Icon */}
                   <button
                     onClick={() => handleRemoveSocialMedia(social.id)}
                     className="text-[#598931] hover:text-[#598931]"
@@ -1583,7 +1825,12 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 </div>
               ))}
 
-              <div className="flex items-center gap-2">
+
+
+
+
+
+              {/* <div className="flex items-center gap-2">
                 <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
                   Main Footer:
                 </label>
@@ -1596,46 +1843,9 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   placeholder="Enter Text"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
-              </div>
+              </div> */}
 
-              <div className="flex items-center gap-2">
-                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Footer Color:
-                </label>
 
-                <input
-                  type="color"
-                  name="footerColor"
-                  value={headerSettings.footerColor}
-                  onChange={(e) =>
-                    setFooterSettings({
-                      ...footerSettings,
-                      footerColor: e.target.value,
-                    })
-                  }
-                  // className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[33px] w-full max-h-[33px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
-                  className="custom-color-input"
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Footer Bg Color:
-                </label>
-
-                <input
-                  type="color"
-                  name="footerBackground"
-                  value={headerSettings.footerBackground}
-                  onChange={(e) =>
-                    setFooterSettings({
-                      ...footerSettings,
-                      footerColor: e.target.value,
-                    })
-                  }
-                  // className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[33px] w-full max-h-[33px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
-                  className="custom-color-input"
-                />
-              </div>
 
               {/* <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
@@ -1644,12 +1854,14 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 Save Changes
               </button> */}
 
-              <button
+              {/* <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
-                onClick={saveFooterSettings}
+                onClick={saveProductCatalogueSettings}
               >
                 Save Changes
-              </button>
+              </button> */}
+
+              <hr />
 
               {/* Contact Settings */}
               <div className="text-[#1E1B1B] font-poppins text-[20px] font-semibold mt-4">
@@ -1719,7 +1931,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
               <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
-                onClick={saveFooterSettings}
+                onClick={saveProductCatalogueSettings}
               >
                 Save Changes
               </button>
