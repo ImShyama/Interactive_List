@@ -6,7 +6,7 @@ import { Input } from "antd";
 import { debounce } from "lodash";
 import { use } from "react";
 
-const GLobalSearch = ({ data, setFilteredData }) => {
+const GLobalSearch = ({ data, setFilteredData, toggleFilterBox }) => {
 
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchGlobal, setSearchGlobal] = useState("");
@@ -27,6 +27,7 @@ const GLobalSearch = ({ data, setFilteredData }) => {
         setSearchGlobal("");
         setIsSearchOpen(false);
         setFilteredData(data);
+        toggleFilterBox();
     }, []);
 
     const onInputChange = useCallback((e) => {

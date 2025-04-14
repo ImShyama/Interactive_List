@@ -1556,7 +1556,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                         </div>
                     )}
 
-                    <GlobalSearch data={data} setFilteredData={setFilteredData} />
+                    <GlobalSearch data={data} setFilteredData={setFilteredData} toggleFilterBox={toggleFilterBox} />
 
                     {isEditMode && <div className="flex items-center">
                         <button onClick={handleAdd} className="mx-2" title="Add Row">

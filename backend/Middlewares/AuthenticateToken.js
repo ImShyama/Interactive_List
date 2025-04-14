@@ -37,8 +37,8 @@ exports.authenticateToken = async (req, res, next) => {
 
             if(!user.isApproved) return res.send({ error: "User is not Approved. Please connect with CEOITBOX team at access@ceoitbox.in." });
 
-            // const isLicenseValid = await checkLicenseValidity(user.email, "CBXINTERACT");
-            // if (!isLicenseValid) return res.send({ error: "Unfortunately you are not authorised to access this app. Please connect with CEOITBOX team at access@ceoitbox.in." })
+            const isLicenseValid = await checkLicenseValidity(user.email, "CBXINTERACT");
+            if (!isLicenseValid) return res.send({ error: "Unfortunately you are not authorised to access this app. Please connect with CEOITBOX team at access@ceoitbox.in." })
 
 
             req.user = user;
@@ -80,8 +80,8 @@ exports.authenticateTokenPrivate = async (req, res, next) => {
 
             if(!user.isApproved) return res.send({ error: "User is not Approved. Please connect with CEOITBOX team at access@ceoitbox.in." });
 
-            // const isLicenseValid = await checkLicenseValidity(user.email, "CBXINTERACT");
-            // if (!isLicenseValid) return res.send({ error: "Unfortunately you are not authorised to access this app. Please connect with CEOITBOX team at access@ceoitbox.in." })
+            const isLicenseValid = await checkLicenseValidity(user.email, "CBXINTERACT");
+            if (!isLicenseValid) return res.send({ error: "Unfortunately you are not authorised to access this app. Please connect with CEOITBOX team at access@ceoitbox.in." })
 
 
             req.user = user;

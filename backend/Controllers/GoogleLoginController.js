@@ -53,8 +53,8 @@ exports.HandleGoogleLogin = async (req, res) => {
         const userEmail = payload.email;
         const userName = payload.name;
 
-        // const isLicenseValid = await checkLicenseValidity(userEmail, "CBXINTERACT");
-        // if (!isLicenseValid) return res.send({ error: "Unfortunately you are not authorised to access this app. Please connect with CEOITBOX team at access@ceoitbox.in."        })
+        const isLicenseValid = await checkLicenseValidity(userEmail, "CBXINTERACT");
+        if (!isLicenseValid) return res.send({ error: "Unfortunately you are not authorised to access this app. Please connect with CEOITBOX team at access@ceoitbox.in."        })
 
         const existingUser = await UsersModel.findOne({ email }).lean();
         console.log({existingUser});

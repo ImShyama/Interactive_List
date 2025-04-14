@@ -13,21 +13,24 @@ import PeopleDirectory from "../assets/images/PeopleDirectoryCard.png"
 import PhotoGallery from "../assets/images/PhotoGallery.png"
 import ProductCatalogue from "../assets/images/ProductCatalogue.png"
 import VideoGallery from "../assets/images/VideoGallery.png"
-export const APPSNAME = ["Interactive List",
+export const APPSNAME = [
+  "Interactive List",
+  "Interactive Map",
   "People Directory",
-  "Video Gallery",
   "Photo Gallery",
-  "Interactive Map"
+  "Video Gallery",
+  // "Product Catalogue",
 ];
 export const CLIENTID = '260938166249-rv9fgk97t8b2qmrpi5nqk8hd4frd2qba.apps.googleusercontent.com';
 export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ';
 
 export const OPTIONS = [
   { value: 'Interactive List' },
-  { value: 'People Directory' },
-  { value: 'Video Gallery' },
-  { value: 'Photo Gallery' },
   { value: 'Interactive Map' },
+  { value: 'People Directory' },
+  { value: 'Photo Gallery' },
+  // { value: 'Product Catalogue' },
+  { value: 'Video Gallery' },
 ];
 
 export const APPS = [
@@ -180,7 +183,7 @@ export const APPS = [
   //           "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
   //       },
   //     ],
-  //   },
+  // },
 ];
 // export const CLIENTID = '210551094674-r1bvcns06j8pj06bk8dnfhl3mh6feuag.apps.googleusercontent.com';
 // export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ'; // Use correct developer key

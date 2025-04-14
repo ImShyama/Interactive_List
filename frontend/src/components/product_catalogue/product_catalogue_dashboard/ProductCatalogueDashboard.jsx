@@ -10,6 +10,7 @@ import CardView from "./CardView";
 import DetailedView from "./DetailedView";
 import BoxView from "./BoxView";
 import ProductCatalogueTable from "../ProductCatalogueTable";
+import ProductCatalogueView from "../ProductCatalogueView.jsx";
 
 const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHeader, freezeIndex, formulaData, unhideHeader }) => {
   console.log({ data,tableHeader, headers, settings, tempHeader, freezeIndex, formulaData, unhideHeader })
@@ -21,7 +22,7 @@ const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHe
   // const [formulaData, setFormulaData] = useState({});
   const [loading, setLoading] = useState(true);
   // const [freezeIndex, setFreezeIndex] = useState(0);
-  const { token } = useContext(UserContext);
+  const { token, setIsPCTSettings } = useContext(UserContext);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -29,6 +30,7 @@ const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHe
   const dispatch = useDispatch();
   // const settings = useSelector((state) => state.setting.settings);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const isEditMode = window.location.pathname.endsWith('/edit');
 
   useEffect(() => {
     if (
@@ -97,6 +99,8 @@ const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHe
   // }, [id, token, navigate, dispatch]);
 
   return (
+    <>
+    {isEditMode ?
     <div className="min-h-screen bg-white p-6 space-y-6">
       {!showTable ? (
         <>
@@ -114,7 +118,7 @@ const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHe
             style={{ backgroundColor: "#598931" }}
             // onMouseOver={(e) => (e.target.style.backgroundColor = "#598931")}
             // onMouseOut={(e) => (e.target.style.backgroundColor = "#BFBFBF")}
-            onClick={() => setShowTable(true)}
+            onClick={() => {setShowTable(true); setIsPCTSettings(true)}}
           >
             View Table
           </button>
@@ -133,6 +137,10 @@ const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHe
         />
       )}
     </div>
+    :
+    <ProductCatalogueView />
+     }
+    </>
   );
 };
 

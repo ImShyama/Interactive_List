@@ -63,6 +63,7 @@ import {
 
 const { Option } = Select;
 
+
 const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const { setToken, setProfile } = useContext(UserContext);
   const [addData, setAddData] = useState(false);
@@ -606,6 +607,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
       ...prev,
       [name]: type === "checkbox" ? !prev[name] : e.target.value,
     }));
+    setIsSaveChanges(true);
   };
 
   const saveProductCatalogueSettings = async () => {
@@ -704,18 +706,19 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               </div>
             </div>
             <div className="setting_icons_top_right">
-              {/* <button
+              <button
                 className="submit_btn"
-                onClick={() =>
-                  handleSaveChanges(
-                    settingData,
-                    "Settings saved successfully, Reloading..."
-                  )
-                }
+                onClick={saveProductCatalogueSettings}
                 disabled={!isSaveChanges}
               >
                 <span className="span_btn">Save Changes</span>
                
+              </button>
+              {/* <button
+                className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
+                onClick={saveProductCatalogueSettings}
+              >
+                Save Changes
               </button> */}
               <div
                 className="setting_icons_top_right_inner"
@@ -1112,12 +1115,12 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 </label>
               </div>
 
-              <button
+              {/* <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
                 onClick={saveProductCatalogueSettings}
               >
                 Save Changes
-              </button>
+              </button> */}
             </div>
           )}
 
@@ -1391,12 +1394,12 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               >
                 Save Changes
               </button> */}
-              <button
+              {/* <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
                 onClick={saveProductCatalogueSettings}
               >
                 Save Changes
-              </button>
+              </button> */}
             </div>
           )}
 
@@ -1929,12 +1932,12 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 Save Changes
               </button> */}
 
-              <button
+              {/* <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
                 onClick={saveProductCatalogueSettings}
               >
                 Save Changes
-              </button>
+              </button> */}
             </div>
           )}
           {/* </> */}

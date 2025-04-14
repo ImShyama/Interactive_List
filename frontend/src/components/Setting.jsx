@@ -1006,7 +1006,8 @@ const ViewSettings = ({ settingsData }) => {
 }
 
 const Setting = ({ closeDrawer, handleToggleDrawer }) => {
-  const { setToken, setProfile } = useContext(UserContext);
+  const { setToken, setProfile, isPCTSettings } = useContext(UserContext);
+  console.log({isPCTSettings});
   const [addData, setAddData] = useState(false);
   const [addSheet, setAddSheet] = useState(false);
   const [addView, setAddView] = useState(false);
@@ -1104,9 +1105,9 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
   return (
     <div>
-      {settingData?.appName == "Product Catalogue"
+      {settingData?.appName == "Product Catalogue" && !isPCTSettings
         ?
-        <CatalogueSettings />
+        <CatalogueSettings handleToggleDrawer={handleToggleDrawer} />
         :
         <div>
           <div className="setting_drawer">
@@ -1159,7 +1160,6 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     {!addSheet ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" />}
                   </div>
                   <div>
-
                   </div>
                   <Info info={"With these settings, you can manage your spreadsheet options, including fetching a spreadsheet directly from Google Drive and selecting the desired data range."} />
                 </div>

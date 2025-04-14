@@ -73,7 +73,7 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
     const [freezeCol, setFreezeCol] = useState(settings?.freezeCol || "");
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const navigate = useNavigate();
-    const { token } = useContext(UserContext);
+    const { token, setIsPCTSettings } = useContext(UserContext);
     const dispatch = useDispatch();
     const tableSettings = settings?.tableSettings?.length > 0 ? settings.tableSettings[0] : null;
     const tableRef = useRef(null);
@@ -832,7 +832,7 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
-                    <button onClick={() => setShowTable(false)} title="Back">
+                    <button onClick={() => {setShowTable(false); setIsPCTSettings(false)}} title="Back">
                         <BackIcon />
                     </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
