@@ -12,7 +12,17 @@ const SheetSchema = new mongoose.Schema({
     firstTabHeader: Array,
     appName: String,
     sheetDetails: Array,
-    sharedWith:Array,
+    // sharedWith:{type: [{email: String, permission: String, photo: String, id: mongoose.Schema.Types.ObjectId, ref:"user"}], default: []},
+    sharedWith: {
+        type: [{
+          email: String,
+          permission: String,
+          photo: String,
+          id: { type: mongoose.Schema.Types.ObjectId, ref: "Users" }
+        }],
+        default: []
+      }
+    ,      
     tableSettings: Array,
     access: String,
     lastUpdatedDate: String,

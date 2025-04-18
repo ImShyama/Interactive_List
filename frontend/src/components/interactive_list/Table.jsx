@@ -664,8 +664,8 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                             onChange={(e) => {
                                                 handleGlobalCheckboxChange(e.target.checked);
                                             }}
-                                            checked={ischecked.length === paginatedData.length && paginatedData.length > 0}
-                                            indeterminate={ischecked?.length > 0 && ischecked.length < paginatedData.length}
+                                            checked={ischecked?.length === paginatedData?.length && paginatedData?.length > 0}
+                                            indeterminate={ischecked?.length > 0 && ischecked?.length < paginatedData?.length}
                                             disabled={isPreview}
                                         />
                                         {/* <button onClick={handleBulkSave} className="rounded-[4px] mx-2" title="Save">

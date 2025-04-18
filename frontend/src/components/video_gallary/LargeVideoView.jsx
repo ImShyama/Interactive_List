@@ -134,46 +134,106 @@ const LargeVideoView = () => {
   const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
   const videoUrl = data?.[titleKey];
 
+  // const getEmbeddedVideoURL = (url) => {
+  //   if (url.includes("youtube.com") || url.includes("youtu.be")) {
+  //     return url.includes("embed")
+  //       ? url
+  //       : `https://www.youtube.com/embed/${url.split("v=")[1].split("&")[0]}`;
+  //   }
+
+  //   if (url.includes("drive.google.com")) {
+  //     return `https://drive.google.com/file/d/${url.split("/d/")[1].split("/")[0]
+  //       }/preview`;
+  //   }
+
+  //   if (url.includes("vimeo.com")) {
+  //     const videoId = url.split("/").pop();
+  //     return `https://player.vimeo.com/video/${videoId}`;
+  //   }
+
+  //   if (url.includes("dailymotion.com")) {
+  //     const videoId = url.split("/video/")[1]?.split("_")[0];
+  //     return `https://www.dailymotion.com/embed/video/${videoId}`;
+  //   }
+
+  //   if (url.includes("facebook.com")) {
+  //     return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
+  //       url
+  //     )}`;
+  //   }
+  //   if (url.includes("instagram.com")) {
+  //     // https://www.instagram.com/reel/C5lSU9qNl0n/?utm_source=ig_web_button_share_sheet
+  //     // https://www.instagram.com/p/BdJRABkDbXU/embed/
+  //     // url = "https://www.instagram.com/reel/C5lSU9qNl0n/"
+  //     return `https://www.instagram.com/p/${url.split("/")[4]}/embed/`;
+  //   }
+
+
+  //   if (url.endsWith(".mp4") || url.endsWith(".webm") || url.endsWith(".ogg")) {
+  //     return url; // Direct video link
+  //   }
+
+  //   return url; // Default case (returns same URL if unknown format)
+  // };
+
   const getEmbeddedVideoURL = (url) => {
     if (url.includes("youtube.com") || url.includes("youtu.be")) {
-      return url.includes("embed")
-        ? url
-        : `https://www.youtube.com/embed/${url.split("v=")[1].split("&")[0]}`;
+      try {
+        const urlObj = new URL(url);
+  
+        // Already an embed URL
+        if (url.includes("embed")) {
+          return url;
+        }
+  
+        // youtu.be short link
+        if (urlObj.hostname === "youtu.be") {
+          const videoId = urlObj.pathname.slice(1);
+          return `https://www.youtube.com/embed/${videoId}`;
+        }
+  
+        // youtube.com with v=VIDEO_ID
+        const videoId = urlObj.searchParams.get("v");
+        if (videoId) {
+          return `https://www.youtube.com/embed/${videoId}`;
+        }
+      } catch (e) {
+        console.error("Invalid YouTube URL:", url);
+        return url;
+      }
     }
-
+  
     if (url.includes("drive.google.com")) {
-      return `https://drive.google.com/file/d/${url.split("/d/")[1].split("/")[0]
-        }/preview`;
+      return `https://drive.google.com/file/d/${
+        url.split("/d/")[1].split("/")[0]
+      }/preview`;
     }
-
+  
     if (url.includes("vimeo.com")) {
       const videoId = url.split("/").pop();
       return `https://player.vimeo.com/video/${videoId}`;
     }
-
+  
     if (url.includes("dailymotion.com")) {
       const videoId = url.split("/video/")[1]?.split("_")[0];
       return `https://www.dailymotion.com/embed/video/${videoId}`;
     }
-
+  
     if (url.includes("facebook.com")) {
       return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
         url
       )}`;
     }
+  
     if (url.includes("instagram.com")) {
-      // https://www.instagram.com/reel/C5lSU9qNl0n/?utm_source=ig_web_button_share_sheet
-      // https://www.instagram.com/p/BdJRABkDbXU/embed/
-      // url = "https://www.instagram.com/reel/C5lSU9qNl0n/"
       return `https://www.instagram.com/p/${url.split("/")[4]}/embed/`;
     }
-
-
+  
     if (url.endsWith(".mp4") || url.endsWith(".webm") || url.endsWith(".ogg")) {
-      return url; // Direct video link
+      return url;
     }
-
-    return url; // Default case (returns same URL if unknown format)
+  
+    return url; // Default fallback
   };
 
   useEffect(() => {
@@ -286,6 +346,21 @@ const LargeVideoView = () => {
         )
           :
           (!isPlaying ? (
+            (settings?.showInCard[1]?.title == "" ) ?
+
+              <iframe
+                // width="100%"
+                // height="100%"
+                className="w-full h-full rounded-[36.443px]"
+                src={
+                  getEmbeddedVideoURL(videoUrl)
+                }
+                title={settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_") || "Video"}
+                // allow="autoplay; encrypted-media"
+                frameBorder="0"
+                allowFullScreen
+              ></iframe>
+              :
             <div
               className="relative w-full h-full cursor-pointer"
               onClick={handlePlayVideo}
