@@ -39,6 +39,7 @@ import VideoGallaryView from "./VideoGallaryView.jsx";
 import { FiEye } from "react-icons/fi";
 import Preview from "../Preview.jsx";
 import EmptyTable from "../component/EmptyTable.jsx";
+import CatalogueFilter from "../component/CategoryFilter.jsx";
 
 
 const convertArrayToJSON = (data) => {
@@ -1172,7 +1173,8 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                         </div>
                     )}
 
-                    <GlobalSearch data={data} setFilteredData={setFilteredData} />
+                    <GlobalSearch data={data}  setFilteredData={setFilteredData} />
+                    <CatalogueFilter data={data} tempHeader={tempHeader} filteredData={filteredData} setFilteredData={setFilteredData}/>
 
                     {isEditMode && <div className="flex items-center">
 
