@@ -28,7 +28,7 @@ const CatalogueFilter = ({ data, tempHeader, setFilteredData, filteredData }) =>
 
         const uniqueValues = Array.from(
             new Set(
-                data.map(item => {
+                filteredData.map(item => {
                     // Clean up the selectedFilter key to match your object keys
                     const key = selectedFilter.toLowerCase().replace(/\s+/g, '_');
                     return item[key] || ""; // Handle missing fields gracefully
@@ -50,39 +50,63 @@ const CatalogueFilter = ({ data, tempHeader, setFilteredData, filteredData }) =>
     };
 
 
+    // const updateFilteredData = (selectedItemsInput) => {
+    //     if (!selectedItemsInput || Object.keys(selectedItemsInput).length === 0) {
+    //         setFilteredData(data);
+    //         return;
+    //     }
+
+    //     const filteredSet = new Set();
+
+    //     let hasActiveFilter = false;
+
+    //     Object.entries(selectedItemsInput).forEach(([filterKey, filterValues]) => {
+    //         if (!filterValues || filterValues.length === 0) return; // skip empty filters
+
+    //         hasActiveFilter = true;
+
+    //         const key = filterKey.toLowerCase().replace(/\s+/g, '_');
+
+    //         data.forEach(item => {
+    //             if (filterValues.includes(item[key])) {
+    //                 filteredSet.add(item);
+    //             }
+    //         });
+    //     });
+
+    //     // If no filters actually applied, reset to full data
+    //     if (!hasActiveFilter) {
+    //         setFilteredData(data);
+    //     } else {
+    //         setFilteredData(Array.from(filteredSet));
+    //     }
+    // };
+
+
     const updateFilteredData = (selectedItemsInput) => {
+        // If no filters selected, show full data
         if (!selectedItemsInput || Object.keys(selectedItemsInput).length === 0) {
             setFilteredData(data);
             return;
         }
-
-        const filteredSet = new Set();
-
-        let hasActiveFilter = false;
-
+    
+        let updatedData = data;
+    
+        // Loop through each filter key and apply filtering
         Object.entries(selectedItemsInput).forEach(([filterKey, filterValues]) => {
-            if (!filterValues || filterValues.length === 0) return; // skip empty filters
-
-            hasActiveFilter = true;
-
+            if (filterValues.length === 0) return;
+    
             const key = filterKey.toLowerCase().replace(/\s+/g, '_');
-
-            data.forEach(item => {
-                if (filterValues.includes(item[key])) {
-                    filteredSet.add(item);
-                }
-            });
+    
+            updatedData = updatedData.filter(item =>
+                filterValues.includes(item[key])
+            );
         });
-
-        // If no filters actually applied, reset to full data
-        if (!hasActiveFilter) {
-            setFilteredData(data);
-        } else {
-            setFilteredData(Array.from(filteredSet));
-        }
+    
+        setFilteredData(updatedData);
     };
-
-
+    
+    
     const handleCheckboxChange = (item) => {
         setSelectedItems(prevSelectedItems => {
             const updatedSelectedItems = { ...prevSelectedItems };
