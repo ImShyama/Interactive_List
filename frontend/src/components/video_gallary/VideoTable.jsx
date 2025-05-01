@@ -7,6 +7,7 @@ import { BiSearch } from "react-icons/bi";
 import { Resizable } from "react-resizable";
 import "react-resizable/css/styles.css";
 import { Delete, Edit, BackIcon, Cancel, Dots, Search, Reset, Add, BulkAdds, Sort, Filter, Label } from "../../assets/svgIcons";
+import numberFilter from "../../assets/numberFilter.svg";
 import { useNavigate } from "react-router-dom";
 import { SearchOutlined, UserOutlined } from "@ant-design/icons";
 import EditRow from "../../components/EditRow";
@@ -850,6 +851,7 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                     {settings && <EditableSpreadsheetName settings={settings} />}
                 </div>
                 <div className="flex ">
+
                     {selectedNumbers.length > 0 && (
                         <div className="flex flex-wrap gap-4 justify-center">
                             {selectedNumbers.map((slider, index) => {
@@ -967,17 +969,24 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                     )}
                 </div>
                 <div className="flex justify-end items-center">
+                    {/* Catalogue Filter */}
+                    <CatalogueFilter data={data} settings={settings} tempHeader={tempHeader} filteredData={filteredData} setFilteredData={setFilteredData} />
 
+                    {/* Global Filter */}
+                    <GlobalSearch data={data} setFilteredData={setFilteredData} />
+
+                    {/* Number filter and Date filter */}
                     {!isFilterOpen ? (
                         <button
                             onClick={toggleFilterBox}
-                            className="bg-primary rounded-[4px] p-1 border-2 border-white text-white focus:outline-none"
+                            className="bg-primary ml-2 rounded-[5px] p-1 border-2 border-white text-white focus:outline-none"
                             title="Filter"
                         >
-                            <LuFilter className="text-white" size={18} />
+                            {/* <LuFilter className="text-white" size={18} /> */}
+                            <img src={numberFilter} alt="Hide" height="17" width="18" />
                         </button>
                     ) : (
-                        <div className="w-[115px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1 px-2 relative">
+                        <div className="w-[115px] h-[41px] ml-2 flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1 px-2 relative">
                             {/* Number Icon */}
                             <button
                                 className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
@@ -1172,10 +1181,8 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
                             </button>
                         </div>
                     )}
-
-                    <GlobalSearch data={data}  setFilteredData={setFilteredData} />
-                    <CatalogueFilter data={data} tempHeader={tempHeader} filteredData={filteredData} setFilteredData={setFilteredData}/>
-
+                    
+                    {/* Other Admin filters */}
                     {isEditMode && <div className="flex items-center">
 
                         <button onClick={handleAdd} className="mx-2" title="Add Row">

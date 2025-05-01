@@ -44,6 +44,7 @@ import HeadingTitle from "./people_directory/HeadingTitle.jsx";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { IoMdOpen } from "react-icons/io";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import AddFilter from "./component/AddFilter.jsx";
 
 const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
 
@@ -1005,12 +1006,210 @@ const ViewSettings = ({ settingsData }) => {
   )
 }
 
+const FilterSettings = ({ settingsData }) => {
+  const [showCard, setShowCard] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const dispatch = useDispatch();
+  const { token } = useContext(UserContext);
+
+  const ProfileSettings = ({ settingsData }) => {
+    const [profileData, setProfileData] = useState(settingsData?.filterSettings?.filters || []);
+
+    // Draggable Item Component
+    const handleDragEnd = async (event) => {
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      const oldIndex = profileData.findIndex((item) => item.id === active.id);
+      const newIndex = profileData.findIndex((item) => item.id === over.id);
+
+      // Update the local state
+      const updatedData = arrayMove(profileData, oldIndex, newIndex);
+      setProfileData(updatedData);
+
+      // Prepare the updated settings to be saved
+      // const updatedSetting = { ...settingsData, filterSettings.filter: updatedData };
+      
+
+      const updatedSetting = {
+        ...settingsData,
+        filterSettings: {
+          ...settingsData.filterSettings,
+          filters: updatedData
+        }
+      };
+      
+      console.log({ updatedData, updatedSetting });
+
+      // Call the API to save changes
+      const response = await handleUpdateSettings(updatedSetting, token, dispatch);
+      console.log({ response });
+    };
+
+    const DraggableItem = ({ item, index }) => {
+      console.log({ item, index });
+      const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
+
+      return (
+        <div
+          ref={setNodeRef}
+          {...attributes}
+          {...listeners}
+          style={{ transform: CSS.Transform.toString(transform), transition }}
+          className="flex justify-between items-center cursor-grab"
+        >
+          <div className="flex items-center">
+            <SixDots />
+
+            <span className="m-[6px] text-[16px] font-medium leading-normal text-[#CDCCCC] font-[Poppins] truncate"
+              title={item.title}
+            >
+              {item.title || "\u00A0"}
+            </span>
+          </div>
+          {/* <div className="flex items-center">
+            {item.title && (
+              <button onClick={() => handleDeleteCard(item.id)} className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins] right-0 hover:text-red-500">
+                ✖
+              </button>
+            )}
+          </div> */}
+        </div>
+      );
+    };
+
+    const handleDeleteProfileCard = async (id, index) => {
+      try {
+        console.log({ id, index, appName: settingsData.appName });
+
+        // Create a new copy of showInProfile
+        let showInProfile = [...settingsData.filterSettings?.filters];
+        showInProfile = showInProfile.filter((item) => item.id !== id);
+
+        // Create a new settingsData object with the updated showInProfile list
+        // const updatedSettings = {
+        //   ...settingsData,
+        //   showInProfile,
+        // };
+        const updatedSettings = {
+          ...settingsData,
+          filterSettings: {
+              ...settingsData.filterSettings,
+              filters: showInProfile
+          }
+      };
+
+        console.log({ showInProfile, updatedSettings });
+
+        // Dispatch the updated settings locally
+        dispatch(updateSetting(updatedSettings));
+
+        // Update backend
+        const response = await axios.put(
+          `${HOST}/spreadsheet/${settingsData._id}`,
+          updatedSettings,
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
+        );
+
+        console.log("Filter deleted successfully:", response.data);
+        dispatch(updateSetting(response.data));
+        notifySuccess("Filter deleted successfully");
+      } catch (error) {
+        console.error("Error deleting Filter:", error);
+        notifyError("Error deleting Filter");
+      }
+    };
+
+
+    return (
+      <div>
+        <AddFilter settingsData={settingsData} dispatch={dispatch} token={token} />
+
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={profileData}>
+            <div className="flex w-[100%] h-[400px]">
+              {/* Left Side (Headings) */}
+              <div className="flex flex-col m-2 w-[130px]">
+                {profileData.map((_, index) => (
+                  <div key={index} className="flex items-center w-[130px]">
+                    {((settingsData?.appName == "Photo Gallery") && index == 0) ?
+                      <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
+                        Image
+                      </span>
+                      :
+                      <span className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">
+                        {settingsData?.appName == "Photo Gallery" ? `Filter ${index}` : `Filter ${index + 1}`}
+                      </span>
+                    }
+                  </div>
+                ))}
+              </div>
+
+              {/* Right Side (Draggable Items) */}
+              <div className="flex flex-col my-2 w-[240px]">
+
+                {profileData.map((item, index) => (
+                  <DraggableItem key={item.id} item={item} index={index} />
+                ))}
+              </div>
+
+              <div className="flex flex-col m-2">
+                {profileData?.map((item, index) => (
+                  item.title ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteProfileCard(item.id, index);
+                      }}
+
+                      className="text-[16px] m-[6px] font-medium leading-normal text-[#111] font-[Poppins] right-0 hover:text-red-500">
+                      ✖
+                    </button>
+                  ) : (
+                    <span key={item.id} className="m-[6px] text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">{"\u00A0"}</span> // Prevents layout shifting
+                  )
+                ))}
+              </div>
+
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
+    );
+  };
+
+
+  return (
+    <div className="w-[100%]">
+      <ProfileSettings settingsData={settingsData} />
+      {/* // show Filter drower */}
+      {/* <div className="ml-[30px]">
+          <div className="flex items-center gap-2 cursor-pointer"
+            onClick={() => setShowProfile(!showProfile)}
+          >
+            <span
+              className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]"
+            >
+              {settingsData?.appName !== "Interactive Map" ? `Profile Settings` : `Details View Settings`}
+            </span>
+            {!showProfile ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" />}
+          </div>
+          {showProfile && <ProfileSettings settingsData={settingsData} />}
+        </div> */}
+
+    </div>
+  )
+}
+
 const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const { setToken, setProfile, isPCTSettings } = useContext(UserContext);
-  console.log({isPCTSettings});
+  console.log({ isPCTSettings });
   const [addData, setAddData] = useState(false);
   const [addSheet, setAddSheet] = useState(false);
   const [addView, setAddView] = useState(false);
+  const [addFilter, setAddFilter] = useState(false);
   const [isSaveChanges, setIsSaveChanges] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -1271,6 +1470,38 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
                   </div>
                   {addView && <ViewSettings settingsData={settingData} />}
+                </>}
+              {(settingData?.appName == "Video Gallery") &&
+                <>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="472"
+                    height="2"
+                    viewBox="0 0 472 2"
+                    fill="none"
+                  >
+                    <path d="M0 1.21265H621" stroke="#EDEEF3" />
+                  </svg>
+                  <div className="flex justify-between items-center w-[100%]">
+                    <div className="flex justify-center items-center">
+                      <div className="flex items-center">
+                        <div
+                          className="setting_filter_top1"
+                          onClick={() => {
+                            setAddFilter(!addFilter);
+                          }}
+                        >
+                          <span className="setting_filter_top1_text ">Filter Settings</span>
+                          {!addFilter ? <FaChevronDown className="text-[12px] text-primary" /> : <FaChevronUp className="text-[12px] text-primary" />}
+                        </div>
+
+                      </div>
+
+                    </div>
+
+
+                  </div>
+                  {addFilter && <FilterSettings settingsData={settingData} />}
                 </>}
             </div>
           </div>

@@ -34,6 +34,7 @@ const SheetSchema = new mongoose.Schema({
     peopleDirectory: Object,
     productCatalogue: Object,
     accessType: {type: Object, default: {type: "public", password: ""}},
+    filterSettings: {type: Object, default: {filters:[]}}
 },{ timestamps: true });
 
 

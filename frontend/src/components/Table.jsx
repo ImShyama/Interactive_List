@@ -26,7 +26,7 @@ const Table = () => {
   const [formulaData, setFormulaData] = useState({});
   const [loading, setLoading] = useState(true);
   const [freezeIndex, setFreezeIndex] = useState(0);
-  const { token } = useContext(UserContext);
+  const { token, categoryHeader, setCategoryHeader } = useContext(UserContext);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -104,6 +104,7 @@ const Table = () => {
         setSheetData(res.jsonData || []);
         setTableHeader(normalizedHeader1);
         setFilterHeader(filteredHeader);
+        setCategoryHeader(normalizedHeader1);
         setFreezeIndex(res.freezeIndex || 0);
         setFormulaData(res.formulaData);
         setUnhideHeader(header);

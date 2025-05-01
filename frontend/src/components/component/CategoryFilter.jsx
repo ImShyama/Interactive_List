@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Search, Filter, RefreshCcw, ChevronDown } from "lucide-react";
 import Cancel from "../../assets/Cancel.svg";
 import { TbFilterSearch } from "react-icons/tb";
-const CatalogueFilter = ({ data, tempHeader, setFilteredData, filteredData }) => {
+import { LuFilter } from "react-icons/lu";
+const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filteredData }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState(null);
     const [selectedItems, setSelectedItems] = useState({});
     const [selectAll, setSelectAll] = useState(false);
-    const [filterOptions, setFilterOptions] = useState(tempHeader.map((header) => header.replace(/_/g, ' ')));
+    const [filterOptions, setFilterOptions] = useState(settings?.filterSettings?.filters?.map((header) => header?.title.replace(/_/g, ' ')));
     const [dropdownItems, setDropdownItems] = useState([]);
-    const [filterOptions2, setFilterOptions2] = useState([]);
-    const [filterOptions3, setFilterOptions3] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const filteredItems = dropdownItems.filter((item) =>
         item.toLowerCase().includes(searchQuery.toLowerCase())
@@ -106,7 +105,7 @@ const CatalogueFilter = ({ data, tempHeader, setFilteredData, filteredData }) =>
         setFilteredData(updatedData);
     };
     
-    
+
     const handleCheckboxChange = (item) => {
         setSelectedItems(prevSelectedItems => {
             const updatedSelectedItems = { ...prevSelectedItems };
@@ -167,7 +166,8 @@ const CatalogueFilter = ({ data, tempHeader, setFilteredData, filteredData }) =>
                             }`}
                         size={20}
                     /> */}
-                    <TbFilterSearch className="bg-primary text-white rounded-[4px] p-1" size={25} />
+                    {/* <TbFilterSearch className="bg-primary text-white rounded-[4px] p-1" size={25} /> */}
+                    <LuFilter className="bg-primary text-white rounded-[4px] p-1" size={25} />
                 </button>
 
                 {/* Main Filter Dropdown */}

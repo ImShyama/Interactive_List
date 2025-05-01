@@ -37,6 +37,10 @@ import Table from "./interactive_list/Table.jsx";
 import Loader from "./Loader.jsx";
 import EmptyTable from "./component/EmptyTable.jsx";
 
+import numberFilter from "../assets/numberFilter.svg";
+import CatalogueFilter from "./component/CategoryFilter.jsx";
+import { FiEye } from "react-icons/fi";
+
 
 const convertArrayToJSON = (data) => {
     // The first array contains the keys
@@ -1140,7 +1144,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     }
 
 
-    const handleBulkSave =  useCallback(async () => {
+    const handleBulkSave = useCallback(async () => {
 
         try {
             setLoading(true);
@@ -1181,6 +1185,10 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             setGlobalCheckboxChecked(false);
         }
     }, [setLoading]);
+
+    const openModal = () => {
+        // setPreviewModalOpen(true);
+    };
 
     const handleBulkDelete = () => {
         if (ischecked.length > 0) {
@@ -1350,7 +1358,6 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                 </div>
                 <div className="flex justify-end items-center">
 
-                    {/* <FilterButton data={data} /> */}
                     {!isFilterOpen ? (
                         <button
                             onClick={toggleFilterBox}
@@ -1361,7 +1368,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                         </button>
                     ) : (
                         <div className="w-[115px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1 px-2 relative">
-                            {/* Number Icon */}
+
                             <button
                                 className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
                                 //  onClick={toggleNumberDropdown}
@@ -1374,7 +1381,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                 <Bs123 className="text-green-900" size={20} />
                             </button>
 
-                            {/* Dropdown for Number */}
+
                             {isNumberDropdownOpen && (
                                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
                                     <div className="flex items-center justify-between gap-2 my-2">
@@ -1389,7 +1396,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                             <ImCancelCircle />
                                         </button>
                                     </div>
-                                    {/* Render checkboxes dynamically */}
+
                                     {numberFilterColumn.length > 0 ? (
                                         numberFilterColumn.map((item, index) => {
                                             let tempItem = item
@@ -1405,7 +1412,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                                     key={index}
                                                     className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
                                                 >
-                                                    {/* Checkbox to toggle range slider */}
+
                                                     <input
                                                         type="checkbox"
                                                         className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
@@ -1431,7 +1438,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                                             }
                                                         }}
                                                     />
-                                                    {/* <span className="text-gray-800 ">{item.replace(/_/g, " ").toUpperCase()}</span> */}
+
                                                     <span
                                                         className="text-gray-800 truncate"
                                                         style={{
@@ -1454,7 +1461,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                 </div>
                             )}
 
-                            {/* Date Icon */}
+
                             <button
                                 className="p-1 bg-[#F2FFE8] rounded-md hover:bg-green-200 flex items-center justify-center relative"
                                 onClick={() => {
@@ -1466,7 +1473,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                 <CiCalendarDate className="text-green-900" size={20} />
                             </button>
 
-                            {/* Dropdown for Date */}
+
                             {isDateDropdownOpen && (
                                 <div className="absolute top-full left-[-50px] mt-1 max-w-[250px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
                                     <div className="flex items-center justify-between gap-2 my-2">
@@ -1481,7 +1488,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                             <ImCancelCircle />
                                         </button>
                                     </div>
-                                    {/* Render checkboxes dynamically */}
+
                                     {dateFilterColumn.length > 0 ? (
                                         dateFilterColumn.map((item, index) => {
 
@@ -1497,7 +1504,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                                     key={index}
                                                     className="flex items-center space-x-2 p-1 hover:bg-gray-100 rounded cursor-pointer"
                                                 >
-                                                    {/* Checkbox to toggle range sliders for dates */}
+
                                                     <input
                                                         type="checkbox"
                                                         className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
@@ -1523,7 +1530,6 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                                             }
                                                         }}
                                                     />
-                                                    {/* <span className="text-gray-800">{item.replace(/_/g, " ").toUpperCase()}</span> */}
                                                     <span
                                                         className="text-gray-800 truncate"
                                                         style={{
@@ -1546,7 +1552,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                 </div>
                             )}
 
-                            {/* Cancel Icon */}
+
                             <button
                                 onClick={toggleFilterBox}
                                 className="p-1 bg-[#598931] rounded-md hover:bg-[#598931] flex items-center justify-center absolute right-2"
@@ -1566,14 +1572,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                             <BulkAdds />
                         </button>
 
-                        {/* {isedit ?
-                            <button onClick={handleBulkSave} className="bg-primary rounded-[4px] p-1 mx-2" title="Save">
-                                <IoSaveSharp color="white" />
-                            </button>
-                            :
-                            <button onClick={handleBulkEdit} className="bg-primary rounded-[4px] p-1 mx-2" title="Edit">
-                                <MdEdit color="white" />
-                            </button>} */}
+
                         <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-[5px]" title="Delete">
                             <MdDelete color="white" />
                         </button>
@@ -1587,6 +1586,8 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                         </Popover>
                     </div>}
                 </div>
+
+                
             </div>
 
             {/* <DataGrid
@@ -1646,7 +1647,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                 />
             }
 
-            
+
 
             <EditRow
                 isOpen={confirmEditModalOpen}

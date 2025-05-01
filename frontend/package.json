@@ -57,7 +57,8 @@
     "react-table-column-resizer": "^1.2.4",
     "react-toastify": "^10.0.6",
     "styled-components": "^6.1.11",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

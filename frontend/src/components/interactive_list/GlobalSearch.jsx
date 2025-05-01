@@ -61,20 +61,20 @@ const GLobalSearch = ({ data, setFilteredData, toggleFilterBox }) => {
             )}
             {
                 isSearchOpen && (
-                    <button onClick={closeSearch} className="bg-primary rounded-[4px] p-1 mr-2">
+                    <button onClick={closeSearch} className="bg-primary rounded-[4px] p-1 mr-2" title="Cancel">
                         <Cancel />
                     </button>
                 )
             }
             {
                 !isSearchOpen && (
-                    <button onClick={openSearch} className="bg-primary rounded-[4px] p-1 mx-2">
+                    <button onClick={openSearch} className="bg-primary rounded-[4px] p-1 mx-2" title="Search">
                         <Search />
                     </button>
                 )
             }
 
-            <button onClick={handleGlobalReset} className="bg-primary rounded-[4px] p-1">
+            <button onClick={handleGlobalReset} className="bg-primary rounded-[4px] p-1" title="Reset">
                 <Reset />
             </button>
         </>

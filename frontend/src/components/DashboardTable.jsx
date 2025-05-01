@@ -16,6 +16,7 @@ import InteractiveListView from "./InteractiveListView";
 import ShareModal from "./ShareModal";
 import { FRONTENDHOST, OPTIONS } from "../utils/constants";
 import { notifySuccess } from "../utils/notify";
+import { MdOutlineContentCopy } from "react-icons/md";
 const options = OPTIONS;
 
 const DashboardTable = () => {
@@ -214,6 +215,16 @@ const DashboardTable = () => {
 
     return formattedDate;
   }
+
+  const handleCopyToClipboard = (sheet) => {
+    const url = `${FRONTENDHOST}/${sheet._id}/view`
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        notifySuccess("Link copied to clipboard!");
+      })
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
 
   return (
     <>
@@ -503,7 +514,7 @@ const DashboardTable = () => {
                         </button>
                       )}
 
-                      {sheet.access == "owner" && (
+                      {sheet.access == "owner" ? (
                         <button
                           className="icons"
                           onClick={() => handleShare(sheet._id, sheet.sharedWith, sheet)}
@@ -556,7 +567,16 @@ const DashboardTable = () => {
                             />
                           </svg>
                         </button>
-                      )}
+                      ) :
+                        (<div><button className="icons pt-1" title="Reset Table Styles"
+                          onClick={() => handleCopyToClipboard(sheet)}
+                        >
+                          <MdOutlineContentCopy
+                            className=" cursor-pointer text-xl text-[#919191]"
+                            title={"Copy View Link"}
+                          />
+                        </button></div>)
+                      }
                     </td>
                   </tr>
                 )))}
