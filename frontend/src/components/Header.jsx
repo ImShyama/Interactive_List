@@ -105,6 +105,8 @@ const Header = () => {
       });
   }, [token]);
 
+  // {userDetails, }
+
   // Scroll to top whenever the location (route) changes
   useEffect(() => {
     window.scrollTo(0, 0);

@@ -18,6 +18,8 @@ const UserModel = require("./Models/UserModel");
 const path = require("path");
 const secret = process.env.TOKEN_KEY;
 const redirect_uri = process.env.REDIRECT_URI;
+const NodeCache = require("node-cache");
+const sheetCache = new NodeCache({ stdTTL: 60 }); // 60 sec TTL
 
 mongoose
   .connect(MONGO_URL)
@@ -107,127 +109,303 @@ async function getMetaSheetData({ sheets, spreadSheetID, range }) {
     obj[nHeader] = !(disableEditing || String(fHeader || "").toLowerCase().includes("=arrayformula"));
   }
 
-  console.log({ obj });
   return obj;
 }
 
+// app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
+//   const startTime = Date.now(); // 🔔 Capture start time
+//   console.log("115", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
+//   try {
+//     const { sheetID } = req.body;
+
+//     // Fetch sheet details from DB
+//     let sheetDetails = await Sheet.findById(sheetID).lean();
+//     if (!sheetDetails) {
+//       return res.status(404).json({ error: "Sheet not found." });
+//     }
+
+//     const sheetOwner = await User.findById(sheetDetails.userId).lean();
+//     const spreadSheetID = sheetDetails.spreadsheetId;
+//     const spreadSheeSharedWith = sheetDetails.sharedWith;
+//     const range = sheetDetails.firstTabDataRange;
+//     const sheetName = range.split("!")[0];
+
+//     // Authenticate with Google API
+//     const authClient = new google.auth.OAuth2(
+//       process.env.CLIENT_ID,
+//       process.env.CLIENT_SECRET,
+//       process.env.REDIRECT_URI
+//     );
+
+//     authClient.setCredentials({
+//       refresh_token: sheetOwner.googleRefreshToken,
+//     });
+
+//     const sheets = google.sheets({ version: "v4", auth: authClient });
+
+//     // Fetch all sheet tabs
+//     const sheetInfo = await sheets.spreadsheets.get({ spreadsheetId: spreadSheetID });
+//     const tabs = sheetInfo.data.sheets;
+
+//     // Extract sheet details
+//     const allSheetDetails = tabs.map(sheet => ({
+//       name: sheet.properties.title,
+//       url: `https://docs.google.com/spreadsheets/d/${spreadSheetID}/edit#gid=${sheet.properties.sheetId}`,
+//       sheetId: sheet.properties.sheetId,
+//     }));
+
+//     // Store updated sheet details in the database and return the updated document
+//     sheetDetails = await Sheet.findByIdAndUpdate(
+//       sheetID,
+//       { sheetDetails: allSheetDetails },
+//       { new: true, lean: true } // Returns the updated document
+//     );
+
+//     sheetDetails = await Sheet.findById(sheetID).lean();
+
+//     console.log("164", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
+//     // Fetch main sheet data
+//     const response = await sheets.spreadsheets.values.get({
+//       spreadsheetId: spreadSheetID,
+//       range: range,
+//     });
+
+//     console.log("171", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
+
+//     const rows = response.data.values;
+//     if (!rows || rows.length === 0) {
+//       return res.status(404).json({ error: "No data found." });
+//     }
+
+//     console.log("178", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
+//     const formulaData = await getMetaSheetData({ sheets, spreadSheetID, range: sheetName });
+
+//     console.log("181", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
+//     // Extract hidden columns from Sheet
+//     const hiddenCol = sheetDetails.hiddenCol;
+//     const jsonData = convertArrayToJSON(rows, hiddenCol);
+
+//     console.log("186", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
+//     const tempAccess = spreadSheeSharedWith?.find((entry) => entry?.email === req?.user?.email);
+//     let permissions = tempAccess?.permission;
+
+//     // let permissions = "edit";
+//     // if (sheetDetails?.accessType?.type === "public") {
+//     //   permissions = "public";
+//     // }
+//     if (sheetDetails?.accessType?.type === "public" && !permissions) {
+//       permissions = "view";
+//     }
+//     // else if (sheetDetails?.accessType?.type === "private" || sheetDetails?.accessType?.type === "public") {
+//     //   const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
+//     //   permissions = tempAccess?.permission;
+//     // }
+//     // else {
+//     //   permissions = "view";
+//     // }
+
+//     console.log({ user: req.user });
+//     // Return full updated sheet details from MongoDB
+//     return res.status(200).json({
+//       rows,
+//       permissions,
+//       jsonData,
+//       hiddenCol,
+//       formulaData,
+//       settings: sheetDetails,  // Returning the full latest sheet settings from MongoDB
+//       user: req.user
+//     });
+
+//   } catch (error) {
+//     console.error("Error fetching spreadsheet data:", error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
+
+// app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
+//   const startTime = Date.now();
+//   const log = (label) => console.log(label, `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
+
+//   log("115");
+
+//   try {
+//     const { sheetID } = req.body;
+
+//     // Fetch sheet & user in parallel
+//     const sheetDetailsInitial = await Sheet.findById(sheetID).lean();
+//     if (!sheetDetailsInitial) {
+//       return res.status(404).json({ error: "Sheet not found." });
+//     }
+
+//     const [sheetOwner] = await Promise.all([
+//       User.findById(sheetDetailsInitial.userId).lean(),
+//     ]);
+
+//     const spreadSheetID = sheetDetailsInitial.spreadsheetId;
+//     const range = sheetDetailsInitial.firstTabDataRange;
+//     const sheetName = range.split("!")[0];
+
+//     // Authenticate with Google API
+//     const authClient = new google.auth.OAuth2(
+//       process.env.CLIENT_ID,
+//       process.env.CLIENT_SECRET,
+//       process.env.REDIRECT_URI
+//     );
+//     authClient.setCredentials({ refresh_token: sheetOwner.googleRefreshToken });
+
+//     const sheets = google.sheets({ version: "v4", auth: authClient });
+
+//     // Fetch metadata, values, and formula info in parallel
+//     const [sheetInfo, valuesResponse, formulaData] = await Promise.all([
+//       sheets.spreadsheets.get({ spreadsheetId: spreadSheetID }),
+//       sheets.spreadsheets.values.get({ spreadsheetId: spreadSheetID, range }),
+//       getMetaSheetData({ sheets, spreadSheetID, range: sheetName }),
+//     ]);
+
+//     log("171");
+
+//     const tabs = sheetInfo.data.sheets;
+//     const allSheetDetails = tabs.map(sheet => ({
+//       name: sheet.properties.title,
+//       url: `https://docs.google.com/spreadsheets/d/${spreadSheetID}/edit#gid=${sheet.properties.sheetId}`,
+//       sheetId: sheet.properties.sheetId,
+//     }));
+
+//     // Update sheet details (without fetching again)
+//     const updatedSheetDetails = await Sheet.findByIdAndUpdate(
+//       sheetID,
+//       { sheetDetails: allSheetDetails },
+//       { new: true, lean: true }
+//     );
+
+//     log("178");
+
+//     const rows = valuesResponse.data.values;
+//     if (!rows || rows.length === 0) {
+//       return res.status(404).json({ error: "No data found." });
+//     }
+
+//     log("181");
+
+//     const hiddenCol = updatedSheetDetails.hiddenCol;
+//     const jsonData = convertArrayToJSON(rows, hiddenCol || []);
+
+//     log("186");
+
+//     // Determine user permissions
+//     const sharedWith = updatedSheetDetails.sharedWith || [];
+//     const tempAccess = sharedWith.find((entry) => entry?.email === req?.user?.email);
+//     let permissions = tempAccess?.permission;
+
+//     if (updatedSheetDetails?.accessType?.type === "public" && !permissions) {
+//       permissions = "view";
+//     }
+
+//     return res.status(200).json({
+//       rows,
+//       permissions,
+//       jsonData,
+//       hiddenCol,
+//       formulaData,
+//       settings: updatedSheetDetails,
+//       user: req.user,
+//     });
+
+//   } catch (error) {
+//     console.error("Error fetching spreadsheet data:", error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
 app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
+  const startTime = Date.now();
+  const log = (label) =>
+    console.log(label, `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
+
+  log("115");
+
   try {
     const { sheetID } = req.body;
+    const sheetDetails = await Sheet.findById(sheetID).lean();
+    if (!sheetDetails) return res.status(404).json({ error: "Sheet not found." });
 
-    // Fetch sheet details from DB
-    let sheetDetails = await Sheet.findById(sheetID).lean();
-    if (!sheetDetails) {
-      return res.status(404).json({ error: "Sheet not found." });
-    }
-
-    const sheetOwner = await User.findById(sheetDetails.userId).lean();
     const spreadSheetID = sheetDetails.spreadsheetId;
-    const spreadSheeSharedWith = sheetDetails.sharedWith;
-    const range = sheetDetails.firstTabDataRange;
-    const sheetName = range.split("!")[0];
+    const fullRange = sheetDetails.firstTabDataRange; // Use DB range directly
+    const sheetName = fullRange.split("!")[0];
+    const sheetOwner = await User.findById(sheetDetails.userId).lean();
 
-    // Authenticate with Google API
-    const authClient = new google.auth.OAuth2(
+    const cacheKey = `sheet-${sheetID}`;
+    const cached = sheetCache.get(cacheKey);
+
+    let allRows;
+    let authClient = new google.auth.OAuth2(
       process.env.CLIENT_ID,
       process.env.CLIENT_SECRET,
       process.env.REDIRECT_URI
     );
-
-    authClient.setCredentials({
-      refresh_token: sheetOwner.googleRefreshToken,
-    });
+    authClient.setCredentials({ refresh_token: sheetOwner.googleRefreshToken });
 
     const sheets = google.sheets({ version: "v4", auth: authClient });
 
-    // Fetch all sheet tabs
-    const sheetInfo = await sheets.spreadsheets.get({ spreadsheetId: spreadSheetID });
-    const tabs = sheetInfo.data.sheets;
+    if (cached?.rows?.length) {
+      log("from-cache");
+      allRows = cached.rows;
+    } else {
+      const response = await sheets.spreadsheets.values.get({
+        spreadsheetId: spreadSheetID,
+        range: fullRange, // fetch full dynamic range
+      });
 
-    // Extract sheet details
-    const allSheetDetails = tabs.map(sheet => ({
-      name: sheet.properties.title,
-      url: `https://docs.google.com/spreadsheets/d/${spreadSheetID}/edit#gid=${sheet.properties.sheetId}`,
-      sheetId: sheet.properties.sheetId,
-    }));
+      log("171");
 
-    // Store updated sheet details in the database and return the updated document
-    sheetDetails = await Sheet.findByIdAndUpdate(
-      sheetID,
-      { sheetDetails: allSheetDetails },
-      { new: true, lean: true } // Returns the updated document
-    );
+      allRows = response.data.values;
+      if (!allRows || allRows.length === 0)
+        return res.status(404).json({ error: "No data found." });
 
-    sheetDetails = await Sheet.findById(sheetID).lean();
-
-    // Fetch main sheet data
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: spreadSheetID,
-      range: range,
-    });
-
-    const rows = response.data.values;
-    if (!rows || rows.length === 0) {
-      return res.status(404).json({ error: "No data found." });
+      sheetCache.set(cacheKey, { rows: allRows }); // store in cache
     }
 
-    const formulaData = await getMetaSheetData({ sheets, spreadSheetID, range: sheetName });
+    log("178");
 
-    // Extract hidden columns from Sheet
-    const hiddenCol = sheetDetails.hiddenCol;
-    const jsonData = convertArrayToJSON(rows, hiddenCol);
+    const hiddenCol = sheetDetails.hiddenCol || [];
+    const jsonData = convertArrayToJSON(allRows, hiddenCol);
 
-    const tempAccess = spreadSheeSharedWith?.find((entry) => entry?.email === req?.user?.email);
+    log("181");
+
+    const formulaData = await getMetaSheetData({
+      sheets,
+      spreadSheetID,
+      range: sheetName,
+    });
+
+    log("186");
+
+    const tempAccess = sheetDetails.sharedWith?.find(
+      (entry) => entry?.email === req?.user?.email
+    );
     let permissions = tempAccess?.permission;
 
-    // let permissions = "edit";
-    // if (sheetDetails?.accessType?.type === "public") {
-    //   permissions = "public";
-    // }
     if (sheetDetails?.accessType?.type === "public" && !permissions) {
       permissions = "view";
     }
-    // else if (sheetDetails?.accessType?.type === "private" || sheetDetails?.accessType?.type === "public") {
-    //   const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
-    //   permissions = tempAccess?.permission;
-    // }
-    // else {
-    //   permissions = "view";
-    // }
 
-    console.log({ user: req.user });
-    // Return full updated sheet details from MongoDB
     return res.status(200).json({
-      rows,
+      rows: allRows, // ✅ full rows, not paginated
       permissions,
       jsonData,
       hiddenCol,
       formulaData,
-      settings: sheetDetails,  // Returning the full latest sheet settings from MongoDB
-      user: req.user
+      settings: sheetDetails,
+      user: req.user,
+      totalRows: allRows.length,
     });
-
   } catch (error) {
     console.error("Error fetching spreadsheet data:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
-app.get("/getSheetDetails/:id", authenticateToken, async (req, res) => {
-  try {
-    const sheetId = req.params.id;
-    const sheet = await Sheet.findById(sheetId);
-
-    if (!sheet) {
-      return res.status(404).json({ error: "Sheet not found" });
-    }
-
-    res.status(200).json(sheet);
-  } catch (error) {
-    console.error("Error fetching sheet details:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 app.get("/getUserData", authenticateToken, (req, res) => {
   res.send(req.user);
@@ -416,13 +594,14 @@ app.delete("/auth/deleteUser/:id", async (req, res) => {
 });
 
 
-
 const convertArrayToJSON = (data, hiddenCol) => {
   // The first array contains the keys (headers)
   const keys = data[0];
 
   // Create a Set for fast lookup of hidden columns
   const hiddenSet = new Set(hiddenCol);
+
+  // const jsonData = data;
 
   // Map the rest of the arrays to JSON objects
   const jsonData = data.slice(1).map((item, index) => {
@@ -461,9 +640,9 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
 
     // Determine if the user is the owner
     const ownerPermission = permissionsResponse.data.permissions.find(
-      (perm) => perm.role === "owner"
+      (perm) => perm.role.toLocaleLowerCase() === "owner"
     );
-    const access = ownerPermission ? "Owner" : "Shared";
+    const access = ownerPermission ? "owner" : "shared";
 
     // Get the last updated date of the spreadsheet
     const lastUpdatedResponse = await drive.files.get({
@@ -1511,6 +1690,63 @@ async function getSheetIdByName(sheets, spreadSheetID, sheetName) {
   return sheet.properties.sheetId;
 }
 
+async function updateSharedWithPhotosByOwner(loggedInUserId) {
+  // Step 1: Get all sheets owned by the user
+  const sheets = await Sheet.find({ userId: loggedInUserId });
+
+  if (!sheets.length) return console.log("No sheets found.");
+
+  // Step 2: Extract all unique emails from sharedWith
+  const allEmails = new Set();
+  sheets.forEach(sheet => {
+    sheet.sharedWith.forEach(entry => {
+      if (entry.email) allEmails.add(entry.email);
+    });
+  });
+
+  // Step 3: Query all users in one go
+  const users = await User.find({ email: { $in: Array.from(allEmails) } });
+  const emailToUserMap = Object.fromEntries(
+    users.map(user => [user.email, user])
+  );
+
+  // Step 4: Update sharedWith in each sheet
+  const bulkOps = [];
+
+  for (const sheet of sheets) {
+    let updated = false;
+    const newSharedWith = sheet.sharedWith.map(entry => {
+      const user = emailToUserMap[entry.email];
+      if (user && (entry.photo !== user.profileUrl || String(entry.id) !== String(user._id))) {
+        updated = true;
+        return {
+          ...entry.toObject(),
+          photo: user.profileUrl || "",
+          id: user._id
+        };
+      }
+      return entry;
+    });
+
+    if (updated) {
+      bulkOps.push({
+        updateOne: {
+          filter: { _id: sheet._id },
+          update: { $set: { sharedWith: newSharedWith } }
+        }
+      });
+    }
+  }
+
+  // Step 5: Bulk write to the database
+  if (bulkOps.length) {
+    await Sheet.bulkWrite(bulkOps);
+    console.log(`${bulkOps.length} sheets updated.`);
+  } else {
+    console.log("No updates needed.");
+  }
+}
+
 // Define the API endpoint
 app.post("/addRow", authenticateToken, async (req, res) => {
   const spreadSheetID = req.body.spreadSheetID;
@@ -1585,6 +1821,7 @@ app.post("/getSpreadSheets", authenticateToken, async (req, res) => {
   const userId = req.user._id;
   const emailID = req.user.email;
   try {
+    await updateSharedWithPhotosByOwner(userId);
     const sheets = await Sheet.find({ $or: [{ userId: userId }, { "sharedWith.email": emailID }] }).lean();
     const newSheets = sheets.map((sheet) => {
       var access = "";
@@ -1605,9 +1842,51 @@ app.post("/getSpreadSheets", authenticateToken, async (req, res) => {
 });
 
 // Route to get all spreadsheets for a user
+// app.get("/getuser", authenticateToken, async (req, res) => {
+//   try {
+//     // let userDetails = req.user;
+//     // userDetails.suggestedUsers = await getFlattenedSharedWithForUser(req.user._id);
+//     console.log(req.user._id);
+//     const suggestedUsers = await getFlattenedSharedWithForUser(req.user._id);
+//     // Only use the pure document (removing Mongoose metadata)
+//     const userDoc = req.user._doc ? req.user._doc : req.user; // fallback for plain objects
+
+//     const userDetails = {
+//       ...userDoc,
+//       suggestedUsers
+//     };
+
+    
+
+//     // console.log({ userDetails, suggestedUsers: await getFlattenedSharedWithForUser(userDetails._id) });
+//     res.status(200).json(userDetails);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to fetch user details" });
+//   }
+// });
+
 app.get("/getuser", authenticateToken, async (req, res) => {
   try {
-    const userDetails = req.user;
+    const userId = req.user._id;
+    const emailID = req.user.email;
+    const userDoc = req.user._doc || req.user;
+
+    // Fire updateSharedWithPhotos in background (don't block response)
+    updateSharedWithPhotosByOwner(userId).catch(console.error);
+
+    // Run both DB queries in parallel
+    const [suggestedUsers, sheets] = await Promise.all([
+      getFlattenedSharedWithForUser(userId),
+      getUserSheets(userId, emailID)
+    ]);
+
+    const userDetails = {
+      ...userDoc,
+      suggestedUsers,
+      sheets
+    };
+
     res.status(200).json(userDetails);
   } catch (err) {
     console.error(err);
@@ -1615,7 +1894,66 @@ app.get("/getuser", authenticateToken, async (req, res) => {
   }
 });
 
-// route for refreshing the token
+
+const getUserSheets = async (userId, emailID) => {
+
+  const sheets = await Sheet.find({
+    $or: [{ userId: userId }, { "sharedWith.email": emailID }]
+  }).lean();
+
+  return sheets.map(sheet => {
+    const access = sheet.userId.toString() === userId.toString()
+      ? "owner"
+      : (sheet.sharedWith.find(entry => entry.email === emailID)?.permission.toLowerCase() || "viewer");
+
+    return { ...sheet, access };
+  });
+
+};
+
+
+const getFlattenedSharedWithForUser = async (userId) => {
+  if (!userId) {
+    console.error(userId);
+    throw new Error("User ID is required");
+  }
+
+  try {
+    const objectId = new mongoose.Types.ObjectId(userId);
+
+    const sheets = await Sheet.find(
+      {
+        $or: [
+          { userId: userId.toString() },
+          { "sharedWith.id": objectId }
+        ]
+      },
+      {
+        sharedWith: 1,
+        _id: 0
+      }
+    );
+
+    const flatSharedWith = sheets.flatMap(sheet => sheet.sharedWith || []);
+
+    // 🔥 Filter unique by email
+    const seen = new Set();
+    const uniqueSharedWith = flatSharedWith.filter(entry => {
+      if (!entry.email) return false; // Skip entries without email
+      const email = entry.email.toLowerCase(); // normalize
+      if (seen.has(email)) return false;
+      seen.add(email);
+      return true;
+    });
+
+    return uniqueSharedWith;
+  } catch (error) {
+    console.error("Error fetching sharedWith entries:", error);
+    throw error;
+  }
+};
+
+
 app.post("/refresh-token", authenticateToken, async (req, res) => {
   const refreshToken = req.body.refreshToken;
 

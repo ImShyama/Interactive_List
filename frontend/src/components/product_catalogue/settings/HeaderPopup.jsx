@@ -5,7 +5,7 @@ import HeaderSection from "../product_catalogue_preview/HeaderSection";
 
 const HeaderPopup = ({ isOpen, onClose, settings }) => {
   if (!isOpen) return null;
-  
+  console.log({ settings });
 
   return ReactDOM.createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">

@@ -180,18 +180,18 @@ const LargeVideoView = () => {
     if (url.includes("youtube.com") || url.includes("youtu.be")) {
       try {
         const urlObj = new URL(url);
-  
+
         // Already an embed URL
         if (url.includes("embed")) {
           return url;
         }
-  
+
         // youtu.be short link
         if (urlObj.hostname === "youtu.be") {
           const videoId = urlObj.pathname.slice(1);
           return `https://www.youtube.com/embed/${videoId}`;
         }
-  
+
         // youtube.com with v=VIDEO_ID
         const videoId = urlObj.searchParams.get("v");
         if (videoId) {
@@ -202,37 +202,36 @@ const LargeVideoView = () => {
         return url;
       }
     }
-  
+
     if (url.includes("drive.google.com")) {
-      return `https://drive.google.com/file/d/${
-        url.split("/d/")[1].split("/")[0]
-      }/preview`;
+      return `https://drive.google.com/file/d/${url.split("/d/")[1].split("/")[0]
+        }/preview`;
     }
-  
+
     if (url.includes("vimeo.com")) {
       const videoId = url.split("/").pop();
       return `https://player.vimeo.com/video/${videoId}`;
     }
-  
+
     if (url.includes("dailymotion.com")) {
       const videoId = url.split("/video/")[1]?.split("_")[0];
       return `https://www.dailymotion.com/embed/video/${videoId}`;
     }
-  
+
     if (url.includes("facebook.com")) {
       return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
         url
       )}`;
     }
-  
+
     if (url.includes("instagram.com")) {
       return `https://www.instagram.com/p/${url.split("/")[4]}/embed/`;
     }
-  
+
     if (url.endsWith(".mp4") || url.endsWith(".webm") || url.endsWith(".ogg")) {
       return url;
     }
-  
+
     return url; // Default fallback
   };
 
@@ -346,7 +345,7 @@ const LargeVideoView = () => {
         )
           :
           (!isPlaying ? (
-            (settings?.showInCard[1]?.title == "" ) ?
+            (settings?.showInCard[1]?.title == "") ?
 
               <iframe
                 // width="100%"
@@ -361,50 +360,50 @@ const LargeVideoView = () => {
                 allowFullScreen
               ></iframe>
               :
-            <div
-              className="relative w-full h-full cursor-pointer"
-              onClick={handlePlayVideo}
-            >
-              <img
-                src={
-                  (() => {
-                    const titleKey = settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
-                    const videoUrl = data?.[titleKey];
+              <div
+                className="relative w-full h-full cursor-pointer"
+                onClick={handlePlayVideo}
+              >
+                <img
+                  src={
+                    (() => {
+                      const titleKey = settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
+                      const videoUrl = data?.[titleKey];
 
-                    if (!videoUrl) return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
+                      if (!videoUrl) return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
 
-                    if (videoUrl.includes("drive.google.com")) {
-                      let driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
-                      console.log({ driveIdMatch, videoUrl });
-                      return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
-                    }
+                      if (videoUrl.includes("drive.google.com")) {
+                        let driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
+                        console.log({ driveIdMatch, videoUrl });
+                        return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
+                      }
 
-                    return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
-                  })()
+                      return data[settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
+                    })()
 
-                }
-                alt={data[settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
-                className="w-full h-full object-cover rounded-[36.443px]"
-                onError={(e) => handleImageError(e, noPhoto)}
-              />
-              {/* Custom Play Button Overlay */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-black bg-opacity-50 rounded-full p-[24px]">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-[64px] w-[64px] text-white"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+                  }
+                  alt={data[settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
+                  className="w-full h-full object-cover rounded-[36.443px]"
+                  onError={(e) => handleImageError(e, noPhoto)}
+                />
+                {/* Custom Play Button Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black bg-opacity-50 rounded-full p-[24px]">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-[64px] w-[64px] text-white"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-            </div>
           ) : (
             <iframe
               className="w-full h-full rounded-[36.443px] object-cover"
-              src={ getEmbeddedVideoURL(videoUrl)
+              src={getEmbeddedVideoURL(videoUrl)
                 // (() => {
                 //   const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
                 //   const videoUrl = data?.[titleKey];
@@ -484,7 +483,7 @@ const LargeVideoView = () => {
                 ? settings?.showInCard[4]?.setting?.fontStyle
                 : undefined,
               fontVariant:
-                settings?.showInCard[4]?.setting?.fontStyle === "small-caps"
+              settings?.showInCard[4]?.setting?.fontStyle === "small-caps"
                   ? "small-caps"
                   : undefined,
               textTransform: ["uppercase", "lowercase"].includes(
@@ -495,7 +494,12 @@ const LargeVideoView = () => {
 
               color: settings?.showInCard[4]?.setting?.fontColor || "#000000",
               fontSize: `${settings?.showInCard[4]?.setting?.fontSize}px`,
-              fontFamily: settings?.showInCard[4]?.setting?.fontType4,
+              fontFamily: settings?.showInCard[4]?.setting?.fontType,
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
               whiteSpace: "pre-line", // Preserve line breaks
             }}
           >

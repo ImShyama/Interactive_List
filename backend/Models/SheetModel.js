@@ -17,7 +17,7 @@ const SheetSchema = new mongoose.Schema({
         type: [{
           email: String,
           permission: String,
-          photo: String,
+          photo: { type: String, default: "" },
           id: { type: mongoose.Schema.Types.ObjectId, ref: "Users" }
         }],
         default: []

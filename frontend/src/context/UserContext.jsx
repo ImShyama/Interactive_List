@@ -9,9 +9,10 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isPCTSettings, setIsPCTSettings] = useState(false);
   const [categoryHeader, setCategoryHeader] = useState([]);
+  const [sharedWith, setSharedWith] = useState([]);
 
   return (
-    <UserContext.Provider value={{ profile, setProfile, token, setToken, role, setRole, user, setUser, isPCTSettings, setIsPCTSettings, categoryHeader, setCategoryHeader }}>
+    <UserContext.Provider value={{ profile, setProfile, token, setToken, role, setRole, user, setUser, isPCTSettings, setIsPCTSettings, categoryHeader, setCategoryHeader, sharedWith, setSharedWith }}>
       {children}
     </UserContext.Provider>
   );

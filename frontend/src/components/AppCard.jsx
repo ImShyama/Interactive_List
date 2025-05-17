@@ -9,7 +9,7 @@ import { notifyError, notifySuccess } from "../utils/notify";
 const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, description }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { token } = useContext(UserContext);
+  const { token, user, setUser } = useContext(UserContext);
   console.log("appName", appName)
 
 
@@ -22,8 +22,8 @@ const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, des
         `${HOST}/copySpreadsheet`,
         {
           spreadSheetID: spreadSheetID,
-            // "1YW0WNJVnT4AU68wAmLbQjj5xbJluBwICMGLFAeY07Pc",
-            // "1sMv_CvZMTaZo1u69xLxzrBrD54n2Ymykd3hvsgEe088",
+          // "1YW0WNJVnT4AU68wAmLbQjj5xbJluBwICMGLFAeY07Pc",
+          // "1sMv_CvZMTaZo1u69xLxzrBrD54n2Ymykd3hvsgEe088",
           spreadSheetName: spreadSheetName,
           appName: appName
         },
@@ -36,10 +36,15 @@ const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, des
       .then(({ data: res, status }) => {
         if (status === 200 && !res.error) {
           console.log("res data: ", res);
+          // Update user.sheets and call setUser
+          setUser(prev => ({
+            ...prev,
+            sheets: [...prev.sheets, res]
+          }));
           navigate(`/${res._id}/edit`);
           setTimeout(() => {
             notifySuccess("Copied successfully!");
-          }, 500); 
+          }, 500);
         } else {
           alert(res.error);
         }
@@ -48,7 +53,7 @@ const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, des
         console.log(err.message);
       })
       .finally(() => {
-        setLoading(false); 
+        setLoading(false);
       });
   };
 
@@ -70,7 +75,7 @@ const AppCard = ({ appName, spreadSheetName, spreadSheetID, appView, appImg, des
           {description}
         </span>
       </div> */}
-       <div className="flex justify-start mx-[25px] my-2 relative group">
+      <div className="flex justify-start mx-[25px] my-2 relative group">
         <span className="text-[14.4px] line-clamp-3 min-h-[30px]  group-hover: whitespace-normal transition-all duration-300 ease-in-out cursor-pointer">
           {description}
         </span>

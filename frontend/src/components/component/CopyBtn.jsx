@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { notifySuccess } from "../../utils/notify";
 
 const CopyBtn = ({ appName, spreadSheetID, spreadSheetName }) => {
-    const { token: userToken } = useContext(UserContext);
+    const { token: userToken, setUser } = useContext(UserContext);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -32,6 +32,11 @@ const CopyBtn = ({ appName, spreadSheetID, spreadSheetName }) => {
             .then(({ data: res, status }) => {
                 if (status === 200 && !res.error) {
                     console.log("res data: ", res);
+
+                    setUser(prev => ({
+                        ...prev,
+                        sheets: [...prev.sheets, res]
+                    }));
                     // Redirect to edit page with the new spreadsheet ID
                     navigate(`/${res._id}/edit`);
                     setTimeout(() => {
@@ -60,7 +65,7 @@ const CopyBtn = ({ appName, spreadSheetID, spreadSheetName }) => {
             </button>
             {loading && (
                 <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75"
-                 style={{ zIndex: 100  , overflow: 'hidden' }}
+                    style={{ zIndex: 100, overflow: 'hidden' }}
                 >
                     <Loader textToDisplay="Creating a copy..." />
                 </div>

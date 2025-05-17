@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useMemo } from "react";
 import { FRONTENDHOST, HOST } from "../utils/constants";
 import { UserContext } from "../context/UserContext";
 import { Input, Select, Space } from 'antd';
@@ -17,6 +17,7 @@ import {
   Button,
   CircularProgress,
 } from "@mui/material";
+import { generateAvatar } from "../utils/globalFunctions";
 
 const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWith, settings }) => {
   const [email, setEmail] = useState("");
@@ -26,13 +27,16 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
   const [error, setError] = useState('');
   const [tooltip, setTooltip] = useState("");
   const [saveTooltip, setSaveTooltip] = useState("");
-  const { token } = useContext(UserContext);
+  const { token, user } = useContext(UserContext);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
+  const [sharedWithList, setSharedWithList] = useState(user?.suggestedUsers || []);
+  const [filteredOptions, setFilteredOptions] = useState([]);
 
 
-  console.log({ settings, sharedWith });
+
+  console.log({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWith, settings });
 
   useEffect(() => {
     setEmails(sharedWith);
@@ -43,7 +47,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
       if (message == "Emails saved successfully!") {
         setLoading(true);
       }
-      
+
       const response = await fetch(`${HOST}/addEmails/${spreadsheetId}`, {
         method: 'POST',
         headers: {
@@ -110,8 +114,15 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
       notifyError('This email is already in the list.');
       return;
     }
+
+    let tempEmail = filteredOptions.find(item => item.email === email);
+    if (!tempEmail) {
+      tempEmail = { email: email, photo: "", permission: access, };
+    }
+    console.log({emails, email, tempEmail})
+
     // Add the email and permission to the list
-    setEmails([...emails, { email: email, permission: access }]);
+    setEmails([...emails, tempEmail]);
     setEmail(''); // Clear the input field after adding
     setAccess("View");
     setError(''); // Clear any previous error
@@ -134,6 +145,9 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
     },
   ];
 
+  
+  
+
   const iconOptions = [
     {
       value: 'Edit',
@@ -147,6 +161,27 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
 
   if (!isOpen) return null;
   console.log({ emails });
+
+  
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (email.trim() === "") {
+        setFilteredOptions([]);
+      } else {
+        const filtered = sharedWithList.filter(item =>
+          item?.email.toLowerCase().includes(email.toLowerCase())
+        );
+        setFilteredOptions(filtered);
+      }
+    }, 300); // debounce delay in ms
+
+    return () => clearTimeout(handler);
+  }, [email]);
+
+
+
+
 
   return (
     <div className="fixed inset-0 z-[999] bg-black bg-opacity-50 flex justify-center items-center">
@@ -175,18 +210,40 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
         {/* Modal content */}
         <h3 className="text-xl font-semibold mb-4">Share this file to:</h3>
         <div className="flex items-center gap-2">
-          {/* Input field */}
-          {/* <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter email address"
-            className={`border px-2 py-1 w-full rounded-lg ${error ? 'border-red-500' : 'border-gray-300'}`}
+
+          {/* <Input type="email" placeholder="Enter email address" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '80%' }}
+            className="border rounded placeholder:text-[12px]"
           /> */}
 
-          <Input type="email" placeholder="Enter email address" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '80%' }}
+          <Select
+            showSearch
+            value={email || null} // This makes placeholder visible when input is empty
+            placeholder="Enter email address"
+            style={{ width: '80%' }}
+            defaultActiveFirstOption={false}
+            suffixIcon={null}
+            filterOption={false}
+            onSearch={setEmail}
+            onChange={setEmail}
+            notFoundContent={null}
+            // options={filteredOptions.map(item => ({ value: item?.email }))}
+            options={filteredOptions.map((item, index) => ({
+              value: item?.email,
+              label: (
+                <div className="flex items-center gap-2">
+                  <img
+                    src={item?.photo || generateAvatar(item?.email, index)}
+                    alt="avatar"
+                    className="w-5 h-5 rounded-full object-cover"
+                  />
+                  <span>{item?.email}</span>
+                </div>
+              )
+            }))}
             className="border rounded placeholder:text-[12px]"
           />
+
+
 
           <Select defaultValue="View" options={options} onChange={(value) => setAccess(value)} style={{ width: '25%' }} />
 
@@ -215,8 +272,17 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
         <div className="max-h-[40vh] my-2 flex flex-wrap overflow-y-scroll">
           {emails?.map((entry, index) => (
             <div key={index} className="flex justify-between bg-gray-100 w-[100%] m-[2px] rounded-lg px-2 items-center">
-              <div className="">
+              {/* <div className="">
                 <span className="text-[12px]">{entry.email}</span>
+              </div> */}
+              <div className="flex justify-start items-center gap-[6px]">
+                <img
+                  src={entry.photo || generateAvatar(entry.email, index)}
+                  alt="avatar"
+                  className="w-6 h-6 rounded-full object-cover m-1"
+                />
+
+                <span className="text-[12px] text-center">{entry.email}</span>
               </div>
               <div className="flex gap-[10px] items-center">
                 <div>
@@ -230,7 +296,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
                 </div>
                 <div className="cursor-pointer flex align-center">
                   <button onClick={() => removeEmail(entry.email)} className="text-red-600 hover:text-red-800">
-                    <RiDeleteBinLine size={16}  className="text-primary" />
+                    <RiDeleteBinLine size={16} className="text-primary" />
                     {/* <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -286,8 +352,8 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
           {loading ?
 
             <button
-            className="rounded-lg px-4 py-2 bg-gray-200 cursor-not-allowed text-white"
-            disabled={true}
+              className="rounded-lg px-4 py-2 bg-gray-200 cursor-not-allowed text-white"
+              disabled={true}
             >
               <CircularProgress
                 size={15}
@@ -296,7 +362,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
               Saving...
             </button>
             : <button
-              className={`rounded-lg px-4 py-2 ${ !loadingSave
+              className={`rounded-lg px-4 py-2 ${!loadingSave
                 ? 'bg-gray-200 cursor-not-allowed'  // Gray background and not-allowed cursor when disabled
                 : 'bg-primary text-white'         // Default orange background when enabled
                 }`}

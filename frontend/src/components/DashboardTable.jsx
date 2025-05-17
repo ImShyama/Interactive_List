@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Table, Pagination, Input, Select, AutoComplete } from "antd";
 import { BiSearch } from "react-icons/bi";
 import axios from "axios";
@@ -17,9 +17,11 @@ import ShareModal from "./ShareModal";
 import { FRONTENDHOST, OPTIONS } from "../utils/constants";
 import { notifySuccess } from "../utils/notify";
 import { MdOutlineContentCopy } from "react-icons/md";
+import { UserContext } from "../context/UserContext";
 const options = OPTIONS;
 
 const DashboardTable = () => {
+  const { token, user } = useContext(UserContext);
   const [spreadsheet, setSpreadSheet] = useState([]);
   const [filteredSheets, setFilteredSheets] = useState([]); // To store the filtered data
   const [searchQuery, setSearchQuery] = useState(""); // To store the search query
@@ -29,7 +31,7 @@ const DashboardTable = () => {
   const [sheetToDelete, setSheetToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5); // Default page size
-  const token = useToken();
+  // const token = useToken();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sheetData, setSheetData] = useState("");
@@ -38,30 +40,40 @@ const DashboardTable = () => {
   const [sheetSharedWith, setSheetSharedWith] = useState(null);
   const [settings, setSettings] = useState(null);
 
+
   useEffect(() => {
-    axios
-      .post(
-        `${HOST}/getSpreadSheets`,
-        {},
-        {
-          headers: {
-            authorization: "Bearer " + token,
-          },
-        }
-      )
-      .then(({ data: res }) => {
-        if (res.error) {
-          alert(res.error);
-          navigate("/");
-          return;
-        }
-        setSpreadSheet(res);
-        setFilteredSheets(res); // Initially, filteredSheets is the same as spreadsheet
-      })
-      .catch((err) => {
-        console.log(err.message);
-      });
-  }, []);
+    if (!user) return;
+    setFilteredSheets(user?.sheets);
+    setSpreadSheet(user?.sheets);
+  }, [user])
+
+
+  console.log({ user, filteredSheets, spreadsheet });
+
+  // useEffect(() => {
+  //   axios
+  //     .post(
+  //       `${HOST}/getSpreadSheets`,
+  //       {},
+  //       {
+  //         headers: {
+  //           authorization: "Bearer " + token,
+  //         },
+  //       }
+  //     )
+  //     .then(({ data: res }) => {
+  //       if (res.error) {
+  //         alert(res.error);
+  //         navigate("/");
+  //         return;
+  //       }
+  //       setSpreadSheet(res);
+  //       setFilteredSheets(res); // Initially, filteredSheets is the same as spreadsheet
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.message);
+  //     });
+  // }, []);
 
   const handleShare = (spreadsheetId, sharedWith, settings) => {
     setSpreadsheetIdForShare(spreadsheetId); // Set the selected spreadsheetId
@@ -180,7 +192,7 @@ const DashboardTable = () => {
   };
 
   const tableData = filteredSheets
-    .slice()
+    ?.slice()
     .sort((a, b) => {
       const dateA = new Date(a.lastUpdatedDate);
       const dateB = new Date(b.lastUpdatedDate);
@@ -302,7 +314,7 @@ const DashboardTable = () => {
               </tr>
             </thead>
             <tbody>
-              {tableData.length === 0 ? (
+              {tableData?.length === 0 ? (
                 // Show animate-pulse skeleton rows when there's no data
                 [...Array(5)].map((_, index) => (
                   <tr key={index} className="animate-pulse border-b border-[#EAECF0]">
@@ -326,7 +338,7 @@ const DashboardTable = () => {
                   </tr>
                 ))
               ) : (
-                tableData.map((sheet, index) => (
+                tableData?.map((sheet, index) => (
                   <tr
                     key={sheet._id}
                     className="border-b-[1.303px] border-[#EAECF0]"
@@ -610,7 +622,7 @@ const DashboardTable = () => {
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={filteredSheets.length}
+            total={filteredSheets?.length}
             onChange={handlePageChange}
             showSizeChanger
           />
