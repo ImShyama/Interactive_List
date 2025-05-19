@@ -21,6 +21,10 @@ const redirect_uri = process.env.REDIRECT_URI;
 const NodeCache = require("node-cache");
 const sheetCache = new NodeCache({ stdTTL: 60 }); // 60 sec TTL
 
+// Add these imports at the top of the file
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
 mongoose
   .connect(MONGO_URL)
   .then(() => console.log("MongoDB is connected successfully"))
@@ -42,6 +46,44 @@ app.use(express.json());
 
 // Serve static files from the frontend's "dist" directory
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// Add this after your other middleware setup but before your routes
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Interactive Tools API',
+      version: '1.0.0',
+      description: 'API documentation for Google Sheets integration with Interactive Tools',
+      contact: {
+        name: 'API Support',
+        email: 'shyamanand@ceoitbox.in'
+      }
+    },
+    servers: [
+      {
+        url: `http://localhost:${PORT}`,
+        description: 'Development server'
+      }
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT'
+        }
+      }
+    },
+    security: [{
+      bearerAuth: []
+    }]
+  },
+  apis: ['./index.js'] // Path to the API docs
+};
+
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use("/", authRoute);
 
@@ -112,212 +154,56 @@ async function getMetaSheetData({ sheets, spreadSheetID, range }) {
   return obj;
 }
 
-// app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
-//   const startTime = Date.now(); // 🔔 Capture start time
-//   console.log("115", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
-//   try {
-//     const { sheetID } = req.body;
-
-//     // Fetch sheet details from DB
-//     let sheetDetails = await Sheet.findById(sheetID).lean();
-//     if (!sheetDetails) {
-//       return res.status(404).json({ error: "Sheet not found." });
-//     }
-
-//     const sheetOwner = await User.findById(sheetDetails.userId).lean();
-//     const spreadSheetID = sheetDetails.spreadsheetId;
-//     const spreadSheeSharedWith = sheetDetails.sharedWith;
-//     const range = sheetDetails.firstTabDataRange;
-//     const sheetName = range.split("!")[0];
-
-//     // Authenticate with Google API
-//     const authClient = new google.auth.OAuth2(
-//       process.env.CLIENT_ID,
-//       process.env.CLIENT_SECRET,
-//       process.env.REDIRECT_URI
-//     );
-
-//     authClient.setCredentials({
-//       refresh_token: sheetOwner.googleRefreshToken,
-//     });
-
-//     const sheets = google.sheets({ version: "v4", auth: authClient });
-
-//     // Fetch all sheet tabs
-//     const sheetInfo = await sheets.spreadsheets.get({ spreadsheetId: spreadSheetID });
-//     const tabs = sheetInfo.data.sheets;
-
-//     // Extract sheet details
-//     const allSheetDetails = tabs.map(sheet => ({
-//       name: sheet.properties.title,
-//       url: `https://docs.google.com/spreadsheets/d/${spreadSheetID}/edit#gid=${sheet.properties.sheetId}`,
-//       sheetId: sheet.properties.sheetId,
-//     }));
-
-//     // Store updated sheet details in the database and return the updated document
-//     sheetDetails = await Sheet.findByIdAndUpdate(
-//       sheetID,
-//       { sheetDetails: allSheetDetails },
-//       { new: true, lean: true } // Returns the updated document
-//     );
-
-//     sheetDetails = await Sheet.findById(sheetID).lean();
-
-//     console.log("164", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
-//     // Fetch main sheet data
-//     const response = await sheets.spreadsheets.values.get({
-//       spreadsheetId: spreadSheetID,
-//       range: range,
-//     });
-
-//     console.log("171", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
-
-//     const rows = response.data.values;
-//     if (!rows || rows.length === 0) {
-//       return res.status(404).json({ error: "No data found." });
-//     }
-
-//     console.log("178", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
-//     const formulaData = await getMetaSheetData({ sheets, spreadSheetID, range: sheetName });
-
-//     console.log("181", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
-//     // Extract hidden columns from Sheet
-//     const hiddenCol = sheetDetails.hiddenCol;
-//     const jsonData = convertArrayToJSON(rows, hiddenCol);
-
-//     console.log("186", `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
-//     const tempAccess = spreadSheeSharedWith?.find((entry) => entry?.email === req?.user?.email);
-//     let permissions = tempAccess?.permission;
-
-//     // let permissions = "edit";
-//     // if (sheetDetails?.accessType?.type === "public") {
-//     //   permissions = "public";
-//     // }
-//     if (sheetDetails?.accessType?.type === "public" && !permissions) {
-//       permissions = "view";
-//     }
-//     // else if (sheetDetails?.accessType?.type === "private" || sheetDetails?.accessType?.type === "public") {
-//     //   const tempAccess = spreadSheeSharedWith.find((entry) => entry.email === req.user.email);
-//     //   permissions = tempAccess?.permission;
-//     // }
-//     // else {
-//     //   permissions = "view";
-//     // }
-
-//     console.log({ user: req.user });
-//     // Return full updated sheet details from MongoDB
-//     return res.status(200).json({
-//       rows,
-//       permissions,
-//       jsonData,
-//       hiddenCol,
-//       formulaData,
-//       settings: sheetDetails,  // Returning the full latest sheet settings from MongoDB
-//       user: req.user
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching spreadsheet data:", error);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-
-// app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
-//   const startTime = Date.now();
-//   const log = (label) => console.log(label, `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
-
-//   log("115");
-
-//   try {
-//     const { sheetID } = req.body;
-
-//     // Fetch sheet & user in parallel
-//     const sheetDetailsInitial = await Sheet.findById(sheetID).lean();
-//     if (!sheetDetailsInitial) {
-//       return res.status(404).json({ error: "Sheet not found." });
-//     }
-
-//     const [sheetOwner] = await Promise.all([
-//       User.findById(sheetDetailsInitial.userId).lean(),
-//     ]);
-
-//     const spreadSheetID = sheetDetailsInitial.spreadsheetId;
-//     const range = sheetDetailsInitial.firstTabDataRange;
-//     const sheetName = range.split("!")[0];
-
-//     // Authenticate with Google API
-//     const authClient = new google.auth.OAuth2(
-//       process.env.CLIENT_ID,
-//       process.env.CLIENT_SECRET,
-//       process.env.REDIRECT_URI
-//     );
-//     authClient.setCredentials({ refresh_token: sheetOwner.googleRefreshToken });
-
-//     const sheets = google.sheets({ version: "v4", auth: authClient });
-
-//     // Fetch metadata, values, and formula info in parallel
-//     const [sheetInfo, valuesResponse, formulaData] = await Promise.all([
-//       sheets.spreadsheets.get({ spreadsheetId: spreadSheetID }),
-//       sheets.spreadsheets.values.get({ spreadsheetId: spreadSheetID, range }),
-//       getMetaSheetData({ sheets, spreadSheetID, range: sheetName }),
-//     ]);
-
-//     log("171");
-
-//     const tabs = sheetInfo.data.sheets;
-//     const allSheetDetails = tabs.map(sheet => ({
-//       name: sheet.properties.title,
-//       url: `https://docs.google.com/spreadsheets/d/${spreadSheetID}/edit#gid=${sheet.properties.sheetId}`,
-//       sheetId: sheet.properties.sheetId,
-//     }));
-
-//     // Update sheet details (without fetching again)
-//     const updatedSheetDetails = await Sheet.findByIdAndUpdate(
-//       sheetID,
-//       { sheetDetails: allSheetDetails },
-//       { new: true, lean: true }
-//     );
-
-//     log("178");
-
-//     const rows = valuesResponse.data.values;
-//     if (!rows || rows.length === 0) {
-//       return res.status(404).json({ error: "No data found." });
-//     }
-
-//     log("181");
-
-//     const hiddenCol = updatedSheetDetails.hiddenCol;
-//     const jsonData = convertArrayToJSON(rows, hiddenCol || []);
-
-//     log("186");
-
-//     // Determine user permissions
-//     const sharedWith = updatedSheetDetails.sharedWith || [];
-//     const tempAccess = sharedWith.find((entry) => entry?.email === req?.user?.email);
-//     let permissions = tempAccess?.permission;
-
-//     if (updatedSheetDetails?.accessType?.type === "public" && !permissions) {
-//       permissions = "view";
-//     }
-
-//     return res.status(200).json({
-//       rows,
-//       permissions,
-//       jsonData,
-//       hiddenCol,
-//       formulaData,
-//       settings: updatedSheetDetails,
-//       user: req.user,
-//     });
-
-//   } catch (error) {
-//     console.error("Error fetching spreadsheet data:", error);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
+// Example of documenting a route (add this before the route definition)
+/**
+ * @swagger
+ * /getSheetDataWithID:
+ *   post:
+ *     summary: Get sheet data by ID
+ *     tags: [Sheets]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - sheetID
+ *             properties:
+ *               sheetID:
+ *                 type: string
+ *                 description: ID of the sheet to fetch
+ *     responses:
+ *       200:
+ *         description: Sheet data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 rows:
+ *                   type: array
+ *                   items:
+ *                     type: array
+ *                 permissions:
+ *                   type: string
+ *                 jsonData:
+ *                   type: array
+ *                 hiddenCol:
+ *                   type: array
+ *                 formulaData:
+ *                   type: object
+ *                 settings:
+ *                   type: object
+ *                 user:
+ *                   type: object
+ *       404:
+ *         description: Sheet not found
+ *       500:
+ *         description: Server error
+ */
 app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
   const startTime = Date.now();
   const log = (label) =>
@@ -406,11 +292,68 @@ app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
   }
 });
 
-
+/**
+ * @swagger
+ * /getUserData:
+ *   get:
+ *     summary: Get authenticated user data
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *       401:
+ *         description: Unauthorized
+ */
 app.get("/getUserData", authenticateToken, (req, res) => {
   res.send(req.user);
 });
 
+/**
+ * @swagger
+ * /getallusers:
+ *   get:
+ *     summary: Get all users (admin only)
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *                   appsCount:
+ *                     type: number
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Server error
+ */
 app.get("/getallusers", authenticateToken, async (req, res) => {
   console.log("API Hit: /getallusers");
   try {
@@ -450,6 +393,7 @@ app.get("/getallusers", authenticateToken, async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 app.put("/auth/approve", async (req, res) => {
   console.log("API Hit: /auth/approve");

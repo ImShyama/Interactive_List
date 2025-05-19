@@ -15,13 +15,16 @@ import ProductTitle from "./ProductTitle";
 
 const HeaderSection = ({ isPopup = false, settings }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const profileRef = useRef(null);
   const profileImageRef = useRef(null);
   const headerSettings = settings?.productCatalogue?.headerSettings || {};
+  const cardSettings = settings?.productCatalogue?.cardSettings || {};
+  const footerSettings = settings?.productCatalogue?.footerSettings || {};
 
-  const { token, setRole } = useContext(UserContext);
+  console.log({settings, headerSettings, cardSettings, footerSettings});
+  const { token, setRole, user } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
   const isEditMode = window.location.pathname.endsWith("/edit");
@@ -43,23 +46,6 @@ const HeaderSection = ({ isPopup = false, settings }) => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // ✅ Fetch user profile info (same as Header.jsx)
-  useEffect(() => {
-    axios
-      .get(`${HOST}/getuser`, {
-        headers: { authorization: `Bearer ${token}` },
-        withCredentials: true,
-      })
-      .then(({ data: res }) => {
-        if (!res.error) {
-          setUser(res);
-          setRole(res.role);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching user data:", err?.response?.data?.error);
-      });
-  }, [token]);
 
   // ✅ Toggle Profile visibility
   const toggleProfileVisibility = (e) => {
@@ -94,7 +80,6 @@ const HeaderSection = ({ isPopup = false, settings }) => {
           {/* Left Section */}
           <div
             className="left-panel"
-            onClick={() => navigate("/")}
             style={{ cursor: "pointer" }}
           >
             <div className="left-panel-svg">
@@ -105,35 +90,20 @@ const HeaderSection = ({ isPopup = false, settings }) => {
               />
             </div>
             <div className="interact-parent">
-              <div className="interact">Interact</div>
+              {/* <div className="interact">Interact</div> */}
               {/* New text below Interact */}
               <div className="text-xl font-medium text-gray-600">
-                Product Catalogue Preview
+                {headerSettings?.headerText == "" ? settings?.spreadsheetName : headerSettings?.headerText}
               </div>
-              {settings?.appName && isEditMode && (
+              {/* {settings?.appName && isEditMode && (
                 <div className="interactive-table">{settings?.appName}</div>
-              )}
+              )} */}
             </div>
           </div>
 
           {/* Right Section */}
           {token && (
             <div className="right-panel pl-10">
-              {isEditMode && (
-                <div
-                  className="right-panel-setting"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleToggleDrawer();
-                  }}
-                >
-                  <img
-                    src={dividerIcon}
-                    alt="Divider"
-                    style={{ marginRight: "10px" }}
-                  />
-                </div>
-              )}
 
               {/* Profile Image */}
               <div className="right-pannel-profil">
@@ -170,7 +140,7 @@ const HeaderSection = ({ isPopup = false, settings }) => {
           </div>
         )}
       </div>
-      <ProductTitle />
+      {/* <ProductTitle /> */}
     </div>
   );
 };
