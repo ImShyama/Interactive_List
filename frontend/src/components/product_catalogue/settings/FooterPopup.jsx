@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { IoClose } from "react-icons/io5";
-import FooterSection from "../product_catalogue_preview/FooterSection";
+import FooterSection from "../product_catalogue_view/FooterSection";
 
 const FooterPopup = ({ isOpen, onClose }) => {
   if (!isOpen) return null;

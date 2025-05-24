@@ -33,21 +33,37 @@ const DetailedView = ({ tableHeader, settings }) => {
   const originalItems = tableHeader.map((header, index) => ({ key: index, value: header.replace(/_/g, " ") }))
   const [items, setItems] = useState(originalItems);
 
+  // const handleSave = () => {
+  //   const savedKey = new Set(
+  //     Object.keys(selectedItems)
+  //       .filter((item) => selectedItems[item])
+  //       .map(Number) // Convert string keys to numbers
+  //   );
+
+  //   console.log("Saved Keys:", savedKey);
+
+  //   const newSelections = items.filter((item) => savedKey.has(item.key));
+
+  //   setSavedSelections(newSelections); // Asynchronous update
+
+  //   setDropdownOpen({});
+  //   const showInProfile = { showInProfile: newSelections }
+  //   // Log the updated state after a delay
+  //   setTimeout(() => {
+  //     console.log("Updated Saved Selections:", newSelections);
+  //     handleSaveChanges(settings, token, dispatch, showInProfile)
+  //   }, 0);
+  // };
+
   const handleSave = () => {
-    const savedKey = new Set(
-      Object.keys(selectedItems)
-        .filter((item) => selectedItems[item])
-        .map(Number) // Convert string keys to numbers
-    );
+    // Instead of creating a new Set and filtering, use the current savedSelections
+    // which already has the correct order
+    const newSelections = savedSelections;
 
-    console.log("Saved Keys:", savedKey);
-
-    const newSelections = items.filter((item) => savedKey.has(item.key));
-
-    setSavedSelections(newSelections); // Asynchronous update
-
+    setSavedSelections(newSelections);
     setDropdownOpen({});
-    const showInProfile = { showInProfile: newSelections }
+    const showInProfile = { showInProfile: newSelections };
+
     // Log the updated state after a delay
     setTimeout(() => {
       console.log("Updated Saved Selections:", newSelections);
@@ -95,30 +111,36 @@ const DetailedView = ({ tableHeader, settings }) => {
     }
   };
 
+
   // const handleCheckboxChange = (item) => {
+  //   console.log(item);
   //   setSelectedItems((prev) => ({
   //     ...prev,
-  //     [item]: !prev[item],
+  //     [item.key]: !prev[item.key],
   //   }));
   // };
+  // console.log({ selectedItems })
 
   const handleCheckboxChange = (item) => {
-    console.log(item);
-    setSelectedItems((prev) => ({
-      ...prev,
-      [item.key]: !prev[item.key],
-    }));
+    setSelectedItems((prev) => {
+      const newSelectedItems = {
+        ...prev,
+        [item.key]: !prev[item.key],
+      };
+
+      // If the item is being selected (becoming true)
+      if (!prev[item.key]) {
+        // Add it to the end of savedSelections
+        setSavedSelections(prev => [...prev, item]);
+      } else {
+        // If the item is being deselected, remove it from savedSelections
+        setSavedSelections(prev => prev.filter(i => i.key !== item.key));
+      }
+
+      return newSelectedItems;
+    });
   };
   console.log({ selectedItems })
-
-  // const handleSelectAll = () => {
-  //   const isAllSelected = Object.values(selectedItems).every(Boolean);
-  //   const newSelections = {};
-  //   items.forEach((item) => {
-  //     newSelections[item] = !isAllSelected;
-  //   });
-  //   setSelectedItems(newSelections);
-  // };
 
   const handleSelectAll = () => {
     const isAllSelected = Object.values(selectedItems).every(Boolean);
@@ -178,14 +200,26 @@ const DetailedView = ({ tableHeader, settings }) => {
     }
   };
 
-  // Drag End Handler
+  // // Drag End Handler
+  // const handleDragEnd = (result) => {
+  //   if (!result.destination) return;
+
+  //   const reordered = Array.from(savedSelections);
+  //   const [removed] = reordered.splice(result.source.index, 1);
+  //   reordered.splice(result.destination.index, 0, removed);
+  //   setSavedSelections(reordered);
+  // };
+
   const handleDragEnd = (result) => {
     if (!result.destination) return;
 
-    const reordered = Array.from(savedSelections);
-    const [removed] = reordered.splice(result.source.index, 1);
-    reordered.splice(result.destination.index, 0, removed);
-    setSavedSelections(reordered);
+    const items = Array.from(savedSelections);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setSavedSelections(items);
+    const showInProfile = { showInProfile: items };
+    handleSaveChanges(settings, token, dispatch, showInProfile)
   };
 
   useEffect(() => {
@@ -277,7 +311,7 @@ const DetailedView = ({ tableHeader, settings }) => {
                   className="relative flex items-center border-2 border-[#598931] rounded-[8px] px-4 py-2"
                 >
                   <button
-                    onClick={() => toggleDropdown(column.id)}
+                    onClick={() => toggleDropdown(field.id)}
                     className="flex items-center gap-2 hover:text-[#598931]"
                   >
                     <span className="text-[18px] font-medium font-[Poppins]">

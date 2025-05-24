@@ -82,7 +82,7 @@ const ProductTitle = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center mx-12 relative mt-4">
+    <div className="flex flex-col items-center relative mx-6">
       {/* Top Icons */}
       <div className="flex justify-between w-full items-center relative">
         <div className="flex gap-4 items-center">

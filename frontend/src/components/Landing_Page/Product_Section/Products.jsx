@@ -11,13 +11,14 @@ import AppCard from "./AppCard"; // Importing the AppCard component
 // Component to display app cards
 const Products = () => {
   return (
-    <div>
+    <div className="max-h-[100vh] overflow-y-scroll">
       <div className="text-black font-[Poppins] text-[32.607px] font-medium leading-none flex justify-center ml-10 mb-4">
         Discover Our Complete Suite of Digital Tools
       </div>
 
-      <div className="flex flex-wrap justify-center">
+      <div className="flex flex-wrap justify-center mx-[100px]">
         {APPS.map((app, index) => (
+          <div className="flex justify-center w-full sm:w-1/2 lg:w-1/3">
           <AppCard
             key={index}
             appName={app.appName}
@@ -30,6 +31,7 @@ const Products = () => {
             multipleImage={app.multipleImage}
             standOut={app.standOut}
           />
+          </div>
         ))}
       </div>
     </div>

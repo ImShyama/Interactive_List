@@ -11,6 +11,7 @@ import { formatHeader } from "../../../utils/globalFunctions.jsx";
 import { UserContext } from "../../../context/UserContext";
 import { useDispatch } from "react-redux";
 import { handleSaveChanges } from "../../../APIs/index.jsx";
+import Info from "../../info.jsx";
 
 const CardView = ({ tableHeader, settings }) => {
   const [columns, setColumns] = useState([]);
@@ -23,7 +24,7 @@ const CardView = ({ tableHeader, settings }) => {
       return acc;
     }, {}) || {}; // Ensures it's always an object
   });
-  
+
   const [savedSelections, setSavedSelections] = useState(settings?.showInCard);
   const [hoveredItem, setHoveredItem] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
@@ -32,26 +33,20 @@ const CardView = ({ tableHeader, settings }) => {
   const { token } = useContext(UserContext);
   const dispatch = useDispatch();
 
-  console.log({tableHeader, settings})
+  console.log({ tableHeader, settings, savedSelections })
 
-  const originalItems = tableHeader.map((header, index) => ({ key: index, value: header.replace(/_/g," ") }))
+  const originalItems = tableHeader.map((header, index) => ({ key: index, value: header.replace(/_/g, " ") }))
   const [items, setItems] = useState(originalItems);
 
   const handleSave = () => {
-    const savedKey = new Set(
-      Object.keys(selectedItems)
-        .filter((item) => selectedItems[item])
-        .map(Number) // Convert string keys to numbers
-    );
-  
-    console.log("Saved Keys:", savedKey);
-  
-    const newSelections = items.filter((item) => savedKey.has(item.key));
-  
-    setSavedSelections(newSelections); // Asynchronous update
-  
+    // Instead of creating a new Set and filtering, use the current savedSelections
+    // which already has the correct order
+    const newSelections = savedSelections;
+
+    setSavedSelections(newSelections);
     setDropdownOpen({});
-    const showIncard = {showInCard:newSelections}
+    const showIncard = { showInCard: newSelections };
+
     // Log the updated state after a delay
     setTimeout(() => {
       console.log("Updated Saved Selections:", newSelections);
@@ -68,7 +63,7 @@ const CardView = ({ tableHeader, settings }) => {
       [item.key]: false, // Mark the deleted item as false
     }));
 
-    const showIncard = {showInCard:newSelections}
+    const showIncard = { showInCard: newSelections }
     // Log the updated state after a delay
     setTimeout(() => {
       console.log("Updated Saved Selections:", newSelections);
@@ -88,21 +83,33 @@ const CardView = ({ tableHeader, settings }) => {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    if(event.target.value == ""){
+    if (event.target.value == "") {
       setItems(originalItems)
-    }else{
-      setItems(items.filter((item)=> item.value.toLowerCase().includes(event.target.value.toLowerCase())))
+    } else {
+      setItems(items.filter((item) => item.value.toLowerCase().includes(event.target.value.toLowerCase())))
     }
   };
 
   const handleCheckboxChange = (item) => {
-    console.log(item);
-    setSelectedItems((prev) => ({
-      ...prev,
-      [item.key]: !prev[item.key],
-    }));
+    setSelectedItems((prev) => {
+      const newSelectedItems = {
+        ...prev,
+        [item.key]: !prev[item.key],
+      };
+
+      // If the item is being selected (becoming true)
+      if (!prev[item.key]) {
+        // Add it to the end of savedSelections
+        setSavedSelections(prev => [...prev, item]);
+      } else {
+        // If the item is being deselected, remove it from savedSelections
+        setSavedSelections(prev => prev.filter(i => i.key !== item.key));
+      }
+
+      return newSelectedItems;
+    });
   };
-  console.log({selectedItems})
+  console.log({ selectedItems })
 
   const handleSelectAll = () => {
     const isAllSelected = Object.values(selectedItems).every(Boolean);
@@ -127,9 +134,9 @@ const CardView = ({ tableHeader, settings }) => {
   // };
   // console.log({savedSelections});
 
-  
-  
-  
+
+
+
 
   const handleEdit = (item) => {
     setEditingItem(item);
@@ -137,7 +144,7 @@ const CardView = ({ tableHeader, settings }) => {
   };
 
   const handleEditSave = (event) => {
-    console.log({event, editText, editingItem})
+    console.log({ event, editText, editingItem })
     if (
       event.type === "click" ||
       event.type === "blur" ||
@@ -165,6 +172,8 @@ const CardView = ({ tableHeader, settings }) => {
     items.splice(result.destination.index, 0, reorderedItem);
 
     setSavedSelections(items);
+    const showIncard = { showInCard: items };
+    handleSaveChanges(settings, token, dispatch, showIncard)
   };
 
   useEffect(() => {
@@ -183,8 +192,11 @@ const CardView = ({ tableHeader, settings }) => {
 
   return (
     <div className="p-4">
-      <div className="text-black font-[Poppins] text-[35px] font-medium leading-normal mb-4">
-        Card View :
+      <div className="flex items-center gap-2 text-black font-[Poppins] text-[35px] font-medium leading-normal mb-4">
+        <span className="">Card View : </span>
+        <div>
+          <Info info={"First column must be selected as Image column."} />
+        </div>
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -256,14 +268,14 @@ const CardView = ({ tableHeader, settings }) => {
                   key={column.id}
                   className="relative flex items-center border-2 border-[#598931] rounded-[8px] px-4 py-2"
                 >
-                  
+
                   <button
                     onClick={() => toggleDropdown(column.id)}
                     className="flex items-center gap-2 hover:text-[#598931]"
                   >
                     <span className="text-[18px] font-medium font-[Poppins]">
-                    Select From List
-                  </span>
+                      Select From List
+                    </span>
                     <FaChevronDown className="text-[#598931]" />
                   </button>
 

@@ -82,11 +82,11 @@ const AppCard = ({
       </div>
       
       <div className="mx-[25px] flex justify-between items-center">
-        {/* <button className="border border-primary rounded-[10px] py-[10px] px-[15px] text-[15.07px] text-primary"  onClick={() => navigate(`/${appView}`)}>
+        {/* <button className="border border-main rounded-[10px] py-[10px] px-[15px] text-[15.07px] text-main"  onClick={() => navigate(`/${appView}`)}>
           Try Template
         </button> */}
         <button
-          className="border border-primary rounded-[10px] py-[10px] px-[15px] text-[15.07px] text-primary"
+          className="border border-main rounded-[10px] py-[10px] px-[15px] text-[15.07px] text-main"
           onClick={() => {
             if (token) {
               navigate(`/${appView}`); // Redirect to appView if user is signed in
@@ -99,7 +99,7 @@ const AppCard = ({
         </button>
 
         <button
-          className="py-[11px] px-[16px] text-[15.07px] rounded-[10px] bg-primary text-white hover:bg-secondary"
+          className="py-[11px] px-[16px] text-[15.07px] rounded-[10px] bg-main text-white hover:bg-green-700"
           onClick={handleOverviewClick}
         >
           See Overview

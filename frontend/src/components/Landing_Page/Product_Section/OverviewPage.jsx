@@ -31,7 +31,7 @@ const OverviewPage = () => {
       <div className="self-stretch text-[#A0A0A0] font-poppins text-[16.705px] font-medium leading-normal">
         <span
           onClick={() => navigate("/products")}
-          className="hover:text-[#598931] hover:underline cursor-pointer"
+          className="hover:text-main hover:underline cursor-pointer"
         >
           Products
         </span>
@@ -67,14 +67,14 @@ const OverviewPage = () => {
             <div className="flex justify-center w-full gap-4 mt-4">
               <button
                 onClick={handlePrev}
-                className="p-2 border-2 border-[#598931] text-[#598931] text-2xl rounded-full hover:bg-[#FFFFFF]"
+                className="p-2 border-2 border-main text-main text-2xl rounded-full hover:bg-[#FFFFFF]"
               >
                 <MdOutlineNavigateBefore />
               </button>
 
               <button
                 onClick={handleNext}
-                className="p-2 border-2 border-[#598931] text-[#598931] text-2xl rounded-full hover:bg-[#FFFFFF]"
+                className="p-2 border-2 border-main text-main text-2xl rounded-full hover:bg-[#FFFFFF]"
               >
                 <MdOutlineNavigateNext />
               </button>
@@ -89,11 +89,11 @@ const OverviewPage = () => {
 
             {standOut?.map((item, index) => (
               <div key={index} className="flex items-start gap-8">
-                <div className="flex items-center justify-center w-12.5 h-12.5 rounded-full bg-[rgba(150,255,63,0.08)] text-[#598931] font-bold text-lg mt-2">
+                <div className="flex items-center justify-center w-12.5 h-12.5 rounded-full bg-[rgba(150,255,63,0.08)] text-main font-bold text-lg mt-2">
                   {index + 1}.
                 </div>
                 <div>
-                  <h3 className="text-xl font-[Poppins] font-semibold leading-normal text-[#598931]">
+                  <h3 className="text-xl font-[Poppins] font-semibold leading-normal text-main">
                     {Object.keys(item)[0]}
                   </h3>
 
@@ -111,7 +111,7 @@ const OverviewPage = () => {
       {/* Button Section - Always Stays at Bottom Center */}
       <div className="flex justify-center items-center pt-8">
         <button
-          className="py-2 px-4 text-lg rounded-xl bg-[#598931] text-white"
+          className="py-2 px-4 text-lg rounded-xl bg-main text-white"
           onClick={() => {
             if (token) {
               navigate(`/${appView}`); // Redirect to appView if user is signed in

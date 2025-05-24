@@ -11,8 +11,9 @@ import { UserContext } from "../context/UserContext";
 import { HOST } from "../utils/constants";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
-import { handleImageError } from "../utils/globalFunctions";
+import { handleImageError, handlePCImageError } from "../utils/globalFunctions";
 import { notifyError } from "../utils/notify";
+import Avatar from "../assets/images/avatar.png";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -276,10 +277,11 @@ const Header = () => {
                   ref={profileImageRef} // Added ref to the profile image
                   className="header-panel-profile"
                   src={
-                    user?.profileUrl || "https://i.ibb.co/qC5F7XW/image25.jpg"
+                    user?.profileUrl || Avatar
                   }
                   alt="Profile"
                   onClick={toggleProfileVisibility}
+                  onError={(e) => handleImageError(e)}
                 />
               </div>
             </div>

@@ -14,6 +14,7 @@ import dividerIcon from "../../../assets/dividerIcon.svg";
 import ProductTitle from "./ProductTitle";
 
 const HeaderSection = ({ isPopup = false, settings }) => {
+  console.log({ settings });
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   // const [user, setUser] = useState(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
@@ -23,7 +24,7 @@ const HeaderSection = ({ isPopup = false, settings }) => {
   const cardSettings = settings?.productCatalogue?.cardSettings || {};
   const footerSettings = settings?.productCatalogue?.footerSettings || {};
 
-  console.log({settings, headerSettings, cardSettings, footerSettings});
+  console.log({ settings, headerSettings, cardSettings, footerSettings });
   const { token, setRole, user } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -71,12 +72,13 @@ const HeaderSection = ({ isPopup = false, settings }) => {
   }, []);
 
   return (
-    <div
-      className={`${isPopup ? "relative" : "fixed"} top-0 left-0 right-0 mb-6`}
-      style={{ zIndex: 999 }}
-    >
-      <div className={`main-container ${isDrawerOpen ? "drawer-open" : ""}`}>
-        <div className="header_main left-content">
+    <div className={`${isPopup ? "relative" : "fixed"} top-0 left-0 right-0 mb-6`} >
+      <div className={`main-container ${isDrawerOpen ? "drawer-open" : ""}`} >
+        <div className="header_main left-content shadow-lg"
+          style={{
+            backgroundColor: headerSettings?.bg || "#ffffff",
+          }}
+        >
           {/* Left Section */}
           <div
             className="left-panel"
@@ -85,14 +87,20 @@ const HeaderSection = ({ isPopup = false, settings }) => {
             <div className="left-panel-svg">
               <img
                 className="logo_img"
-                src="https://i.ibb.co/sbwvB0L/logo-png-1-1.webp"
+                src={headerSettings?.logoURL || "https://i.ibb.co/sbwvB0L/logo-png-1-1.webp"}
                 onError={(e) => handleImageError(e)}
               />
             </div>
             <div className="interact-parent">
               {/* <div className="interact">Interact</div> */}
               {/* New text below Interact */}
-              <div className="text-xl font-medium text-gray-600">
+              <div className="text-xl font-medium"
+                style={{
+                  fontFamily: headerSettings?.headerFont || "Poppins",
+                  fontSize: headerSettings?.headerFontSize || "16px",
+                  color: headerSettings?.headerFontColor || "#000000",
+                }}
+              >
                 {headerSettings?.headerText == "" ? settings?.spreadsheetName : headerSettings?.headerText}
               </div>
               {/* {settings?.appName && isEditMode && (
@@ -140,7 +148,7 @@ const HeaderSection = ({ isPopup = false, settings }) => {
           </div>
         )}
       </div>
-      {/* <ProductTitle /> */}
+      
     </div>
   );
 };

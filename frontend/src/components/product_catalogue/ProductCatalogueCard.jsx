@@ -1,18 +1,48 @@
 import React from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { useNavigate } from "react-router-dom";
+import { getDriveThumbnail, handlePCImageError, RenderText, RenderTextPC } from "../../utils/globalFunctions";
+import ImageNotFound from "../../assets/images/noPhoto.jpg";
+
+const CardText = ({
+  title1, title2, title3, title4, title5,
+  cardSettings
+}) => {
+  const titleData = [title1, title2, title3, title4, title5];
+  const titleKeys = ["Title_1", "Title_2", "Title_3", "Title_4", "Title_5"];
+
+  return titleData.map((text, index) => {
+    const key = titleKeys[index];
+    const style = cardSettings.titles[key];
+
+    return (
+      <div
+        key={key}
+        style={{
+          fontFamily: style.fontType,
+          color: style.fontColor,
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight,
+        }}
+      >
+        <RenderTextPC text={text} />
+        {/* {text} */}
+      </div>
+    );
+  });
+}
 
 const ProductCatalogueCard = ({
-  title,
-  subtitle,
-  description,
-  multipleimages = [],
-  sheetlink,
-  videolink,
-  features,
+  multipleimages,
+  title1,
+  title2,
+  title3,
+  title4,
+  title5,
+  cardSettings
 }) => {
   const navigate = useNavigate(); // Initialize navigation function
-
+  console.log({multipleimages})
   const handleClick = () => {
     navigate("/productCatalogueBiggerView", {
       state: { title, subtitle, description, multipleimages, sheetlink, videolink, features },
@@ -23,9 +53,10 @@ const ProductCatalogueCard = ({
       {/* First Child - Image Section */}
       <div className="w-full relative">
         <img
-          src={multipleimages[0]}
-          alt={title}
+          src={getDriveThumbnail(multipleimages[0]) || ImageNotFound}
+          alt={title1}
           className="w-full h-auto object-cover rounded-t-2xl"
+          onError={(e) => { handlePCImageError(e) }}
         />
         <button
           onClick={handleClick}
@@ -37,36 +68,8 @@ const ProductCatalogueCard = ({
 
       {/* Second Child - Content Section with #F6F8ED background */}
       <div className="bg-[#F6F8ED] flex flex-col items-start gap-[10px] h-full p-6 rounded-b-2xl">
-        <div className="self-stretch text-[#060606] font-poppins text-[30.533px] font-semibold leading-normal">
-          {title}
-        </div>
 
-        <div className="text-[#363636] font-poppins text-[13.249px] font-normal leading-normal">
-          {subtitle}
-        </div>
-
-        <div className="self-stretch text-[#363636] font-poppins text-[15px] font-normal leading-normal">
-          {description}
-        </div>
-
-        {/* Repeated Text Example */}
-        <div className="mt-4 space-y-2">
-          <div className="text-[#363636] font-poppins text-[13.249px] font-normal leading-normal">
-            {subtitle}
-          </div>
-          <div className="text-[#363636] font-poppins text-[13.249px] font-normal leading-normal">
-            {subtitle}
-          </div>
-          <div className="text-[#363636] font-poppins text-[13.249px] font-normal leading-normal">
-            {subtitle}
-          </div>
-        </div>
-
-        {/* Footer */}
-        
-        <div className="text-[#EE0505] font-poppins text-[14.249px] font-medium leading-normal">
-          Medium
-        </div>
+        <CardText title1={title1} title2={title2} title3={title3} title4={title4} title5={title5} cardSettings={cardSettings} />
       </div>
     </div>
   );

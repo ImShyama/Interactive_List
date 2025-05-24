@@ -98,7 +98,22 @@ const BoxView = ({ settings }) => {
     const [removed] = reorderedFields.splice(result.source.index, 1);
     reorderedFields.splice(result.destination.index, 0, removed);
     setFields(reorderedFields);
+
+    const showInBox = { showInBox: reorderedFields };
+    handleSaveChanges(settings, token, dispatch, showInBox)
   };
+
+  // const handleDragEnd = (result) => {
+  //   if (!result.destination) return;
+
+  //   const items = Array.from(savedSelections);
+  //   const [reorderedItem] = items.splice(result.source.index, 1);
+  //   items.splice(result.destination.index, 0, reorderedItem);
+
+  //   setSavedSelections(items);
+  //   const showIncard = { showInCard: items };
+  //   handleSaveChanges(settings, token, dispatch, showIncard)
+  // };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -189,18 +204,6 @@ const BoxView = ({ settings }) => {
 
               {provided.placeholder}
 
-              {/* {isInputVisible && (
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Enter Text"
-                  className="border-[2px] border-[#598931] rounded-[8px] px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#598931]"
-                  autoFocus
-                />
-              )} */}
 
               {isInputVisible && (
                 <div className="flex items-center gap-2">
@@ -215,7 +218,7 @@ const BoxView = ({ settings }) => {
                       }
                     }}
                     placeholder="Enter Text"
-                    className="border-[2px] border-[#598931] rounded-[8px] px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#598931]"
+                    className=" border-[#598931] rounded-[8px] px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-[#598931]"
                     autoFocus
                   />
                   <button

@@ -7,6 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
+        main: "var(--main-color)",
+        second: "var(--second-color)",
         primary: "var(--primary-color)", // Custom color referencing CSS variable
         secondary: "var(--secondary-color)",
         text: "var(--text-color)", // Custom text color

@@ -235,13 +235,30 @@ const LargeVideoView = () => {
     return url; // Default fallback
   };
 
-  useEffect(() => {
-    const storedData = localStorage.getItem(`profileData_${id}`);
-    const storedSettings = localStorage.getItem(`profileSettings_${id}`);
+  // useEffect(() => {
+  //   const storedData = localStorage.getItem(`profileData_${id}`);
+  //   const storedSettings = localStorage.getItem(`profileSettings_${id}`);
 
-    if (storedData) setData(JSON.parse(storedData));
-    if (storedSettings) setSettings(JSON.parse(storedSettings));
-  }, [id]);
+  //   if (storedData) setData(JSON.parse(storedData));
+  //   if (storedSettings) setSettings(JSON.parse(storedSettings));
+  // }, [id]);
+
+  // Update the useParams to get both IDs
+const { settingsId, videoId } = useParams();
+
+// Update the useEffect to use both IDs
+useEffect(() => {
+  // Create the storage keys using both IDs
+  const profileDataKey = `profileData_${settingsId}_${videoId}`;
+  const profileSettingsKey = `profileSettings_${settingsId}_${videoId}`;
+
+  // Fetch data from localStorage using the combined keys
+  const storedData = localStorage.getItem(profileDataKey);
+  const storedSettings = localStorage.getItem(profileSettingsKey);
+
+  if (storedData) setData(JSON.parse(storedData));
+  if (storedSettings) setSettings(JSON.parse(storedSettings));
+}, [settingsId, videoId]);
 
   if (!data) return <p>Loading...</p>;
 

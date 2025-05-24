@@ -10,9 +10,13 @@ export const UserProvider = ({ children }) => {
   const [isPCTSettings, setIsPCTSettings] = useState(false);
   const [categoryHeader, setCategoryHeader] = useState([]);
   const [sharedWith, setSharedWith] = useState([]);
+  const [initialLoadingCount, setInitialLoadingCount] = useState(true);
+  const [dataRows, setDataRows] = useState([]);
 
   return (
-    <UserContext.Provider value={{ profile, setProfile, token, setToken, role, setRole, user, setUser, isPCTSettings, setIsPCTSettings, categoryHeader, setCategoryHeader, sharedWith, setSharedWith }}>
+    <UserContext.Provider value={{ profile, setProfile, token, setToken, role, setRole, user, setUser, isPCTSettings, setIsPCTSettings, 
+    categoryHeader, setCategoryHeader, sharedWith, setSharedWith, initialLoadingCount, setInitialLoadingCount,
+    dataRows, setDataRows }}>
       {children}
     </UserContext.Provider>
   );

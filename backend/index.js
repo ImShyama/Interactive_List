@@ -821,7 +821,7 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
         headerSettings: {
           headerText: "CBXTREE Header",
           headerFont: "Poppins",
-          headerFontColor: "#fff000",
+          headerFontColor: "#000000",
           headerFontSize: "16px",
           bg: "#ffffff",
           logoURL: "",
@@ -833,33 +833,34 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
           titles: {
             Title_1: {
               cardFont: "Poppins",
-              cardFontColor: "#fff000",
-              cardFontSize: "16px",
-              numberOfRows: "",
-              numberOfColumns: "",
+              cardFontColor: "#060606",
+              cardFontSize: "30.533px",
+              fontWeight: "600",
             },
             Title_2: {
               cardFont: "Poppins",
-              cardFontColor: "#fff000",
-              cardFontSize: "16px",
-              numberOfRows: "",
-              numberOfColumns: "",
+              cardFontColor: "#363636",
+              cardFontSize: "13.249px",
+              fontWeight: "400",
             },
             Title_3: {
               cardFont: "Poppins",
-              cardFontColor: "#fff000",
-              cardFontSize: "16px",
+              cardFontColor: "#363636",
+              cardFontSize: "15px",
+              fontWeight: "400",
             },
             Title_4: {
               cardFont: "Poppins",
-              cardFontColor: "#fff000",
-              cardFontSize: "16px",
+              cardFontColor: "#363636",
+              cardFontSize: "13.249px",
+              fontWeight: "400",
             },
             Title_5: {
               cardFont: "Poppins",
-              cardFontColor: "#fff000",
-              cardFontSize: "16px",
-            },
+              cardFontColor: "#EE0505",
+              cardFontSize: "14.249px",
+              fontWeight: "500",
+            }
           },
           numberOfColumns: "4",
           numberOfRows: "3",
@@ -1116,6 +1117,9 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
         { id: 2, title: "Latitude" },
       ]
     }
+    else if (appName == "Product Catalogue") {
+      cardSettings = []
+    }
 
     const res = {
       spreadsheetId: sheet_id,
@@ -1146,9 +1150,143 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       firstTabHeader: res.firstTabHeader,
       appName: appName,
       sheetDetails: sheetDetails,
-      access: res.access, // Save access type
-      lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
-      showInCard: cardSettings
+      access: res.access, 
+      lastUpdatedDate: res.lastUpdatedDate, 
+      showInCard: cardSettings,
+      productCatalogue: {
+        headerSettings: {
+          headerText: "CBXTREE Header",
+          headerFont: "Poppins",
+          headerFontColor: "#000000",
+          headerFontSize: "16px",
+          bg: "#ffffff",
+          logoURL: "",
+          tabTitle: "",
+          reset: false,
+          search: true,
+        },
+        cardSettings: {
+          titles: {
+            Title_1: {
+              cardFont: "Poppins",
+              cardFontColor: "#060606",
+              cardFontSize: "30.533px",
+              fontWeight: "600",
+            },
+            Title_2: {
+              cardFont: "Poppins",
+              cardFontColor: "#363636",
+              cardFontSize: "13.249px",
+              fontWeight: "400",
+            },
+            Title_3: {
+              cardFont: "Poppins",
+              cardFontColor: "#363636",
+              cardFontSize: "15px",
+              fontWeight: "400",
+            },
+            Title_4: {
+              cardFont: "Poppins",
+              cardFontColor: "#363636",
+              cardFontSize: "13.249px",
+              fontWeight: "400",
+            },
+            Title_5: {
+              cardFont: "Poppins",
+              cardFontColor: "#EE0505",
+              cardFontSize: "14.249px",
+              fontWeight: "500",
+            }
+          },
+          numberOfColumns: "4",
+          numberOfRows: "3",
+        },
+        footerSettings: {
+          footers: {
+            Footer_1: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif", // Add default font
+              footerFontSize: "16px", // Add default size
+              footerFontColor: "#000000", // Add default color
+              bg: "#ffffff", // Add default background
+            },
+            Footer_2: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif",
+              footerFontSize: "16px",
+              footerFontColor: "#000000",
+              bg: "#ffffff",
+            },
+            Footer_3: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif",
+              footerFontSize: "16px",
+              footerFontColor: "#000000",
+              bg: "#ffffff",
+            },
+            Footer_4: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif",
+              footerFontSize: "16px",
+              footerFontColor: "#000000",
+              bg: "#ffffff",
+            },
+            Footer_5: {
+              Heading: {
+                SubHeading1: "",
+                SubHeading2: "",
+                SubHeading3: "",
+                SubHeading4: "",
+                SubHeading5: "",
+              },
+              footerFont: "Arial, sans-serif",
+              footerFontSize: "16px",
+              footerFontColor: "#000000",
+              bg: "#ffffff",
+            },
+          },
+          socialMediaSettings: {
+            facebook: "",
+            youtube: "",
+            twitter: "",
+            linkedin: "",
+            instagram: "",
+            socialMedia1: "",
+          },
+          mainFooter: "",
+          footerColor: "",
+          footerBackground: "",
+          contactSettings: {
+            address: "",
+            phone: "",
+            email: "",
+          },
+        }
+      },
     });
 
     return newSheet;

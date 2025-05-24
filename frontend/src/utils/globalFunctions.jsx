@@ -1,3 +1,8 @@
+
+
+import Avatar from "../assets/images/avatar.png";
+import ImageNotFound from "../assets/images/noPhoto.jpg";
+
 export function getDriveThumbnail(url) {
     if (!url) return '';
 
@@ -10,8 +15,12 @@ export function getDriveThumbnail(url) {
     return url;
 }
 
-import Avatar from "../assets/images/avatar.png";
 export const handleImageError = (e, fallbackImage = Avatar) => {
+    e.target.onerror = null; // Prevent infinite loop if fallback fails
+    e.target.src = fallbackImage; // Set the fallback/default image
+};
+
+export const handlePCImageError = (e, fallbackImage = ImageNotFound) => {
     e.target.onerror = null; // Prevent infinite loop if fallback fails
     e.target.src = fallbackImage; // Set the fallback/default image
 };
@@ -46,14 +55,44 @@ export const RenderText = ({ text }) => {
         </span>
     );
 };
+export const RenderTextPC = ({ text }) => {
+    if (!text) return null;
+
+    // Regular expression to detect URLs (http, https, www)
+    const urlRegex = /(https?:\/\/[^\s,]+|www\.[^\s,]+)/g;
+
+    // Check if the text contains URLs
+    const parts = text?.toString().split(urlRegex);
+
+    return (
+        <span className="" >
+            {parts.map((part, index) => {
+                if (part.match(urlRegex)) {
+                    return (
+                        <a
+                            key={index}
+                            href={part.startsWith("http") ? part : `https://${part}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-inherit no-underline hover:underline"
+                        >
+                            Click Here
+                        </a>
+                    );
+                }
+                return part;
+            })}
+        </span>
+    );
+};
 
 export const formatHeader = ({ header }) => {
     return header
         ?.replace(/_/g, " ").split(" ").slice(0, -1).join(" ")
 }
 
-export const generateAvatar = ( email, index ) => {
-    console.log({email, index});
+export const generateAvatar = (email, index) => {
+    console.log({ email, index });
     if (!email) return null;
     const firstLetter = email.charAt(0).toUpperCase();
     const avatarColors = ["#FF5733", "#33C1FF", "#9B59B6", "#F1C40F", "#2ECC71",

@@ -4,6 +4,7 @@ import {
   FaXTwitter,
   FaLinkedin,
   FaInstagram,
+  FaGlobe,
 } from "react-icons/fa6";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 

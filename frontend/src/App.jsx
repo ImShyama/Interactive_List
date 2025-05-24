@@ -25,7 +25,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ProfilePage from "./components/people_directory/ProfilePage";
 // import Home from "./components/Home";
 import PhotoGalleryPreview from "./components/photo_gallery/PhotoGalleryPreview";
-import LandingPage from "./components/Landing_Page/LandingPage";
+import LandingPage from "./components/Interact_Website/LandingPage";
 import About from "./components/Landing_Page/AboutSection";
 import Products from "./components/Landing_Page/Product_Section/Products";
 import OverviewPage from "./components/Landing_Page/Product_Section/OverviewPage";
@@ -36,6 +36,8 @@ import AdminBtn from "./components/component/AdminBtn";
 import ProductCataloguePreview from "./components/product_catalogue/ProductCataloguePreview";
 import ProductCatalogueView from "./components/product_catalogue/ProductCatalogueView";
 import ProductCatalogueBiggerView from "./components/product_catalogue/ProductCatalogueBiggerView"
+import WebsiteLayout from "./components/Interact_Website/WebsiteLayout";
+import NotFound from './components/NotFound';
 
 
 // Layout Component
@@ -68,16 +70,28 @@ const Layout = () => {
 
 // Define the router configuration
 const appRouter = createBrowserRouter([
+  // 🔵 Website routes
+  {
+    element: <WebsiteLayout />,
+    children: [
+      { path: "/", element: <LandingPage /> },
+      { path: "/about", element: <About /> },
+      { path: "/products", element: <Products /> },
+      { path: "/products/:product", element: <OverviewPage /> },
+      { path: "/privacy-policy", element: <PrivacyPolicy /> },
+    ],
+  },
+  // 🟢 Interact App routes
   {
     element: <Layout />,
     children: [
       // { path: "/", element: <Home /> },
-      { path: "/", element: <LandingPage /> },
-      { path: "/about", element: <About /> },
-      { path: "/products", element: <Products /> },
-      { path: "/admin", element: <UsersDashboard /> },
-      { path: "/privacy-policy", element: <PrivacyPolicy /> },
-      { path: "/products/:product", element: <OverviewPage /> },
+      // { path: "/", element: <LandingPage /> },
+      // { path: "/about", element: <About /> },
+      // { path: "/products", element: <Products /> },
+      // { path: "/admin", element: <UsersDashboard /> },
+      // { path: "/privacy-policy", element: <PrivacyPolicy /> },
+      // { path: "/products/:product", element: <OverviewPage /> },
       { path: "/signin", element: <GoogleSignin /> },
       { path: "/:id/edit", element: <Table /> },
       { path: "/:id/view", element: <Table /> },
@@ -92,19 +106,22 @@ const appRouter = createBrowserRouter([
       { path: "/PhotoGalleryPreview", element: <PhotoGalleryPreview /> },
       { path: "/InteractiveMapPreview", element: <InteractiveMapPreview /> },
       { path: "/profile/:id", element: <ProfilePage /> },
-      { path: "/video/:id", element: <LargeVideoView /> },
+      { path: "/video/:settingsId/:videoId", element: <LargeVideoView /> },
       { path: "/ProductCataloguePreview", element: <ProductCataloguePreview /> },
       { path: "/ProductCatalogueView", element: <ProductCatalogueView /> },
       { path: "/ProductCatalogueBiggerView", element: <ProductCatalogueBiggerView /> },
     ],
   },
+  // Add catch-all route for 404
+  {
+    path: "*",
+    element: <NotFound />
+  }
 ]);
 
 // App Component
 const App = () => {
-  return (
-    <RouterProvider router={appRouter} />
-  )
+  return <RouterProvider router={appRouter} />;
 };
 
 export default App;

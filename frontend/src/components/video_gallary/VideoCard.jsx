@@ -96,13 +96,17 @@ const VideoCard = ({ rowData, settings }) => {
   // };
 
   const handleVideoClick = (rowData) => {
+    // Create dynamic storage keys using settings._id and rowData.key_id
+    const profileDataKey = `profileData_${settings._id}_${rowData.key_id}`;
+    const profileSettingsKey = `profileSettings_${settings._id}_${rowData.key_id}`;
 
-    // Store data and settings in localStorage
-    localStorage.setItem(`profileData_${rowData.key_id}`, JSON.stringify(rowData));
-    localStorage.setItem(`profileSettings_${rowData.key_id}`, JSON.stringify(settings));
-
+    // Store data and settings in localStorage with dynamic keys
+    localStorage.setItem(profileDataKey, JSON.stringify(rowData));
+    localStorage.setItem(profileSettingsKey, JSON.stringify(settings));
+    console.log({rowData, settings});
+    
     // Open the profile in a new tab
-    window.open(`/video/${rowData.key_id}`, '_blank');
+    window.open(`/video/${settings._id}/${rowData.key_id}`, '_blank');
   };
 
   // const getEmbeddedVideoURL = (url) => {

@@ -100,6 +100,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     settingData?.productCatalogue?.footerSettings || {}
   );
 
+  console.log({headerSettings,cardSettings,footerSettings});
 
   // const [headerSettings, setHeaderSettings] = useState({
   //   headerText: "CBXTREE Header",
@@ -223,6 +224,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   const handleTitleChange = (e) => {
     const newTitle = e.target.value;
     setSelectedTitle(newTitle);
+    console.log(newTitle);
   };
 
   // const handleCardChange = (e) => {
@@ -262,6 +264,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
         },
       }));
     }
+    // setIsSaveChanges(true);
   };
 
   const [addCardSettings, setAddCardSettings] = useState(false);
@@ -776,7 +779,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   value={headerSettings.headerText}
                   onChange={handleHeaderChange}
                   placeholder="Enter Text"
-                  className=" border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
+                  className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
                 />
                 {/* Hide LuEye and Info when preview is open */}
                 {!showHeaderPreview && (
@@ -831,9 +834,6 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     onChange={handleHeaderChange}
                     className="border border-[#F1F1F1] bg-[#F9F9F9] py-1 px-4 rounded-md w-full h-auto appearance-none placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
                   >
-                    <option value="" disabled hidden>
-                      Choose Font
-                    </option>
                     {fontOptions.map((font) => (
                       <option key={font} value={font}>
                         {font}
@@ -952,7 +952,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     <input
                       type="text"
                       name="logoURL"
-                      value={headerSettings.logoURL}
+                      value={headerSettings?.logoURL}
                       onChange={handleHeaderChange}
                       onKeyPress={handleLogoURLKeyPress}
                       placeholder="Enter URL"
@@ -1008,15 +1008,15 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     </button>
                   </div>
                 )}
-                <Tooltip title="Position" color="#598931">
+                {/* <Tooltip title="Position" color="#598931">
                   <div className="flex justify-center items-center w-8">
                     <LuMove className="w-5 h-5 text-[#A7A7A7] cursor-pointer hover:text-[#598931]" />
                   </div>
-                </Tooltip>
+                </Tooltip> */}
               </div>
 
               {/* Tab Title Name */}
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
                   Tab Title Name:
                 </label>
@@ -1029,7 +1029,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   placeholder="Enter Text"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
-              </div>
+              </div> */}
 
               {/* Reset Toggle */}
 
@@ -1160,6 +1160,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
             <CardPopup
               isOpen={showCardPopup}
               onClose={() => setShowCardPopup(false)}
+              settings={settingData}
             />
           </div>
           {addCardSettings && (
@@ -1172,9 +1173,9 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     onChange={handleTitleChange}
                     className="bg-white text-[#598931] font-semibold py-2 px-4 pr-4 rounded-md border border-gray-300 outline-none appearance-none w-full"
                   >
-                    <option value="" disabled hidden>
+                    {/* <option value="" disabled hidden>
                       Titles
-                    </option>
+                    </option> */}
                     {Object.keys(cardSettings.titles).map((title) => (
                       <option key={title} value={title}>
                         {title.replace(/_/g, " ")}
@@ -1245,7 +1246,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     // value={cardSettings.cardFont}
                     value={
                       selectedTitle
-                        ? cardSettings.titles[selectedTitle].cardFont
+                        ? cardSettings?.titles[selectedTitle]?.cardFont
                         : ""
                     }
                     onChange={handleCardChange}
@@ -1441,6 +1442,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
             <FooterPopup
               isOpen={showFooterPopup}
               onClose={() => setShowFooterPopup(false)}
+              settings={settingData}
             />
           </div>
           {addFooterSettings && (

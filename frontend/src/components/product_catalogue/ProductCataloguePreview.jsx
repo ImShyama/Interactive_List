@@ -8,10 +8,10 @@ import FooterSection from "./product_catalogue_preview/FooterSection";
 const ProductCataloguePreview = () => {
   return (
     <div className="p-6">
-      <div className="mt-6">
-      <HeaderSection />
+      <div className="">
+        <HeaderSection />
       </div>
-      
+
       {/* <ProductTitle /> */}
       <CardSection />
       <FooterSection />

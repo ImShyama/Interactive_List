@@ -1,20 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Pagination } from "antd";
 import ProductCatalogueCard from "../ProductCatalogueCard";
 import cardImage1 from "../../../assets/images/product_catalogue_card.png"; // Replace with actual image path
 import cardImage2 from "../../../assets/images/detailimg.png"; // Replace with actual image path
 import cardImage3 from "../../../assets/images/thumbnail1.png"; // Replace with actual image path
+import { UserContext } from "../../../context/UserContext";
+import ProductTitle from "./ProductTitle";
+
 const dummyData = [
   {
-    title: "CBX NOTES",
-    subtitle: "More Than Just Notes – It's Your Digital Workspace",
-    description:
+    title1: "CBX NOTES",
+    title2: "More Than Just Notes – It's Your Digital Workspace",
+    title3:
       "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
 
     multipleimages: [cardImage1, cardImage2, cardImage3],
-    sheetlink:
+    title4:
       "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
-    videolink: "https://www.youtube.com/embed/a4vVGvrsKC8",
+    title5: "https://www.youtube.com/embed/a4vVGvrsKC8",
     features: {
       benefits: [
         "Efficiency: Automates data analysis and reporting.",
@@ -329,7 +332,9 @@ const dummyData = [
   // Add more items as needed...
 ];
 
-const CardSection = () => {
+const CardSection = ({ settings }) => {
+  const { dataRows } = useContext(UserContext);
+  console.log({ dataRows });
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(6); // Adjust the page size as needed
 
@@ -339,29 +344,34 @@ const CardSection = () => {
   );
 
   return (
-    <div className="p-6">
-      {/* Scrollable Grid Section */}
-      <div
-        style={{ width: "100%", overflowX: "auto", maxHeight: "600px" }}
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3 w-full"
-      >
-        {paginatedData.map((item, index) => (
-          <ProductCatalogueCard key={index} {...item} />
-        ))}
-      </div>
+    <div>
+      <ProductTitle />
 
-      {/* Pagination Controls */}
-      <div className="flex justify-end mt-6">
-        <Pagination
-          current={currentPage}
-          pageSize={pageSize}
-          total={dummyData.length}
-          showSizeChanger
-          onChange={(page, size) => {
-            setCurrentPage(page);
-            setPageSize(size);
-          }}
-        />
+      <div className="p-6">
+
+        {/* Scrollable Grid Section */}
+        <div
+          style={{ width: "100%", overflowX: "auto", maxHeight: "600px" }}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3 w-full"
+        >
+          {paginatedData.map((item, index) => (
+            <ProductCatalogueCard key={index} {...item} />
+          ))}
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-end mt-6">
+          <Pagination
+            current={currentPage}
+            pageSize={pageSize}
+            total={dummyData.length}
+            showSizeChanger
+            onChange={(page, size) => {
+              setCurrentPage(page);
+              setPageSize(size);
+            }}
+          />
+        </div>
       </div>
     </div>
   );
