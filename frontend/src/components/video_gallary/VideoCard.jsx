@@ -96,18 +96,35 @@ const VideoCard = ({ rowData, settings }) => {
   // };
 
   const handleVideoClick = (rowData) => {
-    // Create dynamic storage keys using settings._id and rowData.key_id
-    const profileDataKey = `profileData_${settings._id}_${rowData.key_id}`;
-    const profileSettingsKey = `profileSettings_${settings._id}_${rowData.key_id}`;
+    // // Create dynamic storage keys using settings._id and rowData.key_id
+    // const profileDataKey = `profileData_${settings._id}_${rowData.key_id}`;
+    // const profileSettingsKey = `profileSettings_${settings._id}_${rowData.key_id}`;
 
-    // Store data and settings in localStorage with dynamic keys
-    localStorage.setItem(profileDataKey, JSON.stringify(rowData));
-    localStorage.setItem(profileSettingsKey, JSON.stringify(settings));
-    console.log({rowData, settings});
-    
-    // Open the profile in a new tab
-    window.open(`/video/${settings._id}/${rowData.key_id}`, '_blank');
+    // // Store data and settings in localStorage with dynamic keys
+    // localStorage.setItem(profileDataKey, JSON.stringify(rowData));
+    // localStorage.setItem(profileSettingsKey, JSON.stringify(settings));
+    // console.log({rowData, settings});
+
+    // // Open the profile in a new tab
+    // window.open(`/video/${settings._id}/${rowData.key_id}`, '_blank');
+
+    const dataToEncode = {
+      rowData: rowData,
+      dataSettings: settings
+    };
+
+    // First encode the string to handle Unicode characters
+    const encodedString = encodeURIComponent(JSON.stringify(dataToEncode));
+    // Then convert to base64
+    const encodedData = btoa(encodedString);
+
+
+    // Open the profile in a new tab with encoded data in URL
+    window.open(`/video/${settings._id}/${rowData.key_id}?data=${encodedData}`, '_blank');
+    console.log({ encodedData });
   };
+
+  
 
   // const getEmbeddedVideoURL = (url) => {
   //   if (url.includes("youtube.com") || url.includes("youtu.be")) {

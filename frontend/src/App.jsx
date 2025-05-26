@@ -17,6 +17,7 @@ import PeopleTable from "./components/people_directory/PeopleTable";
 import PeopleDirectoryPreview from "./components/people_directory/PeopleDirectoryPreview";
 import VideoGalleryPreview from "./components/video_gallary/VideoGallaryPreView";
 import LargeVideoView from "./components/video_gallary/LargeVideoView";
+import LargeVideoView_New from "./components/video_gallary/LargeVideoView_New";
 import { Provider } from "react-redux";
 import appStore from "./utils/appStore";
 import { ConfigProvider } from "antd";
@@ -106,7 +107,7 @@ const appRouter = createBrowserRouter([
       { path: "/PhotoGalleryPreview", element: <PhotoGalleryPreview /> },
       { path: "/InteractiveMapPreview", element: <InteractiveMapPreview /> },
       { path: "/profile/:id", element: <ProfilePage /> },
-      { path: "/video/:settingsId/:videoId", element: <LargeVideoView /> },
+      { path: "/video/:settingsId/:videoId", element: <LargeVideoView_New /> },
       { path: "/ProductCataloguePreview", element: <ProductCataloguePreview /> },
       { path: "/ProductCatalogueView", element: <ProductCatalogueView /> },
       { path: "/ProductCatalogueBiggerView", element: <ProductCatalogueBiggerView /> },
