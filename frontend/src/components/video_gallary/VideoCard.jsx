@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import videoimage from "../../assets/images/thumbnail1.png";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDriveThumbnail, handleImageError } from "../../utils/globalFunctions";
 import noPhoto from "../../assets/images/noPhoto.jpg";
+// Option C: Import all and destructure
+import * as hooks from '@react-hookz/web';
+const { useBroadcastChannel } = hooks;
 
 
 
@@ -95,35 +97,45 @@ const VideoCard = ({ rowData, settings }) => {
   //   navigate(`/video/${rowData.key_id}`, { state: { data: rowData, settings: settings } });
   // };
 
+  // const handleVideoClick = (rowData) => {
+  //   // Open the video in a new tab
+  //   window.open(`/video/${settings._id}/${rowData.key_id}`, '_blank');
+  // };
+
+  // const { sendMessage } = useBroadcastChannel('video-data');
+  const channel = useMemo(() => new BroadcastChannel('video-data'), []);
+
   const handleVideoClick = (rowData) => {
-    // // Create dynamic storage keys using settings._id and rowData.key_id
-    // const profileDataKey = `profileData_${settings._id}_${rowData.key_id}`;
-    // const profileSettingsKey = `profileSettings_${settings._id}_${rowData.key_id}`;
-
-    // // Store data and settings in localStorage with dynamic keys
-    // localStorage.setItem(profileDataKey, JSON.stringify(rowData));
-    // localStorage.setItem(profileSettingsKey, JSON.stringify(settings));
-    // console.log({rowData, settings});
-
-    // // Open the profile in a new tab
-    // window.open(`/video/${settings._id}/${rowData.key_id}`, '_blank');
-
-    const dataToEncode = {
+    // Create composite unique ID
+    const uniqueId = `${rowData.key_id}_${Date.now()}`;
+    
+    const videoData = {
+      id: uniqueId,
+      type: 'VIDEO_DATA',
+      settings: settings,
       rowData: rowData,
-      dataSettings: settings
+      timestamp: Date.now()
     };
 
-    // First encode the string to handle Unicode characters
-    const encodedString = encodeURIComponent(JSON.stringify(dataToEncode));
-    // Then convert to base64
-    const encodedData = btoa(encodedString);
+    console.log('🚀 VideoCard - Sending video data:', {
+      videoData,
+      uniqueId,
+      channelName: 'video-data'
+    });
 
-
-    // Open the profile in a new tab with encoded data in URL
-    window.open(`/video/${settings._id}/${rowData.key_id}?data=${encodedData}`, '_blank');
-    console.log({ encodedData });
+    // Send via BroadcastChannel
+    channel.postMessage(videoData);
+    console.log('📤 BroadcastChannel message posted');
+    
+    // Also store in localStorage as backup
+    localStorage.setItem(`video_data_${uniqueId}`, JSON.stringify(videoData));
+    console.log('💾 Data stored in localStorage with key:', `video_data_${uniqueId}`);
+    
+    // Pass unique ID in URL for matching
+    const url = `/video/${settings._id}/${rowData.key_id}?uid=${uniqueId}`;
+    console.log('🔗 Opening URL:', url);
+    window.open(url, '_blank');
   };
-
   
 
   // const getEmbeddedVideoURL = (url) => {
@@ -250,13 +262,15 @@ const VideoCard = ({ rowData, settings }) => {
   const videoUrl = videoData?.[titleKey];
   console.log({ videoUrl });
 
-  return (
-    <div
-      className="bg-white shadow-md rounded-lg"
-      onMouseEnter={() => setHoveredVideo(videoData.key_id)}
-      onMouseLeave={() => setHoveredVideo(null)}
-      onClick={() => handleVideoClick(rowData)} // Navigate on click
-    >
+
+
+      return (
+      <div
+        className="bg-white shadow-md rounded-lg"
+        onMouseEnter={() => setHoveredVideo(videoData.key_id)}
+        onMouseLeave={() => setHoveredVideo(null)}
+        onClick={() => handleVideoClick(rowData)} // Navigate on click
+      >
       {(settingsData?.showInCard[1]?.title == "" && settingsData?.showInCard[0]?.title == "") ?
 
         (<img src={noPhoto} />)

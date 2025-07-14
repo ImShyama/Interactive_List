@@ -5,7 +5,7 @@ import logoutIcon from "../assets/logoutIcon.svg"
 import { UserContext } from "../context/UserContext";
 
 const Profile = ({ name, email, closeProfile }) => {
-  const { setToken, setProfile, setRole } = useContext(UserContext);
+  const { setToken, setProfile, setRole, setUser } = useContext(UserContext);
   const Navigate = useNavigate();
 
   const handleLogout = () => {
@@ -18,6 +18,7 @@ const Profile = ({ name, email, closeProfile }) => {
     setToken(null);
     setProfile(null);
     setRole(null);
+    setUser(null);
     closeProfile();
 
     // Redirect to login page

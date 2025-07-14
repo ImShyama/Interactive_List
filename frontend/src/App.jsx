@@ -107,7 +107,7 @@ const appRouter = createBrowserRouter([
       { path: "/PhotoGalleryPreview", element: <PhotoGalleryPreview /> },
       { path: "/InteractiveMapPreview", element: <InteractiveMapPreview /> },
       { path: "/profile/:id", element: <ProfilePage /> },
-      { path: "/video/:settingsId/:videoId", element: <LargeVideoView_New /> },
+      { path: "/video/:settingsId/:videoId", element: <LargeVideoView /> },
       { path: "/ProductCataloguePreview", element: <ProductCataloguePreview /> },
       { path: "/ProductCatalogueView", element: <ProductCatalogueView /> },
       { path: "/ProductCatalogueBiggerView", element: <ProductCatalogueBiggerView /> },

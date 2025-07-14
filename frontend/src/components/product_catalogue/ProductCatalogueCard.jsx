@@ -19,9 +19,9 @@ const CardText = ({
       <div
         key={key}
         style={{
-          fontFamily: style.fontType,
-          color: style.fontColor,
-          fontSize: style.fontSize,
+          fontFamily: style.cardFont,
+          color: style.cardFontColor,
+          fontSize: style.cardFontSize,
           fontWeight: style.fontWeight,
         }}
       >
@@ -55,7 +55,7 @@ const ProductCatalogueCard = ({
         <img
           src={getDriveThumbnail(multipleimages[0]) || ImageNotFound}
           alt={title1}
-          className="w-full h-auto object-cover rounded-t-2xl"
+          className="w-full h-[200px] object-cover rounded-t-2xl"
           onError={(e) => { handlePCImageError(e) }}
         />
         <button

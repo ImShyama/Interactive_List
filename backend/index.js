@@ -834,7 +834,7 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
             Title_1: {
               cardFont: "Poppins",
               cardFontColor: "#060606",
-              cardFontSize: "30.533px",
+              cardFontSize: "30px",
               fontWeight: "600",
             },
             Title_2: {
@@ -846,23 +846,23 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
             Title_3: {
               cardFont: "Poppins",
               cardFontColor: "#363636",
-              cardFontSize: "15px",
+              cardFontSize: "16px",
               fontWeight: "400",
             },
             Title_4: {
               cardFont: "Poppins",
               cardFontColor: "#363636",
-              cardFontSize: "13.249px",
+              cardFontSize: "14px",
               fontWeight: "400",
             },
             Title_5: {
               cardFont: "Poppins",
               cardFontColor: "#EE0505",
-              cardFontSize: "14.249px",
+              cardFontSize: "14px",
               fontWeight: "500",
             }
           },
-          numberOfColumns: "4",
+          numberOfColumns: "3",
           numberOfRows: "3",
         },
         footerSettings: {
@@ -942,13 +942,13 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
             socialMedia1: "",
           },
           mainFooter: "",
-          footerColor: "",
-          footerBackground: "",
-          contactSettings: {
-            address: "",
-            phone: "",
-            email: "",
-          },
+          footerColor: "#ffffff",
+          footerBackground: "#000000",
+          contactSettings: [
+            { id: 1, name: "Address", text: "", isContactEditing: false },
+            { id: 2, name: "Phone", text: "", isContactEditing: false },
+            { id: 3, name: "Email", text: "", isContactEditing: false },
+          ]
         }
       },
     });
@@ -1278,13 +1278,13 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
             socialMedia1: "",
           },
           mainFooter: "",
-          footerColor: "",
-          footerBackground: "",
-          contactSettings: {
-            address: "",
-            phone: "",
-            email: "",
-          },
+          footerColor: "#000000",
+          footerBackground: "#ffffff",
+          contactSettings: [
+            { id: 1, name: "Address", text: "", isContactEditing: false },
+            { id: 2, name: "Phone", text: "", isContactEditing: false },
+            { id: 3, name: "Email", text: "", isContactEditing: false },
+          ]
         }
       },
     });
@@ -2255,6 +2255,75 @@ app.post("/getSpreadsheetDetails", authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /getSheetDetails/{id}:
+ *   get:
+ *     summary: Get sheet details by ID
+ *     tags: [Sheets]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Sheet ID to fetch details for
+ *     responses:
+ *       200:
+ *         description: Sheet details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 _id:
+ *                   type: string
+ *                 spreadsheetName:
+ *                   type: string
+ *                 spreadsheetId:
+ *                   type: string
+ *                 appName:
+ *                   type: string
+ *                 settings:
+ *                   type: object
+ *       404:
+ *         description: Sheet not found
+ *       500:
+ *         description: Server error
+ */
+app.get("/getSheetDetails/:id", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Find the sheet in the database
+    const sheetDetails = await Sheet.findById(id).lean();
+    
+    if (!sheetDetails) {
+      return res.status(404).json({ error: "Sheet not found." });
+    }
+
+    // Check if the user has access to this sheet
+    const userId = req.user._id;
+    const userEmail = req.user.email;
+    
+    // Allow access if user is the owner or has been shared with
+    const hasAccess = sheetDetails.userId.toString() === userId.toString() || 
+                     sheetDetails.sharedWith?.some(entry => entry.email === userEmail);
+    
+    if (!hasAccess) {
+      return res.status(403).json({ error: "Access denied." });
+    }
+
+    // Return the sheet details
+    res.status(200).json(sheetDetails);
+  } catch (err) {
+    console.log("error: ", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 async function appendBulkDataAndGetUpdatedData(authClient, originalSheetId, originalSheetName, bulkData) {
   const sheets = google.sheets({ version: 'v4', auth: authClient });
 
@@ -2320,7 +2389,158 @@ app.post("/bulkCopyFromAnotherSheet", authenticateToken, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /getSheetRowData:
+ *   post:
+ *     summary: Get specific row data from sheet by ID and row number
+ *     tags: [Sheets]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - sheetID
+ *             properties:
+ *               sheetID:
+ *                 type: string
+ *                 description: ID of the sheet to fetch
+ *               rowNumber:
+ *                 type: number
+ *                 description: Row number to fetch (1-based index, optional if key_id is provided)
+ *               key_id:
+ *                 type: string
+ *                 description: Key ID from the data to fetch (optional if rowNumber is provided)
+ *     responses:
+ *       200:
+ *         description: Row data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   description: The row data as JSON object
+ *                 settings:
+ *                   type: object
+ *                   description: Sheet settings and configuration
+ *       404:
+ *         description: Sheet or row not found
+ *       500:
+ *         description: Server error
+ */
+app.post("/getSheetRowData", dynamicAuth, async (req, res) => {
+  try {
+    const { sheetID, rowNumber, key_id } = req.body;
+    
+    if (!sheetID || (!rowNumber && !key_id)) {
+      return res.status(400).json({ error: "Sheet ID and either row number or key_id are required." });
+    }
+
+    // Use key_id if provided, otherwise use rowNumber
+    const targetRowNumber = key_id ? parseInt(key_id) : rowNumber;
+
+    // Fetch sheet details from database
+    const sheetDetails = await Sheet.findById(sheetID).lean();
+    if (!sheetDetails) {
+      return res.status(404).json({ error: "Sheet not found." });
+    }
+
+    const spreadSheetID = sheetDetails.spreadsheetId;
+    const fullRange = sheetDetails.firstTabDataRange;
+    const sheetName = fullRange.split("!")[0];
+    const sheetOwner = await User.findById(sheetDetails.userId).lean();
+
+    if (!sheetOwner) {
+      return res.status(404).json({ error: "Sheet owner not found." });
+    }
+
+    // Create OAuth2 client
+    let authClient = new google.auth.OAuth2(
+      process.env.CLIENT_ID,
+      process.env.CLIENT_SECRET,
+      process.env.REDIRECT_URI
+    );
+    authClient.setCredentials({ refresh_token: sheetOwner.googleRefreshToken });
+
+    const sheets = google.sheets({ version: "v4", auth: authClient });
+
+    // First, fetch the actual headers from the Google Sheet
+    const headerResponse = await sheets.spreadsheets.values.get({
+      spreadsheetId: spreadSheetID,
+      range: `${sheetName}!1:1`,
+    });
+
+    const actualHeaders = headerResponse.data.values?.[0];
+    if (!actualHeaders) {
+      return res.status(404).json({ error: "Headers not found." });
+    }
+
+    // Fetch the specific row (targetRowNumber + 1 because Google Sheets is 1-based and we need to account for header)
+    const targetRow = targetRowNumber + 1; // Add 1 to account for header row
+    const range = `${sheetName}!A${targetRow}:${String.fromCharCode(64 + actualHeaders.length)}${targetRow}`;
+    
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: spreadSheetID,
+      range: range,
+    });
+
+    const rowData = response.data.values?.[0];
+    if (!rowData) {
+      return res.status(404).json({ error: "Row not found." });
+    }
+
+    // Convert row data to JSON format using actual headers from the sheet
+    const headers = actualHeaders;
+    
+    console.log("Headers:", headers);
+    console.log("Row Data:", rowData);
+    console.log("Target Row Number:", targetRowNumber);
+    const jsonData = {};
+    
+    // Map headers to row data first
+    headers.forEach((header, index) => {
+      const key = header.replace(/\s+/g, '_').toLowerCase();
+      jsonData[key] = rowData[index] || "";
+    });
+
+    // Debug: Log the mapping
+    console.log("Header to Data Mapping:");
+    headers.forEach((header, index) => {
+      const key = header.replace(/\s+/g, '_').toLowerCase();
+      console.log(`${header} (${key}) -> ${rowData[index]}`);
+    });
+
+    // Set key_id based on the S.No column or targetRowNumber
+    if (jsonData["s.no"] && jsonData["s.no"] !== "") {
+      jsonData.key_id = jsonData["s.no"];
+    } else {
+      jsonData.key_id = targetRowNumber.toString();
+      jsonData["s.no"] = targetRowNumber.toString();
+    }
+
+    console.log("Final JSON Data:", jsonData);
+
+    // Clean up settings object for response
+    const cleanSettings = { ...sheetDetails };
+    delete cleanSettings.__v; // Remove MongoDB version field
+
+    return res.status(200).json({
+      data: jsonData,
+      settings: cleanSettings
+    });
+
+  } catch (error) {
+    console.error("Error fetching row data:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
 });
-

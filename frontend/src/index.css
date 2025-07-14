@@ -59,7 +59,7 @@
 
   /* Receive Form Page */
 
-  /* --tab-info-text: rgba(60, 97, 53, 1);
+/* --tab-info-text: rgba(60, 97, 53, 1);
   --form-border-color: #E4E4E7; */
 /* }  */
 
@@ -143,10 +143,9 @@
   --sidebar-accent-foreground: 240 4.8% 95.9%;
   --sidebar-border: 240 3.7% 15.9%;
   --sidebar-ring: 217.2 91.2% 59.8%;
-} */
+}
 
-
-#root * {
+*/ #root * {
   /* scrollbar-color: var(--scrollbar-bg) var(--scrollbar-color);
   scrollbar-width: thin ; */
 
@@ -594,15 +593,23 @@ button:disabled {
   /* border: 1px solid red !important; */
 }
 
-.resizeActions{
+.resizeActions {
   opacity: 0 !important;
 }
 
 .ResizeTH:hover .resizeActions {
   /* background-color: #f1f1f1 !important; */
-  z-index: 5 ;
+  z-index: 5;
   display: flex !important;
   align-items: center !important;
   opacity: 1 !important;
   transition: all 0.3s ease-in-out;
+}
+
+.multi-line-ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

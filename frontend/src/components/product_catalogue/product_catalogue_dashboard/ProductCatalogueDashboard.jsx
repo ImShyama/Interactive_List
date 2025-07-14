@@ -138,7 +138,7 @@ const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHe
       )}
     </div>
     :
-    <ProductCatalogueView />
+    <ProductCatalogueView data={data} settings={settings} />
      }
     </>
   );

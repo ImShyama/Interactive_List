@@ -19,7 +19,7 @@ const GeneralAccess = ({ sheetId }) => {
     useEffect(() => {
         setGeneralAccess(setting?.accessType?.type);
     }, [setting])
-    console.log({ generalAccess });
+    console.log({ generalAccess, sheetId, setting });
 
     const handleSaveChanges = async (e) => {
         console.log(e);

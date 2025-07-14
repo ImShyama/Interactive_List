@@ -100,7 +100,10 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     settingData?.productCatalogue?.footerSettings || {}
   );
 
-  console.log({headerSettings,cardSettings,footerSettings});
+  const [selectedTitle, setSelectedTitle] = useState("Title_1");
+
+  console.log({ headerSettings, cardSettings, footerSettings });
+  console.log(cardSettings?.titles[selectedTitle]?.cardFontSize)
 
   // const [headerSettings, setHeaderSettings] = useState({
   //   headerText: "CBXTREE Header",
@@ -113,8 +116,6 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   //   reset: false,
   //   search: true,
   // });
-
-
 
   const [addHeaderSettings, setAddHeaderSettings] = useState(false);
   const fileInputRef = useRef(null);
@@ -219,7 +220,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   //   },
   // });
 
-  const [selectedTitle, setSelectedTitle] = useState("Title_1");
+
 
   const handleTitleChange = (e) => {
     const newTitle = e.target.value;
@@ -243,6 +244,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
   const handleCardChange = (e) => {
     const { name, value } = e.target;
+    setIsSaveChanges(true);
 
     // Handle noOfRows and noOfColumns directly
     if (name === "numberOfRows" || name === "numberOfColumns") {
@@ -264,7 +266,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
         },
       }));
     }
-    // setIsSaveChanges(true);
+
   };
 
   const [addCardSettings, setAddCardSettings] = useState(false);
@@ -379,6 +381,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
   const handleFooterChange = (e) => {
     const { name, value } = e.target;
+    console.log(name, value);
 
     // Handle contact settings
     if (["address", "phone", "email"].includes(name)) {
@@ -389,6 +392,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           [name]: value,
         },
       }));
+      setIsSaveChanges(true);
       return;
     }
 
@@ -403,6 +407,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           [name]: value,
         },
       }));
+      setIsSaveChanges(true);
       return;
     }
 
@@ -412,6 +417,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
         ...prev,
         [name]: value,
       }));
+      setIsSaveChanges(true);
       return;
     }
 
@@ -431,6 +437,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
         },
       },
     }));
+    setIsSaveChanges(true);
   };
 
 
@@ -457,45 +464,93 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
   //   ]);
   // };
 
+  // const handleAddSocialMedia = () => {
+  //   // Generate new ID based on the last entry, or set to 1 if no links exist
+  //   const newId = socialMediaLinks.length > 0 ? socialMediaLinks[socialMediaLinks.length - 1].id + 1 : 1;
+
+  //   // Add the new social media link to the socialMediaLinks state
+  //   setSocialMediaLinks([
+  //     ...socialMediaLinks,
+  //     { id: newId, name: `Social media ${newId}`, link: "", isEditing: false },
+  //   ]);
+
+  //   // Add the new social media link to footerSettings as well
+  //   setFooterSettings((prev) => ({
+  //     ...prev,
+  //     socialMediaSettings: {
+  //       ...prev.socialMediaSettings,
+  //       [`socialMedia${newId}`]: { link: "", label: `Social Media ${newId}` },
+  //     },
+  //   }));
+  // };
+
+
   const handleAddSocialMedia = () => {
-    // Generate new ID based on the last entry, or set to 1 if no links exist
-    const newId = socialMediaLinks.length > 0 ? socialMediaLinks[socialMediaLinks.length - 1].id + 1 : 1;
-  
-    // Add the new social media link to the socialMediaLinks state
-    setSocialMediaLinks([
-      ...socialMediaLinks,
-      { id: newId, name: `Social media ${newId}`, link: "", isEditing: false },
-    ]);
-  
-    // Add the new social media link to footerSettings as well
-    setFooterSettings((prev) => ({
+    // Get the current number of social media links
+    const currentSocialMediaCount = Object.keys(footerSettings.socialMediaSettings || {})
+      .filter(key => key.startsWith('socialMedia'))
+      .length;
+
+    // Create new ID for the social media link
+    const newId = `socialMedia${currentSocialMediaCount + 1}`;
+
+    // Update footerSettings with the new social media link
+    setFooterSettings(prev => ({
       ...prev,
       socialMediaSettings: {
         ...prev.socialMediaSettings,
-        [`socialMedia${newId}`]: { link: "", label: `Social Media ${newId}` },
-      },
+        [newId]: "" // Initialize with empty string
+      }
     }));
-  };
-  
 
-  
+    // Update socialMediaLinks state
+    setSocialMediaLinks(prev => [
+      ...prev,
+      {
+        id: currentSocialMediaCount + 1,
+        name: `Social Media ${currentSocialMediaCount + 1}`,
+        link: "",
+        isEditing: false
+      }
+    ]);
+
+    setIsSaveChanges(true);
+  };
+
+  const handleRemoveSocialMedia = (id) => {
+    // Remove from footerSettings
+    setFooterSettings(prev => {
+      const newSettings = { ...prev.socialMediaSettings };
+      delete newSettings[`socialMedia${id}`];
+      return {
+        ...prev,
+        socialMediaSettings: newSettings
+      };
+    });
+
+    // Remove from socialMediaLinks
+    setSocialMediaLinks(prev => prev.filter(social => social.id !== id));
+    setIsSaveChanges(true);
+  };
+
+
   // const handleRemoveSocialMedia = (id) => {
   //   setSocialMediaLinks(socialMediaLinks.filter((item) => item.id !== id));
   // };
 
-  const handleRemoveSocialMedia = (id) => {
-    // Remove the social media link from socialMediaLinks state
-    setSocialMediaLinks(socialMediaLinks.filter((item) => item.id !== id));
-  
-    // Remove the social media link from footerSettings
-    setFooterSettings((prev) => {
-      const updatedSocialMediaSettings = { ...prev.socialMediaSettings };
-      delete updatedSocialMediaSettings[id]; // Remove the link from socialMediaSettings
-      return { ...prev, socialMediaSettings: updatedSocialMediaSettings };
-    });
-  };
+  // const handleRemoveSocialMedia = (id) => {
+  //   // Remove the social media link from socialMediaLinks state
+  //   setSocialMediaLinks(socialMediaLinks.filter((item) => item.id !== id));
 
-  
+  //   // Remove the social media link from footerSettings
+  //   setFooterSettings((prev) => {
+  //     const updatedSocialMediaSettings = { ...prev.socialMediaSettings };
+  //     delete updatedSocialMediaSettings[id]; // Remove the link from socialMediaSettings
+  //     return { ...prev, socialMediaSettings: updatedSocialMediaSettings };
+  //   });
+  // };
+
+
   const handleChange = (id, field, value) => {
     setSocialMediaLinks((prevLinks) =>
       prevLinks.map((item) =>
@@ -512,11 +567,30 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     );
   };
 
-  const [contactSettings, setContactSettings] = useState([
-    { id: 1, name: "Address", text: "", isContactEditing: false },
-    { id: 2, name: "Phone", text: "", isContactEditing: false },
-    { id: 3, name: "Email", text: "", isContactEditing: false },
-  ]);
+  const [contactSettings, setContactSettings] = useState(() => {
+    const initialContactData = footerSettings?.contactSettings;
+    if (Array.isArray(initialContactData)) {
+      return initialContactData.map(item => ({...item})); // Ensure a new array is returned
+    }
+    return [
+      { id: 1, name: "Address", text: "", isContactEditing: false },
+      { id: 2, name: "Phone", text: "", isContactEditing: false },
+      { id: 3, name: "Email", text: "", isContactEditing: false },
+    ];
+  });
+
+  useEffect(() => {
+    const initialContactData = footerSettings?.contactSettings;
+    if (Array.isArray(initialContactData)) {
+      setContactSettings(initialContactData.map(item => ({...item})));
+    } else {
+      setContactSettings([
+        { id: 1, name: "Address", text: "", isContactEditing: false },
+        { id: 2, name: "Phone", text: "", isContactEditing: false },
+        { id: 3, name: "Email", text: "", isContactEditing: false },
+      ]);
+    }
+  }, [footerSettings?.contactSettings]);
 
   const handleContactChange = (id, field, value) => {
     setContactSettings((prevContacts) =>
@@ -524,6 +598,16 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
         item.id === id ? { ...item, [field]: value } : item
       )
     );
+
+    // Update the `footerSettings` state directly based on the array structure
+    setFooterSettings((prevFooterSettings) => ({
+      ...prevFooterSettings,
+      contactSettings: prevFooterSettings.contactSettings.map((contactItem) =>
+        contactItem.id === id ? { ...contactItem, [field]: value } : contactItem
+      ),
+    }));
+
+    setIsSaveChanges(true);
   };
 
   // Toggle edit mode for a specific contact
@@ -629,6 +713,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
     if (result) {
       notifySuccess("Product Catalogue settings saved successfully!");
+      setIsSaveChanges(false);
       // setAddHeaderSettings(false);
       // setAddCardSettings(false);
       // setAddFooterSettings(false);
@@ -715,7 +800,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 disabled={!isSaveChanges}
               >
                 <span className="span_btn">Save Changes</span>
-               
+
               </button>
               {/* <button
                 className="bg-primary text-white py-2 px-2 font-medium rounded-full mt-2 max-w-[150px]"
@@ -1283,7 +1368,11 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 <input
                   type="color"
                   name="cardFontColor"
-                  value={cardSettings.cardFontColor}
+                  value={
+                    selectedTitle
+                      ? cardSettings?.titles[selectedTitle]?.cardFontColor
+                      : ""
+                  }
                   onChange={handleCardChange}
                   // className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[33px] w-full max-h-[33px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                   className="custom-color-input"
@@ -1301,7 +1390,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     // value={cardSettings.cardFontSize}
                     value={
                       selectedTitle
-                        ? cardSettings.titles[selectedTitle].cardFontSize
+                        ? cardSettings?.titles[selectedTitle]?.cardFontSize
                         : ""
                     }
                     onChange={handleCardChange}
@@ -1621,12 +1710,13 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   type="color"
                   name="footerColor"
                   value={footerSettings?.footerColor}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFooterSettings({
                       ...footerSettings,
                       footerColor: e.target.value,
-                    })
-                  }
+                    });
+                    setIsSaveChanges(true);
+                  }}
                   // className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[33px] w-full max-h-[33px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                   className="custom-color-input"
                 />
@@ -1640,12 +1730,13 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   type="color"
                   name="footerBackground"
                   value={footerSettings?.footerBackground}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setFooterSettings({
                       ...footerSettings,
                       footerBackground: e.target.value,
-                    })
-                  }
+                    });
+                    setIsSaveChanges(true);
+                  }}
                   // className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[33px] w-full max-h-[33px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                   className="custom-color-input"
                 />
@@ -1751,65 +1842,39 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               {socialMediaLinks.map((social) => (
                 <div key={social.id} className="flex items-center gap-2">
                   {social.isEditing ? (
-                    // Editable Name Input
                     <input
                       type="text"
                       value={social.name}
-                      onChange={(e) =>
-                        setFooterSettings((prev) => ({
-                          ...prev,
-                          socialMediaSettings: {
-                            ...prev.socialMediaSettings,
-                            [`socialMedia${social.id}`]: {
-                              ...prev.socialMediaSettings[`socialMedia${social.id}`],
-                              name: e.target.value,
-                            },
-                          },
-                        }))
-                      }
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          handleEditToggle(social.id); // Save and exit edit mode
-                        }
+                      onChange={(e) => {
+                        setSocialMediaLinks(prev =>
+                          prev.map(item =>
+                            item.id === social.id
+                              ? { ...item, name: e.target.value }
+                              : item
+                          )
+                        );
                       }}
                       className="border p-2 rounded-md"
                     />
                   ) : (
-                    // Display Name
                     <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
                       {social.name}
                     </label>
                   )}
 
-
                   <input
                     type="text"
-                    value={social.link}
+                    value={footerSettings.socialMediaSettings[`socialMedia${social.id}`] || ''}
                     onChange={(e) => {
-                      const updatedLink = e.target.value;
-                    
-                      // Update socialMediaLinks
-                      setSocialMediaLinks((prevLinks) =>
-                        prevLinks.map((social) =>
-                          social.id === social.id
-                            ? { ...social, link: updatedLink }
-                            : social
-                        )
-                      );
-                    
-                      // Update footerSettings
-                      setFooterSettings((prev) => ({
+                      setFooterSettings(prev => ({
                         ...prev,
                         socialMediaSettings: {
                           ...prev.socialMediaSettings,
-                          [`socialMedia${social.id}`]: {
-                            ...prev.socialMediaSettings[`socialMedia${social.id}`],
-                            link: updatedLink,
-                          },
-                        },
+                          [`socialMedia${social.id}`]: e.target.value
+                        }
                       }));
+                      setIsSaveChanges(true);
                     }}
-                    
                     placeholder="Enter Link"
                     className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
                   />
@@ -1882,9 +1947,10 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     <input
                       type="text"
                       value={contact.name}
-                      onChange={(e) =>
+                      onChange={(e) => {
                         handleContactChange(contact.id, "name", e.target.value)
-                      }
+                        setIsSaveChanges(true);
+                      }}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           handleContactEditToggle(contact.id); // Save and exit edit mode
@@ -1902,9 +1968,10 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   <input
                     type="text"
                     value={contact.text}
-                    onChange={(e) =>
+                    onChange={(e) =>{
                       handleContactChange(contact.id, "text", e.target.value)
-                    }
+                      setIsSaveChanges(true);
+                    }}
                     placeholder={`Enter ${contact.name}`}
                     className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
                   />

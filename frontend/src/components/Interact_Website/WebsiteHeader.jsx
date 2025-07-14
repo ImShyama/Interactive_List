@@ -11,11 +11,12 @@ import { handleImageError } from "../../utils/globalFunctions";
 const WebsiteHeader = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { token, setRole } = useContext(UserContext);
-  const [user, setUser] = useState(null);
+  const { token, setRole, user, setUser } = useContext(UserContext);
+  // const [user, setUser] = useState(null);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const profileRef = useRef(null);
   const profileImageRef = useRef(null);
+  console.log({user, token});
 
   const navItems = [
     { name: "Home", path: "/" },

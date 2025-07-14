@@ -245,7 +245,12 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
 
 
 
-          <Select defaultValue="View" options={options} onChange={(value) => setAccess(value)} style={{ width: '25%' }} />
+          <Select 
+            value={access} 
+            options={options} 
+            onChange={(value) => setAccess(value)} 
+            style={{ width: '25%' }} 
+          />
 
           {/* Error message */}
 

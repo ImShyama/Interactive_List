@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext, useMemo } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { IoMdArrowBack } from "react-icons/io";
 import { useParams } from "react-router-dom";
 import noPhoto from "../../assets/images/noPhoto.jpg";
 import { handleImageError } from "../../utils/globalFunctions";
+import axios from "axios";
+import { HOST } from "../../utils/constants";
+import { UserContext } from "../../context/UserContext";
 
 const LargeVideoView = () => {
   const navigate = useNavigate();
+  const { token } = useContext(UserContext);
 
   // const video = location.state?.video;
   const dummySetting = {
@@ -117,10 +121,10 @@ const LargeVideoView = () => {
   // const data = location.state?.data || [];
   // const settings = location.state?.settings || dummySetting;
   const [isPlaying, setIsPlaying] = useState(false);
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // const video = data?[settings?.showInCard[0]?.title.toLowerCase().replace(/\s/g, "_")]:"";
-
 
   // if (!video) {
   //   navigate(-1); // Redirect to home if no video is found
@@ -133,48 +137,6 @@ const LargeVideoView = () => {
 
   const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
   const videoUrl = data?.[titleKey];
-
-  // const getEmbeddedVideoURL = (url) => {
-  //   if (url.includes("youtube.com") || url.includes("youtu.be")) {
-  //     return url.includes("embed")
-  //       ? url
-  //       : `https://www.youtube.com/embed/${url.split("v=")[1].split("&")[0]}`;
-  //   }
-
-  //   if (url.includes("drive.google.com")) {
-  //     return `https://drive.google.com/file/d/${url.split("/d/")[1].split("/")[0]
-  //       }/preview`;
-  //   }
-
-  //   if (url.includes("vimeo.com")) {
-  //     const videoId = url.split("/").pop();
-  //     return `https://player.vimeo.com/video/${videoId}`;
-  //   }
-
-  //   if (url.includes("dailymotion.com")) {
-  //     const videoId = url.split("/video/")[1]?.split("_")[0];
-  //     return `https://www.dailymotion.com/embed/video/${videoId}`;
-  //   }
-
-  //   if (url.includes("facebook.com")) {
-  //     return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
-  //       url
-  //     )}`;
-  //   }
-  //   if (url.includes("instagram.com")) {
-  //     // https://www.instagram.com/reel/C5lSU9qNl0n/?utm_source=ig_web_button_share_sheet
-  //     // https://www.instagram.com/p/BdJRABkDbXU/embed/
-  //     // url = "https://www.instagram.com/reel/C5lSU9qNl0n/"
-  //     return `https://www.instagram.com/p/${url.split("/")[4]}/embed/`;
-  //   }
-
-
-  //   if (url.endsWith(".mp4") || url.endsWith(".webm") || url.endsWith(".ogg")) {
-  //     return url; // Direct video link
-  //   }
-
-  //   return url; // Default case (returns same URL if unknown format)
-  // };
 
   const getEmbeddedVideoURL = (url) => {
     if (url.includes("youtube.com") || url.includes("youtu.be")) {
@@ -235,33 +197,205 @@ const LargeVideoView = () => {
     return url; // Default fallback
   };
 
+  const { settingsId, videoId } = useParams();
+  const [searchParams] = useSearchParams();
+  
+  // Create broadcast channel for receiving video data
+  const channel = useMemo(() => new BroadcastChannel('video-data'), []);
+
+  // Data loading useEffect - MUST be before any early returns!
+  useEffect(() => {
+    const expectedUid = searchParams.get('uid');
+    console.log('🎯 LargeVideoView mounted with UID:', expectedUid);
+    
+    if (!expectedUid) {
+      console.log('❌ No UID found in URL');
+      setError('No video ID found');
+      setLoading(false);
+      return;
+    }
+
+    // Function to process video data
+    const processVideoData = (videoData) => {
+      console.log('✅ Processing video data:', videoData);
+      setData(videoData.rowData);
+      setSettings(videoData.settings);
+      setLoading(false);
+      
+      // Don't clean localStorage immediately - let it persist for reloads
+      // Clean up after 1 hour instead
+      setTimeout(() => {
+        localStorage.removeItem(`video_data_${expectedUid}`);
+        console.log('🧹 Cleaned up localStorage after 1 hour');
+      }, 60 * 60 * 1000); // 1 hour
+    };
+
+    // First, try to get data from localStorage (immediate)
+    const localStorageKey = `video_data_${expectedUid}`;
+    const storedData = localStorage.getItem(localStorageKey);
+    
+    if (storedData) {
+      try {
+        const videoData = JSON.parse(storedData);
+        console.log('💾 Found data in localStorage:', videoData);
+        if (videoData.type === 'VIDEO_DATA' && videoData.id === expectedUid) {
+          processVideoData(videoData);
+          return; // Exit early if localStorage worked
+        }
+      } catch (error) {
+        console.error('❌ Error parsing localStorage data:', error);
+      }
+    }
+
+    // If localStorage didn't work, try server fallback
+    console.log('🌐 Trying to fetch data from server...');
+    
+    const fetchFromServer = async () => {
+      try {
+        const response = await axios.post(`${HOST}/getSheetRowData`, {
+          sheetID: settingsId,
+          key_id: videoId
+        }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        console.log('✅ Fetched data from server:', response.data);
+        setData(response.data.data);
+        setSettings(response.data.settings);
+        setLoading(false);
+        return true; // Success
+      } catch (error) {
+        console.error("❌ Error fetching from server:", error);
+        return false; // Failed
+      }
+    };
+
+    // Try server fetch first, then fall back to BroadcastChannel
+    fetchFromServer().then(success => {
+      if (success) {
+        console.log('✅ Server fetch successful, no need for BroadcastChannel');
+        return; // Exit if server fetch worked
+      }
+      
+      // If server fetch failed, listen for BroadcastChannel
+      console.log('📻 Server fetch failed, waiting for BroadcastChannel message...');
+      
+      const handleMessage = (event) => {
+        console.log('🔥 Received broadcast message:', { 
+          eventData: event.data, 
+          expectedUid,
+          timestamp: new Date().toISOString()
+        });
+        
+        if (event.data && event.data.type === 'VIDEO_DATA' && event.data.id === expectedUid) {
+          processVideoData(event.data);
+        } else {
+          console.log('❌ Message did not match criteria:', {
+            hasData: !!event.data,
+            type: event.data?.type,
+            messageId: event.data?.id,
+            expectedUid
+          });
+        }
+      };
+
+      channel.addEventListener('message', handleMessage);
+      
+      // Timeout fallback - if no data received in 5 seconds, show error
+      const fallbackTimeout = setTimeout(() => {
+        console.log('⏰ Timeout: No video data received');
+        setError('Video data not found. Please try clicking the video again.');
+        setLoading(false);
+      }, 5000);
+      
+      // Store cleanup function for this scenario
+      window.videoCleanup = () => {
+        clearTimeout(fallbackTimeout);
+        channel.removeEventListener('message', handleMessage);
+      };
+    });
+    
+    // Cleanup function
+    return () => {
+      console.log('🧹 Cleaning up event listener and timeout');
+      if (window.videoCleanup) {
+        window.videoCleanup();
+        delete window.videoCleanup;
+      }
+    };
+  }, [channel, searchParams]);
+
   // useEffect(() => {
-  //   const storedData = localStorage.getItem(`profileData_${id}`);
-  //   const storedSettings = localStorage.getItem(`profileSettings_${id}`);
+  //   const fetchData = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await axios.post(`${HOST}/getSheetRowData`, {
+  //         sheetID: settingsId,
+  //         key_id: videoId
+  //       }, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`
+  //         }
+  //       });
+        
+  //       setData(response.data.data);
+  //       setSettings(response.data.settings);
+  //     } catch (error) {
+  //       console.error("Error fetching video data:", error);
+  //       setError("An error occurred while fetching video data.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-  //   if (storedData) setData(JSON.parse(storedData));
-  //   if (storedSettings) setSettings(JSON.parse(storedSettings));
-  // }, [id]);
+  //   if (settingsId && videoId) {
+  //     fetchData();
+  //   }
+  // }, [settingsId, videoId, token]);
 
-  // Update the useParams to get both IDs
-const { settingsId, videoId } = useParams();
+  // Shimmer UI for loading state
+  const LargeVideoViewShimmer = () => (
+    <div className="flex flex-col items-center mx-20 animate-pulse">
+      {/* Title Bar Section */}
+      <div className="w-full flex items-center gap-[39px] py-3">
+        <div className="h-8 w-2/3 bg-gray-200 rounded"></div>
+      </div>
 
-// Update the useEffect to use both IDs
-useEffect(() => {
-  // Create the storage keys using both IDs
-  const profileDataKey = `profileData_${settingsId}_${videoId}`;
-  const profileSettingsKey = `profileSettings_${settingsId}_${videoId}`;
+      {/* Video/Image Section */}
+      <div className="w-full max-w-full h-[480px] flex justify-center mx-auto">
+        <div className="relative w-full h-full bg-gray-200 rounded-[36.443px] flex items-center justify-center">
+          {/* Play button shimmer */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="bg-gray-300 bg-opacity-70 rounded-full p-[24px]">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-[64px] w-[64px] text-gray-400"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
 
-  // Fetch data from localStorage using the combined keys
-  const storedData = localStorage.getItem(profileDataKey);
-  const storedSettings = localStorage.getItem(profileSettingsKey);
+      {/* Content Section */}
+      <div className="w-full flex flex-col items-start gap-[16px] mt-6">
+        <div className="h-6 w-1/2 bg-gray-200 rounded mb-2"></div>
+        <div className="h-4 w-2/3 bg-gray-200 rounded mb-2"></div>
+        <div className="h-4 w-1/3 bg-gray-200 rounded mb-2"></div>
+        <div className="h-4 w-1/4 bg-gray-200 rounded mb-2"></div>
+        <div className="h-4 w-1/2 bg-gray-200 rounded mb-2"></div>
+        <div className="h-4 w-1/3 bg-gray-200 rounded mb-2"></div>
+      </div>
+    </div>
+  );
 
-  if (storedData) setData(JSON.parse(storedData));
-  if (storedSettings) setSettings(JSON.parse(storedSettings));
-}, [settingsId, videoId]);
-
-  if (!data) return <p>Loading...</p>;
-
+  if (loading) return <LargeVideoViewShimmer />;
+  if (error) return <p>{error}</p>;
 
   console.log({ data, settings });
   /** Function to Extract Thumbnail for Drive Images */
@@ -277,15 +411,6 @@ useEffect(() => {
 
     return imageUrl;
   };
-
-
-  // const getVideoSrc = (video) => {
-  //   if (video.isGoogleDrive) {
-  //     const fileId = video.video.split("/d/")[1]?.split("/")[0];
-  //     return `https://drive.google.com/file/d/${fileId}/preview`; // Google Drive embed link
-  //   }
-  //   return `${video.video}?autoplay=1&controls=1&modestbranding=1&rel=0&showinfo=0`;
-  // };
 
   /** Function to Extract Video URL */
   const getVideoSrc = (videoUrl) => {
@@ -421,24 +546,6 @@ useEffect(() => {
             <iframe
               className="w-full h-full rounded-[36.443px] object-cover"
               src={getEmbeddedVideoURL(videoUrl)
-                // (() => {
-                //   const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
-                //   const videoUrl = data?.[titleKey];
-
-                //   if (!videoUrl) return "";
-
-                //   if (videoUrl.includes("drive.google.com")) {
-                //     const driveIdMatch = videoUrl.match(/\/d\/(.*?)(\/|$)/);
-                //     return driveIdMatch ? `https://drive.google.com/file/d/${driveIdMatch[1]}/preview` : "";
-                //   }
-
-                //   if (videoUrl.includes("youtube.com/watch") || videoUrl.includes("youtu.be")) {
-                //     const youtubeIdMatch = videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
-                //     return youtubeIdMatch ? `https://www.youtube.com/embed/${youtubeIdMatch[1]}?autoplay=1&mute=1` : "";
-                //   }
-
-                //   return videoUrl; // Fallback for other video sources
-                // })()
               }
               title={settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_") || "Video"}
               allow="autoplay; encrypted-media"

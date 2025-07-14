@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { IoClose } from "react-icons/io5";
 import FooterSection from "../product_catalogue_view/FooterSection";
 
-const FooterPopup = ({ isOpen, onClose }) => {
+const FooterPopup = ({ isOpen, onClose, settings }) => {
   if (!isOpen) return null;
 
   return ReactDOM.createPortal(
@@ -19,7 +19,7 @@ const FooterPopup = ({ isOpen, onClose }) => {
 
         {/* Render FooterSection */}
         <div className="flex-1 overflow-auto">
-          <FooterSection />
+          <FooterSection settingData={settings} />
         </div>
       </div>
     </div>,

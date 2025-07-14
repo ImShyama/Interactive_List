@@ -100,7 +100,7 @@ const CardSection = ({ settings }) => {
       {/* Scrollable Grid Section */}
       <div
         style={{ width: "100%", overflowX: "auto", maxHeight: "600px" }}
-        className="bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3 w-full"
+        className={`bg-white grid grid-cols-1 sm:grid-cols-2 md:grid-cols-${cardSettings?.numberOfColumns} lg:grid-cols-${cardSettings?.numberOfColumns} gap-6 mt-3 w-full`}
       >
         {paginatedData.map((item, index) => {
           let multipleimages = item[showInCard[0]?.value?.replaceAll(" ", "_").toLowerCase()]?.split(",") || [];

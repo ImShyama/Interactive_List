@@ -575,6 +575,7 @@ const ViewSettings = ({ settingsData }) => {
   console.log({ settingsData });
   const [showCard, setShowCard] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [isAscending, setIsAscending] = useState(false);
   const dispatch = useDispatch();
   const { token } = useContext(UserContext);
 
@@ -970,6 +971,19 @@ const ViewSettings = ({ settingsData }) => {
   return (
     <div className="w-[100%]">
 
+      {/* add toggle button for sorting eg: assanding, descending */}
+      {/* <div className="flex ml-[30px] mb-[20px] items-center gap-2 cursor-pointer">
+        <span className="text-[16px] font-medium leading-normal text-[#111] font-[Poppins]">Sorting :</span>
+
+        <span className="text-[14px] font-small leading-normal text-[#111] font-[Poppins]">Ascending</span>
+        <div className={`relative inline-block w-8 h-4 transition duration-200 ease-in-out rounded-full cursor-pointer ${isAscending ? 'bg-gray-300' : 'bg-primary'}`}
+          onClick={() => setIsAscending(!isAscending)} >
+          <div className={`absolute w-4 h-4 transition duration-200 ease-in-out transform bg-white border rounded-full shadow-sm ${isAscending ? 'translate-x-0 border-gray-300' : 'translate-x-4 border-primary'}`} >
+          </div>
+        </div>
+        <span className="text-[14px] font-small leading-normal text-[#111] font-[Poppins]">Descending</span>
+      </div> */}
+
       {/* // show card drower */}
       {<div className="ml-[30px] mb-[20px] w-[100%]">
         <div className="flex items-center gap-2 cursor-pointer"
@@ -1029,7 +1043,7 @@ const FilterSettings = ({ settingsData }) => {
 
       // Prepare the updated settings to be saved
       // const updatedSetting = { ...settingsData, filterSettings.filter: updatedData };
-      
+
 
       const updatedSetting = {
         ...settingsData,
@@ -1038,7 +1052,7 @@ const FilterSettings = ({ settingsData }) => {
           filters: updatedData
         }
       };
-      
+
       console.log({ updatedData, updatedSetting });
 
       // Call the API to save changes
@@ -1094,10 +1108,10 @@ const FilterSettings = ({ settingsData }) => {
         const updatedSettings = {
           ...settingsData,
           filterSettings: {
-              ...settingsData.filterSettings,
-              filters: showInProfile
+            ...settingsData.filterSettings,
+            filters: showInProfile
           }
-      };
+        };
 
         console.log({ showInProfile, updatedSettings });
 

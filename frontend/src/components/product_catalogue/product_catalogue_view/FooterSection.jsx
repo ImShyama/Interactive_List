@@ -8,7 +8,61 @@ import {
 } from "react-icons/fa6";
 import { FaPhone, FaEnvelope, FaMapMarkerAlt } from "react-icons/fa";
 
-const FooterSection = () => {
+const FooterSection = ({ settingData }) => {
+  const footerSettings = settingData?.productCatalogue?.footerSettings;
+  const footerHeaders = footerSettings?.footers;
+  const footerColor = footerSettings?.footerColor;
+  const footerBgColor = footerSettings?.footerBackground;
+  const socialMediaSettings = footerSettings?.socialMediaSettings || {};
+
+  // Convert footerHeaders object into an array of sections
+  const footerSections = Object.entries(footerHeaders || {}).map(([key, value]) => {
+    const { Heading } = value;
+    return {
+      title: Heading.SubHeading1,
+      items: [
+        Heading.SubHeading2,
+        Heading.SubHeading3,
+        Heading.SubHeading4,
+        Heading.SubHeading5
+      ].filter(item => item !== "") // Filter out empty strings
+    };
+  });
+
+  // Function to get all social media links
+  const getSocialMediaLinks = () => {
+    const links = [];
+    
+    // Add standard social media links
+    if (socialMediaSettings.facebook) {
+      links.push({ icon: <FaFacebook />, url: socialMediaSettings.facebook });
+    }
+    if (socialMediaSettings.youtube) {
+      links.push({ icon: <FaYoutube />, url: socialMediaSettings.youtube });
+    }
+    if (socialMediaSettings.twitter) {
+      links.push({ icon: <FaXTwitter />, url: socialMediaSettings.twitter });
+    }
+    if (socialMediaSettings.linkedin) {
+      links.push({ icon: <FaLinkedin />, url: socialMediaSettings.linkedin });
+    }
+    if (socialMediaSettings.instagram) {
+      links.push({ icon: <FaInstagram />, url: socialMediaSettings.instagram });
+    }
+
+    // Add custom social media links
+    Object.entries(socialMediaSettings)
+      .filter(([key]) => key.startsWith('socialMedia'))
+      .forEach(([key, url]) => {
+        if (url) { // Only add if URL is not empty
+          links.push({ icon: <FaGlobe />, url });
+        }
+      });
+
+    return links;
+  };
+
+  console.log({ settingData, footerSettings, footerColor, footerBgColor });
   const serviceSections = [
     {
       title: "Services1",
@@ -49,20 +103,30 @@ const FooterSection = () => {
   ];
 
   return (
-    <footer className="bg-gray-900 text-gray-300 py-10">
+    <footer
+      className="py-10"
+      style={{ backgroundColor: footerBgColor, color: footerColor }}
+    >
       <div className="container mx-auto px-6 md:px-12 lg:px-20">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 border-b border-gray-700 pb-6">
+        <div
+          className="grid grid-cols-2 md:grid-cols-6 gap-6 border-b pb-6"
+          style={{ borderColor: footerColor }}
+        >
           {/* Services Sections */}
-          {serviceSections.map((section, index) => (
+          {footerSections.map((section, index) => (
             <div key={index}>
-              <h3 className="self-stretch text-white font-poppins text-[20.585px] font-semibold">
+              <h3
+                className="self-stretch font-poppins text-[20.585px] font-semibold"
+                style={{ color: footerColor }}
+              >
                 {section.title}
               </h3>
               <ul className="space-y-2">
                 {section.items.map((item, i) => (
                   <li
                     key={i}
-                    className="text-[#9AA1A7] font-poppins text-[14.243px] font-normal leading-normal hover:text-white cursor-pointer"
+                    className="font-poppins text-[14.243px] font-normal leading-normal cursor-pointer"
+                    style={{ color: footerColor }}
                   >
                     {item}
                   </li>
@@ -70,24 +134,27 @@ const FooterSection = () => {
               </ul>
             </div>
           ))}
-          {/* Contact Details */}
 
-          <div>
-            <h3 className="self-stretch text-white font-poppins text-[20.585px] font-semibold">
+          {/* Contact Details */}
+          <div className="flex flex-col">
+            <h3
+              className="self-stretch font-poppins text-[20.585px] font-semibold"
+              style={{ color: footerColor }}
+            >
               Contact Details
             </h3>
             <ul className="space-y-2">
-              <li className="flex items-center gap-2 text-[#9AA1A7] font-poppins text-[14.243px] font-normal leading-normal ">
-                <FaPhone className="w-4 h-4 hover:text-white cursor-pointer" />{" "}
-                98547156XX
+              <li className="flex items-center gap-2 font-poppins text-[14.243px] font-normal leading-normal" style={{ color: footerColor }}>
+                <FaPhone className="w-4 h-4 cursor-pointer flex-shrink-0" />
+                <span className="mt-px">{footerSettings?.contactSettings[1].text || "98547156XX"}</span>
               </li>
-              <li className="flex items-center gap-2 text-[#9AA1A7] font-poppins text-[14.243px] font-normal leading-normal">
-                <FaEnvelope className="w-4 h-4 hover:text-white cursor-pointer" />{" "}
-                officialwebsite.com
+              <li className="flex items-center gap-2 font-poppins text-[14.243px] font-normal leading-normal" style={{ color: footerColor }}>
+                <FaEnvelope className="w-4 h-4 cursor-pointer flex-shrink-0" />
+                <span className="mt-px">{footerSettings?.contactSettings[2].text || "officialwebsite.com"}</span>
               </li>
-              <li className="flex items-center gap-2 text-[#9AA1A7] font-poppins text-[14.243px] font-normal leading-normal">
-                <FaMapMarkerAlt className="w-5 h-5 hover:text-white cursor-pointer" />{" "}
-                23 Main Street, Anytown, USA, 12345
+              <li className="flex items-center gap-2 font-poppins text-[14.243px] font-normal leading-normal" style={{ color: footerColor }}>
+                <FaMapMarkerAlt className="w-4 h-4 cursor-pointer flex-shrink-0" />
+                <span className="mt-px">{footerSettings?.contactSettings[0].text || "23 Main Street, Anytown, USA, 12345"}</span>
               </li>
             </ul>
           </div>
@@ -95,17 +162,24 @@ const FooterSection = () => {
 
         {/* Social Icons */}
         <div className="flex justify-between mt-6">
-          <div className="flex space-x-4 ">
-            <FaFacebook className="text-2xl hover:text-white cursor-pointer" />
-            <FaYoutube className="text-2xl hover:text-white cursor-pointer" />
-            <FaXTwitter className="text-2xl hover:text-white cursor-pointer" />
-            <FaLinkedin className="text-2xl hover:text-white cursor-pointer" />
-            <FaInstagram className="text-2xl hover:text-white cursor-pointer" />
+          <div className="flex space-x-4">
+            {getSocialMediaLinks().map((social, index) => (
+              <a
+                key={index}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-2xl cursor-pointer hover:opacity-80 transition-opacity"
+                style={{ color: footerColor }}
+              >
+                {social.icon}
+              </a>
+            ))}
           </div>
 
           {/* Copyright Section */}
-          <div className="text-sm text-gray-500 ">
-            Copyright &copy; 2025 All rights reserved | by CEOITBOX
+          <div className="text-sm" style={{ color: footerColor }}>
+            Copyright &copy; {new Date().getFullYear()} All rights reserved | by CEOITBOX
           </div>
         </div>
       </div>

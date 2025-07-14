@@ -1,16 +1,16 @@
 
 
 import React from "react";
-import HeaderSection from "./product_catalogue_preview/HeaderSection";
-import CardSection from "./product_catalogue_preview/CardSection"; // Adjust path if needed
-import FooterSection from "./product_catalogue_preview/FooterSection"
+import HeaderSection from "./product_catalogue_view/HeaderSection";
+import CardSection from "./product_catalogue_view/CardSection"; // Adjust path if needed
+import FooterSection from "./product_catalogue_view/FooterSection"
 
-const ProductCatalogueView = () => {
+const ProductCatalogueView = ({ data, settings}) => {
   return (
-    <div className="p-6">
-      <HeaderSection/>
-      <CardSection />
-      <FooterSection/>
+    <div className="">
+      <HeaderSection data={data} settings={settings} />
+      <CardSection data={data} settings={settings} />
+      <FooterSection data={data} settingData={settings} />
     </div>
   );
 };

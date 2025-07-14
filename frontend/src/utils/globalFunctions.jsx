@@ -1,5 +1,3 @@
-
-
 import Avatar from "../assets/images/avatar.png";
 import ImageNotFound from "../assets/images/noPhoto.jpg";
 
@@ -65,7 +63,7 @@ export const RenderTextPC = ({ text }) => {
     const parts = text?.toString().split(urlRegex);
 
     return (
-        <span className="" >
+        <span className="multi-line-ellipsis" >
             {parts.map((part, index) => {
                 if (part.match(urlRegex)) {
                     return (
