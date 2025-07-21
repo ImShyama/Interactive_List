@@ -22,6 +22,7 @@ const WebsiteHeader = () => {
     { name: "Home", path: "/" },
     { name: "Products", path: "/products" },
     { name: "About", path: "/about" },
+    { name: "Privacy Policy", path: "/privacy-policy" },
   ];
 
   // Fetch user data if token exists
