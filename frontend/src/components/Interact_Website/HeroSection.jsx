@@ -91,7 +91,7 @@ const HeroSection = ({ onExit }) => {
   const { title, subtitle, image } = features[activeFeatureIndex];
 
   return (
-    <section ref={heroRef} className="relative w-full flex overflow-hidden">
+    <section ref={heroRef} className="relative w-full flex overflow-hidden  min-h-screen  items-stretch">
       <motion.div
         initial={{ x: "100%", opacity: 0 }} // Start offscreen on the right
         animate={controls} // Control animation with framer-motion
