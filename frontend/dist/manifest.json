@@ -1,0 +1,28 @@
+{
+    "name": "INTERACT",
+    "short_name": "Interact",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "rgb(152, 127, 168)",
+    "lang": "en",
+    "scope": "/",
+    "description": "Interactive tolls for complex google spreadsheets",
+    "theme_color": "rgb(152, 127, 168)",
+    "icons": [
+        {
+            "src": "pwaIcon.png",
+            "sizes": "144x144",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "/pwaIcon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/pwaIcon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
