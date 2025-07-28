@@ -26,7 +26,7 @@ const OverviewPage = () => {
   };
 
   return (
-    <div className=" max-h-[100vh] overflow-y-scroll px-[100px]">
+    <div className="min-h-screen max-h-[100vh] overflow-y-auto pb-32 px-[100px]">
       {/* above Section */}
       <div className="self-stretch text-[#A0A0A0] font-poppins text-[16.705px] font-medium leading-normal">
         <span
