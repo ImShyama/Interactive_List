@@ -97,7 +97,7 @@ const OverviewPage = () => {
                     {Object.keys(item)[0]}
                   </h3>
 
-                  <p className="text-[#B6B6B6] font-[Poppins] text-[13.5px] font-normal leading-normal mt-1">
+                  <p className="text-[#5e5b5b] font-[Poppins] text-[15.5px] font-normal leading-normal mt-1">
                     {Object.values(item)[0] ||
                       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque eligendi facilis adipisci, ratione labore illo quod quasi explicabo aliquid aliquam totam amet, optio expedita vero, possimus sint incidunt nobis consequatur."}
                   </p>
