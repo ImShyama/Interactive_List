@@ -114,7 +114,6 @@ const dynamicAuth = async (req, res, next) => {
   }
 };
 
-// app.use(authenticateToken);
 
 async function getMetaSheetData({ sheets, spreadSheetID, range }) {
   const formulaResponse = await sheets.spreadsheets.values.get({
@@ -123,14 +122,12 @@ async function getMetaSheetData({ sheets, spreadSheetID, range }) {
     valueRenderOption: "FORMULA", // Ensures formulas are returned
   });
   const formulaHeader = formulaResponse.data.values[0];
-
   const normalResponse = await sheets.spreadsheets.values.get({
     spreadsheetId: spreadSheetID,
     range: `${range}!1:1`,
   });
 
   const normalHeader = normalResponse.data.values[0];
-
   const checkRow1 = formulaHeader?.find((item) => {
     return String(item || "").toLowerCase().includes("=query") || String(item || "").toLowerCase().includes("=importrange")
       || String(item || "").toLowerCase().includes("=filter");
@@ -140,11 +137,8 @@ async function getMetaSheetData({ sheets, spreadSheetID, range }) {
     return String(item || "").toLowerCase().includes("=query") || String(item || "").toLowerCase().includes("=importrange")
       || String(item || "").toLowerCase().includes("=filter");
   });
-
   const disableEditing = checkRow1 || checkRow2;
-
   let obj = {};
-
   for (let i = 0; i < formulaHeader.length; i++) {
     let fHeader = formulaHeader[i];
     let nHeader = normalHeader[i].replace(/\s+/g, '_').toLowerCase();
@@ -205,81 +199,41 @@ async function getMetaSheetData({ sheets, spreadSheetID, range }) {
  *         description: Server error
  */
 app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
-  const startTime = Date.now();
-  const log = (label) =>
-    console.log(label, `[+${((Date.now() - startTime) / 1000).toFixed(2)}s]`);
-
-  log("115");
-
   try {
     const { sheetID } = req.body;
     const sheetDetails = await Sheet.findById(sheetID).lean();
     if (!sheetDetails) return res.status(404).json({ error: "Sheet not found." });
-
     const spreadSheetID = sheetDetails.spreadsheetId;
     const fullRange = sheetDetails.firstTabDataRange; // Use DB range directly
     const sheetName = fullRange.split("!")[0];
     const sheetOwner = await User.findById(sheetDetails.userId).lean();
-
     const cacheKey = `sheet-${sheetID}`;
     const cached = sheetCache.get(cacheKey);
-
     let allRows;
-    let authClient = new google.auth.OAuth2(
-      process.env.CLIENT_ID,
-      process.env.CLIENT_SECRET,
-      process.env.REDIRECT_URI
-    );
+    let authClient = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
     authClient.setCredentials({ refresh_token: sheetOwner.googleRefreshToken });
 
     const sheets = google.sheets({ version: "v4", auth: authClient });
-
-    if (cached?.rows?.length) {
-      log("from-cache");
-      allRows = cached.rows;
-    } else {
-      const response = await sheets.spreadsheets.values.get({
-        spreadsheetId: spreadSheetID,
-        range: fullRange, // fetch full dynamic range
-      });
-
-      log("171");
-
+    if (cached?.rows?.length) { allRows = cached.rows }
+    else {
+      const response = await sheets.spreadsheets.values.get({ spreadsheetId: spreadSheetID, range: fullRange });
       allRows = response.data.values;
       if (!allRows || allRows.length === 0)
         return res.status(404).json({ error: "No data found." });
-
-      sheetCache.set(cacheKey, { rows: allRows }); // store in cache
+      sheetCache.set(cacheKey, { rows: allRows });
     }
-
-    log("178");
 
     const hiddenCol = sheetDetails.hiddenCol || [];
     const jsonData = convertArrayToJSON(allRows, hiddenCol);
+    const formulaData = await getMetaSheetData({ sheets, spreadSheetID, range: sheetName });
 
-    log("181");
-
-    const formulaData = await getMetaSheetData({
-      sheets,
-      spreadSheetID,
-      range: sheetName,
-    });
-
-    log("186");
-
-    const tempAccess = sheetDetails.sharedWith?.find(
-      (entry) => entry?.email === req?.user?.email
-    );
+    const tempAccess = sheetDetails.sharedWith?.find((entry) => entry?.email === req?.user?.email);
     let permissions = tempAccess?.permission;
 
-    if (sheetDetails?.accessType?.type === "public" && !permissions) {
-      permissions = "view";
-    }
+    if (sheetDetails?.accessType?.type === "public" && !permissions) { permissions = "view" }
 
     return res.status(200).json({
-      rows: allRows, // ✅ full rows, not paginated
-      permissions,
-      jsonData,
+      rows: allRows, permissions, jsonData,
       hiddenCol,
       formulaData,
       settings: sheetDetails,
@@ -493,22 +447,14 @@ app.put("/auth/updateRole/:id", async (req, res) => {
 
 
 app.delete("/auth/deleteUser/:id", async (req, res) => {
-  console.log("API Hit: /auth/deleteUser");
-
   try {
     const { id } = req.params;
-
-    if (!id) {
-      return res.status(400).json({ message: "User ID is required" });
-    }
+    if (!id) { return res.status(400).json({ message: "User ID is required" }) }
 
     let user = await User.findByIdAndDelete(id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) { return res.status(404).json({ message: "User not found" }) }
 
     const updatedUsers = await User.find({});
-
     const sheetCounts = await Sheet.aggregate([
       {
         $group: {
@@ -570,18 +516,10 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
 
   try {
     // Get the source spreadsheet details to obtain its title
-    const getSpreadsheetResponse = await sheets.spreadsheets.get({
-      spreadsheetId: sheet_id,
-    });
-
+    const getSpreadsheetResponse = await sheets.spreadsheets.get({ spreadsheetId: sheet_id });
     const sourceSpreadsheetTitle = getSpreadsheetResponse.data.properties.title;
-
     // Get permissions to determine access (Owner/Shared)
-    const permissionsResponse = await drive.permissions.list({
-      fileId: sheet_id,
-      fields: "permissions(id, role, type)",
-    });
-
+    const permissionsResponse = await drive.permissions.list({ fileId: sheet_id, fields: "permissions(id, role, type)" });
     // Determine if the user is the owner
     const ownerPermission = permissionsResponse.data.permissions.find(
       (perm) => perm.role.toLocaleLowerCase() === "owner"
@@ -589,20 +527,11 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
     const access = ownerPermission ? "owner" : "shared";
 
     // Get the last updated date of the spreadsheet
-    const lastUpdatedResponse = await drive.files.get({
-      fileId: sheet_id,
-      fields: "modifiedTime",
-    });
+    const lastUpdatedResponse = await drive.files.get({ fileId: sheet_id, fields: "modifiedTime" });
     const lastUpdatedDate = new Date();
 
     // Create a new spreadsheet
-    const createResponse = await sheets.spreadsheets.create({
-      resource: {
-        properties: {
-          title: `Copy of ${sourceSpreadsheetTitle}`,
-        },
-      },
-    });
+    const createResponse = await sheets.spreadsheets.create({ resource: { properties: { title: `Copy of ${sourceSpreadsheetTitle}` } } });
     const newSpreadsheetId = createResponse.data.spreadsheetId;
 
     const sourceSheets = getSpreadsheetResponse.data.sheets;
@@ -611,63 +540,23 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       const sourceSheetId = sheet.properties.sheetId;
       const sourceSheetName = sheet.properties.title;
 
-      console.log(
-        `Copying sheet: ${sourceSheetName} with ID: ${sourceSheetId}`
-      );
-
       // Prepare the request to copy the sheet
-      const request = {
-        spreadsheetId: sheet_id,
-        sheetId: sourceSheetId,
-        resource: {
-          destinationSpreadsheetId: newSpreadsheetId,
-        },
-      };
+      const request = { spreadsheetId: sheet_id, sheetId: sourceSheetId, resource: { destinationSpreadsheetId: newSpreadsheetId } };
 
       // Copy the sheet to the new spreadsheet
       const copyResponse = await sheets.spreadsheets.sheets.copyTo(request);
 
       // Rename the copied sheet to match the source sheet name
       const copiedSheetId = copyResponse.data.sheetId;
-      await sheets.spreadsheets.batchUpdate({
-        spreadsheetId: newSpreadsheetId,
-        resource: {
-          requests: [
-            {
-              updateSheetProperties: {
-                properties: {
-                  sheetId: copiedSheetId,
-                  title: sourceSheetName,
-                },
-                fields: "title",
-              },
-            },
-          ],
-        },
-      });
-
-      console.log(`Sheet copied and renamed to: ${sourceSheetName}`);
+      await sheets.spreadsheets.batchUpdate({ spreadsheetId: newSpreadsheetId, resource: { requests: [{ updateSheetProperties: { properties: { sheetId: copiedSheetId, title: sourceSheetName }, fields: "title" } }] } });
     }
 
     // Delete the default "Sheet1" from the new spreadsheet
-    const deleteSheetResponse = await sheets.spreadsheets.batchUpdate({
-      spreadsheetId: newSpreadsheetId,
-      resource: {
-        requests: [
-          {
-            deleteSheet: {
-              sheetId: createResponse.data.sheets[0].properties.sheetId,
-            },
-          },
-        ],
-      },
-    });
+    const deleteSheetResponse = await sheets.spreadsheets.batchUpdate({ spreadsheetId: newSpreadsheetId, resource: { requests: [{ deleteSheet: { sheetId: createResponse.data.sheets[0].properties.sheetId } }] } });
+
 
     // Retrieve details of the first sheet in the new spreadsheet
-    const newSpreadsheetResponse = await sheets.spreadsheets.get({
-      spreadsheetId: newSpreadsheetId,
-    });
-
+    const newSpreadsheetResponse = await sheets.spreadsheets.get({ spreadsheetId: newSpreadsheetId });
 
     const firstSheet = newSpreadsheetResponse.data.sheets[0];
     const firstSheetId = firstSheet.properties.sheetId;
@@ -966,29 +855,17 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
 
   try {
     // Get the source spreadsheet details to obtain its title
-    const getSpreadsheetResponse = await sheets.spreadsheets.get({
-      spreadsheetId: sheet_id,
-    });
-
+    const getSpreadsheetResponse = await sheets.spreadsheets.get({ spreadsheetId: sheet_id });
     const sourceSpreadsheetTitle = getSpreadsheetResponse.data.properties.title;
-
     // Get permissions to determine access (Owner/Shared)
-    const permissionsResponse = await drive.permissions.list({
-      fileId: sheet_id,
-      fields: "permissions(id, role, type)",
-    });
+    const permissionsResponse = await drive.permissions.list({ fileId: sheet_id, fields: "permissions(id, role, type)" });
 
     // Determine if the user is the owner
-    const ownerPermission = permissionsResponse.data.permissions.find(
-      (perm) => perm.role === "owner"
-    );
+    const ownerPermission = permissionsResponse.data.permissions.find( (perm) => perm.role === "owner" );
     const access = ownerPermission ? "Owner" : "Shared";
 
     // Get the last updated date of the spreadsheet
-    const lastUpdatedResponse = await drive.files.get({
-      fileId: sheet_id,
-      fields: "modifiedTime",
-    });
+    const lastUpdatedResponse = await drive.files.get({ fileId: sheet_id, fields: "modifiedTime" });
     const lastUpdatedDate = new Date();
 
     // Extract all sheet names by looping over newSpreadsheetResponse.data.sheets
@@ -1004,12 +881,7 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       const sheetId = sheet.properties.sheetId;
       const sheetName = sheet.properties.title;
       const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheet_id}/edit#gid=${sheetId}`;
-
-      return {
-        name: sheetName,
-        url: sheetUrl,
-        sheetId: sheetId,
-      };
+      return { name: sheetName, url: sheetUrl, sheetId: sheetId };
     });
 
     // Get the data range of the first sheet
@@ -1134,7 +1006,6 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       sheetDetails: sheetDetails,
       access: access, // Add access type
       lastUpdatedDate: lastUpdatedDate, // Add last updated date
-
     };
 
     // Save the sheet details to the database
@@ -1150,8 +1021,8 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       firstTabHeader: res.firstTabHeader,
       appName: appName,
       sheetDetails: sheetDetails,
-      access: res.access, 
-      lastUpdatedDate: res.lastUpdatedDate, 
+      access: res.access,
+      lastUpdatedDate: res.lastUpdatedDate,
       showInCard: cardSettings,
       productCatalogue: {
         headerSettings: {
@@ -1938,7 +1809,7 @@ app.post("/getSpreadSheets", authenticateToken, async (req, res) => {
 //       suggestedUsers
 //     };
 
-    
+
 
 //     // console.log({ userDetails, suggestedUsers: await getFlattenedSharedWithForUser(userDetails._id) });
 //     res.status(200).json(userDetails);
@@ -2296,10 +2167,10 @@ app.post("/getSpreadsheetDetails", authenticateToken, async (req, res) => {
 app.get("/getSheetDetails/:id", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // Find the sheet in the database
     const sheetDetails = await Sheet.findById(id).lean();
-    
+
     if (!sheetDetails) {
       return res.status(404).json({ error: "Sheet not found." });
     }
@@ -2307,11 +2178,11 @@ app.get("/getSheetDetails/:id", authenticateToken, async (req, res) => {
     // Check if the user has access to this sheet
     const userId = req.user._id;
     const userEmail = req.user.email;
-    
+
     // Allow access if user is the owner or has been shared with
-    const hasAccess = sheetDetails.userId.toString() === userId.toString() || 
-                     sheetDetails.sharedWith?.some(entry => entry.email === userEmail);
-    
+    const hasAccess = sheetDetails.userId.toString() === userId.toString() ||
+      sheetDetails.sharedWith?.some(entry => entry.email === userEmail);
+
     if (!hasAccess) {
       return res.status(403).json({ error: "Access denied." });
     }
@@ -2437,7 +2308,7 @@ app.post("/bulkCopyFromAnotherSheet", authenticateToken, async (req, res) => {
 app.post("/getSheetRowData", dynamicAuth, async (req, res) => {
   try {
     const { sheetID, rowNumber, key_id } = req.body;
-    
+
     if (!sheetID || (!rowNumber && !key_id)) {
       return res.status(400).json({ error: "Sheet ID and either row number or key_id are required." });
     }
@@ -2484,7 +2355,7 @@ app.post("/getSheetRowData", dynamicAuth, async (req, res) => {
     // Fetch the specific row (targetRowNumber + 1 because Google Sheets is 1-based and we need to account for header)
     const targetRow = targetRowNumber + 1; // Add 1 to account for header row
     const range = `${sheetName}!A${targetRow}:${String.fromCharCode(64 + actualHeaders.length)}${targetRow}`;
-    
+
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: spreadSheetID,
       range: range,
@@ -2497,12 +2368,12 @@ app.post("/getSheetRowData", dynamicAuth, async (req, res) => {
 
     // Convert row data to JSON format using actual headers from the sheet
     const headers = actualHeaders;
-    
+
     console.log("Headers:", headers);
     console.log("Row Data:", rowData);
     console.log("Target Row Number:", targetRowNumber);
     const jsonData = {};
-    
+
     // Map headers to row data first
     headers.forEach((header, index) => {
       const key = header.replace(/\s+/g, '_').toLowerCase();

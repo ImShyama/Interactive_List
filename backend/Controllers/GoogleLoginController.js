@@ -17,7 +17,7 @@ exports.InitiateGoogleLogin = (req, res) => {
         prompt: 'consent',  // This ensures that a new refresh token is issued
         scope: ['email', 'profile'
             , "https://www.googleapis.com/auth/spreadsheets"
-            , "https://www.googleapis.com/auth/drive"
+            , "https://www.googleapis.com/auth/drive.file"
         ] // Add any additional scopes you need
     });
     res.redirect(authUrl);
