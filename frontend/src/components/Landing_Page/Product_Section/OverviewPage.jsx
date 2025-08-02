@@ -26,7 +26,7 @@ const OverviewPage = () => {
   };
 
   return (
-    <div className=" max-h-[100vh] overflow-y-scroll px-[100px]">
+    <div className="min-h-screen max-h-[100vh] overflow-y-auto pb-32 px-[100px]">
       {/* above Section */}
       <div className="self-stretch text-[#A0A0A0] font-poppins text-[16.705px] font-medium leading-normal">
         <span
@@ -97,7 +97,7 @@ const OverviewPage = () => {
                     {Object.keys(item)[0]}
                   </h3>
 
-                  <p className="text-[#B6B6B6] font-[Poppins] text-[13.5px] font-normal leading-normal mt-1">
+                  <p className="text-[#5e5b5b] font-[Poppins] text-[15.5px] font-normal leading-normal mt-1">
                     {Object.values(item)[0] ||
                       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque eligendi facilis adipisci, ratione labore illo quod quasi explicabo aliquid aliquam totam amet, optio expedita vero, possimus sint incidunt nobis consequatur."}
                   </p>
