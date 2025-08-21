@@ -210,13 +210,100 @@ app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
     const cacheKey = `sheet-${sheetID}`;
     const cached = sheetCache.get(cacheKey);
     let allRows;
-    let authClient = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
-    authClient.setCredentials({ refresh_token: sheetOwner.googleRefreshToken });
 
-    const sheets = google.sheets({ version: "v4", auth: authClient });
+    async function tryOAuthClientWithRefreshToken(refreshToken) {
+      if (!refreshToken) return { ok: false, reason: 'missing_refresh' };
+      const client = new google.auth.OAuth2(process.env.CLIENT_ID, process.env.CLIENT_SECRET, process.env.REDIRECT_URI);
+      client.setCredentials({ refresh_token: refreshToken });
+      try {
+        console.log({ client });
+        // Force a refresh now to validate the refresh token
+        await client.getAccessToken();
+        return { ok: true, client };
+      } catch (e) {
+        const errData = e?.response?.data;
+        if (errData?.error === 'invalid_grant') {
+          return { ok: false, reason: 'invalid_grant' };
+        }
+        return { ok: false, reason: 'other', error: e };
+      }
+    }
+
+    async function tryServiceAccount() {
+      const saEmail = process.env.GSA_CLIENT_EMAIL;
+      const saKey = (process.env.GSA_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+      if (!saEmail || !saKey) return { ok: false, reason: 'not_configured' };
+      try {
+        const jwtClient = new google.auth.JWT(
+          saEmail,
+          null,
+          saKey,
+          ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.file']
+        );
+        await jwtClient.authorize();
+        return { ok: true, client: jwtClient, saEmail };
+      } catch (e) {
+        return { ok: false, reason: 'authorize_failed', error: e };
+      }
+    }
+
+    // Build list of auth strategies
+    const strategies = [];
+    if (req.user?.googleRefreshToken) strategies.push({ type: 'requester', token: req.user.googleRefreshToken });
+    strategies.push({ type: 'owner', token: sheetOwner?.googleRefreshToken });
+
+    let sheets = null;
+    let lastInvalidGrantFrom = null;
+
+    // Try requester and owner tokens first
+    for (const strat of strategies) {
+      console.log({ strat });
+      const resTry = await tryOAuthClientWithRefreshToken(strat.token);
+      console.log({ resTry });
+      if (resTry.ok) {
+        sheets = google.sheets({ version: 'v4', auth: resTry.client });
+        break;
+      }
+      if (resTry.reason === 'invalid_grant') {
+        lastInvalidGrantFrom = strat.type;
+        continue;
+      }
+      // For other errors, continue to next strategy
+    }
+
+    // If still no sheets client, try service account
+    if (!sheets) {
+      const saTry = await tryServiceAccount();
+      if (saTry.ok) {
+        sheets = google.sheets({ version: 'v4', auth: saTry.client });
+        // Note: Spreadsheet must be shared with saTry.saEmail
+      } else {
+        // Could not build any auth client
+        if (lastInvalidGrantFrom) {
+          const who = lastInvalidGrantFrom === 'owner' ? 'sheet owner' : 'requesting user';
+          return res.status(401).json({ error: 'invalid_grant', message: `Google refresh token for ${who} is expired or revoked. Please sign in again.` });
+        }
+        return res.status(401).json({ error: 'unauthorized', message: 'No valid Google auth available. Either sign in again or configure a service account and share the sheet with it.' });
+      }
+    }
     if (cached?.rows?.length) { allRows = cached.rows }
     else {
-      const response = await sheets.spreadsheets.values.get({ spreadsheetId: spreadSheetID, range: fullRange });
+      let response;
+      try {
+        response = await sheets.spreadsheets.values.get({ spreadsheetId: spreadSheetID, range: fullRange });
+      } catch (apiErr) {
+        const status = apiErr?.response?.status;
+        if (status === 403) {
+          // Likely service account not shared or insufficient permission
+          const saEmail = process.env.GSA_CLIENT_EMAIL;
+          return res.status(403).json({ error: 'forbidden', message: saEmail ? `Service account lacks access. Share the sheet with ${saEmail}` : 'Insufficient permissions to access the sheet.' });
+        }
+        const errData = apiErr?.response?.data;
+        if (errData?.error === 'invalid_grant') {
+          return res.status(401).json({ error: 'invalid_grant', message: 'Google refresh token expired or revoked. Please sign in again.' });
+        }
+        throw apiErr;
+      }
       allRows = response.data.values;
       if (!allRows || allRows.length === 0)
         return res.status(404).json({ error: "No data found." });

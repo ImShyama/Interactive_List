@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios, { spread } from "axios";
 import "./setting.css";
@@ -20,7 +20,7 @@ import sheetIcon from "../assets/sheetIcon.svg";
 import openIcon from "../assets/openIcon.svg";
 import { UserContext } from "../context/UserContext";
 import { useSelector, useDispatch } from "react-redux";
-import { updateSetting } from "../utils/settingSlice";
+import { updateSetting, updateFilterSettings } from "../utils/settingSlice";
 import { HOST } from "../utils/constants.jsx";
 import ColorPick from "./ColorPick.jsx";
 import useDrivePicker from "react-google-drive-picker";
@@ -72,11 +72,14 @@ const AddData = ({ activateSave, isTableLoading, setIsTableLoading }) => {
     { display: "Brush Script", value: "Brush Script MT" },
   ];
 
+  const id = useParams();
+  console.log(id);
+
   const handleSaveChanges = async (updatedSettings) => {
     try {
       // Update the settings in the backend
       const response = await axios.put(
-        `${HOST}/spreadsheet/${settingData._id}`,
+        `${HOST}/spreadsheet/${id.id}`,
         { ...settingData, ...updatedSettings }, // Merge existing settings with updates
         {
           headers: {
@@ -1115,8 +1118,8 @@ const FilterSettings = ({ settingsData }) => {
 
         console.log({ showInProfile, updatedSettings });
 
-        // Dispatch the updated settings locally
-        dispatch(updateSetting(updatedSettings));
+        // Dispatch the updated filter settings locally using the new action
+        dispatch(updateFilterSettings(updatedSettings.filterSettings));
 
         // Update backend
         const response = await axios.put(
@@ -1128,7 +1131,8 @@ const FilterSettings = ({ settingsData }) => {
         );
 
         console.log("Filter deleted successfully:", response.data);
-        dispatch(updateSetting(response.data));
+        // Update the full settings from backend response, but specifically handle filterSettings
+        dispatch(updateFilterSettings(response.data.filterSettings || { filters: [] }));
         notifySuccess("Filter deleted successfully");
       } catch (error) {
         console.error("Error deleting Filter:", error);

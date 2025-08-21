@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { v4 as uuidv4 } from "uuid"; // for generating unique ids
 import { handleSaveChanges } from "../../APIs";
-import { updateSetting } from "../../utils/settingSlice";
+import { updateSetting, updateFilterSettings } from "../../utils/settingSlice";
 import { useContext } from "react";
 import { UserContext } from "../../context/UserContext";
 
@@ -29,14 +29,14 @@ const AddFilter = ({ settingsData, dispatch, token }) => {
             filterSettings: {
                 ...settingsData.filterSettings,
                 filters: [
-                    ...(settingsData?.filterSettings?.filters),
+                    ...(settingsData?.filterSettings?.filters || []),
                     newFilter
                 ]
             }
         };
 
-        // setSettingsData(updatedSettings);
-        dispatch(updateSetting(updatedSettings));
+        // Update only the filter settings using the new action
+        dispatch(updateFilterSettings(updatedSettings.filterSettings));
 
         handleSaveChanges(settingsData, token, dispatch, updatedSettings);
 

@@ -6,18 +6,19 @@ import { LuFilter } from "react-icons/lu";
 const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filteredData }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState(null);
-    const [selectedItems, setSelectedItems] = useState({});
+    const [selectedItems, setSelectedItems] = useState({})
     const [selectAll, setSelectAll] = useState(false);
-    const [filterOptions, setFilterOptions] = useState(settings?.filterSettings?.filters?.map((header) => header?.title.replace(/_/g, ' ')));
+    const [filterOptions, setFilterOptions] = useState([]);
     const [dropdownItems, setDropdownItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [currentSheetId, setCurrentSheetId] = useState(settings?._id);
     const filteredItems = dropdownItems.filter((item) =>
         item.toLowerCase().includes(searchQuery.toLowerCase())
     );
     const isAllSelected = selectedItems?.[selectedFilter]?.length === filteredItems?.length && filteredItems?.length > 0;
     const isIndeterminate = selectedItems?.[selectedFilter]?.length > 0 && selectedItems?.[selectedFilter]?.length < filteredItems?.length;
 
-    console.log({ data, tempHeader, selectedFilter, selectedItems, filterOptions });
+    console.log({ data, tempHeader, selectedFilter, selectedItems, filterOptions, settings });
 
     const updateDropdown = () => {
         if (!selectedFilter) {
@@ -27,7 +28,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
 
         const uniqueValues = Array.from(
             new Set(
-                filteredData.map(item => {
+                filteredData?.map(item => {
                     // Clean up the selectedFilter key to match your object keys
                     const key = selectedFilter.toLowerCase().replace(/\s+/g, '_');
                     return item[key] || ""; // Handle missing fields gracefully
@@ -42,48 +43,40 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
         updateDropdown();
     }, [selectedFilter]);
 
+    // Update filterOptions when settings change or sheet changes
+    useEffect(() => {
+        // Check if this is a different sheet
+        const isNewSheet = settings?._id !== currentSheetId;
+        
+        if (isNewSheet) {
+            setCurrentSheetId(settings?._id);
+        }
+        
+        // Get filter options from current settings, defaulting to empty array if not present
+        const newFilterOptions = settings?.filterSettings?.filters?.map((header) => header?.title.replace(/_/g, ' ')) || [];
+        
+        // Always update filterOptions, especially when switching sheets
+        setFilterOptions(newFilterOptions);
+        
+        // Reset all filter states when switching sheets or when settings change
+        setSelectedFilter(null);
+        setSelectedItems({});
+        setShowDropdown(false);
+        setSearchQuery("");
+        
+        // Reset filtered data to original data
+        if (data && setFilteredData) {
+            setFilteredData(data);
+        }
+    }, [settings, data, setFilteredData, currentSheetId]);
+
     const toggleFilterDropdown = (option) => {
         setSelectedFilter((prev) => (prev === option ? null : option));
         setSearchQuery("");
-        setSelectAll(false); // 👈 Reset select all when changing filters
+        setSelectAll(false); 
     };
 
-
-    // const updateFilteredData = (selectedItemsInput) => {
-    //     if (!selectedItemsInput || Object.keys(selectedItemsInput).length === 0) {
-    //         setFilteredData(data);
-    //         return;
-    //     }
-
-    //     const filteredSet = new Set();
-
-    //     let hasActiveFilter = false;
-
-    //     Object.entries(selectedItemsInput).forEach(([filterKey, filterValues]) => {
-    //         if (!filterValues || filterValues.length === 0) return; // skip empty filters
-
-    //         hasActiveFilter = true;
-
-    //         const key = filterKey.toLowerCase().replace(/\s+/g, '_');
-
-    //         data.forEach(item => {
-    //             if (filterValues.includes(item[key])) {
-    //                 filteredSet.add(item);
-    //             }
-    //         });
-    //     });
-
-    //     // If no filters actually applied, reset to full data
-    //     if (!hasActiveFilter) {
-    //         setFilteredData(data);
-    //     } else {
-    //         setFilteredData(Array.from(filteredSet));
-    //     }
-    // };
-
-
     const updateFilteredData = (selectedItemsInput) => {
-        // If no filters selected, show full data
         if (!selectedItemsInput || Object.keys(selectedItemsInput).length === 0) {
             setFilteredData(data);
             return;
@@ -149,25 +142,24 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
             {/* Filter Button */}
             <div className="relative">
                 <button
-                    className="ml-2 flex items-center"
-                    // className={`p-2 rounded-lg transition-colors ${showDropdown
-                    //     ? "bg-[#598931]"
-                    //     : "bg-[#F6FCF1] hover:bg-[#EAF7D6]"
-                    //     }`}
+                    className="ml-2 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={() => {
                         setShowDropdown(!showDropdown)
                         setShowDropdown(!showDropdown);
                         setSelectedFilter(null);
+                        console.log(selectedFilter);
                     }}
+                    disabled={!filterOptions || filterOptions.length === 0}
                     title="CategoryFilter"
                 >
-                    {/* <Filter
-                        className={`transition-colors ${showDropdown ? "text-white" : "text-[#598931]"
-                            }`}
-                        size={20}
-                    /> */}
-                    {/* <TbFilterSearch className="bg-primary text-white rounded-[4px] p-1" size={25} /> */}
-                    <LuFilter className="bg-primary text-white rounded-[4px] p-1" size={25} />
+                    <LuFilter 
+                        className={`rounded-[4px] p-1 ${
+                            !filterOptions || filterOptions.length === 0 
+                                ? "bg-gray-400 text-gray-200" 
+                                : "bg-primary text-white"
+                        }`} 
+                        size={25} 
+                    />
                 </button>
 
                 {/* Main Filter Dropdown */}
@@ -208,8 +200,8 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                 </div>
 
                                 <ul className="p-2 space-y-2">
-                                    {filteredItems.length > 0 ? (
-                                        filteredItems.map((item, i) => (
+                                    {filteredItems?.length > 0 ? (
+                                        filteredItems?.map((item, i) => (
                                             // <li
                                             //     key={i}
                                             //     className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 rounded-lg "
@@ -273,7 +265,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                     </button>
                                 </div>
                                 <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto">
-                                    {filterOptions.map((option, index) => (
+                                    {filterOptions?.map((option, index) => (
                                         <li key={index} className="relative">
                                             <div
                                                 className="flex justify-between items-center p-3 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200"

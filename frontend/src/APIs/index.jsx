@@ -1,7 +1,7 @@
 import axios from "axios";
 import { HOST } from "../utils/constants";
 import { notifyError } from "../utils/notify";
-import { updateSetting } from "../utils/settingSlice";
+import { updateSetting, updateFilterSettings } from "../utils/settingSlice";
 
 // export const handleSaveChanges = async (settingData, token, dispatch, updatedSettings) => {
 //     try {
@@ -48,8 +48,14 @@ export const handleSaveChanges = async (settingData, token, dispatch, updatedSet
 
     console.log("Settings updated successfully:", response.data);
 
-    // Dispatch updated settings to Redux store
-    dispatch(updateSetting(response.data));
+    // Check if this update includes filterSettings and dispatch accordingly
+    if (updatedSettings.filterSettings) {
+      // If updating filter settings, use the specific action to replace them completely
+      dispatch(updateFilterSettings(response.data.filterSettings || { filters: [] }));
+    } else {
+      // For other settings, use the regular merge action
+      dispatch(updateSetting(response.data));
+    }
 
     return response.data;
   } catch (error) {

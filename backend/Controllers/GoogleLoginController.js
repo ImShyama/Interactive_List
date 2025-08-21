@@ -59,11 +59,19 @@ exports.HandleGoogleLogin = async (req, res) => {
         const existingUser = await UsersModel.findOne({ email }).lean();
         console.log({existingUser});
         if (existingUser) {
-            let updatedUser = await UsersModel.findOneAndUpdate({ email }, {
+            const updateFields = {
                 name: userName,
                 profileUrl: payload.picture,
-                googleRefreshToken: tokens.refresh_token,
-            }).lean();
+            };
+            // Only update refresh token if Google provided a new one
+            if (tokens && tokens.refresh_token) {
+                updateFields.googleRefreshToken = tokens.refresh_token;
+            }
+            let updatedUser = await UsersModel.findOneAndUpdate(
+                { email },
+                updateFields,
+                { new: true }
+            ).lean();
 
             if (!updatedUser.isApproved) return res.send({ error: "User is not Approved. Please connect with CEOITBOX team at access@ceoitbox.in." });
 
