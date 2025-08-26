@@ -44,14 +44,15 @@ const dummyData = [
     },
   },
   {
-    title: "CBX NOTES",
-    subtitle: "More Than Just Notes – It's Your Digital Workspace",
-    description:
+    title1: "CBX NOTES",
+    title2: "More Than Just Notes – It's Your Digital Workspace",
+    title3:
       "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
 
     multipleimages: [cardImage1, cardImage2, cardImage3],
-    sheetlink:
+    title4:
       "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
+    title5: "https://www.youtube.com/embed/a4vVGvrsKC8",
     features: {
       benefits: [
         "Efficiency: Automates data analysis and reporting.",
@@ -78,51 +79,15 @@ const dummyData = [
     },
   },
   {
-    title: "CBX NOTES",
-    subtitle: "More Than Just Notes – It's Your Digital Workspace",
-    description:
+    title1: "CBX NOTES",
+    title2: "More Than Just Notes – It's Your Digital Workspace",
+    title3:
       "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
 
     multipleimages: [cardImage1, cardImage2, cardImage3],
-    sheetlink:
+    title4:
       "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
-    videolink: "https://www.youtube.com/embed/a4vVGvrsKC8",
-
-    features: {
-      benefits: [
-        "Efficiency: Automates data analysis and reporting.",
-        "Insights: Provides valuable insights for decision-making.",
-        "Communication: Easily shares reports via email and WhatsApp.",
-        "Scalability: Handles various data sets and growing needs.",
-        "Cost-effective: Reduces manual effort and improves efficiency.",
-      ],
-      useCases: [
-        "Business Performance Tracking: Automate report generation and sharing.",
-        "Sales Reporting: Streamline sales data analysis and share reports instantly.",
-        "Financial Analysis: Compile financial data, track trends, and share insights.",
-        "Client Reporting: Generate and send detailed reports to clients.",
-        "Employee Performance Reviews: Automate HR reporting for tracking performance metrics.",
-      ],
-      featureList: [
-        "Analyze Data given in any Google Sheet or Sheets.",
-        "Generate reports or answer any question on the same.",
-        "Send reports via Email & WhatsApp on a schedule.",
-        "No more need to locate sheets & go through data manually.",
-        "Provides insights for decision-making automatically.",
-        "Limitation: 4096 tokens of data for GPT 3.5.",
-      ],
-    },
-  },
-  {
-    title: "CBX NOTES",
-    subtitle: "More Than Just Notes – It's Your Digital Workspace",
-    description:
-      "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
-
-    multipleimages: [cardImage1, cardImage2, cardImage3],
-    sheetlink:
-      "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
-    videolink: "https://www.youtube.com/embed/a4vVGvrsKC8",
+    title5: "https://www.youtube.com/embed/a4vVGvrsKC8",
 
     features: {
       benefits: [
@@ -150,15 +115,15 @@ const dummyData = [
     },
   },
   {
-    title: "CBX NOTES",
-    subtitle: "More Than Just Notes – It's Your Digital Workspace",
-    description:
+    title1: "CBX NOTES",
+    title2: "More Than Just Notes – It's Your Digital Workspace",
+    title3:
       "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
 
     multipleimages: [cardImage1, cardImage2, cardImage3],
-    sheetlink:
+    title4:
       "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
-    videolink: "https://www.youtube.com/embed/a4vVGvrsKC8",
+    title5: "https://www.youtube.com/embed/a4vVGvrsKC8",
 
     features: {
       benefits: [
@@ -186,15 +151,15 @@ const dummyData = [
     },
   },
   {
-    title: "CBX NOTES",
-    subtitle: "More Than Just Notes – It's Your Digital Workspace",
-    description:
+    title1: "CBX NOTES",
+    title2: "More Than Just Notes – It's Your Digital Workspace",
+    title3:
       "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
 
     multipleimages: [cardImage1, cardImage2, cardImage3],
-    sheetlink:
+    title4:
       "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
-    videolink: "https://www.youtube.com/embed/a4vVGvrsKC8",
+    title5: "https://www.youtube.com/embed/a4vVGvrsKC8",
 
     features: {
       benefits: [
@@ -222,15 +187,15 @@ const dummyData = [
     },
   },
   {
-    title: "CBX NOTES",
-    subtitle: "More Than Just Notes – It's Your Digital Workspace",
-    description:
+    title1: "CBX NOTES",
+    title2: "More Than Just Notes – It's Your Digital Workspace",
+    title3:
       "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
 
     multipleimages: [cardImage1, cardImage2, cardImage3],
-    sheetlink:
+    title4:
       "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
-    videolink: "https://www.youtube.com/embed/a4vVGvrsKC8",
+    title5: "https://www.youtube.com/embed/a4vVGvrsKC8",
 
     features: {
       benefits: [
@@ -258,15 +223,15 @@ const dummyData = [
     },
   },
   {
-    title: "CBX NOTES",
-    subtitle: "More Than Just Notes – It's Your Digital Workspace",
-    description:
+    title1: "CBX NOTES",
+    title2: "More Than Just Notes – It's Your Digital Workspace",
+    title3:
       "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
 
     multipleimages: [cardImage1, cardImage2, cardImage3],
-    sheetlink:
+    title4:
       "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
-    videolink: "https://www.youtube.com/embed/a4vVGvrsKC8",
+    title5: "https://www.youtube.com/embed/a4vVGvrsKC8",
 
     features: {
       benefits: [
@@ -294,15 +259,51 @@ const dummyData = [
     },
   },
   {
-    title: "CBX NOTES",
-    subtitle: "More Than Just Notes – It's Your Digital Workspace",
-    description:
+    title1: "CBX NOTES",
+    title2: "More Than Just Notes – It's Your Digital Workspace",
+    title3:
       "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
 
     multipleimages: [cardImage1, cardImage2, cardImage3],
-    sheetlink:
+    title4:
       "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
-    videolink: "https://www.youtube.com/embed/a4vVGvrsKC8",
+    title5: "https://www.youtube.com/embed/a4vVGvrsKC8",
+
+    features: {
+      benefits: [
+        "Efficiency: Automates data analysis and reporting.",
+        "Insights: Provides valuable insights for decision-making.",
+        "Communication: Easily shares reports via email and WhatsApp.",
+        "Scalability: Handles various data sets and growing needs.",
+        "Cost-effective: Reduces manual effort and improves efficiency.",
+      ],
+      useCases: [
+        "Business Performance Tracking: Automate report generation and sharing.",
+        "Sales Reporting: Streamline sales data analysis and share reports instantly.",
+        "Financial Analysis: Compile financial data, track trends, and share insights.",
+        "Client Reporting: Generate and send detailed reports to clients.",
+        "Employee Performance Reviews: Automate HR reporting for tracking performance metrics.",
+      ],
+      featureList: [
+        "Analyze Data given in any Google Sheet or Sheets.",
+        "Generate reports or answer any question on the same.",
+        "Send reports via Email & WhatsApp on a schedule.",
+        "No more need to locate sheets & go through data manually.",
+        "Provides insights for decision-making automatically.",
+        "Limitation: 4096 tokens of data for GPT 3.5.",
+      ],
+    },
+  },
+  {
+    title1: "CBX NOTES",
+    title2: "More Than Just Notes – It's Your Digital Workspace",
+    title3:
+      "Perplexity AI is an AI-powered tool that delivers accurate, concise answers to complex queries using natural language processing, enhancing the search experience with clear responses from trusted sources.",
+
+    multipleimages: [cardImage1, cardImage2, cardImage3],
+    title4:
+      "https://docs.google.com/spreadsheets/d/1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4/edit?gid=1974260981#gid=1974260981",
+    title5: "https://www.youtube.com/embed/a4vVGvrsKC8",
 
     features: {
       benefits: [
@@ -337,15 +338,30 @@ const CardSection = ({ settings }) => {
   console.log({ dataRows });
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(6); // Adjust the page size as needed
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const paginatedData = dummyData.slice(
+  const filteredData = (searchQuery || "").trim().length === 0
+    ? dummyData
+    : dummyData.filter((item) => {
+        return [item.title1, item.title2, item.title3]
+          .filter(Boolean)
+          .some((val) => String(val).toLowerCase().includes(searchQuery.toLowerCase()));
+      });
+
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
   return (
     <div>
-      <ProductTitle />
+      <ProductTitle
+        searchQuery={searchQuery}
+        onSearchChange={(q) => {
+          setCurrentPage(1);
+          setSearchQuery(q);
+        }}
+      />
 
       <div className="p-6">
 
@@ -364,7 +380,7 @@ const CardSection = ({ settings }) => {
           <Pagination
             current={currentPage}
             pageSize={pageSize}
-            total={dummyData.length}
+            total={filteredData.length}
             showSizeChanger
             onChange={(page, size) => {
               setCurrentPage(page);

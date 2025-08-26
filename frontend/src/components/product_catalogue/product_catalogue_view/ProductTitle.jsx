@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Search, Filter, RefreshCcw, ChevronDown } from "lucide-react";
 import Cancel from "../../../assets/Cancel.svg";
-import { IoArrowBack } from "react-icons/io5";
+// import { IoArrowBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import CopyBtn from "../../component/CopyBtn";
 import { APPS } from "../../../utils/constants";
@@ -86,12 +86,12 @@ const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
       {/* Top Icons */}
       <div className="flex justify-between w-full items-center relative">
         <div className="flex gap-4 items-center">
-          <button
+          {/* <button
             onClick={() => navigate(-1)}
             className=" bg-[#598931] p-2 rounded-full shadow-md"
           >
             <IoArrowBack className="text-white text-3xl" />
-          </button>
+          </button> */}
 
           {/* Conditionally render Search Icon or Search Box */}
           {!showSearchBox ? (

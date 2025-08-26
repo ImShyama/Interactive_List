@@ -216,7 +216,7 @@ const Table = () => {
   };
 
   return (
-    <div className="mt-[80px]">
+    <div className="">
       {renderTable()}
     </div>
   );

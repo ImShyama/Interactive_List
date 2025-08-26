@@ -19,7 +19,7 @@ const ProductCatalogueBiggerView = () => {
     videolink,
     features,
   } = location.state || {};
-
+ 
   // State to track active section (default: "features")
   const [activeSection, setActiveSection] = useState("features");
   const carouselRef = useRef(null);

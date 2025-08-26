@@ -11,6 +11,7 @@ import { filter } from "lodash";
 import VideoGallaryView from "./video_gallary/VideoGallaryView";
 import PhotoGalleryView from "./photo_gallery/PhotoGalleryView";
 import InteractiveMapView from "./interactive_map/InteractiveMapView";
+import ProductCatalogueView from "./product_catalogue/ProductCatalogueView";
 import { IoCopyOutline } from "react-icons/io5";
 
 const Preview = ({ closeModal, sheetdetails }) => {
@@ -216,7 +217,18 @@ const Preview = ({ closeModal, sheetdetails }) => {
                                                             settings={sheetdetails}
                                                         />
                                                     );
-                                                    
+                                                    case "Product Catalogue":
+                                                        return (
+                                                            <ProductCatalogueView
+                                                                data={sheetData}
+                                                                headers={filterHeader}
+                                                                tempHeader={tableHeader}
+                                                                filteredData={filteredData}
+                                                                setFilteredData={setFilteredData}
+                                                                paginatedData={paginatedData}
+                                                                settings={sheetdetails}
+                                                            />
+                                                        );
                                                 default:
                                                     return null;
                                             }

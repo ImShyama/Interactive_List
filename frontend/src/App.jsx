@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import GoogleSignin from "./components/GoogleSignin";
 import { UserProvider, UserContext } from "./context/UserContext";
+import { HeaderVisibilityContext } from "./context/HeaderVisibilityContext";
 import Header from "./components/Header";
 import Table from "./components/Table";
 import Setting from "./components/Setting";
@@ -44,6 +45,7 @@ import NotFound from './components/NotFound';
 // Layout Component
 const Layout = () => {
   const { role } = useContext(UserContext);
+  const [hideHeader, setHideHeader] = useState(false);
 
   return(
   <Provider store={appStore}>
@@ -54,16 +56,18 @@ const Layout = () => {
         },
       }}
     >
-      <Header />
-      <ToastContainer position="top-right" autoClose={3000} />
-      <div className="mt-[80px] relative">
-        <Outlet />
-        {role === "admin" && ( // Show AdminBtn only if role is 'admin'
-          <div className="fixed bottom-6 right-6 z-50">
-            <AdminBtn />
-          </div>
-        )}
-      </div>
+      <HeaderVisibilityContext.Provider value={{ hideHeader, setHideHeader }}>
+        <Header />
+        <ToastContainer position="top-right" autoClose={3000} />
+        <div className={hideHeader ? "relative" : "mt-[80px] relative"}>
+          <Outlet />
+          {role === "admin" && ( // Show AdminBtn only if role is 'admin'
+            <div className="fixed bottom-6 right-6 z-50">
+              <AdminBtn />
+            </div>
+          )}
+        </div>
+      </HeaderVisibilityContext.Provider>
     </ConfigProvider>
   </Provider>
   )

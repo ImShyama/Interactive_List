@@ -71,7 +71,7 @@ const HeaderSection = ({ isPopup = false, settings }) => {
   }, []);
 
   return (
-    <div className={`${isPopup ? "relative" : "fixed"} top-0 left-0 right-0 mb-6`} >
+    <div className={`${isPopup ? "relative" : "fixed"} top-0 left-0 right-0 mb-[-10px]`} >
       <div className={`main-container ${isDrawerOpen ? "drawer-open" : ""}`} >
         <div className="header_main left-content shadow-lg"
           style={{

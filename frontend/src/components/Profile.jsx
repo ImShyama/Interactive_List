@@ -29,10 +29,14 @@ const Profile = ({ name, email, closeProfile }) => {
     return (
       <>
       <div style={{position:'relative',zIndex: '999'}} className="rounded-[11px] bg-[var(--white,#FFF)] shadow-[9px_4px_17px_0px_rgba(152,151,168,0.25)] flex w-[200px] px-[18px] flex-col justify-center items-start gap-[1px] flex-shrink-0">
-        <span className="text-[var(--black,#111)] font-poppins text-[14px] font-medium leading-normal pt-4">
+        <span className="text-[var(--black,#111)] font-poppins text-[14px] font-medium leading-normal pt-4 truncate w-full cursor-pointer"
+        title={name}
+        >
           {name}
         </span>
-        <span className="text-[#787D89] font-poppins text-[12px] font-normal leading-normal pb-2">
+        <span className="text-[#787D89] font-poppins text-[12px] font-normal leading-normal pb-2 truncate w-full cursor-pointer"
+         title={email} 
+        >
           {email}
         </span>
         <svg
