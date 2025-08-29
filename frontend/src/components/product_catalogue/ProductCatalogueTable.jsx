@@ -36,6 +36,8 @@ import GlobalSearch from "../interactive_list/GlobalSearch.jsx";
 import Table from "../interactive_list/Table.jsx";
 import Loader from "../Loader.jsx";
 import ProductCatalogueView from "./ProductCatalogueView.jsx";
+import CatalogueFilter from "../component/CategoryFilter.jsx";
+import numberFilter from "../../assets/numberFilter.svg";
 
 
 const convertArrayToJSON = (data) => {
@@ -956,14 +958,16 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
                 </div>
                 <div className="flex justify-end items-center">
 
+                    <CatalogueFilter data={data} settings={settings} tempHeader={tempHeader} filteredData={filteredData} setFilteredData={setFilteredData}  />
+
                     {/* <FilterButton data={data} /> */}
                     {!isFilterOpen ? (
                         <button
                             onClick={toggleFilterBox}
-                            className="bg-primary rounded-[4px] p-1 border-2 border-white text-white focus:outline-none"
+                            className="bg-primary rounded-[4px] p-1 border-2 border-white text-white focus:outline-none ml-2"
                             title="Filter"
                         >
-                            <LuFilter className="text-white" size={18} />
+                           <img src={numberFilter} alt="Hide" height="16" width="17" />
                         </button>
                     ) : (
                         <div className="w-[115px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1 px-2 relative">
@@ -1210,7 +1214,7 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
 
            {!isEditMode ?
            <div>
-           <ProductCatalogueView data={filteredData} headers={headers} settings={settings} />
+           <ProductCatalogueView data={filteredData} headers={headers} settings={settings} tempHeader={tempHeader} />
 
            <Table
                 data={data}

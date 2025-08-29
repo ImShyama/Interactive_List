@@ -38,6 +38,7 @@ import AdminBtn from "./components/component/AdminBtn";
 import ProductCataloguePreview from "./components/product_catalogue/ProductCataloguePreview";
 import ProductCatalogueView from "./components/product_catalogue/ProductCatalogueView";
 import ProductCatalogueBiggerView from "./components/product_catalogue/ProductCatalogueBiggerView"
+import ProductCatalogueBiggerPreview from "./components/product_catalogue/ProductCatalogueBiggerPreivew";
 import WebsiteLayout from "./components/Interact_Website/WebsiteLayout";
 import NotFound from './components/NotFound';
 
@@ -114,6 +115,7 @@ const appRouter = createBrowserRouter([
       { path: "/video/:settingsId/:videoId", element: <LargeVideoView /> },
       { path: "/ProductCataloguePreview", element: <ProductCataloguePreview /> },
       { path: "/ProductCatalogueView", element: <ProductCatalogueView /> },
+      { path: "/ProductCatalogueBiggerPreview", element: <ProductCatalogueBiggerPreview /> },
       { path: "/ProductCatalogueBiggerView", element: <ProductCatalogueBiggerView /> },
     ],
   },

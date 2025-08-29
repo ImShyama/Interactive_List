@@ -282,7 +282,7 @@ const CardView = ({ tableHeader, settings }) => {
                   {dropdownOpen[column.id] && (
                     <div className="absolute top-12 left-0 bg-white shadow-lg rounded-lg w-80 p-3 border overflow-hidden z-50">
                       <div className="flex items-center justify-between p-2 mt-[-10px] border-b">
-                        <input
+                        {/* <input
                           type="checkbox"
                           onChange={handleSelectAll}
                           checked={
@@ -292,7 +292,7 @@ const CardView = ({ tableHeader, settings }) => {
                             Object.values(selectedItems).every(Boolean)
                           }
                           className="w-4 h-4 scale-150 accent-[#598931] cursor-pointer mr-2"
-                        />
+                        /> */}
                         <div className="relative">
                           <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-300 " />
                           <input

@@ -3,7 +3,7 @@ import { Search, Filter, RefreshCcw, ChevronDown } from "lucide-react";
 import Cancel from "../../assets/Cancel.svg";
 import { TbFilterSearch } from "react-icons/tb";
 import { LuFilter } from "react-icons/lu";
-const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filteredData }) => {
+const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filteredData, buttonVariant = "default", useCataloguePosition = true }) => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState(null);
     const [selectedItems, setSelectedItems] = useState({})
@@ -142,39 +142,90 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
             {/* Filter Button */}
             <div className="relative">
                 <button
-                    className="ml-2 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    className={
+                        buttonVariant === "searchLike"
+                            ? "p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6] disabled:opacity-50 disabled:cursor-not-allowed"
+                            : "ml-2 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    }
                     onClick={() => {
                         setShowDropdown(!showDropdown)
                         setShowDropdown(!showDropdown);
                         setSelectedFilter(null);
-                        console.log(selectedFilter);
                     }}
                     disabled={!filterOptions || filterOptions.length === 0}
                     title="CategoryFilter"
                 >
                     <LuFilter 
-                        className={`rounded-[4px] p-1 ${
-                            !filterOptions || filterOptions.length === 0 
-                                ? "bg-gray-400 text-gray-200" 
-                                : "bg-primary text-white"
-                        }`} 
-                        size={25} 
+                        className={
+                            buttonVariant === "searchLike"
+                                ? "text-[#598931]"
+                                : `${!filterOptions || filterOptions.length === 0 ? "rounded-[4px] p-1 bg-gray-400 text-gray-200" : "rounded-[4px] p-1 bg-primary text-white"}`
+                        }
+                        size={buttonVariant === "searchLike" ? 21 : 26}
                     />
                 </button>
 
-                {/* Main Filter Dropdown */}
-                <div className="absolute flex top-full right-[250px] gap-[250px] ">
+                {/* Dropdown container position */}
+                <div className={useCataloguePosition ? "absolute flex top-full right-[250px] gap-[250px] z-50" : "absolute top-full left-0 flex gap-4 z-50"}>
+                    {/* In non-catalogue (CardSection) mode, show main list first so the values panel opens to the right */}
+                    {(!useCataloguePosition) && (
+                        <div>
+                            {showDropdown && (
+                                <div className="mt-2 min-w-[300px] max-w-[400px] bg-white shadow-lg rounded-xl border border-gray-200 p-4">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <button
+                                            className="text-[#598931] font-medium"
+                                            onClick={() => {
+                                                setSelectedItems({});
+                                                updateFilteredData({});
+                                                setSelectAll(false);
+                                            }}
+                                        >
+                                            <RefreshCcw />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setShowDropdown(false);
+                                                setSelectedFilter(null);
+                                            }}
+                                            className="text-gray-500 hover:text-black"
+                                        >
+                                            <img
+                                                src={Cancel}
+                                                alt="Cancel"
+                                                className="w-5 h-5 invert brightness-50"
+                                            />
+                                        </button>
+                                    </div>
+                                    <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto">
+                                        {filterOptions?.map((option, index) => (
+                                            <li key={index} className="relative">
+                                                <div
+                                                    className="flex justify-between items-center p-3 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200"
+                                                    onClick={() => toggleFilterDropdown(option)}
+                                                >
+                                                    <span>{option}</span>
+                                                    <ChevronDown
+                                                        className={`text-[#598931] transition-transform ${selectedFilter === option ? "rotate-180" : ""}`}
+                                                        size={18}
+                                                    />
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     <div>
                         {selectedFilter && (
-                            <div className="absolute mt-12 min-w-[250px] max-w-[250px] bg-white border border-gray-300 rounded-lg shadow-md p-2 max-h-[250px] overflow-auto z-50">
+                            <div className={useCataloguePosition ? "absolute mt-12 min-w-[250px] max-w-[250px] bg-white border border-gray-300 rounded-lg shadow-md p-2 max-h-[250px] overflow-auto" : "mt-2 min-w-[250px] max-w-[250px] bg-white border border-gray-300 rounded-lg shadow-md p-2 max-h-[250px] overflow-auto"}>
                                 <div className="flex justify-between items-center p-2 border-b border-gray-200">
                                     <div className="flex items-center">
                                         <input
                                             type="checkbox"
                                             checked={isAllSelected}
-                                            // ref={input => {
-                                            //     if (input) input.indeterminate = isIndeterminate;
-                                            // }}
                                             onChange={handleSelectAll}
                                             className="mr-2 w-5 h-5 accent-[#598931] cursor-pointer"
                                         />
@@ -202,18 +253,6 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                 <ul className="p-2 space-y-2">
                                     {filteredItems?.length > 0 ? (
                                         filteredItems?.map((item, i) => (
-                                            // <li
-                                            //     key={i}
-                                            //     className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 rounded-lg "
-                                            // >
-                                            //     <input
-                                            //         type="checkbox"
-                                            //         checked={selectedItems?.[selectedFilter]?.includes(item) || false}
-                                            //         onChange={() => handleCheckboxChange(item)}
-                                            //         className="w-4 h-4 accent-[#598931] cursor-pointer"
-                                            //     />
-                                            //     <span className="truncate">{item}</span>
-                                            // </li>
                                             <li
                                                 key={i}
                                                 className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 rounded-lg py-1"
@@ -236,54 +275,57 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                             </div>
                         )}
                     </div>
-                    <div>
-                        {showDropdown && (
-                            <div className="absolute mt-2 min-w-[300px] max-w-[400px] bg-white shadow-lg rounded-xl border border-gray-200 z-50 p-4">
-                                <div className="flex justify-between items-center mb-4">
-                                    <button
-                                        className="text-[#598931] font-medium"
-                                        onClick={() => {
-                                            setSelectedItems({});
-                                            updateFilteredData({});
-                                            setSelectAll(false);
-                                        }}
-                                    >
-                                        <RefreshCcw />
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            setShowDropdown(false);
-                                            setSelectedFilter(null);
-                                        }}
-                                        className="text-gray-500 hover:text-black"
-                                    >
-                                        <img
-                                            src={Cancel}
-                                            alt="Cancel"
-                                            className="w-5 h-5 invert brightness-50"
-                                        />
-                                    </button>
+
+                    {/* In catalogue (table) mode, keep original order/placement */}
+                    {useCataloguePosition && (
+                        <div>
+                            {showDropdown && (
+                                <div className="absolute mt-2 min-w-[300px] max-w-[400px] bg-white shadow-lg rounded-xl border border-gray-200 z-50 p-4">
+                                    <div className="flex justify-between items-center mb-4">
+                                        <button
+                                            className="text-[#598931] font-medium"
+                                            onClick={() => {
+                                                setSelectedItems({});
+                                                updateFilteredData({});
+                                                setSelectAll(false);
+                                            }}
+                                        >
+                                            <RefreshCcw />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setShowDropdown(false);
+                                                setSelectedFilter(null);
+                                            }}
+                                            className="text-gray-500 hover:text-black"
+                                        >
+                                            <img
+                                                src={Cancel}
+                                                alt="Cancel"
+                                                className="w-5 h-5 invert brightness-50"
+                                            />
+                                        </button>
+                                    </div>
+                                    <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto">
+                                        {filterOptions?.map((option, index) => (
+                                            <li key={index} className="relative">
+                                                <div
+                                                    className="flex justify-between items-center p-3 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200"
+                                                    onClick={() => toggleFilterDropdown(option)}
+                                                >
+                                                    <span>{option}</span>
+                                                    <ChevronDown
+                                                        className={`text-[#598931] transition-transform ${selectedFilter === option ? "rotate-180" : ""}`}
+                                                        size={18}
+                                                    />
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
                                 </div>
-                                <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto">
-                                    {filterOptions?.map((option, index) => (
-                                        <li key={index} className="relative">
-                                            <div
-                                                className="flex justify-between items-center p-3 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200"
-                                                onClick={() => toggleFilterDropdown(option)}
-                                            >
-                                                <span>{option}</span>
-                                                <ChevronDown
-                                                    className={`text-[#598931] transition-transform ${selectedFilter === option ? "rotate-180" : ""
-                                                        }`}
-                                                    size={18}
-                                                />
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
             </div>

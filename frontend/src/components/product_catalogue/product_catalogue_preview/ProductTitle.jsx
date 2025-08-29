@@ -5,6 +5,7 @@ import { IoArrowBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import CopyBtn from "../../component/CopyBtn";
 import { APPS } from "../../../utils/constants";
+import { notifyError } from "../../../utils/notify";
 
 const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -24,8 +25,9 @@ const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
   const searchBoxRef = useRef(null); // REF for detecting outside click
 
   const toggleFilterDropdown = (option) => {
-    setSelectedFilter((prev) => (prev === option ? null : option));
-    setFilterSearch("");
+    // Disable filter functionality in preview mode
+    notifyError("Not available in Preview");
+    return;
   };
 
   const filterOptions = [
@@ -67,24 +69,32 @@ const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
     item.toLowerCase().includes(filterSearch.toLowerCase())
   );
 
-  // Close search box when clicked outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        searchBoxRef.current &&
-        !searchBoxRef.current.contains(event.target)
-      ) {
-        setShowSearchBox(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  // Remove the outer click functionality
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (
+  //       searchBoxRef.current &&
+  //       !searchBoxRef.current.contains(event.target)
+  //     ) {
+  //       setShowSearchBox(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
+
+  // Handle close button click - reset search and close search box
+  const handleCloseSearch = () => {
+    if (onSearchChange) {
+      onSearchChange(""); // Reset search query
+    }
+    setShowSearchBox(false); // Close search box
+  };
 
   return (
-    <div className="flex flex-col items-center relative mx-6">
+    <div className="flex flex-col items-center relative mx-8">
       {/* Top Icons */}
-      <div className="flex justify-between w-full items-center relative">
+      <div className="flex justify-between w-full items-center relative mt-6">
         <div className="flex gap-4 items-center">
           <button
             onClick={() => navigate(-1)}
@@ -114,7 +124,7 @@ const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
                 value={searchQuery}
                 onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
               />
-              <button onClick={() => setShowSearchBox(false)}>
+              <button onClick={handleCloseSearch}>
                 <img
                   src={Cancel}
                   alt="Cancel"
@@ -127,130 +137,26 @@ const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
           {/* Filter Button */}
           <div className="relative">
             <button
-              className={`p-2 rounded-lg transition-colors ${showDropdown
-                  ? "bg-[#598931]"
-                  : "bg-[#F6FCF1] hover:bg-[#EAF7D6]"
-                }`}
-              onClick={() => setShowDropdown(!showDropdown)}
+              className="p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6]"
+              onClick={() => notifyError("Not available in Preview")}
+              title="Filter not available in Preview mode"
             >
               <Filter
-                className={`transition-colors ${showDropdown ? "text-white" : "text-[#598931]"
-                  }`}
+                className="text-[#598931]"
                 size={20}
               />
             </button>
-
-            {/* Main Filter Dropdown */}
-            {showDropdown && (
-              <div className="absolute top-full left-[-50px] mt-2 min-w-[300px] max-w-[400px] bg-white shadow-lg rounded-xl border border-gray-200 z-50 p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <button
-                    className="text-[#598931] font-medium"
-                    onClick={() => {
-                      setSelectedItems([]);
-                      setSelectAll(false);
-                    }}
-                  >
-                    <RefreshCcw />
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowDropdown(false);
-                      setSelectedFilter(null);
-                    }}
-                    className="text-gray-500 hover:text-black"
-                  >
-                    <img
-                      src={Cancel}
-                      alt="Cancel"
-                      className="w-5 h-5 invert brightness-50"
-                    />
-                  </button>
-                </div>
-                <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto">
-                  {filterOptions.map((option, index) => (
-                    <li key={index} className="relative">
-                      <div
-                        className="flex justify-between items-center p-3 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200"
-                        onClick={() => toggleFilterDropdown(option)}
-                      >
-                        <span>{option}</span>
-                        <ChevronDown
-                          className={`text-[#598931] transition-transform ${selectedFilter === option ? "rotate-180" : ""
-                            }`}
-                          size={18}
-                        />
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {/* Filter dropdown disabled in preview mode */}
           </div>
 
           {/* Refresh Button */}
-          <button className="p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6]">
+          {/* <button className="p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6]">
             <RefreshCcw className="text-[#598931]" size={20} />
-          </button>
+          </button> */}
         </div>
       </div>
 
-      {/* Sub-dropdown (Appears Beside Filter Box) */}
-      {selectedFilter && (
-        <div className="absolute top-[230%] left-[25.8%] min-w-[250px] bg-white border border-gray-300 rounded-lg shadow-md p-2 max-h-[250px] overflow-auto z-50">
-          <div className="flex justify-between items-center p-2 border-b border-gray-200">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                checked={selectAll}
-                onChange={handleSelectAll}
-                className="mr-2 w-5 h-5 accent-[#598931] cursor-pointer"
-              />
-              <Search size={16} className="text-gray-500 mr-2" />
-              <input
-                type="text"
-                placeholder="Search"
-                value={filterSearch}
-                onChange={(e) => setFilterSearch(e.target.value)}
-                className="w-full text-sm outline-none bg-transparent"
-              />
-            </div>
-            <button
-              onClick={() => setSelectedFilter(null)}
-              className="text-gray-500 hover:text-black"
-            >
-              <img
-                src={Cancel}
-                alt="Cancel"
-                className="w-5 h-5 invert brightness-50"
-              />
-            </button>
-          </div>
-
-          <ul className="p-2 space-y-2">
-            {filteredItems.length > 0 ? (
-              filteredItems.map((item, i) => (
-                <li
-                  key={i}
-                  className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 rounded-lg"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.includes(item)}
-                    onChange={() => handleCheckboxChange(item)}
-                    className="w-4 h-4 accent-[#598931] cursor-pointer"
-                  />
-                  <span>{item}</span>
-                </li>
-              ))
-            ) : (
-              <li className="text-gray-500 text-center py-2">
-                No results found
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
+      {/* Filter sub-dropdown disabled in preview mode */}
       <div className="fixed bottom-6 right-20 z-50 mr-2">
         {/* <CopyBtn
           appName={"Product Catalogue"}

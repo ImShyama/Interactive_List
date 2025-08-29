@@ -363,12 +363,12 @@ const CardSection = ({ settings }) => {
         }}
       />
 
-      <div className="p-6">
+      <div className="px-4 pb-6">
 
         {/* Scrollable Grid Section */}
         <div
           style={{ width: "100%", overflowX: "auto", maxHeight: "600px" }}
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3 w-full"
+          className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-3 w-full"
         >
           {paginatedData.map((item, index) => (
             <ProductCatalogueCard key={index} {...item} />

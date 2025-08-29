@@ -7,10 +7,15 @@ import HeaderSection from "./product_catalogue_view/HeaderSection";
 import CardSection from "./product_catalogue_view/CardSection"; // Adjust path if needed
 import FooterSection from "./product_catalogue_view/FooterSection"
 
-const ProductCatalogueView = ({ data, settings }) => {
+const ProductCatalogueView = ({ data, settings, tempHeader }) => {
   const { setHideHeader } = useHeaderVisibility();
   const location = useLocation();
   const isRouteView = location.pathname.toLowerCase().endsWith("/view");
+
+  // Allow navigation via location.state from card click
+  const state = location.state || {};
+  const effectiveData = data ?? state.data;
+  const effectiveSettings = settings ?? state.settings;
 
   useEffect(() => {
     // Hide header when component mounts
@@ -22,7 +27,7 @@ const ProductCatalogueView = ({ data, settings }) => {
     };
   }, [setHideHeader]);
 
-  console.log({ settings1: settings, data1: data })
+  console.log({ settings1: effectiveSettings, data1: effectiveData })
   return (
     <div className="">
       <div style={{ width: '100%', overflowX: 'hidden', ...(isRouteView ? {} : { overflowY: 'auto', maxHeight: '88vh' }) }}>
@@ -34,9 +39,9 @@ const ProductCatalogueView = ({ data, settings }) => {
     ...(isRouteView ? {} : { overflowY: "auto", maxHeight: "80vh" }),
   }}
 > */}
-        <HeaderSection isPopup={true} data={data} settings={settings} />
-        <CardSection data={data} settings={settings} />
-        <FooterSection data={data} settingData={settings} />
+        <HeaderSection isPopup={true} data={effectiveData} settings={effectiveSettings} />
+        <CardSection data={effectiveData} settings={effectiveSettings} tempHeader={tempHeader} />
+        <FooterSection data={effectiveData} settingData={effectiveSettings} />
       </div>
     </div>
   );
