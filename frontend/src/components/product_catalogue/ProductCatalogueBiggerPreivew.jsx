@@ -85,7 +85,7 @@ const ProductCatalogueBiggerPreview = () => {
   const carouselRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   return (
-    <div className="min-h-screen bg-white flex flex-col p-2">
+    <div className="min-h-screen  flex flex-col p-2">
       {/* Product Image and Description Section - Full Width */}
       <div className="w-[90%] md:w-[95%] mx-auto py-10">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-16">
