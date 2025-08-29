@@ -7,7 +7,7 @@ import FooterSection from "./product_catalogue_preview/FooterSection";
 
 const ProductCataloguePreview = () => {
   return (
-    <div className="p-6">
+    <div>
       <div className="">
         <HeaderSection />
       </div>

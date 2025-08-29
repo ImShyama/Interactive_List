@@ -1489,7 +1489,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   </div>
                   {addView && <ViewSettings settingsData={settingData} />}
                 </>}
-              {(settingData?.appName == "Video Gallery") &&
+              {(settingData?.appName == "Video Gallery" || settingData?.appName == "Product Catalogue") &&
                 <>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

@@ -19,7 +19,7 @@ import {
 import { CgFormatJustify } from "react-icons/cg";
 import { Modal, Input } from "antd";
 
-const BoxViewPreview = ({ text, value, onClose }) => {
+const BoxViewPreview = ({ text, value, onClose, onSave }) => {
   const contentRef = useRef(null);
   const [activeStyles, setActiveStyles] = useState({});
   const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
@@ -304,7 +304,9 @@ const saveSelection = () => {
               className="px-4 py-2 bg-[#598931] text-white rounded-md shadow-md hover:bg-[#4A7326] transition-colors"
               onClick={() => {
                 const content = contentRef.current.innerHTML;
-                console.log("Saved Content: ", content);
+                if (typeof onSave === "function") {
+                  onSave(content);
+                }
               }}
             >
               Save

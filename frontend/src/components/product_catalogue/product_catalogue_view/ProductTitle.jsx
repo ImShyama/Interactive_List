@@ -1,18 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Filter, RefreshCcw, ChevronDown } from "lucide-react";
+import { Search, RefreshCcw } from "lucide-react";
 import Cancel from "../../../assets/Cancel.svg";
-import { IoArrowBack } from "react-icons/io5";
+// import { IoArrowBack } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import CopyBtn from "../../component/CopyBtn";
+// import CopyBtn from "../../component/CopyBtn";
 import { APPS } from "../../../utils/constants";
-import { notifyError } from "../../../utils/notify";
+import CatalogueFilter from "../../component/CategoryFilter.jsx";
 
-const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState(null);
-  const [selectAll, setSelectAll] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
-  const [filterSearch, setFilterSearch] = useState("");
+const ProductTitle = ({ searchQuery = "", onSearchChange, data, settings, filteredData, setFilteredData }) => {
   const [showSearchBox, setShowSearchBox] = useState(false); // NEW STATE
 
   let appDetails = APPS.filter((app) => {
@@ -23,51 +18,6 @@ const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
 
   const navigate = useNavigate();
   const searchBoxRef = useRef(null); // REF for detecting outside click
-
-  const toggleFilterDropdown = (option) => {
-    // Disable filter functionality in preview mode
-    notifyError("Not available in Preview");
-    return;
-  };
-
-  const filterOptions = [
-    "Product Title",
-    "Alumni No.",
-    "Priority",
-    "Department",
-    "Product Heading",
-  ];
-
-  const dropdownItems = [
-    "CBX Notes",
-    "CBX Start",
-    "Perplexity AI",
-    "Crew AI",
-    "Chat Base",
-    "WhatsApp WIZ CRM",
-    "Microsoft Designer",
-  ];
-
-  const handleSelectAll = () => {
-    if (selectAll) {
-      setSelectedItems([]);
-    } else {
-      setSelectedItems(filteredItems.map((item) => item));
-    }
-    setSelectAll(!selectAll);
-  };
-
-  const handleCheckboxChange = (item) => {
-    if (selectedItems.includes(item)) {
-      setSelectedItems(selectedItems.filter((i) => i !== item));
-    } else {
-      setSelectedItems([...selectedItems, item]);
-    }
-  };
-
-  const filteredItems = dropdownItems.filter((item) =>
-    item.toLowerCase().includes(filterSearch.toLowerCase())
-  );
 
   // Remove the outer click functionality
   // useEffect(() => {
@@ -92,16 +42,16 @@ const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
   };
 
   return (
-    <div className="flex flex-col items-center relative mx-8">
+    <div className="flex flex-col items-center relative mx-6">
       {/* Top Icons */}
-      <div className="flex justify-between w-full items-center relative mt-6">
+      <div className="flex justify-between w-full items-center relative">
         <div className="flex gap-4 items-center">
-          <button
+          {/* <button
             onClick={() => navigate(-1)}
             className=" bg-[#598931] p-2 rounded-full shadow-md"
           >
             <IoArrowBack className="text-white text-3xl" />
-          </button>
+          </button> */}
 
           {/* Conditionally render Search Icon or Search Box */}
           {!showSearchBox ? (
@@ -134,20 +84,15 @@ const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
             </div>
           )}
 
-          {/* Filter Button */}
-          <div className="relative">
-            <button
-              className="p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6]"
-              onClick={() => notifyError("Not available in Preview")}
-              title="Filter not available in Preview mode"
-            >
-              <Filter
-                className="text-[#598931]"
-                size={20}
-              />
-            </button>
-            {/* Filter dropdown disabled in preview mode */}
-          </div>
+          {/* Category Filter (replaces Filter icon) */}
+          <CatalogueFilter
+            data={data}
+            settings={settings}
+            filteredData={filteredData}
+            setFilteredData={setFilteredData}
+            buttonVariant="searchLike"
+            useCataloguePosition={false}
+          />
 
           {/* Refresh Button */}
           {/* <button className="p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6]">
@@ -156,19 +101,15 @@ const ProductTitle = ({ searchQuery = "", onSearchChange }) => {
         </div>
       </div>
 
-      {/* Filter sub-dropdown disabled in preview mode */}
-      <div className="fixed bottom-6 right-20 z-50 mr-2">
-        {/* <CopyBtn
-          appName={"Product Catalogue"}
-          spreadSheetID={"YOUR_SPREADSHEET_ID"}
-          spreadSheetName={"YOUR_SPREADSHEET_NAME"}
-        /> */}
+      {/* CategoryFilter handles its own dropdowns; removed legacy sub-dropdown UI */}
+      {/* <div className="fixed bottom-6 right-20 z-50 mr-2">
+      
         <CopyBtn
           appName={appName}
           spreadSheetID={appID}
           spreadSheetName={spreadSheetName}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -8,6 +8,7 @@ import settingsIcon1 from "../assets/settingIcon1.svg";
 import { SettingIcon, SettingIcon1 } from "../assets/svgIcons";
 import dividerIcon from "../assets/dividerIcon.svg";
 import { UserContext } from "../context/UserContext";
+import { useHeaderVisibility } from "../context/HeaderVisibilityContext";
 import { HOST } from "../utils/constants";
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,6 +20,7 @@ const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const { token, setToken, setProfile, setRole, user, setUser } = useContext(UserContext);
+  const { hideHeader } = useHeaderVisibility();
   const navigate = useNavigate();
   const location = useLocation(); // Access the current route
   const isEditMode = window.location.pathname.endsWith("/edit");
@@ -143,6 +145,11 @@ const Header = () => {
     setActiveButton(path);
     navigate(path);
   };
+
+  // Don't render header if hideHeader is true
+  if (hideHeader) {
+    return null;
+  }
 
   return (
     <div className="fixed top-0 left-0 right-0 " style={{ zIndex: 999 }}>

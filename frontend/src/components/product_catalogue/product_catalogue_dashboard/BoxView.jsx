@@ -21,7 +21,13 @@ const BoxView = ({ settings }) => {
   const inputRef = useRef(null);
   const dispatch = useDispatch();
   const { token } = useContext(UserContext);
-
+  const [savedSelections, setSavedSelections] = useState(settings?.showInProfile || []);
+  const [selectedItems, setSelectedItems] = useState(() => {
+    return settings?.showInProfile?.reduce((acc, item) => {
+      acc[item.key] = true; // Default selection to `true`, change if needed
+      return acc;
+    }, {}) || {}; // Ensures it's always an object
+  });
   const addField = () => {
     setIsInputVisible(true);
   };
@@ -35,12 +41,43 @@ const BoxView = ({ settings }) => {
   // };
 
   const handleDelete = (item) => {
-    setFields(fields.filter((field) => field.id !== item.id));
+
+    const newFileds = fields.filter((field) => field.id !== item.id)
+    
+      setFields(newFileds); // ✅ Update state correctly
+      setInputValue("");
+      setIsInputVisible(false);
+  
+      const showInBox = { showInBox: newFileds };
+  
+      // Log the updated state after a delay
+      setTimeout(() => {
+        console.log("Updated Saved Selections:", newFileds);
+        handleSaveChanges(settings, token, dispatch, showInBox);
+      }, 0);
   };
 
   const handleEdit = (item) => {
+    console.log({item})
     setEditingItem(item.id); // Store ID instead of text
     setEditText(item.text);
+
+    const updatedFields = fields.map((field) => 
+      field.id === item.id 
+        ? { ...field, text: item.text, value: item.value }
+        : field
+    );
+    setFields(updatedFields)
+    setIsInputVisible(false);
+  
+    const showInBox = { showInBox: updatedFields };
+
+    // Log the updated state after a delay
+    setTimeout(() => {
+      console.log("Updated Saved Selections:", updatedFields);
+      handleSaveChanges(settings, token, dispatch, showInBox);
+    }, 0);
+
   };
 
   const handleEditSave = (e) => {
@@ -49,12 +86,25 @@ const BoxView = ({ settings }) => {
       (e.type === "keydown" && e.key === "Enter") ||
       e.type === "save-click"
     ) {
-      setFields(
-        fields.map((field) =>
+      
+      const updateText = fields.map((field) =>
           field.id === editingItem ? { ...field, text: editText } : field
         )
-      );
+
+        setFields(updateText);
+
+      
       setEditingItem(null);
+
+      
+  
+      const showInBox = { showInBox: updateText };
+  
+      // Log the updated state after a delay
+      setTimeout(() => {
+        console.log("Updated Saved Selections:", showInBox);
+        handleSaveChanges(settings, token, dispatch, showInBox);
+      }, 0);
     }
   };
 
@@ -253,6 +303,15 @@ const BoxView = ({ settings }) => {
           text={selectedItem.text}
           value={selectedItem.value}
           onClose={() => setShowModal(false)}
+          onSave={(newHtml) => {
+            const updated = fields.map((f) =>
+              f.id === selectedItem.id ? { ...f, value: newHtml } : f
+            );
+            setFields(updated);
+            const showInBox = { showInBox: updated };
+            handleSaveChanges(settings, token, dispatch, showInBox);
+            setShowModal(false);
+          }}
         />
       )}
     </div>
