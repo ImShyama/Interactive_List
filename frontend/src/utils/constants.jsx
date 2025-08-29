@@ -19,6 +19,7 @@ import InteractiveMap from "../assets/images/InteractiveMap.png"
 import InteractiveMap1 from "../assets/images/InteractiveMap1.png"
 import InteractiveMap2 from "../assets/images/InteractiveMap2.png"
 import PeopleDirectory from "../assets/images/PeopleDirectoryCard.png"
+
 import PhotoGallery from "../assets/images/PhotoGallery.png"
 import PhotoGallery1 from "../assets/images/PhotoGallery1.png"
 import PhotoGallery2 from "../assets/images/PhotoGallery2.png"
@@ -30,7 +31,7 @@ export const APPSNAME = [
   "People Directory",
   "Photo Gallery",
   "Video Gallery",
-  // "Product Catalogue",
+  "Product Catalogue",
 ];
 export const CLIENTID = '260938166249-rv9fgk97t8b2qmrpi5nqk8hd4frd2qba.apps.googleusercontent.com';
 export const DEVELOPERKEY = 'AIzaSyBnH_ONkdpY5NAFLdy6TKe4Y6SyEGmRzwQ';
@@ -40,7 +41,7 @@ export const OPTIONS = [
   { value: 'Interactive Map' },
   { value: 'People Directory' },
   { value: 'Photo Gallery' },
-  // { value: 'Product Catalogue' },
+  { value: 'Product Catalogue' },
   { value: 'Video Gallery' },
 ];
 
