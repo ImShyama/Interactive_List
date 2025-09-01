@@ -56,6 +56,7 @@ import FooterPopup from "./FooterPopup.jsx";
 import { LuUpload, LuMove } from "react-icons/lu";
 import { Tooltip } from "antd";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
+import { FiSave } from "react-icons/fi";
 import {
   getDriveThumbnail,
   handleImageError,
@@ -619,6 +620,23 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           : item
       )
     );
+  };
+
+  // Handle footer sub-heading edit toggle
+  const handleFooterSubHeadingEditToggle = (subHeadingKey) => {
+    setFooterSettings((prev) => ({
+      ...prev,
+      footers: {
+        ...prev.footers,
+        [selectedFooters]: {
+          ...prev.footers?.[selectedFooters],
+          Heading: {
+            ...(prev.footers?.[selectedFooters]?.Heading || {}),
+            [`isEditing${subHeadingKey}`]: !(prev.footers?.[selectedFooters]?.Heading?.[`isEditing${subHeadingKey}`] || false),
+          },
+        },
+      },
+    }));
   };
   const handleRemoveContact = (id) => {
     setContactSettings(contactSettings.filter((item) => item.id !== id));
@@ -1629,9 +1647,34 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
               </div>
 
               <div className="flex items-center gap-2">
-                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Sub-heading1
-                </label>
+                {footerSettings.footers[selectedFooters]?.Heading?.isEditingSubHeading2 ? (
+                  <input
+                    type="text"
+                    value={footerSettings.footers[selectedFooters]?.Heading?.SubHeading2Label ?? ""}
+                    onChange={(e) => {
+                      setFooterSettings((prev) => ({
+                        ...prev,
+                        footers: {
+                          ...prev.footers,
+                          [selectedFooters]: {
+                            ...prev.footers?.[selectedFooters],
+                            Heading: {
+                              ...(prev.footers?.[selectedFooters]?.Heading || {}),
+                              SubHeading2Label: e.target.value,
+                            },
+                          },
+                        },
+                      }));
+                      setIsSaveChanges(true);
+                    }}
+                    className="w-[40%] border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md text-[#1E1B1B] font-poppins text-[17px] font-medium placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
+                    placeholder="Enter Label"
+                  />
+                ) : (
+                  <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
+                    {footerSettings.footers[selectedFooters]?.Heading?.SubHeading2Label || "Sub-heading1"}
+                  </label>
+                )}
 
                 <input
                   type="text"
@@ -1644,12 +1687,47 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   placeholder="Enter Text"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
+                <button
+                  onClick={() => handleFooterSubHeadingEditToggle('SubHeading2')}
+                  className="text-[#1E1B1B] hover:text-[#598931] transition-colors"
+                >
+                  {footerSettings.footers[selectedFooters]?.Heading?.isEditingSubHeading2 ? (
+                    <FiSave className="w-5 h-5" />
+                  ) : (
+                    <CiEdit className="w-5 h-5" />
+                  )}
+                </button>
               </div>
 
               <div className="flex items-center gap-2">
-                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Sub-heading2
-                </label>
+                {footerSettings.footers[selectedFooters]?.Heading?.isEditingSubHeading3 ? (
+                  <input
+                    type="text"
+                    value={footerSettings.footers[selectedFooters]?.Heading?.SubHeading3Label ?? ""}
+                    onChange={(e) => {
+                      setFooterSettings((prev) => ({
+                        ...prev,
+                        footers: {
+                          ...prev.footers,
+                          [selectedFooters]: {
+                            ...prev.footers?.[selectedFooters],
+                            Heading: {
+                              ...(prev.footers?.[selectedFooters]?.Heading || {}),
+                              SubHeading3Label: e.target.value,
+                            },
+                          },
+                        },
+                      }));
+                      setIsSaveChanges(true);
+                    }}
+                    className="w-[40%] border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md text-[#1E1B1B] font-poppins text-[17px] font-medium placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
+                    placeholder="Enter Label"
+                  />
+                ) : (
+                  <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
+                    {footerSettings.footers[selectedFooters]?.Heading?.SubHeading3Label || "Sub-heading2"}
+                  </label>
+                )}
 
                 <input
                   type="text"
@@ -1662,12 +1740,47 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   placeholder="Enter Text"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
+                <button
+                  onClick={() => handleFooterSubHeadingEditToggle('SubHeading3')}
+                  className="text-[#1E1B1B] hover:text-[#598931] transition-colors"
+                >
+                  {footerSettings.footers[selectedFooters]?.Heading?.isEditingSubHeading3 ? (
+                    <FiSave className="w-5 h-5" />
+                  ) : (
+                    <CiEdit className="w-5 h-5" />
+                  )}
+                </button>
               </div>
 
               <div className="flex items-center gap-2">
-                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Sub-heading3
-                </label>
+                {footerSettings.footers[selectedFooters]?.Heading?.isEditingSubHeading4 ? (
+                  <input
+                    type="text"
+                    value={footerSettings.footers[selectedFooters]?.Heading?.SubHeading4Label ?? ""}
+                    onChange={(e) => {
+                      setFooterSettings((prev) => ({
+                        ...prev,
+                        footers: {
+                          ...prev.footers,
+                          [selectedFooters]: {
+                            ...prev.footers?.[selectedFooters],
+                            Heading: {
+                              ...(prev.footers?.[selectedFooters]?.Heading || {}),
+                              SubHeading4Label: e.target.value,
+                            },
+                          },
+                        },
+                      }));
+                      setIsSaveChanges(true);
+                    }}
+                    className="w-[40%] border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md text-[#1E1B1B] font-poppins text-[17px] font-medium placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
+                    placeholder="Enter Label"
+                  />
+                ) : (
+                  <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
+                    {footerSettings.footers[selectedFooters]?.Heading?.SubHeading4Label || "Sub-heading2"}
+                  </label>
+                )}
 
                 <input
                   type="text"
@@ -1677,15 +1790,50 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                       ?.SubHeading4 || ""
                   }
                   onChange={handleFooterChange}
-                  placeholder="Enter Text"
+                  placeholder="Enter Link"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
+                <button
+                  onClick={() => handleFooterSubHeadingEditToggle('SubHeading4')}
+                  className="text-[#1E1B1B] hover:text-[#598931] transition-colors"
+                >
+                  {footerSettings.footers[selectedFooters]?.Heading?.isEditingSubHeading4 ? (
+                    <FiSave className="w-5 h-5" />
+                  ) : (
+                    <CiEdit className="w-5 h-5" />
+                  )}
+                </button>
               </div>
 
               <div className="flex items-center gap-2">
-                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
-                  Sub-heading4
-                </label>
+                {footerSettings.footers[selectedFooters]?.Heading?.isEditingSubHeading5 ? (
+                  <input
+                    type="text"
+                    value={footerSettings.footers[selectedFooters]?.Heading?.SubHeading5Label ?? ""}
+                    onChange={(e) => {
+                      setFooterSettings((prev) => ({
+                        ...prev,
+                        footers: {
+                          ...prev.footers,
+                          [selectedFooters]: {
+                            ...prev.footers?.[selectedFooters],
+                            Heading: {
+                              ...(prev.footers?.[selectedFooters]?.Heading || {}),
+                              SubHeading5Label: e.target.value,
+                            },
+                          },
+                        },
+                      }));
+                      setIsSaveChanges(true);
+                    }}
+                    className="w-[40%] border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md text-[#1E1B1B] font-poppins text-[17px] font-medium placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
+                    placeholder="Enter Label"
+                  />
+                ) : (
+                  <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
+                    {footerSettings.footers[selectedFooters]?.Heading?.SubHeading5Label || "Sub-heading4"}
+                  </label>
+                )}
 
                 <input
                   type="text"
@@ -1698,6 +1846,16 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   placeholder="Enter Text"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
+                <button
+                  onClick={() => handleFooterSubHeadingEditToggle('SubHeading5')}
+                  className="text-[#1E1B1B] hover:text-[#598931] transition-colors"
+                >
+                  {footerSettings.footers[selectedFooters]?.Heading?.isEditingSubHeading5 ? (
+                    <FiSave className="w-5 h-5" />
+                  ) : (
+                    <CiEdit className="w-5 h-5" />
+                  )}
+                </button>
               </div>
               <hr />
 
@@ -1879,12 +2037,12 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
                   />
 
-                  <button
+                  {/* <button
                     onClick={() => handleEditToggle(social.id)}
                     className="text-[#1E1B1B] hover:text-[#598931]"
                   >
                     <CiEdit />
-                  </button>
+                  </button> */}
 
                   <button
                     onClick={() => handleRemoveSocialMedia(social.id)}
@@ -1977,12 +2135,12 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   />
 
                   {/* Edit Icon - Toggles Edit Mode */}
-                  <button
+                  {/* <button
                     onClick={() => handleContactEditToggle(contact.id)}
                     className="text-[#1E1B1B] hover:text-[#598931]"
                   >
                     <CiEdit />
-                  </button>
+                  </button> */}
 
                   {/* Remove Button */}
                   {/* <button

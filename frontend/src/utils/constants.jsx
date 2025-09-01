@@ -175,24 +175,24 @@ export const APPS = [
       appName: "Product Catalogue",
       appView: "ProductCataloguePreview",
       appImg: ProductCatalogue,
-      description: "Create an interactive map to display multiple locations with details, images, and search filters.",
+      description: "Create a smart product catalogue that highlights multiple images, detailed views, and powerful filtering options.",
       appID: "1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4",
       spreadSheetName: "Data",
       overview:
-        "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+        "The Product Catalogue allows you to present your products in a modern and interactive format, making it easier for customers to browse, explore, and find exactly what they need. Whether it’s multiple product images, detailed descriptions, or smart filters — everything is designed to make shopping effortless and engaging.",
       multipleImage: [PeopleImage, VideoImage],
       standOut: [
         {
-          "Heading 1":
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+          "Interactive Product Display":
+            "Showcase your products in an engaging layout that encourages easy browsing and comparison. Customers can explore items with a clean, organized view.",
         },
         {
-          "Heading 2":
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+          "Multiple Image Support":
+            "Add multiple images for each product to give buyers a complete visual experience, including zoom options for closer inspection of details.",
         },
         {
-          "Heading 3":
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gallery of type and scrambled it to make a type specimen book.",
+          " Smart Filters & Search":
+            "Help customers find products faster with advanced search options and customizable filters by category, price, or other attributes.",
         },
       ],
   },

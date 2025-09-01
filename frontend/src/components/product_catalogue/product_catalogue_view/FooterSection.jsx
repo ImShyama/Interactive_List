@@ -16,18 +16,42 @@ const FooterSection = ({ settingData }) => {
   const socialMediaSettings = footerSettings?.socialMediaSettings || {};
 
   // Convert footerHeaders object into an array of sections
-  const footerSections = Object.entries(footerHeaders || {}).map(([key, value]) => {
-    const { Heading } = value;
+  // const footerSections = Object.entries(footerHeaders || {}).map(([key, value]) => {
+  //   const { Heading } = value;
+  //   return {
+  //     title: Heading.SubHeading1,
+  //     items: [
+  //       Heading.SubHeading2,
+  //       Heading.SubHeading3,
+  //       Heading.SubHeading4,
+  //       Heading.SubHeading5
+  //     ].filter(item => item !== "") // Filter out empty strings
+  //   };
+  // });
+
+  // Convert footerHeaders object into an array of sections
+const footerSections = Object.entries(footerHeaders || {}).map(([key, value]) => {
+  const { Heading } = value;
+  
+  // Helper function to create item object with link and label
+  const createItem = (link, label) => {
+    if (!link && !label) return null;
     return {
-      title: Heading.SubHeading1,
-      items: [
-        Heading.SubHeading2,
-        Heading.SubHeading3,
-        Heading.SubHeading4,
-        Heading.SubHeading5
-      ].filter(item => item !== "") // Filter out empty strings
+      link: link || "",
+      label: label || link || "" // Use label if available, otherwise fallback to link
     };
-  });
+  };
+  
+  return {
+    title: Heading.SubHeading1,
+    items: [
+      createItem(Heading.SubHeading2, Heading.SubHeading2Label),
+      createItem(Heading.SubHeading3, Heading.SubHeading3Label),
+      createItem(Heading.SubHeading4, Heading.SubHeading4Label),
+      createItem(Heading.SubHeading5, Heading.SubHeading5Label)
+    ].filter(item => item !== null) // Filter out null items
+  };
+});
 
   // Function to get all social media links
   const getSocialMediaLinks = () => {
@@ -123,13 +147,23 @@ const FooterSection = ({ settingData }) => {
               </h3>
               <ul className="space-y-2">
                 {section.items.map((item, i) => (
-                  <li
-                    key={i}
-                    className="font-poppins text-[14.243px] font-normal leading-normal cursor-pointer"
-                    style={{ color: footerColor }}
-                  >
-                    {item}
-                  </li>
+                 <li
+                 key={i}
+                 className="font-poppins text-[14.243px] font-normal leading-normal cursor-pointer"
+                 style={{ color: footerColor }}
+               >
+                 {item.link ? (
+                   <a 
+                     href={item.link}
+                     className="hover:underline"
+                     style={{ color: footerColor }}
+                   >
+                     {item.label}
+                   </a>
+                 ) : (
+                   <span>{item.label}</span>
+                 )}
+               </li>
                 ))}
               </ul>
             </div>

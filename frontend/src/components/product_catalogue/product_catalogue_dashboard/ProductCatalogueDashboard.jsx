@@ -111,8 +111,16 @@ const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHe
             <DetailedView tableHeader={tableHeader} settings={settings} />
           </div>
           <div className="pb-4">
-            <BoxView settings={settings}/>
+            <BoxView settings={settings} tableHeader={tableHeader}/>
           </div>
+          <button
+            className="fixed bottom-20 right-60 px-4 py-2 text-white rounded-[8px] font-semibold text-lg"
+            style={{ backgroundColor: "#598931" }}
+           // open in new tab
+            onClick={() => window.open(`/${id}/view`, '_blank')}
+          >
+            User View
+          </button>
           <button
             className="fixed bottom-20 right-20 px-4 py-2 text-white rounded-[8px] font-semibold text-lg"
             style={{ backgroundColor: "#598931" }}

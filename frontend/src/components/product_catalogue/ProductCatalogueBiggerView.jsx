@@ -9,12 +9,16 @@ import { GoLink } from "react-icons/go";
 import { LiaFileVideo } from "react-icons/lia";
 import { Carousel } from "antd";
 import { getDriveThumbnail, RenderTextPC } from "../../utils/globalFunctions";
+import HeaderSection from "./product_catalogue_view/HeaderSection";
+import { useHeaderVisibility } from "../../context/HeaderVisibilityContext";
+
 
 const ProductCatalogueBiggerView = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { settingsId, rowKey } = useParams();
+  const { setHideHeader } = useHeaderVisibility();
 
   // Local state populated from BroadcastChannel/localStorage or fallback to location.state
   const [title, setTitle] = useState(location.state?.title);
@@ -32,8 +36,14 @@ const ProductCatalogueBiggerView = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeSection, setActiveSection] = useState(null);
+  const state = location.state || {};
+  // const effectiveData = state?.payload?.data;
+  // const effectiveSettings =  state?.payload?.settings;
+  const [effectiveData, setEffectiveData] = useState(null);
+  const [effectiveSettings, setEffectiveSettings] = useState(null);
 
-
+  
+  
   const channel = useMemo(() => new BroadcastChannel('product-data'), []);
 
   useEffect(() => {
@@ -68,7 +78,8 @@ const ProductCatalogueBiggerView = () => {
       setShowInCard(p.settings.showInCard || null);
       setCardSettings(p.settings?.productCatalogue?.cardSettings || null);
       setActiveSection(p.settings.showInBox?.[0]);
-
+      setEffectiveData(p.row);
+      setEffectiveSettings(p.settings);
 
       setLoading(false);
       // cleanup after 1 hour like video flow
@@ -117,6 +128,8 @@ const ProductCatalogueBiggerView = () => {
           rowData: resp.data?.data || null,
           showInProfile: resp.data?.settings?.showInProfile || null,
           showInCard: resp.data?.settings?.showInCard || null,
+          effectiveData: resp.data?.data || null,
+          effectiveSettings: resp.data?.settings || null,
         };
         applyData({ payload });
         return true;
@@ -173,10 +186,51 @@ const ProductCatalogueBiggerView = () => {
     );
   }
 
+// Alternative: More dynamic function that can handle any placeholder pattern
+function replaceAllTemplateVariables(template, data) {
+  let result = template;
+  
+  // Find all placeholders in the format {key} and replace them
+  const placeholderRegex = /\{([^}]+)\}/g;
+  
+  result = result.replace(placeholderRegex, (match, key) => {
+      // Convert key to lowercase and replace spaces with underscores
+      const normalizedKey = key.toLowerCase().replace(/\s+/g, '_');
+        
+      // Check if the normalized key exists in the data object
+      if (data.hasOwnProperty(normalizedKey)) {
+          return data[normalizedKey] || '';
+      }
+      // If key doesn't exist, return the original placeholder
+      return match;
+  });
+  
+  return result;
+}
+
+// Process the HTML content
+const htmlContent = activeSection ? replaceAllTemplateVariables(activeSection.value, rowData) : '';
+console.log("Dynamic replacement result:", htmlContent);
+
+
+  // Header visibility effect
+  useEffect(() => {
+    setHideHeader(true);
+    return () => {
+      setHideHeader(false);
+    };
+  }, [setHideHeader]);
+
+  
+
+
   return (
     <div className="min-h-screen bg-white flex flex-col p-2">
+
+      {/* Header Section */}
+      <HeaderSection isPopup={true} data={effectiveData} settings={effectiveSettings} />
       {/* Product Image and Description Section - Full Width */}
-      <div className="w-[90%] md:w-[95%] mx-auto py-10">
+      <div className="w-[90%] md:w-[95%] mx-auto py-20">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-16">
           {/* Image Section */}
           <div className="relative w-full md:w-1/2">
@@ -391,11 +445,14 @@ const ProductCatalogueBiggerView = () => {
           {/* {activeSection &&
             activeSection.value
           } */}
-
-          <div
+          {activeSection &&
+            <div
+          
             className="prose max-w-none text-gray-800"
-            dangerouslySetInnerHTML={{ __html: activeSection?.value }}
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
+            
           />
+        }
 
 
         </div>
