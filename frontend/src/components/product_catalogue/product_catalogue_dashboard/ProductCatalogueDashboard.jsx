@@ -119,7 +119,7 @@ const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHe
            // open in new tab
             onClick={() => window.open(`/${id}/view`, '_blank')}
           >
-            User View
+            View Link
           </button>
           <button
             className="fixed bottom-20 right-20 px-4 py-2 text-white rounded-[8px] font-semibold text-lg"

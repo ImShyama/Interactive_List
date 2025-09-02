@@ -147,23 +147,44 @@ const footerSections = Object.entries(footerHeaders || {}).map(([key, value]) =>
               </h3>
               <ul className="space-y-2">
                 {section.items.map((item, i) => (
-                 <li
-                 key={i}
-                 className="font-poppins text-[14.243px] font-normal leading-normal cursor-pointer"
-                 style={{ color: footerColor }}
-               >
-                 {item.link ? (
-                   <a 
-                     href={item.link}
-                     className="hover:underline"
-                     style={{ color: footerColor }}
-                   >
-                     {item.label}
-                   </a>
-                 ) : (
-                   <span>{item.label}</span>
-                 )}
-               </li>
+              //    <li
+              //    key={i}
+              //    className="font-poppins text-[14.243px] font-normal leading-normal cursor-pointer"
+              //    style={{ color: footerColor }}
+              //  >
+              //    {item.link ? (
+              //      <a 
+              //        href={item.link}
+              //        className="hover:underline"
+              //        style={{ color: footerColor }}
+              //      >
+              //        {item.label}
+              //      </a>
+              //    ) : (
+              //      <span>{item.label}</span>
+              //    )}
+              //  </li>
+
+              <li
+  key={i}
+  className="font-poppins text-[14.243px] font-normal leading-normal cursor-pointer"
+  style={{ color: footerColor }}
+>
+  {item.link ? (
+    <a 
+      href={item.link}
+      target="_blank"           // 👈 Opens in new tab
+      rel="noopener noreferrer" // 👈 Security best practice
+      className="hover:underline"
+      style={{ color: footerColor }}
+    >
+      {item.label}
+    </a>
+  ) : (
+    <span>{item.label}</span>
+  )}
+</li>
+
                 ))}
               </ul>
             </div>
