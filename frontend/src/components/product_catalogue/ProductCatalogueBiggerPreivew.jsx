@@ -84,6 +84,28 @@ const ProductCatalogueBiggerPreview = () => {
   const [activeSection, setActiveSection] = useState("features");
   const carouselRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  
+  // Helpers to detect media types for the carousel
+  const isVideoUrl = (url) => {
+    if (!url) return false;
+    const u = url.toString().toLowerCase();
+    return u.endsWith('.mp4') || u.endsWith('.webm') || u.endsWith('.ogg');
+  };
+
+  const isYouTubeUrl = (url) => {
+    if (!url) return false;
+    return /(?:youtube\.com\/.+v=|youtu\.be\/)/i.test(url);
+  };
+
+  const getYouTubeEmbedSrc = (url) => {
+    try {
+      const ytMatch = url.match(/(?:v=|youtu\.be\/)([\w-]+)/i);
+      const id = ytMatch ? ytMatch[1] : null;
+      return id ? `https://www.youtube.com/embed/${id}` : url;
+    } catch (e) {
+      return url;
+    }
+  };
   return (
     <div className="min-h-screen  flex flex-col p-2">
       {/* Product Image and Description Section - Full Width */}
@@ -98,22 +120,37 @@ const ProductCatalogueBiggerPreview = () => {
               <IoArrowBack className="text-white text-3xl" />
             </button> */}
 
-            <div className="relative w-full bg-[#FDFEFF] rounded-[51.746px] border-[2.07px] border-[#F1F1F1] shadow-lg overflow-hidden h-auto">
+            <div className="relative w-full bg-[#FDFEFF] rounded-[35.746px] border-[2.07px] border-[#F1F1F1] shadow-lg overflow-hidden h-auto">
               <Carousel
                 ref={carouselRef}
                 autoplay={true}
                 dots={true}
-                className="w-full h-full"
+                className="w-full h-full my-red-dots"
                 afterChange={(index) => setCurrentIndex(index)}
               >
                 {multipleimages.length > 0 ? (
-                  multipleimages.map((img, index) => (
+                  multipleimages.map((media, index) => (
                     <div key={index} className="w-full h-full">
-                      <img
-                        src={img}
-                        alt={`Slide ${index + 1}`}
-                        className="w-full h-[320px] object-cover"
-                      />
+                      <div className="w-full h-[360px] object-cover">
+                        {isVideoUrl(media) ? (
+                          <video controls className="max-w-full max-h-full" src={media} />
+                        ) : isYouTubeUrl(media) ? (
+                          <iframe
+                            className="w-full h-full"
+                            src={getYouTubeEmbedSrc(media)}
+                            title={`video-${index}`}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowFullScreen
+                          />
+                        ) : (
+                          <img
+                            src={media}
+                            alt={`Slide ${index + 1}`}
+                            className="w-full h-[360px] object-cover"
+                          />
+                        )}
+                      </div>
                     </div>
                   ))
                 ) : (
@@ -284,6 +321,11 @@ const ProductCatalogueBiggerPreview = () => {
           )}
         </div>
       </div>
+      {/* Scoped styles for red carousel dots */}
+      <style>{`
+        .my-red-dots .slick-dots li button { background: #ef4444 !important; }
+        .my-red-dots .slick-dots li.slick-active button { background: #b91c1c !important; }
+      `}</style>
     </div>
   );
 };
