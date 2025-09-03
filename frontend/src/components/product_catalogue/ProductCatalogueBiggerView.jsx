@@ -786,21 +786,41 @@ const ProductCatalogueBiggerView = () => {
   };
 
   // Get current media for expand functionality
+  // const getCurrentMedia = () => {
+  //   const currentMedia = multipleimages[currentIndex];
+  //   if (!currentMedia) return null;
+    
+  //   if (isYouTubeUrl(currentMedia)) {
+  //     // For YouTube, open the original URL
+  //     return currentMedia;
+  //   } else if (isVideoUrl(currentMedia)) {
+  //     // For video files, open the direct URL
+  //     return currentMedia;
+  //   } else {
+  //     // For images, use the processed source
+  //     return getImageSrc(currentMedia);
+  //   }
+  // };
+
+  const getYouTubeWatchUrl = (url) => {
+    const videoId = getYouTubeVideoId(url);
+    return videoId ? `https://www.youtube.com/watch?v=${videoId}` : url;
+  };
+  
   const getCurrentMedia = () => {
     const currentMedia = multipleimages[currentIndex];
     if (!currentMedia) return null;
-    
+  
     if (isYouTubeUrl(currentMedia)) {
-      // For YouTube, open the original URL
-      return currentMedia;
+      return getYouTubeWatchUrl(currentMedia); // 👍 open proper watch page
     } else if (isVideoUrl(currentMedia)) {
-      // For video files, open the direct URL
-      return currentMedia;
+      return currentMedia; // browser tries to play/download
     } else {
-      // For images, use the processed source
       return getImageSrc(currentMedia);
     }
   };
+  
+
 
   // Header visibility effect
   useEffect(() => {
