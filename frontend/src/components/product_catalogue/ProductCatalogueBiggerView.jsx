@@ -580,23 +580,23 @@ const ProductCatalogueBiggerView = () => {
     }
 
     const applyData = (data) => {
-      console.log({ data: data.payload });
+      console.log({ data: data?.payload });
       const p = data?.payload || {};
-      setTitle(p.title);
-      setSubtitle(p.subtitle);
-      setDescription(p.description);
-      setMultipleimages(Array.isArray(p.multipleimages) ? p.multipleimages : (p.multipleimages ? [p.multipleimages] : []));
-      setSheetlink(p.sheetlink);
-      setVideolink(p.videolink);
-      setFeatures(p.features);
-      setRowData(p.row || null);
-      setShowInProfile(p.settings.showInProfile || null);
-      setShowInBox(p.settings.showInBox || null);
-      setShowInCard(p.settings.showInCard || null);
-      setCardSettings(p.settings?.productCatalogue?.cardSettings || null);
-      setActiveSection(p.settings.showInBox?.[0]);
-      setEffectiveData(p.row);
-      setEffectiveSettings(p.settings);
+      setTitle(p?.title);
+      setSubtitle(p?.subtitle);
+      setDescription(p?.description);
+      setMultipleimages(Array.isArray(p?.multipleimages) ? p?.multipleimages : (p?.multipleimages ? [p.multipleimages] : []));
+      setSheetlink(p?.sheetlink);
+      setVideolink(p?.videolink);
+      setFeatures(p?.features);
+      setRowData(p?.row || null);
+      setShowInProfile(p?.settings?.showInProfile || null);
+      setShowInBox(p?.settings?.showInBox || null);
+      setShowInCard(p?.settings?.showInCard || null);
+      setCardSettings(p?.settings?.productCatalogue?.cardSettings || null);
+      setActiveSection(p?.settings?.showInBox?.[0]);
+      setEffectiveData(p?.row);
+      setEffectiveSettings(p?.settings);
 
       setLoading(false);
       try {
