@@ -1036,7 +1036,7 @@ const ProductCatalogueBiggerView = () => {
         </div>
       </div>
 
-      <div className="w-[90%] md:w-[95%] mx-auto py-12 relative">
+      <div className="w-[90%] md:w-[95%] mx-auto mt-[-50px] relative">
         {/* Features Section - Also Full Width */}
         <div className="relative flex flex-col items-start gap-[15.246px] rounded-[50px] bg-[rgba(211,238,188,0.10)] px-12 md:px-20 pt-8 md:pt-12 pb-20 shadow-lg">
           {/* Buttons at the Top Center */}
@@ -1046,7 +1046,7 @@ const ProductCatalogueBiggerView = () => {
                 <button
                   key={item.id || item.text}
                   onClick={() => setActiveSection(item)}
-                  className={`px-4 py-2 rounded-[8px] font-semibold shadow-md transition-all duration-300 text-xl ${(activeSection?.text === item?.text)
+                  className={`px-4 py-2 rounded-[8px] font-semibold shadow-md transition-all duration-300 text-base ${(activeSection?.text === item?.text)
                     ? "bg-[#598931] text-white"
                     : "bg-[#EBEEE9] text-[#9B9B9B]"
                     }`}

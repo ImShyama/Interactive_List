@@ -243,14 +243,14 @@ const ProductCatalogueBiggerPreview = () => {
         </div>
       </div>
 
-      <div className="w-[90%] md:w-[95%] mx-auto py-4 relative">
+      <div className="w-[90%] md:w-[95%] mx-auto  relative">
         {/* Features Section - Also Full Width */}
         <div className="relative flex flex-col  items-start gap-[15.246px] rounded-[50px] bg-[rgba(211,238,188,0.10)] px-12 md:px-20 pt-8 md:pt-12 pb-20 shadow-lg ">
           {/* Buttons at the Top Center */}
           <div className="w-full flex justify-center gap-8 mb-10">
             <button
               onClick={() => setActiveSection("features")}
-              className={`px-4 py-2 rounded-[8px] font-semibold shadow-md transition-all duration-300 text-xl ${
+              className={`px-4 py-2 rounded-[8px] font-semibold shadow-md transition-all duration-300 text-base ${
                 activeSection === "features"
                   ? "bg-[#598931] text-white"
                   : "bg-[#EBEEE9] text-[#9B9B9B]"
