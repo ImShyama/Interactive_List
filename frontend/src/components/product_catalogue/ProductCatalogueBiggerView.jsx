@@ -522,15 +522,17 @@
 
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useLocation, useNavigate, useSearchParams, useParams } from "react-router-dom";
-import { IoArrowBack } from "react-icons/io5";
+import { IoArrowBack, IoPlayOutline } from "react-icons/io5";
 import { CgArrowsExpandRight } from "react-icons/cg";
 import { PiStarFour } from "react-icons/pi";
 import { GoLink } from "react-icons/go";
 import { LiaFileVideo } from "react-icons/lia";
+import { FaPlay } from "react-icons/fa6";
 import { Carousel } from "antd";
 import { getDriveThumbnail, RenderTextPC } from "../../utils/globalFunctions";
 import HeaderSection from "./product_catalogue_view/HeaderSection";
 import { useHeaderVisibility } from "../../context/HeaderVisibilityContext";
+
 
 const ProductCatalogueBiggerView = () => {
   const location = useLocation();
@@ -679,6 +681,56 @@ const ProductCatalogueBiggerView = () => {
   const carouselRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const contentRef = useRef(null);
+
+  // Custom carousel dots component
+  const CustomCarouselDots = () => {
+    if (multipleimages.length <= 1) return null;
+    
+    return (
+      <div className="absolute bottom-4 left-0 w-full py-2 flex justify-center">
+        <div className="flex gap-2">
+          {multipleimages.map((media, index) => {
+            const isVideo = isVideoUrl(media) || isYouTubeUrl(media);
+            const isActive = index === currentIndex;
+            
+            if (isVideo) {
+              return (
+                <button
+                  key={index}
+                  onClick={() => {
+                    if (carouselRef.current) {
+                      carouselRef.current.goTo(index);
+                    }
+                  }}
+                  className="w-3 h-3 transition-all duration-300 hover:scale-110"
+                  title={`Go to slide ${index + 1}`}
+                >
+                  <FaPlay className="text-[#598931] text-sm" />
+                </button>
+              );
+            }
+            
+            return (
+              <button
+                key={index}
+                onClick={() => {
+                  if (carouselRef.current) {
+                    carouselRef.current.goTo(index);
+                  }
+                }}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  isActive 
+                    ? 'bg-[#598931] scale-125' 
+                    : 'bg-[#598931] opacity-50 hover:opacity-75'
+                }`}
+                title={`Go to slide ${index + 1}`}
+              />
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
 
   // Map dynamic button text to a known section key
   const resolveSectionType = (label) => {
@@ -844,8 +896,8 @@ const ProductCatalogueBiggerView = () => {
               <Carousel
                 ref={carouselRef}
                 autoplay={true}
-                dots={true}
-                className="w-full h-full my-red-dots"
+                dots={false}
+                className="w-full h-full"
                 afterChange={(index) => setCurrentIndex(index)}
               >
                 {multipleimages.length > 0 ? (
@@ -915,9 +967,7 @@ const ProductCatalogueBiggerView = () => {
                 )}
               </Carousel>
 
-              <div className="absolute bottom-4 left-0 w-full py-2 flex justify-center">
-                <ul className="custom-carousel-dots"></ul>
-              </div>
+              <CustomCarouselDots />
 
               {multipleimages.length > 0 && (
                 <button
@@ -1107,22 +1157,7 @@ const ProductCatalogueBiggerView = () => {
         </div>
       </div>
       
-      {/* Scoped styles for red carousel dots */}
-      <style>{`
-        .my-red-dots .slick-dots li button { 
-          background: #598931 !important; 
-          border-radius: 50%;
-          width: 12px;
-          height: 12px;
-        }
-        .my-red-dots .slick-dots li.slick-active button { 
-          background: #598931 !important; 
-          transform: scale(1.2);
-        }
-        .my-red-dots .slick-dots {
-          bottom: 10px;
-        }
-      `}</style>
+      {/* Custom carousel dots are now handled by the CustomCarouselDots component */}
     </div>
   );
 };
