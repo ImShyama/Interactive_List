@@ -322,9 +322,24 @@ const ProductCatalogueBiggerPreview = () => {
         </div>
       </div>
       {/* Scoped styles for red carousel dots */}
-      <style>{`
+      {/* <style>{`
         .my-red-dots .slick-dots li button { background: #ef4444 !important; }
         .my-red-dots .slick-dots li.slick-active button { background: #b91c1c !important; }
+      `}</style> */}
+       <style>{`
+        .my-red-dots .slick-dots li button { 
+          background: #598931 !important; 
+          border-radius: 50%;
+          width: 12px;
+          height: 12px;
+        }
+        .my-red-dots .slick-dots li.slick-active button { 
+          background: #598931 !important; 
+          transform: scale(1.2);
+        }
+        .my-red-dots .slick-dots {
+          bottom: 10px;
+        }
       `}</style>
     </div>
   );
