@@ -290,7 +290,7 @@ const BoxView = ({ settings, tableHeader }) => {
                   +
                 </span>
                 <span className="text-[18px] font-medium font-[Poppins]">
-                  Add Field
+                  Add Header
                 </span>
               </button>
             </div>

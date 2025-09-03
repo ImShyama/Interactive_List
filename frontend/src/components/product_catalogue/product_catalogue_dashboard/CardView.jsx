@@ -363,7 +363,7 @@ const CardView = ({ tableHeader, settings }) => {
                   +
                 </span>
                 <span className="text-[18px] font-medium font-[Poppins]">
-                  Add Column
+                  Add Header
                 </span>
               </button>
             </div>

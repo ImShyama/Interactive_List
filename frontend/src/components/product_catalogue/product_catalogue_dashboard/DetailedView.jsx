@@ -416,7 +416,7 @@ const DetailedView = ({ tableHeader, settings }) => {
                   +
                 </span>
                 <span className="text-[18px] font-medium font-[Poppins]">
-                  Add Field
+                  Add Header
                 </span>
               </button>
             </div>
