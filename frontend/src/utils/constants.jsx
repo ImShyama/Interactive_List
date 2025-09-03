@@ -3,8 +3,8 @@ export const CLIENT_ID = "733145859090-a841efgntmtqmpqn8u08oiulimf0leeu.apps.goo
 // export const FRONTENDHOST = "http://localhost:5173"
 export const HOST = ""
 export const FRONTENDHOST = "https://interact.ceoitbox.com"
-import PeopleImage from "../assets/images/PeopleImage.png";
-import PeopleImage1 from "../assets/images/PeopleImage1.png";
+// import PeopleImage from "../assets/images/PeopleImage.png";
+// import PeopleImage1 from "../assets/images/PeopleImage1.png";
 import PeopleImage2 from "../assets/images/PeopleImage2.png";
 import VideoImage from "../assets/images/VideoImage.png";
 import VideoImage1 from "../assets/images/VideoImage1.png";
