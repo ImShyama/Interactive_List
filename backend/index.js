@@ -952,7 +952,7 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
     const sourceSpreadsheetTitle = getSpreadsheetResponse.data.properties.title;
 
     // Try to get basic file metadata first
-    let access = "shared"; // Default to shared access (matching original lowercase)
+    let access = "owner"; // Default to shared access (matching original lowercase)
     let lastUpdatedDate = new Date(); // Fallback to current date
     
     try {

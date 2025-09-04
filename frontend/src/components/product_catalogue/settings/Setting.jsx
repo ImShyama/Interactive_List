@@ -1684,7 +1684,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                       ?.SubHeading2 || ""
                   }
                   onChange={handleFooterChange}
-                  placeholder="Enter Text"
+                  placeholder="Enter Link"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
                 <button
@@ -1737,7 +1737,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                       ?.SubHeading3 || ""
                   }
                   onChange={handleFooterChange}
-                  placeholder="Enter Text"
+                  placeholder="Enter Link"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
                 <button
@@ -1843,7 +1843,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                       ?.SubHeading5 || ""
                   }
                   onChange={handleFooterChange}
-                  placeholder="Enter Text"
+                  placeholder="Enter Link"
                   className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md max-w-[180px] w-full max-h-[30px] flex-1 placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none "
                 />
                 <button
