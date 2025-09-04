@@ -109,14 +109,15 @@ const ProductCatalogueCard = ({
           src={getDriveThumbnail(multipleimages[0]) || ImageNotFound}
           alt={title1}
           className="w-full h-[200px] object-cover rounded-t-2xl"
+          onClick={handleClick}
           // onError={(e) => { handlePCImageError(e) }}
         />
-        <button
+        {/* <button
           onClick={handleClick}
           className="absolute bottom-[10px] right-[10px] bg-[#598931] p-3 rounded-full shadow-md"
         >
           <GoArrowUpRight className="text-white text-xl" />
-        </button>
+        </button> */}
       </div>
 
       {/* Second Child - Content Section with #F6F8ED background */}

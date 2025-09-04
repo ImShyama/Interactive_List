@@ -12,7 +12,7 @@ import { UserContext } from "../../../context/UserContext";
 import { useDispatch } from "react-redux";
 import { handleSaveChanges } from "../../../APIs/index.jsx";
 import Info from "../../info.jsx";
-
+import { notifyError } from "../../../utils/notify.jsx";
 const CardView = ({ tableHeader, settings }) => {
   const [columns, setColumns] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState({});
@@ -90,25 +90,53 @@ const CardView = ({ tableHeader, settings }) => {
     }
   };
 
+  // const handleCheckboxChange = (item) => {
+  //   setSelectedItems((prev) => {
+  //     const newSelectedItems = {
+  //       ...prev,
+  //       [item.key]: !prev[item.key],
+  //     };
+
+  //     // If the item is being selected (becoming true)
+  //     if (!prev[item.key]) {
+  //       // Add it to the end of savedSelections
+  //       setSavedSelections(prev => [...prev, item]);
+  //     } else {
+  //       // If the item is being deselected, remove it from savedSelections
+  //       setSavedSelections(prev => prev.filter(i => i.key !== item.key));
+  //     }
+
+  //     return newSelectedItems;
+  //   });
+  // };
+
   const handleCheckboxChange = (item) => {
     setSelectedItems((prev) => {
+      const isSelected = prev[item.key];
+
+      // 🚫 Prevent selecting more than 6
+      if (!isSelected && savedSelections.length >= 6) {
+        notifyError("You can select a maximum of 6 options."); // ✅ Toast instead of alert
+        return prev; // Do not allow adding more
+      }
+
       const newSelectedItems = {
         ...prev,
-        [item.key]: !prev[item.key],
+        [item.key]: !isSelected,
       };
 
-      // If the item is being selected (becoming true)
-      if (!prev[item.key]) {
-        // Add it to the end of savedSelections
-        setSavedSelections(prev => [...prev, item]);
+      if (!isSelected) {
+        // Add to savedSelections
+        setSavedSelections((prev) => [...prev, item]);
       } else {
-        // If the item is being deselected, remove it from savedSelections
-        setSavedSelections(prev => prev.filter(i => i.key !== item.key));
+        // Remove from savedSelections
+        setSavedSelections((prev) => prev.filter((i) => i.key !== item.key));
       }
 
       return newSelectedItems;
     });
   };
+
   console.log({ selectedItems })
 
   const handleSelectAll = () => {
@@ -363,7 +391,7 @@ const CardView = ({ tableHeader, settings }) => {
                   +
                 </span>
                 <span className="text-[18px] font-medium font-[Poppins]">
-                  Add Header
+                  Add Column
                 </span>
               </button>
             </div>
