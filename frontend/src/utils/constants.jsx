@@ -1,8 +1,8 @@
 export const CLIENT_ID = "733145859090-a841efgntmtqmpqn8u08oiulimf0leeu.apps.googleusercontent.com";
-// export const HOST = "http://localhost:4000"
-// export const FRONTENDHOST = "http://localhost:5173"
-export const HOST = ""
-export const FRONTENDHOST = "https://interact.ceoitbox.com"
+export const HOST = "http://localhost:4000"
+export const FRONTENDHOST = "http://localhost:5173"
+// export const HOST = ""
+// export const FRONTENDHOST = "https://interact.ceoitbox.com"
 import PeopleImage from "../assets/images/PeopleImage.png";
 import PeopleImage1 from "../assets/images/PeopleImage1.png";
 import PeopleImage2 from "../assets/images/PeopleImage2.png";
@@ -56,6 +56,8 @@ export const APPS = [
     overview:
       "Transform your raw data into a fully interactive, searchable, and customizable table. Ideal for employee databases, client records, or project tracking.",
     multipleImage: [InteractiveList,InteractiveList1,InteractiveList2],
+    allowedGroups: [],
+    show: true,
     standOut: [
       {
         "Seamless Data Management":
@@ -81,6 +83,8 @@ export const APPS = [
     overview:
       "The People Directory is a dynamic, interactive tool designed to help organizations present, explore, and connect with their team members in one place. Whether you're a startup or an enterprise, this tool allows for a clean, engaging, and searchable view of your workforce.",
     multipleImage: [PeopleImage, PeopleImage1, PeopleImage2],
+    allowedGroups: [],
+    show: true,
     standOut: [
       {
         "Centralized Directory":
@@ -92,7 +96,7 @@ export const APPS = [
       },
       {
         "Customizable to Your Needs":
-          "Easily customize fields to match your company’s needs—whether it's for HR use, internal networking, or a public-facing team page.",
+          "Easily customize fields to match your company's needs—whether it's for HR use, internal networking, or a public-facing team page.",
       },
     ],
   },
@@ -106,6 +110,8 @@ export const APPS = [
     overview:
       "The Video Gallery helps you showcase your visual content in a clean, structured, and interactive way. Whether you're highlighting tutorials, marketing campaigns, internal presentations, or testimonials—this gallery organizes your videos beautifully for easy access and engagement.",
     multipleImage: [VideoImage, VideoImage1, VideoImage2],
+    allowedGroups: [],
+    show: true,
     standOut: [
       {
         "Smart Categorization":
@@ -131,6 +137,8 @@ export const APPS = [
     overview:
       "The Photo Gallery offers a seamless and visually stunning way to organize, browse, and present images. Whether you're showcasing event pictures, product photography, employee portraits, or visual assets, our tool makes image management easy and efficient.",
     multipleImage: [PhotoGallery, PhotoGallery1, PhotoGallery2],
+    allowedGroups: [],
+    show: true,
     standOut: [
       {
         "Clean Visual Layout":
@@ -156,6 +164,8 @@ export const APPS = [
     overview:
       "The Interactive Map allows you to display data in a location-based format, making it easier to explore, analyze, and present geographically distributed information. Whether it's store locations, employee spread, service zones, or client territories — make it all interactive and visual.",
     multipleImage: [InteractiveMap,InteractiveMap1,InteractiveMap2],
+    allowedGroups: [],
+    show: true,
     standOut: [
       {
         "Geo-Based Visualization":
@@ -179,8 +189,10 @@ export const APPS = [
       appID: "1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4",
       spreadSheetName: "Data",
       overview:
-        "The Product Catalogue allows you to present your products in a modern and interactive format, making it easier for customers to browse, explore, and find exactly what they need. Whether it’s multiple product images, detailed descriptions, or smart filters — everything is designed to make shopping effortless and engaging.",
+        "The Product Catalogue allows you to present your products in a modern and interactive format, making it easier for customers to browse, explore, and find exactly what they need. Whether it's multiple product images, detailed descriptions, or smart filters — everything is designed to make shopping effortless and engaging.",
       multipleImage: [PeopleImage, VideoImage],
+      allowedGroups: [],
+      show: true,
       standOut: [
         {
           "Interactive Product Display":

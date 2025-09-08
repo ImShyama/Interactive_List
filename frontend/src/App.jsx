@@ -41,7 +41,17 @@ import ProductCatalogueBiggerView from "./components/product_catalogue/ProductCa
 import ProductCatalogueBiggerPreview from "./components/product_catalogue/ProductCatalogueBiggerPreivew";
 import WebsiteLayout from "./components/Interact_Website/WebsiteLayout";
 import NotFound from './components/NotFound';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+// Create a client
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 // Layout Component
 const Layout = () => {
@@ -49,28 +59,30 @@ const Layout = () => {
   const [hideHeader, setHideHeader] = useState(false);
 
   return(
-  <Provider store={appStore}>
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#598931", // green
-        },
-      }}
-    >
-      <HeaderVisibilityContext.Provider value={{ hideHeader, setHideHeader }}>
-        <Header />
-        <ToastContainer position="top-right" autoClose={3000} />
-        <div className={hideHeader ? "relative" : "mt-[80px] relative"}>
-          <Outlet />
-          {role === "admin" && ( // Show AdminBtn only if role is 'admin'
-            <div className="fixed bottom-6 right-6 z-50">
-              <AdminBtn />
-            </div>
-          )}
-        </div>
-      </HeaderVisibilityContext.Provider>
-    </ConfigProvider>
-  </Provider>
+  <QueryClientProvider client={queryClient}>
+    <Provider store={appStore}>
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#598931", // green
+          },
+        }}
+      >
+        <HeaderVisibilityContext.Provider value={{ hideHeader, setHideHeader }}>
+          <Header />
+          <ToastContainer position="top-right" autoClose={3000} />
+          <div className={hideHeader ? "relative" : "mt-[80px] relative"}>
+            <Outlet />
+            {role === "admin" && ( // Show AdminBtn only if role is 'admin'
+              <div className="fixed bottom-6 right-6 z-50">
+                <AdminBtn />
+              </div>
+            )}
+          </div>
+        </HeaderVisibilityContext.Provider>
+      </ConfigProvider>
+    </Provider>
+  </QueryClientProvider>
   )
 };
 
