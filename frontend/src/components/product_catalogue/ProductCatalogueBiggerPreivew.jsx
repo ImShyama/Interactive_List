@@ -56,10 +56,10 @@ const ProductCatalogueBiggerPreview = () => {
     };
 
     try {
-      const raw = localStorage.getItem(`product_data_${expectedUid}`);
+      const raw = localStorage.getItem(`catalogue_data_${expectedUid}`);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed?.type === 'PRODUCT_DATA' && parsed?.id === expectedUid) {
+        if ((parsed?.type === 'PRODUCT_DATA' || parsed?.type === 'CATALOGUE_DATA') && parsed?.id === expectedUid) {
           applyData(parsed);
           return;
         }
@@ -68,7 +68,7 @@ const ProductCatalogueBiggerPreview = () => {
 
     const onMessage = (event) => {
       const msg = event?.data;
-      if (msg?.type === 'PRODUCT_DATA' && msg?.id === expectedUid) {
+      if ((msg?.type === 'PRODUCT_DATA' || msg?.type === 'CATALOGUE_DATA') && msg?.id === expectedUid) {
         applyData(msg);
       }
     };
@@ -377,3 +377,5 @@ const ProductCatalogueBiggerPreview = () => {
 };
 
 export default ProductCatalogueBiggerPreview;
+
+

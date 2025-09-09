@@ -86,6 +86,7 @@ const defaultVideo = {
 };
 
 const VideoCard = ({ rowData, settings }) => {
+  console.log({rowData, settings})
   // Use `video` if provided, otherwise use `defaultVideo`
   const videoData = rowData || defaultVideo;
   const settingsData = settings || defaultSettings;
@@ -122,6 +123,7 @@ const VideoCard = ({ rowData, settings }) => {
       uniqueId,
       channelName: 'video-data'
     });
+    
 
     // Send via BroadcastChannel
     channel.postMessage(videoData);
@@ -182,12 +184,12 @@ const VideoCard = ({ rowData, settings }) => {
   // };
 
   const getEmbeddedVideoURL = (url) => {
-    if (url.includes("youtube.com") || url.includes("youtu.be")) {
+    if (url?.includes("youtube.com") || url?.includes("youtu.be")) {
       try {
         const urlObj = new URL(url);
 
         // Already an embed URL
-        if (url.includes("embed")) {
+        if (url?.includes("embed")) {
           return url;
         }
 
@@ -208,32 +210,32 @@ const VideoCard = ({ rowData, settings }) => {
       }
     }
 
-    if (url.includes("drive.google.com")) {
+    if (url?.includes("drive.google.com")) {
       return `https://drive.google.com/file/d/${url.split("/d/")[1].split("/")[0]
         }/preview`;
     }
 
-    if (url.includes("vimeo.com")) {
+    if (url?.includes("vimeo.com")) {
       const videoId = url.split("/").pop();
       return `https://player.vimeo.com/video/${videoId}`;
     }
 
-    if (url.includes("dailymotion.com")) {
+    if (url?.includes("dailymotion.com")) {
       const videoId = url.split("/video/")[1]?.split("_")[0];
       return `https://www.dailymotion.com/embed/video/${videoId}`;
     }
 
-    if (url.includes("facebook.com")) {
+    if (url?.includes("facebook.com")) {
       return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
         url
       )}`;
     }
 
-    if (url.includes("instagram.com")) {
+    if (url?.includes("instagram.com")) {
       return `https://www.instagram.com/p/${url.split("/")[4]}/embed/`;
     }
 
-    if (url.endsWith(".mp4") || url.endsWith(".webm") || url.endsWith(".ogg")) {
+    if (url?.endsWith(".mp4") || url.endsWith(".webm") || url.endsWith(".ogg")) {
       return url;
     }
 
@@ -312,7 +314,7 @@ const VideoCard = ({ rowData, settings }) => {
 
                     if (!videoUrl) return videoData[settingsData?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_")];
 
-                    if (videoUrl.includes("drive.google.com")) {
+                    if (videoUrl?.includes("drive.google.com")) {
                       let driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
                       console.log({ driveIdMatch, videoUrl });
                       return driveIdMatch ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}` : "";
@@ -331,7 +333,7 @@ const VideoCard = ({ rowData, settings }) => {
         <span
 
           style={{
-            fontStyle: ["normal", "italic", "oblique"].includes(
+            fontStyle: ["normal", "italic", "oblique"]?.includes(
               settingsData?.showInCard[2]?.setting?.fontStyle
             )
               ? settingsData?.showInCard[2]?.setting?.fontStyle
@@ -341,14 +343,14 @@ const VideoCard = ({ rowData, settings }) => {
               "underline",
               "line-through",
               "overline",
-            ].includes(settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase())
+            ]?.includes(settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase())
               ? settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase()
               : undefined,
             fontVariant:
               settingsData?.showInCard[2]?.setting?.fontStyle.toLowerCase() === "small-caps"
                 ? "small-caps"
                 : undefined,
-            textTransform: ["uppercase", "lowercase"].includes(
+            textTransform: ["uppercase", "lowercase"]?.includes(
               settingsData?.showInCard[2]?.setting?.fontStyle
             )
               ? settingsData?.showInCard[2]?.setting?.fontStyle
@@ -372,7 +374,7 @@ const VideoCard = ({ rowData, settings }) => {
 
 
         <span style={{
-          fontStyle: ["normal", "italic", "oblique"].includes(
+          fontStyle: ["normal", "italic", "oblique"]?.includes(
             settingsData?.showInCard[3]?.setting?.fontStyle
           )
             ? settingsData?.showInCard[3]?.setting?.fontStyle
@@ -382,14 +384,14 @@ const VideoCard = ({ rowData, settings }) => {
             "underline",
             "line-through",
             "overline",
-          ].includes(settingsData?.showInCard[3]?.setting?.fontStyle)
+          ]?.includes(settingsData?.showInCard[3]?.setting?.fontStyle)
             ? settingsData?.showInCard[3]?.setting?.fontStyle
             : undefined,
           fontVariant:
             settingsData?.showInCard[3]?.setting?.fontStyle === "small-caps"
               ? "small-caps"
               : undefined,
-          textTransform: ["uppercase", "lowercase"].includes(
+          textTransform: ["uppercase", "lowercase"]?.includes(
             settingsData?.showInCard[3]?.setting?.fontStyle
           )
             ? settingsData?.showInCard[3]?.setting?.fontStyle
@@ -405,7 +407,7 @@ const VideoCard = ({ rowData, settings }) => {
 
         <span
           style={{
-            fontStyle: ["normal", "italic", "oblique"].includes(
+            fontStyle: ["normal", "italic", "oblique"]?.includes(
               settingsData?.showInCard[4]?.setting?.fontStyle
             )
               ? settingsData?.showInCard[4]?.setting?.fontStyle
@@ -415,14 +417,14 @@ const VideoCard = ({ rowData, settings }) => {
               "underline",
               "line-through",
               "overline",
-            ].includes(settingsData?.showInCard[4]?.setting?.fontStyle)
+            ]?.includes(settingsData?.showInCard[4]?.setting?.fontStyle)
               ? settingsData?.showInCard[4]?.setting?.fontStyle
               : undefined,
             fontVariant:
               settingsData?.showInCard[4]?.setting?.fontStyle === "small-caps"
                 ? "small-caps"
                 : undefined,
-            textTransform: ["uppercase", "lowercase"].includes(
+            textTransform: ["uppercase", "lowercase"]?.includes(
               settingsData?.showInCard[4]?.setting?.fontStyle
             )
               ? settingsData?.showInCard[4]?.setting?.fontStyle
@@ -444,7 +446,7 @@ const VideoCard = ({ rowData, settings }) => {
 
 
         <span style={{
-          fontStyle: ["normal", "italic", "oblique"].includes(
+          fontStyle: ["normal", "italic", "oblique"]?.includes(
             settingsData?.showInCard[5]?.setting?.fontStyle
           )
             ? settingsData?.showInCard[5]?.setting?.fontStyle
@@ -454,14 +456,14 @@ const VideoCard = ({ rowData, settings }) => {
             "underline",
             "line-through",
             "overline",
-          ].includes(settingsData?.showInCard[5]?.setting?.fontStyle)
+          ]?.includes(settingsData?.showInCard[5]?.setting?.fontStyle)
             ? settingsData?.showInCard[5]?.setting?.fontStyle
             : undefined,
           fontVariant:
             settingsData?.showInCard[5]?.setting?.fontStyle === "small-caps"
               ? "small-caps"
               : undefined,
-          textTransform: ["uppercase", "lowercase"].includes(
+          textTransform: ["uppercase", "lowercase"]?.includes(
             settingsData?.showInCard[5]?.setting?.fontStyle
           )
             ? settingsData?.showInCard[5]?.setting?.fontStyle

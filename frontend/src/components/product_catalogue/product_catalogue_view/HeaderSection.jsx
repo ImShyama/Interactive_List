@@ -113,7 +113,7 @@ const HeaderSection = ({ isPopup = false, settings }) => {
             <div className="right-panel pl-10">
 
               {/* Profile Image */}
-              <div className="right-pannel-profil">
+              <div className="right-pannel-profile cursor-pointer">
                 <img
                   ref={profileImageRef}
                   className="header-panel-profile"

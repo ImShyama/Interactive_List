@@ -842,8 +842,8 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
 
 
     return (
-        <div>
-            <div className="flex text-center justify-between items-center px-[50px]">
+        <div className="h-[calc(100vh-80px)]">
+            <div className="flex text-center justify-between items-center px-[50px] ">
                 <div className="flex align-center gap-[10px]">
                     {isEditMode && <button onClick={() => navigate(-1)} title="Back">
                         <BackIcon />
