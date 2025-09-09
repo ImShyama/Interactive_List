@@ -663,6 +663,7 @@ import { useHeaderVisibility } from "../../context/HeaderVisibilityContext";
 import axios from "axios";
 import { UserContext } from "../../context/UserContext";
 import { HOST } from "../../utils/constants";
+import Loader from "../Loader";
 
 
 const ProductCatalogueBiggerView = () => {
@@ -709,7 +710,7 @@ const ProductCatalogueBiggerView = () => {
       setLoading(false);
       return;
     }
-
+    
     // Function to process video data
     const processcatalogueData = (catalogueData) => {
       console.log('✅ Processing video data:', catalogueData);
@@ -766,8 +767,9 @@ const ProductCatalogueBiggerView = () => {
     }
 
 
-
+    
     const fetchFromServer = async () => {
+      setLoading(true);
       try {
         // If localStorage didn't work, try server fallback
         console.log('🌐 Trying to fetch data from server...');
@@ -1073,13 +1075,23 @@ const ProductCatalogueBiggerView = () => {
 
   console.log({multipleimages})
 
+  //  Show full page loader when loading
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-white z-50 flex items-center justify-center">
+        <Loader textToDisplay="Loading..."/>
+      </div>
+    );
+  }
+  else {
   return (
     <div className="min-h-screen bg-white flex flex-col">
       {/* Header Section */}
+      
       <HeaderSection isPopup={true} data={effectiveData} settings={effectiveSettings} />
 
       {/* Product Image and Description Section - Full Width */}
-      <div className="w-[90%] md:w-[95%] mx-auto py-20">
+      <div className="w-[90%] md:w-[95%] mx-auto py-8">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-16">
           {/* Image Section */}
           <div className="relative w-full md:w-1/2">
@@ -1227,12 +1239,12 @@ const ProductCatalogueBiggerView = () => {
           </div>
         </div>
       </div>
-
-      <div className="w-[90%] md:w-[95%] mx-auto mt-[-50px] relative">
+      {showInBox?.length >= 1 && (
+      <div className="w-[90%] md:w-[95%] mx-auto mb-8 relative">
         {/* Features Section - Also Full Width */}
-        <div className="relative flex flex-col items-start gap-[15.246px] rounded-[50px] bg-[rgba(211,238,188,0.10)] px-12 md:px-20 pt-8 md:pt-12 pb-20 shadow-lg">
+        <div className="relative flex flex-col items-start gap-[15.246px] rounded-[50px] bg-[rgba(211,238,188,0.10)] px-12 md:px-20 pt-2 md:py-4 shadow-lg">
           {/* Buttons at the Top Center */}
-          <div className="w-full flex justify-center gap-8 mb-10">
+          <div className="w-full flex justify-center gap-8">
             {showInBox?.map((item) => {
               return (
                 <button
@@ -1348,10 +1360,11 @@ const ProductCatalogueBiggerView = () => {
           )}
         </div>
       </div>
-
+      )}
       {/* Custom carousel dots are now handled by the CustomCarouselDots component */}
     </div>
   );
+}
 };
 
 export default ProductCatalogueBiggerView;

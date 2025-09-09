@@ -159,9 +159,9 @@ const ProductCatalogueBiggerPreview = () => {
     }
   };
   return (
-    <div className="min-h-screen  flex flex-col p-2">
+    <div className="min-h-screen  flex flex-col px-2">
       {/* Product Image and Description Section - Full Width */}
-      <div className="w-[90%] md:w-[95%] mx-auto py-10">
+      <div className="w-[90%] md:w-[95%] mx-auto py-4">
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-16">
           {/* Image Section */}
           <div className="relative w-full md:w-1/2">
@@ -243,11 +243,11 @@ const ProductCatalogueBiggerPreview = () => {
         </div>
       </div>
 
-      <div className="w-[90%] md:w-[95%] mx-auto  relative">
+      <div className="w-[90%] md:w-[95%] mx-auto  mb-8 relative">
         {/* Features Section - Also Full Width */}
-        <div className="relative flex flex-col  items-start gap-[15.246px] rounded-[50px] bg-[rgba(211,238,188,0.10)] px-12 md:px-20 pt-8 md:pt-12 pb-20 shadow-lg ">
+        <div className="relative flex flex-col  items-start gap-[15.246px] rounded-[50px] bg-[rgba(211,238,188,0.10)] px-12 md:px-20 pt-8 md:py-4 shadow-lg ">
           {/* Buttons at the Top Center */}
-          <div className="w-full flex justify-center gap-8 mb-10">
+          <div className="w-full flex justify-center gap-8">
             <button
               onClick={() => setActiveSection("features")}
               className={`px-4 py-2 rounded-[8px] font-semibold shadow-md transition-all duration-300 text-base ${
