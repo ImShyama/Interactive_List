@@ -279,7 +279,7 @@ const Header = () => {
                 </div>
               )}
               {isEditMode && <img src={dividerIcon} />}
-              <div className="right-pannel-profil">
+              <div className="right-pannel-profile cursor-pointer">
                 <img
                   ref={profileImageRef} // Added ref to the profile image
                   className="header-panel-profile"

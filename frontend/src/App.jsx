@@ -116,7 +116,8 @@ const appRouter = createBrowserRouter([
       { path: "/ProductCataloguePreview", element: <ProductCataloguePreview /> },
       { path: "/ProductCatalogueView", element: <ProductCatalogueView /> },
       { path: "/ProductCatalogueBiggerPreview", element: <ProductCatalogueBiggerPreview /> },
-      { path: "/ProductCatalogueBiggerView", element: <ProductCatalogueBiggerView /> },
+      // { path: "/ProductCatalogueBiggerView", element: <ProductCatalogueBiggerView /> },
+      { path: "/catalogue/:settingsId/:catalogueId", element: <ProductCatalogueBiggerView /> },
     ],
   },
   // Add catch-all route for 404
