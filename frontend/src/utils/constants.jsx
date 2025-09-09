@@ -19,7 +19,6 @@ import InteractiveMap from "../assets/images/InteractiveMap.png"
 import InteractiveMap1 from "../assets/images/InteractiveMap1.png"
 import InteractiveMap2 from "../assets/images/InteractiveMap2.png"
 import PeopleDirectory from "../assets/images/PeopleDirectoryCard.png"
-
 import PhotoGallery from "../assets/images/PhotoGallery.png"
 import PhotoGallery1 from "../assets/images/PhotoGallery1.png"
 import PhotoGallery2 from "../assets/images/PhotoGallery2.png"

@@ -360,6 +360,7 @@ const DashboardTable = () => {
                       <button
                         onClick={() => openModal(sheet)}
                         className="relative"
+                        title="Preview"
                       >
                         <div className="group">
                           <svg
@@ -388,7 +389,20 @@ const DashboardTable = () => {
                         </div>
                       </button>
 
-                      {sheet.access == "view" && (
+                      {/* Copy button - always visible for all access types */}
+                      <button
+                        className="icons"
+                        onClick={() => handleCopyToClipboard(sheet)}
+                        title="Copy View Link"
+                      >
+                        <div className="group">
+                          <MdOutlineContentCopy
+                            className="cursor-pointer text-xl text-[#919191]"
+                          />
+                        </div>
+                      </button>
+
+                      {/* {sheet.access == "view" && (
                         <button
                           className="icons"
                           onClick={() => handleCopy(sheet._id, sheet.access)}
@@ -423,13 +437,14 @@ const DashboardTable = () => {
                             </svg>
                           </div>
                         </button>
-                      )}
+                      )} */}
 
                       {sheet.access !== "view" && (
                         <button
                           className="icons"
                           onClick={() => handleEdit(sheet._id, sheet.access)}
                           disabled={sheet.access == "view"}
+                          title="Edit"
                         >
                           <div className="group">
                             <svg
@@ -476,6 +491,7 @@ const DashboardTable = () => {
                             )
                           }
                           disabled={sheet.access == "view"}
+                          title="Delete"
                         >
                           <div className="group">
                             <svg
@@ -531,6 +547,7 @@ const DashboardTable = () => {
                           className="icons"
                           onClick={() => handleShare(sheet._id, sheet.sharedWith, sheet)}
                           disabled={sheet.access == "view"}
+                          title="Share"
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
