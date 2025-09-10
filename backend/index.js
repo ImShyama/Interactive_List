@@ -402,7 +402,7 @@ app.get("/getallusers", authenticateToken, async (req, res) => {
     // Fetch all users
     const users = await User.find({}).lean();
 
-    console.log({ requser: req.user, isAdmin: req.user.role === "admin" });
+    // console.log({ requser: req.user, isAdmin: req.user.role === "admin" });
     if (!req.user || req.user.role !== "admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -2670,7 +2670,7 @@ app.post("/getSpreadSheets", authenticateToken, async (req, res) => {
         access = "owner";
       } else {
         let tempSharedWith = sheet.sharedWith.find(access => access.email === emailID)
-        console.log({ tempSharedWith });
+        // console.log({ tempSharedWith });
         access = tempSharedWith.permission.toLowerCase();
       }
       return { ...sheet, access: access };
@@ -3302,10 +3302,26 @@ app.post("/getSheetRowData", dynamicAuth, async (req, res) => {
 
 // ==================== APPS ROUTES ====================
 
-// GET all apps
-app.get("/apps", async (req, res) => {
+// GET all apps for admin
+app.get("/apps/admin",authenticateToken, async (req, res) => {
   try {
     const apps = await App.find({}).sort({ createdAt: 1 });
+    res.status(200).json(apps);
+  } catch (error) {
+    console.error("Error fetching apps:", error);
+    res.status(500).json({ error: "Failed to fetch apps" });
+  }
+});
+
+// GET all apps
+app.get("/apps",authenticateToken, async (req, res) => {
+  try {
+    const user = req.user;
+    console.log("userfsafsa: ", user);
+    const allowedGroups = user.slmData.sheet_detail.groupNames;
+    console.log("user.slmData: ", user.slmData.sheet_detail);
+    console.log("allowedGroups: ", allowedGroups);
+    const apps = await App.find({ allowedGroups: { $in: allowedGroups } }).sort({ createdAt: 1 });
     res.status(200).json(apps);
   } catch (error) {
     console.error("Error fetching apps:", error);

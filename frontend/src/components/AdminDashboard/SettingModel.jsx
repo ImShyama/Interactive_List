@@ -4,6 +4,8 @@ import { fetchGroupNames } from '../../APIs/index.jsx';
 
 const SettingModel = ({ openSettingsModal, handleCancel, handleSave, selectedApp }) => {
     const [selectedGroups, setSelectedGroups] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
 
     // React Query to fetch group names
     const { data: groupNames, isLoading, error } = useQuery({
@@ -21,6 +23,13 @@ const SettingModel = ({ openSettingsModal, handleCancel, handleSave, selectedApp
         }
     }, [selectedApp]);
 
+    // Filter groups based on search term
+    const filteredGroups = groupNames && Array.isArray(groupNames) 
+        ? groupNames.filter(group => 
+            group.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        : [];
+
     const handleGroupToggle = (group) => {
         setSelectedGroups(prev => {
             if (prev.includes(group)) {
@@ -29,6 +38,17 @@ const SettingModel = ({ openSettingsModal, handleCancel, handleSave, selectedApp
                 return [...prev, group];
             }
         });
+    };
+
+    const handleSaveClick = async () => {
+        setIsSaving(true);
+        try {
+            await handleSave(selectedGroups);
+        } catch (error) {
+            console.error('Error saving settings:', error);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     if (!openSettingsModal) return null;
@@ -64,6 +84,17 @@ const SettingModel = ({ openSettingsModal, handleCancel, handleSave, selectedApp
                         Select Allowed Groups
                     </label>
                     
+                    {/* Search input */}
+                    <div className="mb-3">
+                        <input
+                            type="text"
+                            placeholder="Search groups..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                    </div>
+                    
                     {isLoading ? (
                         <div className="text-center py-4">
                             <div className="text-gray-500">Loading groups...</div>
@@ -74,8 +105,8 @@ const SettingModel = ({ openSettingsModal, handleCancel, handleSave, selectedApp
                         </div>
                     ) : (
                         <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-md">
-                            {groupNames && Array.isArray(groupNames) && groupNames.length > 0 ? (
-                                groupNames.map((group, index) => (
+                            {filteredGroups && filteredGroups.length > 0 ? (
+                                filteredGroups.map((group, index) => (
                                     <div key={index} className="flex items-center p-3 hover:bg-gray-50">
                                         <input
                                             type="checkbox"
@@ -94,7 +125,7 @@ const SettingModel = ({ openSettingsModal, handleCancel, handleSave, selectedApp
                                 ))
                             ) : (
                                 <div className="text-center py-4 text-gray-500">
-                                    No groups available
+                                    {searchTerm ? 'No groups found matching your search' : 'No groups available'}
                                 </div>
                             )}
                         </div>
@@ -126,10 +157,21 @@ const SettingModel = ({ openSettingsModal, handleCancel, handleSave, selectedApp
                         Cancel
                     </button>
                     <button
-                        onClick={() => handleSave(selectedGroups)}
-                        className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                        onClick={handleSaveClick}
+                        disabled={isSaving}
+                        className={`px-4 py-2 text-white rounded-md transition-colors flex items-center space-x-2 ${
+                            isSaving 
+                                ? 'bg-gray-400 cursor-not-allowed' 
+                                : 'bg-green-600 hover:bg-green-700'
+                        }`}
                     >
-                        Save Settings
+                        {isSaving && (
+                            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        )}
+                        <span>{isSaving ? 'Saving...' : 'Save Settings'}</span>
                     </button>
                 </div>
             </div>

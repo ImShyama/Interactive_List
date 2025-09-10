@@ -5,7 +5,7 @@ import { Tooltip } from "antd";
 import { notifySuccess, notifyError } from "../../utils/notify";
 import SettingModel from "./SettingModel";
 import { MdEdit, MdBlock, MdArrowBack } from "react-icons/md";
-import { fetchApps, updateAppGroups, toggleAppVisibility } from "../../APIs/index.jsx";
+import { fetchAppsAdmin, updateAppGroups, toggleAppVisibility } from "../../APIs/index.jsx";
 import useToken from "../../utils/useToken";
 
 const AppsList = ({ onBack }) => {
@@ -21,7 +21,7 @@ const AppsList = ({ onBack }) => {
         const loadApps = async () => {
             try {
                 setLoading(true);
-                const appsData = await fetchApps(token);
+                const appsData = await fetchAppsAdmin(token);
                 setApps(appsData);
             } catch (error) {
                 console.error("Error loading apps:", error);
@@ -53,7 +53,7 @@ const AppsList = ({ onBack }) => {
     const handleToggleApp = async (app) => {
         try {
             const updatedApp = await toggleAppVisibility(app._id, token);
-            setApps((prevApps) => 
+            setApps((prevApps) =>
                 prevApps.map(a => a._id === app._id ? updatedApp : a)
             );
             notifySuccess(`App ${app.show ? 'disabled' : 'enabled'} successfully`);
@@ -71,7 +71,7 @@ const AppsList = ({ onBack }) => {
         if (selectedApp) {
             try {
                 const updatedApp = await updateAppGroups(selectedApp._id, selectedGroups, token);
-                setApps((prevApps) => 
+                setApps((prevApps) =>
                     prevApps.map(app => app._id === selectedApp._id ? updatedApp : app)
                 );
                 notifySuccess("App settings updated successfully");
@@ -217,55 +217,59 @@ const AppsList = ({ onBack }) => {
                 ) : (
                     <div className="space-y-4">
                         {filteredApps.map((app) => (
-                        <div
-                            key={app.appName}
-                            className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                            <div className="flex items-center space-x-4">
-                                <div className="w-[100px] h-[100px] rounded-lg flex items-center justify-center">
-                                    <img
-                                        src={app.appImg}
-                                        alt={app.appName}
-                                        className="w-[100px] h-[100px] object-contain"
-                                    />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-gray-800">
-                                        {app.appName}
-                                    </h3>
-                                    <p className="text-sm text-gray-600">
-                                        {app.description}
-                                    </p>
-                                    <div className="flex items-center space-x-2 mt-1">
-                                        <span className={`px-2 py-1 text-xs rounded-full ${app.show
+                            <div
+                                key={app.appName}
+                                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                            >
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-[100px] h-[50px] rounded-lg flex items-center justify-center">
+                                        <img
+                                            src={app.appImg}
+                                            alt={app.appName}
+                                            className="w-[100px] h-[50px] object-contain"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col items-start justify-center gap-2">
+                                        <div className="flex items-center justify-start gap-2">
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-0">
+                                                {app.appName}
+                                            </h3>
+                                            <div className="flex items-center space-x-2">
+                                                {/* <span className={`px-2 py-1 text-xs rounded-full ${app.show
                                                 ? 'bg-green-100 text-green-800'
                                                 : 'bg-red-100 text-red-800'
                                             }`}>
                                             {app.show ? 'Enabled' : 'Disabled'}
-                                        </span>
-                                        {app.allowedGroups.length > 0 && (
-                                            <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
-                                                {app.allowedGroups.length} group(s) assigned
-                                            </span>
-                                        )}
+                                        </span> */}
+                                                {app.allowedGroups.length > 0 && (
+                                                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                                                        {app.allowedGroups.length} group(s) assigned
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <p className="text-sm text-gray-600 mb-0">
+                                            {app.description}
+                                        </p>
+
                                     </div>
                                 </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Tooltip title="Edit App Settings">
-                                    <IconButton
-                                        onClick={() => handleEditApp(app)}
-                                        sx={{
-                                            color: "#3b82f6",
-                                            "&:hover": {
-                                                backgroundColor: "#eff6ff",
-                                            },
-                                        }}
-                                    >
-                                        <MdEdit size={20} />
-                                    </IconButton>
-                                </Tooltip>
-                                <Tooltip title={app.show ? "Disable App" : "Enable App"}>
+                                <div className="flex items-center space-x-2">
+                                    <Tooltip title="Edit App Settings">
+                                        <IconButton
+                                            onClick={() => handleEditApp(app)}
+                                            sx={{
+                                                color: "#3b82f6",
+                                                "&:hover": {
+                                                    backgroundColor: "#eff6ff",
+                                                },
+                                            }}
+                                        >
+                                            <MdEdit size={20} />
+                                        </IconButton>
+                                    </Tooltip>
+                                    {/* <Tooltip title={app.show ? "Disable App" : "Enable App"}>
                                     <IconButton
                                         onClick={() => handleToggleApp(app)}
                                         sx={{
@@ -277,9 +281,9 @@ const AppsList = ({ onBack }) => {
                                     >
                                         <MdBlock size={20} />
                                     </IconButton>
-                                </Tooltip>
+                                </Tooltip> */}
+                                </div>
                             </div>
-                        </div>
                         ))}
                     </div>
                 )}

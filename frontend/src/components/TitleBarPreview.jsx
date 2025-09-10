@@ -12,7 +12,8 @@ import Loader from "./Loader";
 import { notifySuccess } from "../utils/notify";
 import PreviewBtn from "./component/PreviewBtn";
 import CopyBtn from "./component/CopyBtn";
-import {APPS} from '../utils/constants'
+import { fetchApps } from "../APIs";
+
 const TitleBarPreview = ({ appName, spreadSheetID, spreadSheetName }) => {
   const navigate = useNavigate(); // Initialize the navigate function
   const [openPicker, authResponse] = useDrivePicker();
@@ -21,8 +22,16 @@ const TitleBarPreview = ({ appName, spreadSheetID, spreadSheetName }) => {
   const token = Cookies.get('token');
   const [loading, setLoading] = useState(false);
   const { token: userToken } = useContext(UserContext);
-  const currentApp = APPS.find((app) => app.appName === appName);
-  console.log({currentApp, appName, spreadSheetID, spreadSheetName});
+  
+  const [apps, setApps] = useState(null);
+  const currentApp = apps?.find((app) => app.appName === appName);
+
+  useEffect(() => {
+    fetchApps(token).then((res) => {
+      setApps(res);
+    });
+  }, [token]);
+
 
   const handleCopy = () => {
     setLoading(true);

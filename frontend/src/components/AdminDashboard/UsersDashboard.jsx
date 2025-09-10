@@ -403,21 +403,15 @@ const UsersDashboard = (props) => {
                     </div>
                   </div>
 
-                   {/* Apps Button */}
-                   <button
-                     onClick={() => setCurrentView("apps")}
-                     className="px-4 py-2 w-[200px] rounded-md text-sm font-medium transition-colors bg-blue-600 text-white hover:bg-blue-700"
-                   >
-                     Apps List
-                   </button>
 
-                   {/* Seed Apps Button */}
-                   <button
+
+                  {/* Seed Apps Button */}
+                  {/* <button
                      onClick={handleSeedApps}
                      className="px-4 py-2 rounded-md text-sm font-medium transition-colors bg-green-600 text-white hover:bg-green-700"
                    >
                      Seed Apps
-                   </button>
+                   </button> */}
 
                   {/* Search Inputs */}
                   <Input
@@ -471,6 +465,21 @@ const UsersDashboard = (props) => {
                     onClick={handleReset}
                   >
                     Reset
+                  </button>
+
+                  {/* Apps Button */}
+                  <button
+                    onClick={() => setCurrentView("apps")}
+                    className="bg-primary rounded-[4px] p-[5px] text-white w-[110px]"
+                    style={{
+                      border: "1px solid #ccc",
+                      outline: "1px solid transparent",
+                      borderRadius: "5px",
+                      padding: "5px 20px",
+                      fontSize: "14px",
+                    }}
+                  >
+                    Apps List
                   </button>
                 </div>
               ) : (

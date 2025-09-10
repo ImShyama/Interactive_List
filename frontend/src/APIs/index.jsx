@@ -212,6 +212,21 @@ export const fetchGroupNames = async () => {
 
 // ==================== APPS API FUNCTIONS ====================
 
+// GET all apps for admin
+export const fetchAppsAdmin = async (token) => {
+  try {
+    const response = await axios.get(`${HOST}/apps/admin`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching apps admin:", error);
+    throw error;
+  }
+};
+
 // GET all apps
 export const fetchApps = async (token) => {
   try {
