@@ -5,7 +5,7 @@ import { CgArrowsExpandRight } from "react-icons/cg";
 import { PiStarFour } from "react-icons/pi";
 import { GoLink } from "react-icons/go";
 
-import { FaPlay } from "react-icons/fa6";
+import { FaPlay, FaCircleChevronLeft, FaCircleChevronRight } from "react-icons/fa6";
 import { Carousel } from "antd";
 import { IoPlayOutline } from "react-icons/io5";
 
@@ -86,6 +86,19 @@ const ProductCatalogueBiggerPreview = () => {
   const [activeSection, setActiveSection] = useState("features");
   const carouselRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+
+   // Navigation functions for carousel
+   const goToPrevious = () => {
+    if (carouselRef.current) {
+      carouselRef.current.prev();
+    }
+  };
+
+  const goToNext = () => {
+    if (carouselRef.current) {
+      carouselRef.current.next();
+    }
+  };
   
   // Custom carousel dots component
   const CustomCarouselDots = () => {
@@ -172,7 +185,7 @@ const ProductCatalogueBiggerPreview = () => {
               <IoArrowBack className="text-white text-3xl" />
             </button> */}
 
-            <div className="relative w-full bg-[#FDFEFF] rounded-[35.746px] border-[2.07px] border-[#F1F1F1] shadow-lg overflow-hidden h-auto">
+            <div className="relative w-full bg-[#FDFEFF] rounded-[35.746px] border-[2.07px] border-[#F1F1F1] shadow-lg overflow-hidden h-auto group">
               <Carousel
                 ref={carouselRef}
                 autoplay={true}
@@ -211,6 +224,29 @@ const ProductCatalogueBiggerPreview = () => {
                   </div>
                 )}
               </Carousel>
+
+                {/* Navigation Arrows */}
+                {multipleimages.length > 1 && (
+                  <>
+                    {/* Left Arrow */}
+                    <button
+                      onClick={goToPrevious}
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 opacity-0 group-hover:opacity-100 "
+                      title="Previous image"
+                    >
+                      <FaCircleChevronLeft className="text-[#598931] text-2xl" />
+                    </button>
+
+                    {/* Right Arrow */}
+                    <button
+                      onClick={goToNext}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all duration-200 hover:scale-110 opacity-0 group-hover:opacity-100"
+                      title="Next image"
+                    >
+                      <FaCircleChevronRight className="text-[#598931] text-2xl" />
+                    </button>
+                  </>
+                )}
 
               <CustomCarouselDots />
 
