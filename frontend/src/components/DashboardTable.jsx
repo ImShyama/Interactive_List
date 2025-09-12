@@ -542,7 +542,7 @@ const DashboardTable = () => {
                         </button>
                       )}
 
-                      {sheet.access == "owner" ? (
+                      {sheet.access == "owner" && (
                         <button
                           className="icons"
                           onClick={() => handleShare(sheet._id, sheet.sharedWith, sheet)}
@@ -596,15 +596,17 @@ const DashboardTable = () => {
                             />
                           </svg>
                         </button>
-                      ) :
-                        (<div><button className="icons pt-1" title="Reset Table Styles"
-                          onClick={() => handleCopyToClipboard(sheet)}
-                        >
-                          <MdOutlineContentCopy
-                            className=" cursor-pointer text-xl text-[#919191]"
-                            title={"Copy View Link"}
-                          />
-                        </button></div>)
+                      // ) :
+                      //   (
+                      //   <div><button className="icons pt-1" title="Reset Table Styles"
+                      //     onClick={() => handleCopyToClipboard(sheet)}
+                      //   >
+                      //     <MdOutlineContentCopy
+                      //       className=" cursor-pointer text-xl text-[#919191]"
+                      //       title={"Copy View Link"}
+                      //     />
+                      //   </button></div>
+                        )
                       }
                     </td>
                   </tr>

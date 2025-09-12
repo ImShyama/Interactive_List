@@ -32,9 +32,9 @@ const PreviewBtn = () => {
             <button onClick={(e) => handleAlert(e)} className="bg-primary rounded-[4px] p-[5px]" title="Delete">
                 <MdDelete color="white" size={18} />
             </button>
-            <button onClick={() => handleAlert(e)} className="bg-primary rounded-[4px] p-[5px]" title="Preview">
+            {/* <button onClick={() => handleAlert(e)} className="bg-primary rounded-[4px] p-[5px]" title="Preview">
                 <FiEye color="white" size={18} />
-            </button>
+            </button> */}
             <button onClick={(e) => handleAlert(e)} className="bg-primary rounded-[4px] p-[5px]" title="Hide Columns">
                 <BiSolidHide color="white" size={18} />
             </button>
