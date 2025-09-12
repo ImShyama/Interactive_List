@@ -11,6 +11,7 @@ const { authenticateToken, authenticateTokenPrivate } = require("./Middlewares/A
 const { google } = require("googleapis");
 const Sheet = require("./Models/SheetModel.js");
 const User = require("./Models/UserModel.js");
+const App = require("./Models/AppModel.js");
 const fetchuser = require("./Middlewares/FetchUser.js");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
@@ -401,7 +402,7 @@ app.get("/getallusers", authenticateToken, async (req, res) => {
     // Fetch all users
     const users = await User.find({}).lean();
 
-    console.log({ requser: req.user, isAdmin: req.user.role === "admin" });
+    // console.log({ requser: req.user, isAdmin: req.user.role === "admin" });
     if (!req.user || req.user.role !== "admin") {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -2669,7 +2670,7 @@ app.post("/getSpreadSheets", authenticateToken, async (req, res) => {
         access = "owner";
       } else {
         let tempSharedWith = sheet.sharedWith.find(access => access.email === emailID)
-        console.log({ tempSharedWith });
+        // console.log({ tempSharedWith });
         access = tempSharedWith.permission.toLowerCase();
       }
       return { ...sheet, access: access };
@@ -3296,6 +3297,291 @@ app.post("/getSheetRowData", dynamicAuth, async (req, res) => {
   } catch (error) {
     console.error("Error fetching row data:", error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== APPS ROUTES ====================
+
+// GET all apps for admin
+app.get("/apps/admin",authenticateToken, async (req, res) => {
+  try {
+    const apps = await App.find({}).sort({ createdAt: 1 });
+    res.status(200).json(apps);
+  } catch (error) {
+    console.error("Error fetching apps:", error);
+    res.status(500).json({ error: "Failed to fetch apps" });
+  }
+});
+
+// GET all apps
+app.get("/apps",authenticateToken, async (req, res) => {
+  try {
+    const user = req.user;
+    console.log("userfsafsa: ", user);
+    const allowedGroups = user.slmData.sheet_detail.groupNames;
+    console.log("user.slmData: ", user.slmData.sheet_detail);
+    console.log("allowedGroups: ", allowedGroups);
+    const apps = await App.find({ allowedGroups: { $in: allowedGroups } }).sort({ createdAt: 1 });
+    res.status(200).json(apps);
+  } catch (error) {
+    console.error("Error fetching apps:", error);
+    res.status(500).json({ error: "Failed to fetch apps" });
+  }
+});
+
+// GET single app by ID
+app.get("/apps/:id", async (req, res) => {
+  try {
+    const app = await App.findById(req.params.id);
+    if (!app) {
+      return res.status(404).json({ error: "App not found" });
+    }
+    res.status(200).json(app);
+  } catch (error) {
+    console.error("Error fetching app:", error);
+    res.status(500).json({ error: "Failed to fetch app" });
+  }
+});
+
+// POST create new app
+app.post("/apps", authenticateToken, async (req, res) => {
+  try {
+    const newApp = new App(req.body);
+    const savedApp = await newApp.save();
+    res.status(201).json(savedApp);
+  } catch (error) {
+    console.error("Error creating app:", error);
+    if (error.code === 11000) {
+      res.status(400).json({ error: "App with this name already exists" });
+    } else {
+      res.status(500).json({ error: "Failed to create app" });
+    }
+  }
+});
+
+// PUT update app by ID
+app.put("/apps/:id", authenticateToken, async (req, res) => {
+  try {
+    const updatedApp = await App.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    
+    if (!updatedApp) {
+      return res.status(404).json({ error: "App not found" });
+    }
+    
+    res.status(200).json(updatedApp);
+  } catch (error) {
+    console.error("Error updating app:", error);
+    if (error.code === 11000) {
+      res.status(400).json({ error: "App with this name already exists" });
+    } else {
+      res.status(500).json({ error: "Failed to update app" });
+    }
+  }
+});
+
+// PUT update app's allowed groups
+app.put("/apps/:id/groups", authenticateToken, async (req, res) => {
+  try {
+    const { allowedGroups } = req.body;
+    const updatedApp = await App.findByIdAndUpdate(
+      req.params.id,
+      { allowedGroups },
+      { new: true, runValidators: true }
+    );
+    
+    if (!updatedApp) {
+      return res.status(404).json({ error: "App not found" });
+    }
+    
+    res.status(200).json(updatedApp);
+  } catch (error) {
+    console.error("Error updating app groups:", error);
+    res.status(500).json({ error: "Failed to update app groups" });
+  }
+});
+
+// PUT toggle app visibility (show/hide)
+app.put("/apps/:id/toggle", authenticateToken, async (req, res) => {
+  try {
+    const app = await App.findById(req.params.id);
+    if (!app) {
+      return res.status(404).json({ error: "App not found" });
+    }
+    
+    app.show = !app.show;
+    const updatedApp = await app.save();
+    
+    res.status(200).json(updatedApp);
+  } catch (error) {
+    console.error("Error toggling app visibility:", error);
+    res.status(500).json({ error: "Failed to toggle app visibility" });
+  }
+});
+
+// POST seed initial apps data
+app.post("/apps/seed", authenticateToken, async (req, res) => {
+  try {
+    // Check if apps already exist
+    const existingApps = await App.countDocuments();
+    if (existingApps > 0) {
+      return res.status(400).json({ error: "Apps already exist in database" });
+    }
+
+    // Initial apps data from constants
+    const initialApps = [
+      {
+        appName: "Interactive List",
+        appView: "InteractiveListView",
+        appImg: "https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=IL",
+        description: "Transform raw data into an interactive, searchable, and customizable table.",
+        appID: "1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ",
+        spreadSheetName: "Data",
+        overview: "Transform your raw data into a fully interactive, searchable, and customizable table. Ideal for employee databases, client records, or project tracking.",
+        multipleImage: ["https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=IL1", "https://via.placeholder.com/100x100/4F46E5/FFFFFF?text=IL2"],
+        allowedGroups: [],
+        show: true,
+        standOut: [
+          {
+            "Seamless Data Management": "Easily select your desire spreadsheet data and convert it into an organized table view. Enjoy edit, delete, and select functionalities directly in the table."
+          },
+          {
+            "Fully Customizable Tables": "Use built-in settings to customize font size, colors, background, and overall appearance of both headers and body to suit your brand style."
+          },
+          {
+            "Powerful Filtering & Search": "Enable advanced search, sorting, and filtering across all columns, so you can instantly find the information you need."
+          }
+        ]
+      },
+      {
+        appName: "People Directory",
+        appView: "PeopleDirectoryPreview",
+        appImg: "https://via.placeholder.com/100x100/059669/FFFFFF?text=PD",
+        description: "Convert your employee database into an interactive format.",
+        appID: "1VIWkwCewrs9Ydbo4mTWLovsa78jX1ZJc33BJpaZ5WHg",
+        spreadSheetName: "Data",
+        overview: "The People Directory is a dynamic, interactive tool designed to help organizations present, explore, and connect with their team members in one place. Whether you're a startup or an enterprise, this tool allows for a clean, engaging, and searchable view of your workforce.",
+        multipleImage: ["https://via.placeholder.com/100x100/059669/FFFFFF?text=PD1", "https://via.placeholder.com/100x100/059669/FFFFFF?text=PD2"],
+        allowedGroups: [],
+        show: true,
+        standOut: [
+          {
+            "Centralized Directory": "Keep all employee or team data in one centralized place. Search, sort, and filter by department, location, skills, or any custom attribute."
+          },
+          {
+            "Interactive & User-Friendly Design": "Sleek, card-style interface with quick access to employee profiles. Click to view detailed bios, contact details, and project involvement."
+          },
+          {
+            "Customizable to Your Needs": "Easily customize fields to match your company's needs—whether it's for HR use, internal networking, or a public-facing team page."
+          }
+        ]
+      },
+      {
+        appName: "Video Gallery",
+        appView: "VideoGalleryPreview",
+        appImg: "https://via.placeholder.com/100x100/DC2626/FFFFFF?text=VG",
+        description: "Transform scattered videos into a visually appealing and structured gallery.",
+        appID: "1d8_iPCgw7NhMd-4Jjl4RY_aENd0kA-j3YiaB24mVe4U",
+        spreadSheetName: "Data",
+        overview: "The Video Gallery helps you showcase your visual content in a clean, structured, and interactive way. Whether you're highlighting tutorials, marketing campaigns, internal presentations, or testimonials—this gallery organizes your videos beautifully for easy access and engagement.",
+        multipleImage: ["https://via.placeholder.com/100x100/DC2626/FFFFFF?text=VG1", "https://via.placeholder.com/100x100/DC2626/FFFFFF?text=VG2"],
+        allowedGroups: [],
+        show: true,
+        standOut: [
+          {
+            "Smart Categorization": "Easily sort videos into categories like marketing, product tutorials, or team updates. Make it easier for viewers to find what they're looking for."
+          },
+          {
+            "Responsive and Easy to Embed": "Designed to work on all devices, the gallery can be embedded into your internal tools, websites, or shared portals with ease."
+          },
+          {
+            "Interactive Player & Metadata": "Integrated video viewer with detailed metadata—title, tags, duration, creator info, and more—all in one clean card format."
+          }
+        ]
+      },
+      {
+        appName: "Photo Gallery",
+        appView: "PhotoGalleryPreview",
+        appImg: "https://via.placeholder.com/100x100/7C3AED/FFFFFF?text=PG",
+        description: "Easily organize and explore images in a structured gallery with zoom and slideshow features.",
+        appID: "1U8KFBe4oEtO5RmA3J2aj5F0zUIgghDRq5Y3JIi8VVq4",
+        spreadSheetName: "Data",
+        overview: "The Photo Gallery offers a seamless and visually stunning way to organize, browse, and present images. Whether you're showcasing event pictures, product photography, employee portraits, or visual assets, our tool makes image management easy and efficient.",
+        multipleImage: ["https://via.placeholder.com/100x100/7C3AED/FFFFFF?text=PG1", "https://via.placeholder.com/100x100/7C3AED/FFFFFF?text=PG2"],
+        allowedGroups: [],
+        show: true,
+        standOut: [
+          {
+            "Clean Visual Layout": "Present your image assets in a structured, grid-based layout that's easy to browse and pleasing to the eye. Designed to handle everything from product photos to event galleries."
+          },
+          {
+            "Easy Upload & Categorization": "Quickly upload photos in bulk, add tags or categories, and organize them for easy retrieval. Ideal for teams that need centralized photo storage with smart filters."
+          },
+          {
+            "Seamless Preview & Sharing": "View multiple images in a smooth slideshow or video-style preview. Click to expand any image, then copy and share the link with internal teams or external users — all through a responsive and easy-to-use interface."
+          }
+        ]
+      },
+      {
+        appName: "Interactive Map",
+        appView: "InteractiveMapPreview",
+        appImg: "https://via.placeholder.com/100x100/F59E0B/FFFFFF?text=IM",
+        description: "Create an interactive map to display multiple locations with details, images, and search filters.",
+        appID: "1IDvlKAFVt5xc06RGtHXZ9I5SDoBbIGAPBe8N4o0O6oQ",
+        spreadSheetName: "Data",
+        overview: "The Interactive Map allows you to display data in a location-based format, making it easier to explore, analyze, and present geographically distributed information. Whether it's store locations, employee spread, service zones, or client territories — make it all interactive and visual.",
+        multipleImage: ["https://via.placeholder.com/100x100/F59E0B/FFFFFF?text=IM1", "https://via.placeholder.com/100x100/F59E0B/FFFFFF?text=IM2"],
+        allowedGroups: [],
+        show: true,
+        standOut: [
+          {
+            "Geo-Based Visualization": "See your workforce, customers, or assets displayed directly on an interactive map. Quickly understand location distribution and drill down into key areas."
+          },
+          {
+            "Filter & Search by Region": "Use built-in filters to segment by country, region, or custom labels. Perfect for teams managing global operations, remote workers, or regional marketing data."
+          },
+          {
+            "Interactive Marker Insights": "Click on any marker to view detailed store information—such as brand, address, and store manager—displayed in a clean and organized card layout. Image support is included where available, enhancing context without clutter."
+          }
+        ]
+      },
+      {
+        appName: "Product Catalogue",
+        appView: "ProductCataloguePreview",
+        appImg: "https://via.placeholder.com/100x100/10B981/FFFFFF?text=PC",
+        description: "Create a smart product catalogue that highlights multiple images, detailed views, and powerful filtering options.",
+        appID: "1Ec32czq2ilWYGKllZ8SBrt_RiViSPpPN2awdB2tnMj4",
+        spreadSheetName: "Data",
+        overview: "The Product Catalogue allows you to present your products in a modern and interactive format, making it easier for customers to browse, explore, and find exactly what they need. Whether it's multiple product images, detailed descriptions, or smart filters — everything is designed to make shopping effortless and engaging.",
+        multipleImage: ["https://via.placeholder.com/100x100/10B981/FFFFFF?text=PC1", "https://via.placeholder.com/100x100/10B981/FFFFFF?text=PC2"],
+        allowedGroups: [],
+        show: true,
+        standOut: [
+          {
+            "Interactive Product Display": "Showcase your products in an engaging layout that encourages easy browsing and comparison. Customers can explore items with a clean, organized view."
+          },
+          {
+            "Multiple Image Support": "Add multiple images for each product to give buyers a complete visual experience, including zoom options for closer inspection of details."
+          },
+          {
+            "Smart Filters & Search": "Help customers find products faster with advanced search options and customizable filters by category, price, or other attributes."
+          }
+        ]
+      }
+    ];
+
+    const createdApps = await App.insertMany(initialApps);
+    res.status(201).json({ 
+      message: "Apps seeded successfully", 
+      count: createdApps.length,
+      apps: createdApps 
+    });
+  } catch (error) {
+    console.error("Error seeding apps:", error);
+    res.status(500).json({ error: "Failed to seed apps" });
   }
 });
 

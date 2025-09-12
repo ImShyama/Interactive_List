@@ -8,16 +8,16 @@ import DashboardTable from "./DashboardTable";
 import uparrow from "../assets/uparrow.svg";
 import downarrow from "../assets/downarrow.svg";
 import updownIcon from "../assets/updownIcon.svg";
-import { APPS, APPSNAME, CLIENTID, DEVELOPERKEY, OPTIONS } from "../utils/constants";
+import {CLIENTID, DEVELOPERKEY } from "../utils/constants";
 import { Input, Select } from "antd";
 import { BiSearch } from "react-icons/bi";
 import { HOST } from "../utils/constants";
 import { AutoComplete } from "antd";
 import Loader from "./Loader";
 import AdminBtn from "./component/AdminBtn";
+import { fetchApps } from "../APIs";
 const clientId = CLIENTID;
 const developerKey = DEVELOPERKEY;
-const options = OPTIONS;
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -28,11 +28,20 @@ const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState("");
   const [showWarning, setShowWarning] = useState(false);
   const [showAppCard, setShowAppCard] = useState(true);
-  const [apps, setApps] = useState(APPS);
+  const [apps, setApps] = useState(null);
+  const [originalApps, setOriginalApps] = useState(null); // Store original apps data
   const [isDisable, setIsDisable] = useState(true);
   const [searchQuery, setSearchQuery] = useState(""); // To store the search query
   const [searchValue, setSearchValue] = useState(""); // To store the search query
+  const [dropdownValue, setDropdownValue] = useState(""); // To store the dropdown value
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchApps(token).then((res) => {
+      setApps(res);
+      setOriginalApps(res); // Store original data
+    });
+  }, [token]);
 
   // {
   //   console.log("app:", apps);
@@ -139,11 +148,11 @@ const Dashboard = () => {
 
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
-    console.log({ query, APPS });
+    console.log({ query, apps });
     setSearchQuery(query);
     setSearchValue(query);
 
-    const filteredData = APPS.filter((app) => {
+    const filteredData = apps.filter((app) => {
       const appName = app.appName.toLowerCase();
       return appName.includes(query);
     });
@@ -152,16 +161,26 @@ const Dashboard = () => {
   };
 
   const handleSearchDropdown = (query) => {
+    setDropdownValue(query);
     const searchQuery = query.toLowerCase();
-    console.log({ query, APPS });
+    console.log({ query, apps });
     setSearchQuery(searchQuery);
 
-    const filteredData = APPS.filter((app) => {
+    const filteredData = apps.filter((app) => {
       const appName = app.appName.toLowerCase();
       return appName.includes(searchQuery);
     });
 
     setApps(filteredData);
+  };
+
+  const handleClearDropdown = () => {
+    setDropdownValue("");
+    setSearchQuery("");
+    // Reset apps to original data
+    if (originalApps) {
+      setApps(originalApps);
+    }
   };
 
   return (
@@ -197,13 +216,17 @@ const Dashboard = () => {
                     width: 200,
                     height: 44,
                   }}
-                  options={options}
-
+                  value={dropdownValue}
+                  options={originalApps && Array.isArray(originalApps) ? originalApps.map((app) => ({
+                    value: app.appName,
+                    label: app.appName,
+                  })) : []}
                   size="large"
                   filterOption={(inputValue, option) =>
                     option.value.toLowerCase().includes(inputValue.toLowerCase())
                   }
                   onChange={handleSearchDropdown}
+                  onClear={handleClearDropdown}
                 >
                   <Input style={{
                     width: 200,
@@ -212,6 +235,7 @@ const Dashboard = () => {
                     size="large"
                     placeholder="Select App Name"
                     allowClear
+                    onClear={handleClearDropdown}
                   />
                 </AutoComplete>
               </div>
@@ -272,9 +296,9 @@ const Dashboard = () => {
                 onChange={handleSelectChange}
               >
                 <option value="">Select App Name</option>
-                {APPSNAME.map((row) => {
-                  return <option value={row}>{row}</option>;
-                })}
+                {apps && Array.isArray(apps) ? apps.map((row) => {
+                  return <option key={row.appName} value={row.appName}>{row.appName}</option>;
+                }) : []}
               </select>
 
               <button
@@ -326,10 +350,9 @@ const Dashboard = () => {
         //   ))}
         // </div>
         <div className="flex flex-wrap justify-center mx-[100px]">
-          {apps.map((app, index) => (
-            <div className="flex justify-center w-full sm:w-1/2 lg:w-1/3">
+          {apps && Array.isArray(apps) ? apps.map((app, index) => (
+            <div key={index} className="flex justify-center w-full sm:w-1/2 lg:w-1/3">
               <AppCard
-                key={index}
                 appName={app.appName}
                 spreadSheetName={app.spreadSheetName}
                 spreadSheetID={app.appID}
@@ -338,7 +361,7 @@ const Dashboard = () => {
                 description={app.description}
               />
             </div>
-          ))}
+          )) : []}
         </div>
 
 

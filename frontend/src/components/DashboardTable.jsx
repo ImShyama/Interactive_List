@@ -18,6 +18,7 @@ import { FRONTENDHOST, OPTIONS } from "../utils/constants";
 import { notifySuccess } from "../utils/notify";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { UserContext } from "../context/UserContext";
+import { fetchApps } from "../APIs";
 const options = OPTIONS;
 
 const DashboardTable = () => {
@@ -39,13 +40,25 @@ const DashboardTable = () => {
   const [spreadsheetIdForShare, setSpreadsheetIdForShare] = useState(null);
   const [sheetSharedWith, setSheetSharedWith] = useState(null);
   const [settings, setSettings] = useState(null);
+  const [dropdownValue, setDropdownValue] = useState(""); // To store the dropdown value
+  const [originalApps, setOriginalApps] = useState(null); // Store original apps data
+  const [originalSheets, setOriginalSheets] = useState(null); // Store original sheets data
+  const [apps, setApps] = useState(null);
 
 
   useEffect(() => {
     if (!user) return;
     setFilteredSheets(user?.sheets);
     setSpreadSheet(user?.sheets);
+    setOriginalSheets(user?.sheets); // Store original sheets data
   }, [user])
+
+  useEffect(() => {
+    fetchApps(token).then((res) => {
+      setApps(res);
+      setOriginalApps(res); // Store original data
+    });
+  }, [token]);
 
 
   console.log({ user, filteredSheets, spreadsheet });
@@ -110,6 +123,7 @@ const DashboardTable = () => {
   };
 
   const handleSearchDropdown = (query) => {
+    setDropdownValue(query);
     const searchQuery = query.toLowerCase();
     console.log({ searchQuery, spreadsheet });
     setSearchQuery(searchQuery);
@@ -120,6 +134,15 @@ const DashboardTable = () => {
     });
 
     setFilteredSheets(filteredData);
+  };
+
+  const handleClearDropdown = () => {
+    setDropdownValue("");
+    setSearchQuery("");
+    // Reset sheets to original data
+    if (originalSheets) {
+      setFilteredSheets(originalSheets);
+    }
   };
 
   const handleEdit = (id, access) => {
@@ -273,22 +296,27 @@ const DashboardTable = () => {
                   width: 200,
                   height: 44,
                 }}
-                options={options}
-
+                options={originalSheets && Array.isArray(originalSheets) ? originalSheets.map((app) => ({
+                  value: app.spreadsheetName,
+                  label: app.spreadsheetName,
+                })) : []}
                 size="large"
                 filterOption={(inputValue, option) =>
                   option.value.toLowerCase().includes(inputValue.toLowerCase())
                 }
                 onChange={handleSearchDropdown}
+                onClear={handleClearDropdown}
               >
                 <Input
                   // onChange={handleSearch}
-                  placeholder="Select App Name"
+                  placeholder="Select Spreadsheet Name"
                   style={{
                     width: 200,
                     height: 44,
-                  }} size="large"
+                    }} 
+                    size="large"
                   allowClear
+                  onClear={handleClearDropdown}
                 />
               </AutoComplete>
             </div>
