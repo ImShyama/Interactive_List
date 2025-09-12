@@ -217,10 +217,10 @@ const Dashboard = () => {
                     height: 44,
                   }}
                   value={dropdownValue}
-                  options={originalApps?.map((app) => ({
+                  options={originalApps && Array.isArray(originalApps) ? originalApps.map((app) => ({
                     value: app.appName,
                     label: app.appName,
-                  }))}
+                  })) : []}
                   size="large"
                   filterOption={(inputValue, option) =>
                     option.value.toLowerCase().includes(inputValue.toLowerCase())
@@ -296,9 +296,9 @@ const Dashboard = () => {
                 onChange={handleSelectChange}
               >
                 <option value="">Select App Name</option>
-                {apps?.map((row) => {
-                  return <option value={row.appName}>{row.appName}</option>;
-                })}
+                {apps && Array.isArray(apps) ? apps.map((row) => {
+                  return <option key={row.appName} value={row.appName}>{row.appName}</option>;
+                }) : []}
               </select>
 
               <button
@@ -350,10 +350,9 @@ const Dashboard = () => {
         //   ))}
         // </div>
         <div className="flex flex-wrap justify-center mx-[100px]">
-          {apps?.map((app, index) => (
-            <div className="flex justify-center w-full sm:w-1/2 lg:w-1/3">
+          {apps && Array.isArray(apps) ? apps.map((app, index) => (
+            <div key={index} className="flex justify-center w-full sm:w-1/2 lg:w-1/3">
               <AppCard
-                key={index}
                 appName={app.appName}
                 spreadSheetName={app.spreadSheetName}
                 spreadSheetID={app.appID}
@@ -362,7 +361,7 @@ const Dashboard = () => {
                 description={app.description}
               />
             </div>
-          ))}
+          )) : []}
         </div>
 
 

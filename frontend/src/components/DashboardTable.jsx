@@ -296,10 +296,10 @@ const DashboardTable = () => {
                   width: 200,
                   height: 44,
                 }}
-                options={originalApps?.map((app) => ({
-                  value: app.appName,
-                  label: app.appName,
-                }))}
+                options={originalSheets && Array.isArray(originalSheets) ? originalSheets.map((app) => ({
+                  value: app.spreadsheetName,
+                  label: app.spreadsheetName,
+                })) : []}
                 size="large"
                 filterOption={(inputValue, option) =>
                   option.value.toLowerCase().includes(inputValue.toLowerCase())
@@ -309,7 +309,7 @@ const DashboardTable = () => {
               >
                 <Input
                   // onChange={handleSearch}
-                  placeholder="Select App Name"
+                  placeholder="Select Spreadsheet Name"
                   style={{
                     width: 200,
                     height: 44,
@@ -320,35 +320,6 @@ const DashboardTable = () => {
                 />
               </AutoComplete>
             </div>
-            {/* <div className="flex items-center">
-                <AutoComplete
-                  style={{
-                    width: 200,
-                    height: 44,
-                  }}
-                  value={dropdownValue}
-                  options={originalApps?.map((app) => ({
-                    value: app.appName,
-                    label: app.appName,
-                  }))}
-                  size="large"
-                  filterOption={(inputValue, option) =>
-                    option.value.toLowerCase().includes(inputValue.toLowerCase())
-                  }
-                  onChange={handleSearchDropdown}
-                  onClear={handleClearDropdown}
-                >
-                  <Input style={{
-                    width: 200,
-                    height: 44,
-                  }}
-                    size="large"
-                    placeholder="Select App Name"
-                    allowClear
-                    onClear={handleClearDropdown}
-                  />
-                </AutoComplete>
-              </div> */}
           </div>
         </div>
 
