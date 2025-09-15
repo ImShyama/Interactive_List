@@ -1,0 +1,131 @@
+/* Popover stílusok */
+.whats-new-popover-overlay {
+  z-index: 1000 !important;
+}
+
+.whats-new-popover-overlay .ant-popover-inner {
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.whats-new-popover-overlay .ant-popover-arrow {
+  display: none;
+}
+
+/* Image Preview Modal stílusok */
+.image-preview-modal {
+  z-index: 2000 !important;
+}
+
+.image-preview-modal .ant-modal-mask {
+  z-index: 2000 !important;
+  backdrop-filter: blur(4px);
+}
+
+.image-preview-modal .ant-modal-wrap {
+  z-index: 2001 !important;
+}
+
+/* Edit és Add Feature Modal stílusok */
+.edit-feature-modal,
+.add-feature-modal {
+  z-index: 1500 !important;
+}
+
+.edit-feature-modal .ant-modal-mask,
+.add-feature-modal .ant-modal-mask {
+  z-index: 1500 !important;
+}
+
+.edit-feature-modal .ant-modal-wrap,
+.add-feature-modal .ant-modal-wrap {
+  z-index: 1501 !important;
+}
+
+/* Fő What's New Modal stílusok */
+.whats-new-modal {
+  z-index: 1200 !important;
+}
+
+.whats-new-modal .ant-modal-mask {
+  z-index: 1200 !important;
+}
+
+.whats-new-modal .ant-modal-wrap {
+  z-index: 1201 !important;
+}
+
+.whats-new-popover {
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+}
+
+.whats-new-popover .header-navigation {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.whats-new-popover .title-section h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.whats-new-popover .title-section p {
+  font-size: 0.875rem;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.whats-new-popover .feature-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.2s ease;
+}
+
+.whats-new-popover .feature-card:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.whats-new-popover .feature-image-preview img {
+  height: 96px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.whats-new-popover .fullscreen-icon {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.search-input {
+  transition: all 0.2s ease-in-out;
+}
+
+.search-input:focus {
+  background-color: #f9fafb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive design */
+@media (max-width: 640px) {
+  .whats-new-popover {
+    padding: 16px;
+  }
+  
+  .whats-new-popover .title-section h1 {
+    font-size: 1.25rem;
+  }
+  
+  .whats-new-popover .feature-card {
+    padding: 12px;
+  }
+}

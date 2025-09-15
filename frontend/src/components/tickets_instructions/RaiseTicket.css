@@ -1,0 +1,39 @@
+/* RaiseTicket Modal Styles */
+.raise-ticket-modal .ant-modal-content {
+  border-radius: 40px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  border: none;
+}
+
+.raise-ticket-modal .ant-modal-mask {
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
+}
+
+/* Button hover effects */
+.raise-ticket-modal button {
+  transition: all 0.2s ease;
+}
+
+.raise-ticket-modal button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.raise-ticket-modal button:active {
+  transform: translateY(0);
+}
+
+/* Footer buttons specific styling */
+.raise-ticket-modal .footer-buttons button {
+  transition: all 0.2s ease;
+}
+
+.raise-ticket-modal .footer-buttons button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.raise-ticket-modal .footer-buttons button:active {
+  transform: translateY(0);
+}
