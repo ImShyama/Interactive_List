@@ -250,7 +250,7 @@ app.post("/getSheetDataWithID", dynamicAuth, async (req, res) => {
 
     // Build list of auth strategies
     const strategies = [];
-    if (req.user?.googleRefreshToken) strategies.push({ type: 'requester', token: req.user.googleRefreshToken });
+    // if (req.user?.googleRefreshToken) strategies.push({ type: 'requester', token: req.user.googleRefreshToken });
     strategies.push({ type: 'owner', token: sheetOwner?.googleRefreshToken });
 
     let sheets = null;
@@ -2893,28 +2893,28 @@ app.post("/addEmails/:id", authenticateToken, async (req, res) => {
     });
 
     // Initialize Google Drive API with authenticated OAuth client
-    const drive = google.drive({ version: "v3", auth: authClient });
+    // const drive = google.drive({ version: "v3", auth: authClient });
 
     // Loop through emails and add permissions
-    for (const { email, permission } of emails) {
-      let role = permission.toLowerCase() === "edit" ? "writer" : "reader";
+    // for (const { email, permission } of emails) {
+    //   let role = permission.toLowerCase() === "edit" ? "writer" : "reader";
 
-      try {
-        await drive.permissions.create({
-          fileId: spreadsheetId,
-          requestBody: {
-            type: "user",
-            role: role,
-            emailAddress: email,
-          },
-          fields: "id",
-        });
+    //   try {
+    //     await drive.permissions.create({
+    //       fileId: spreadsheetId,
+    //       requestBody: {
+    //         type: "user",
+    //         role: role,
+    //         emailAddress: email,
+    //       },
+    //       fields: "id",
+    //     });
 
-        console.log(`✅ Shared sheet with ${email} as ${role}`);
-      } catch (error) {
-        console.error(`❌ Failed to share with ${email}:`, error.message);
-      }
-    }
+    //     console.log(`✅ Shared sheet with ${email} as ${role}`);
+    //   } catch (error) {
+    //     console.error(`❌ Failed to share with ${email}:`, error.message);
+    //   }
+    // }
 
     // Update MongoDB to store shared emails
     const updatedSetting = await Sheet.findByIdAndUpdate(
