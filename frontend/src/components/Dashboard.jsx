@@ -316,39 +316,10 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-          {/* <div className="bg-white p-6 rounded-md max-w-md w-full">
-            <h2 className="text-lg font-bold mb-4">Create New App</h2>
-            <p>Select a document to start:</p>
-            <button
-              className="bg-[#FFA500] rounded-[8px] p-[10px] text-white text-[14px] mt-4"
-              onClick={handleOpenPicker}
-            >
-              Select Docs
-            </button>
-            <button
-              className="bg-red-500 rounded-[8px] p-[10px] text-white text-[14px] mt-4 ml-4"
-              onClick={closeModal}
-            >
-              Cancel
-            </button>
-          </div> */}
         </div>
       )}
 
       {showAppCard && (
-        // <div className="flex flex-wrap justify-center">
-        //   {apps.map((app, index) => (
-        //     <AppCard
-        //       key={index}
-        //       appName={app.appName}
-        //       spreadSheetName={app.spreadSheetName}
-        //       spreadSheetID={app.appID}
-        //       appView={app.appView}
-        //       appImg={app.appImg}
-        //       description={app.description}
-        //     />
-        //   ))}
-        // </div>
         <div className="flex flex-wrap justify-center mx-[100px]">
           {apps && Array.isArray(apps) ? apps.map((app, index) => (
             <div key={index} className="flex justify-center w-full sm:w-1/2 lg:w-1/3">
@@ -361,7 +332,37 @@ const Dashboard = () => {
                 description={app.description}
               />
             </div>
-          )) : []}
+          )) : (
+            // Shimmer loading for app cards - matching AppCard structure
+            [...Array(6)].map((_, index) => (
+              <div key={index} className="flex justify-center w-full sm:w-1/2 lg:w-1/3 mb-4">
+                <div className="w-[350px] h-[400px] m-2 shadow-md flex flex-col rounded-[15.07px] bg-[#FFFCF8] p-6">
+                  {/* Image shimmer */}
+                  <div className="mb-4">
+                    <div className="w-full h-[190px] rounded-[15.07px] shimmer"></div>
+                  </div>
+                  
+                  {/* App name shimmer */}
+                  <div className="mb-3">
+                    <div className="h-[22px] w-3/4 shimmer rounded"></div>
+                  </div>
+                  
+                  {/* Description shimmer */}
+                  <div className="mb-4 flex-1">
+                    <div className="h-[14px] w-full shimmer rounded mb-2"></div>
+                    <div className="h-[14px] w-5/6 shimmer rounded mb-2"></div>
+                    <div className="h-[14px] w-2/3 shimmer rounded"></div>
+                  </div>
+                  
+                  {/* Buttons shimmer */}
+                  <div className="flex justify-between items-center gap-3">
+                    <div className="h-[40px] w-[80px] shimmer rounded-[14px]"></div>
+                    <div className="h-[40px] w-[120px] shimmer rounded-[14px]"></div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
 
