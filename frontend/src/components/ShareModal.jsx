@@ -18,6 +18,8 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { generateAvatar } from "../utils/globalFunctions";
+import { AutoComplete } from "antd";
+
 
 const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWith, settings }) => {
   const [email, setEmail] = useState("");
@@ -115,11 +117,28 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
       return;
     }
 
+    // let tempEmail = filteredOptions.find(item => item.email === email);
+    // if (!tempEmail) {
+    //   tempEmail = { email: email, photo: "", permission: access, };
+    // }
+
     let tempEmail = filteredOptions.find(item => item.email === email);
     if (!tempEmail) {
-      tempEmail = { email: email, photo: "", permission: access, };
+      // If user is not in suggestions, create new user object
+      tempEmail = {
+        email: email,
+        photo: "",
+        permission: access
+      };
+    } else {
+      // If user is found in suggestions, use their photo but respect current access setting
+      tempEmail = {
+        email: tempEmail.email,
+        photo: tempEmail.photo,
+        permission: access  // Use current access state, not the previous permission
+      };
     }
-    console.log({emails, email, tempEmail})
+    console.log({ emails, email, tempEmail })
 
     // Add the email and permission to the list
     setEmails([...emails, tempEmail]);
@@ -145,8 +164,8 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
     },
   ];
 
-  
-  
+
+
 
   const iconOptions = [
     {
@@ -162,7 +181,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
   if (!isOpen) return null;
   console.log({ emails });
 
-  
+
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -215,7 +234,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
             className="border rounded placeholder:text-[12px]"
           /> */}
 
-          <Select
+          {/* <Select
             showSearch
             value={email || null} // This makes placeholder visible when input is empty
             placeholder="Enter email address"
@@ -241,15 +260,36 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
               )
             }))}
             className="border rounded placeholder:text-[12px]"
+          /> */}
+
+
+          <AutoComplete
+            value={email}
+            onChange={setEmail} // updates while typing
+            placeholder="Enter email address"
+            style={{ width: "80%" }}
+            options={filteredOptions.map((item, index) => ({
+              value: item?.email,
+              label: (
+                <div className="flex items-center gap-2">
+                  <img
+                    src={item?.photo || generateAvatar(item?.email, index)}
+                    alt="avatar"
+                    className="w-5 h-5 rounded-full object-cover"
+                  />
+                  <span>{item?.email}</span>
+                </div>
+              )
+            }))}
           />
 
 
 
-          <Select 
-            value={access} 
-            options={options} 
-            onChange={(value) => setAccess(value)} 
-            style={{ width: '25%' }} 
+          <Select
+            value={access}
+            options={options}
+            onChange={(value) => setAccess(value)}
+            style={{ width: '25%' }}
           />
 
           {/* Error message */}
