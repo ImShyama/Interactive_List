@@ -61,7 +61,7 @@ const DashboardTable = () => {
   }, [token]);
 
 
-  console.log({ user, filteredSheets, spreadsheet });
+  console.log({ user, filteredSheets, apps });
 
   // useEffect(() => {
   //   axios
@@ -125,8 +125,10 @@ const DashboardTable = () => {
   const handleSearchDropdown = (query) => {
     setDropdownValue(query);
     const searchQuery = query.toLowerCase();
-    console.log({ searchQuery, spreadsheet });
+    console.log({ searchQuery, apps, spreadsheet });
     setSearchQuery(searchQuery);
+
+
 
     const filteredData = spreadsheet.filter((sheet) => {
       const sheetName = sheet.appName;
@@ -296,9 +298,9 @@ const DashboardTable = () => {
                   width: 200,
                   height: 44,
                 }}
-                options={originalSheets && Array.isArray(originalSheets) ? originalSheets.map((app) => ({
-                  value: app.spreadsheetName,
-                  label: app.spreadsheetName,
+                options={originalApps && Array.isArray(originalApps) ? originalApps.map((app) => ({
+                  value: app.appName,
+                  label: app.appName,
                 })) : []}
                 size="large"
                 filterOption={(inputValue, option) =>
