@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const FeaturesController = require("../controllers/FeaturesController");
+const FeaturesController = require("../Controllers/FeaturesController");
 
 // Get All Features Data
 router.get("/getAllFeatures", FeaturesController.getAllFeatures);
