@@ -44,6 +44,8 @@ const DashboardTable = () => {
   const [originalApps, setOriginalApps] = useState(null); // Store original apps data
   const [originalSheets, setOriginalSheets] = useState(null); // Store original sheets data
   const [apps, setApps] = useState(null);
+  const [accessFilter, setAccessFilter] = useState("");
+
 
 
   useEffect(() => {
@@ -122,30 +124,43 @@ const DashboardTable = () => {
     setFilteredSheets(filteredData);
   };
 
+  // const handleSearchDropdown = (query) => {
+  //   setDropdownValue(query);
+  //   const searchQuery = query.toLowerCase();
+  //   console.log({ searchQuery, apps, spreadsheet });
+  //   setSearchQuery(searchQuery);
+
+
+
+  //   const filteredData = spreadsheet.filter((sheet) => {
+  //     const sheetName = sheet.appName;
+  //     return sheetName.toLowerCase().includes(searchQuery);
+  //   });
+
+  //   setFilteredSheets(filteredData);
+  // };
+
+  // const handleClearDropdown = () => {
+  //   setDropdownValue("");
+  //   setSearchQuery("");
+  //   // Reset sheets to original data
+  //   if (originalSheets) {
+  //     setFilteredSheets(originalSheets);
+  //   }
+  // };
+
   const handleSearchDropdown = (query) => {
     setDropdownValue(query);
-    const searchQuery = query.toLowerCase();
-    console.log({ searchQuery, apps, spreadsheet });
-    setSearchQuery(searchQuery);
-
-
-
-    const filteredData = spreadsheet.filter((sheet) => {
-      const sheetName = sheet.appName;
-      return sheetName.toLowerCase().includes(searchQuery);
-    });
-
-    setFilteredSheets(filteredData);
+    setSearchQuery(query);
+    applyFilters(query, accessFilter);
   };
 
   const handleClearDropdown = () => {
     setDropdownValue("");
     setSearchQuery("");
-    // Reset sheets to original data
-    if (originalSheets) {
-      setFilteredSheets(originalSheets);
-    }
+    applyFilters("", accessFilter);
   };
+
 
   const handleEdit = (id, access) => {
     if (access == "view") {
@@ -263,6 +278,25 @@ const DashboardTable = () => {
       .catch((err) => console.error("Failed to copy: ", err));
   };
 
+  const applyFilters = (appNameQuery, accessValue) => {
+    let filtered = originalSheets || [];
+
+    if (appNameQuery) {
+      filtered = filtered.filter((sheet) =>
+        sheet.appName?.toLowerCase().includes(appNameQuery.toLowerCase())
+      );
+    }
+
+    if (accessValue) {
+      filtered = filtered.filter((sheet) =>
+        sheet.access?.toLowerCase() === accessValue.toLowerCase()
+      );
+    }
+
+    setFilteredSheets(filtered);
+  };
+
+
   return (
     <>
       <div className="overflow-x-auto m-4 rounded-[10.423px] border-[1.303px] border-[#FFF7EA] bg-[#FEFBF7] overflow-hidden">
@@ -292,7 +326,7 @@ const DashboardTable = () => {
                 ]}
               />
             </div> */}
-            <div className="flex items-center">
+            {/* <div className="flex items-center">
               <AutoComplete
                 style={{
                   width: 200,
@@ -311,7 +345,7 @@ const DashboardTable = () => {
               >
                 <Input
                   // onChange={handleSearch}
-                  placeholder="Select Spreadsheet Name"
+                  placeholder="Select App Name"
                   style={{
                     width: 200,
                     height: 44,
@@ -321,7 +355,68 @@ const DashboardTable = () => {
                   onClear={handleClearDropdown}
                 />
               </AutoComplete>
+            </div> */}
+
+            <div className="flex items-center gap-2">
+              {/* App Name Dropdown */}
+              <AutoComplete
+                style={{ width: 200, height: 44 }}
+                options={originalApps && Array.isArray(originalApps)
+                  ? originalApps.map((app) => ({
+                    value: app.appName,
+                    label: app.appName,
+                  }))
+                  : []}
+                size="large"
+                filterOption={(inputValue, option) =>
+                  option.value.toLowerCase().includes(inputValue.toLowerCase())
+                }
+                onChange={handleSearchDropdown}
+                onClear={handleClearDropdown}
+              >
+                <Input
+                  placeholder="Select App Name"
+                  style={{ width: 200, height: 44 }}
+                  size="large"
+                  allowClear
+                />
+              </AutoComplete>
+
+              {/* Access Dropdown */}
+
+              <AutoComplete
+                style={{ width: 200, height: 44 }}
+                options={Array.from(
+                  new Set((originalSheets || []).map((sheet) => sheet.access?.toLowerCase()))
+                )
+                  .filter(Boolean) // remove null/undefined
+                  .map((access) => ({
+                    value: access,
+                    label: access.charAt(0).toUpperCase() + access.slice(1),
+                  }))}
+                size="large"
+                filterOption={(inputValue, option) =>
+                  option.value.toLowerCase().includes(inputValue.toLowerCase())
+                }
+                onChange={(value) => {
+                  setAccessFilter(value || "");
+                  applyFilters(searchQuery, value);
+                }}
+                onClear={() => {
+                  setAccessFilter("");
+                  applyFilters(searchQuery, "");
+                }}
+              >
+                <Input
+                  placeholder="Select Access Type"
+                  style={{ width: 200, height: 44 }}
+                  size="large"
+                  allowClear
+                />
+              </AutoComplete>
+
             </div>
+
           </div>
         </div>
 
@@ -626,17 +721,17 @@ const DashboardTable = () => {
                             />
                           </svg>
                         </button>
-                      // ) :
-                      //   (
-                      //   <div><button className="icons pt-1" title="Reset Table Styles"
-                      //     onClick={() => handleCopyToClipboard(sheet)}
-                      //   >
-                      //     <MdOutlineContentCopy
-                      //       className=" cursor-pointer text-xl text-[#919191]"
-                      //       title={"Copy View Link"}
-                      //     />
-                      //   </button></div>
-                        )
+                        // ) :
+                        //   (
+                        //   <div><button className="icons pt-1" title="Reset Table Styles"
+                        //     onClick={() => handleCopyToClipboard(sheet)}
+                        //   >
+                        //     <MdOutlineContentCopy
+                        //       className=" cursor-pointer text-xl text-[#919191]"
+                        //       title={"Copy View Link"}
+                        //     />
+                        //   </button></div>
+                      )
                       }
                     </td>
                   </tr>

@@ -8,7 +8,7 @@ import DashboardTable from "./DashboardTable";
 import uparrow from "../assets/uparrow.svg";
 import downarrow from "../assets/downarrow.svg";
 import updownIcon from "../assets/updownIcon.svg";
-import {CLIENTID, DEVELOPERKEY } from "../utils/constants";
+import { CLIENTID, DEVELOPERKEY } from "../utils/constants";
 import { Input, Select } from "antd";
 import { BiSearch } from "react-icons/bi";
 import { HOST } from "../utils/constants";
@@ -146,25 +146,37 @@ const Dashboard = () => {
   };
 
 
+
   const handleSearch = (e) => {
     const query = e.target.value.toLowerCase();
-    console.log({ query, apps });
     setSearchQuery(query);
     setSearchValue(query);
 
-    const filteredData = apps.filter((app) => {
-      const appName = app.appName.toLowerCase();
+    if (!query) {
+      // If input is cleared, reset to original apps
+      setApps(originalApps);
+      return;
+    }
+
+    const filteredData = (originalApps || []).filter((app) => {
+      const appName = app.appName?.toLowerCase() || "";
       return appName.includes(query);
     });
 
     setApps(filteredData);
   };
 
+
   const handleSearchDropdown = (query) => {
     setDropdownValue(query);
     const searchQuery = query.toLowerCase();
     console.log({ query, apps });
     setSearchQuery(searchQuery);
+
+    if (!searchQuery) {
+      setApps(originalApps);
+      return;
+    }
 
     const filteredData = apps.filter((app) => {
       const appName = app.appName.toLowerCase();
@@ -341,19 +353,19 @@ const Dashboard = () => {
                   <div className="mb-4">
                     <div className="w-full h-[190px] rounded-[15.07px] shimmer"></div>
                   </div>
-                  
+
                   {/* App name shimmer */}
                   <div className="mb-3">
                     <div className="h-[22px] w-3/4 shimmer rounded"></div>
                   </div>
-                  
+
                   {/* Description shimmer */}
                   <div className="mb-4 flex-1">
                     <div className="h-[14px] w-full shimmer rounded mb-2"></div>
                     <div className="h-[14px] w-5/6 shimmer rounded mb-2"></div>
                     <div className="h-[14px] w-2/3 shimmer rounded"></div>
                   </div>
-                  
+
                   {/* Buttons shimmer */}
                   <div className="flex justify-between items-center gap-3">
                     <div className="h-[40px] w-[80px] shimmer rounded-[14px]"></div>

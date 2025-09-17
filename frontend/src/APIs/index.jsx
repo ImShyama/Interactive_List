@@ -331,3 +331,36 @@ export const seedApps = async (token) => {
     throw error;
   }
 };
+
+
+// Fetch all features
+export const fetchFeatures = async () => {
+  try {
+    const response = await axios.get(`${HOST}/v4/getAllFeatures`);
+    if (response.data.success) {
+      return response.data.feature || [];
+      // setFeatures(response.data.features || []);
+      // // Don't show error if no features found, it's a normal state
+      // if (response.data.features && response.data.features.length === 0) {
+      //   console.log("No features found - this is normal");
+      // }
+    } else {
+      // Only show error for actual failures, not empty states
+      if (response.status !== 200) {
+        error(response.data.message || "Failed to fetch features");
+      } else {
+        return [];
+        setFeatures([]);
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching features:", err);
+    // Only show error for network/server errors, not empty data
+    if (err.response && err.response.status !== 404) {
+      error("Failed to connect to server");
+    } else {
+      setFeatures([]);
+    }
+  } finally {
+  }
+};

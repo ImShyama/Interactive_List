@@ -15,6 +15,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { handleImageError, handlePCImageError } from "../utils/globalFunctions";
 import { notifyError } from "../utils/notify";
 import Avatar from "../assets/images/avatar.png";
+import RaiseTicket from "../components/tickets_instructions/RaiseTicket";
+import InstrucationTutorial from "./tickets_instructions/InstrucationTutorial";
+import DisplayNewFeatures from "./newfeatureupdates/DisplayNewFeatures";
+import { MdOutlineSupportAgent } from "react-icons/md";
+import { Tooltip, Badge, Button } from "antd";
+import { IoVideocamOutline } from "react-icons/io5";
+import { TbSpeakerphone } from "react-icons/tb";
+import AddFeature from "./newfeatureupdates/AddFeature";
+import { FaPlus } from "react-icons/fa";
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -27,8 +36,54 @@ const Header = () => {
   const isViewMode = window.location.pathname.endsWith("/view");
   const profileRef = useRef(null); // Ref for the Profile component
   const profileImageRef = useRef(null); // Ref for the profile image
+  const [showInstructionVideo, setShowInstructionVideo] = useState(false);
+  const [badgeCount, setBadgeCount] = useState(0);
+  const [features, setFeatures] = useState([]);
+  const [viewedFeatures, setViewedFeatures] = useState(new Set());
+  const [showAddFeature, setShowAddFeature] = useState(false);
+  const [showRaiseTicket, setShowRaiseTicket] = useState(false);
 
   const settings = useSelector((state) => state.setting.settings);
+
+  // Define preview pages and their corresponding video URLs
+  const previewPagesConfig = {
+    "/interactiveListView": {
+      name: "Interactive List",
+      videoUrl: "https://drive.google.com/file/d/1QKnzt5cKbZRL_kiQn0p1UGYdVLVTP8ed/preview"
+    },
+    "/peopleDirectoryPreview": {
+      name: "People Directory",
+      videoUrl: "https://drive.google.com/file/d/1QKnzt5cKbZRL_kiQn0p1UGYdVLVTP8ed/preview"
+    },
+    "/VideoGalleryPreview": {
+      name: "Video Gallery",
+      videoUrl: "https://drive.google.com/file/d/1QKnzt5cKbZRL_kiQn0p1UGYdVLVTP8ed/preview"
+    },
+    "/PhotoGalleryPreview": {
+      name: "Photo Gallery",
+      videoUrl: "https://drive.google.com/file/d/1QKnzt5cKbZRL_kiQn0p1UGYdVLVTP8ed/preview"
+    },
+    "/InteractiveMapPreview": {
+      name: "Interactive Map",
+      videoUrl: "https://drive.google.com/file/d/1QKnzt5cKbZRL_kiQn0p1UGYdVLVTP8ed/preview"
+    },
+    "/ProductCataloguePreview": {
+      name: "Product Catalogue",
+      videoUrl: "https://drive.google.com/file/d/1QKnzt5cKbZRL_kiQn0p1UGYdVLVTP8ed/preview"
+    },
+  };
+
+  // Check if current page is a preview page
+  const isDashboard = location.pathname === "/dashboard";
+
+  const isPreviewPage = Object.keys(previewPagesConfig).some(path =>
+    location.pathname.toLowerCase() === path.toLowerCase()
+  );
+
+  const currentPreviewConfig = Object.entries(previewPagesConfig).find(([path]) =>
+    location.pathname.toLowerCase() === path.toLowerCase()
+  )?.[1];
+
 
   const closeDrawer = () => setIsDrawerOpen(false);
 
@@ -151,6 +206,86 @@ const Header = () => {
     return null;
   }
 
+  // New Features Functions
+  const handleCloseNewFeatures = () => {
+    // Reset badge count when modal is closed
+    resetBadgeCount();
+  };
+
+  const handleOpenAddFeature = () => {
+    setShowAddFeature(true);
+  };
+
+  const handleFeatureAdded = () => {
+    // When admin adds new features, DON'T mark them as viewed
+    // This way they will show up in the badge count
+    // Just refresh the features data to get the new count
+    getAllNewFeaturesData();
+  };
+
+  const handleCloseAddFeature = () => {
+    setShowAddFeature(false);
+  };
+
+  const resetBadgeCount = () => {
+    // Mark all current features as viewed
+    const savedViewedFeatures = localStorage.getItem("viewedFeatures");
+    const currentViewedFeatures = savedViewedFeatures
+      ? new Set(JSON.parse(savedViewedFeatures))
+      : new Set();
+
+    const currentFeatureIds = features.map((f) => f._id);
+    const newViewedFeatures = new Set([
+      ...currentViewedFeatures,
+      ...currentFeatureIds,
+    ]);
+
+    // Save to localStorage
+    localStorage.setItem(
+      "viewedFeatures",
+      JSON.stringify(Array.from(newViewedFeatures))
+    );
+
+    // Update state
+    setViewedFeatures(newViewedFeatures);
+
+    // Reset badge count
+    setBadgeCount(0);
+  };
+
+  // Fetch features data
+  const getAllNewFeaturesData = async () => {
+    try {
+      const response = await fetch(`${url}/v4/getAllFeatures`);
+      const data = await response.json();
+
+      if (data.success) {
+        setFeatures(data.features);
+
+        // Get current viewed features from localStorage
+        const savedViewedFeatures = localStorage.getItem("viewedFeatures");
+        const currentViewedFeatures = savedViewedFeatures
+          ? new Set(JSON.parse(savedViewedFeatures))
+          : new Set();
+
+        // Update viewedFeatures state to match localStorage
+        setViewedFeatures(currentViewedFeatures);
+
+        // Count only unviewed features
+        const unviewedFeatures = data.features.filter(
+          (feature) => !currentViewedFeatures.has(feature._id)
+        );
+
+        setBadgeCount(unviewedFeatures.length);
+      }
+    } catch (error) {
+      console.error("Error fetching features:", error);
+    }
+  };
+
+
+
+
   return (
     <div className="fixed top-0 left-0 right-0 " style={{ zIndex: 999 }}>
       <div className={`main-container ${isDrawerOpen ? "drawer-open" : ""}`}>
@@ -168,6 +303,7 @@ const Header = () => {
                 onError={(e) => handleImageError(e)}
               />
             </div>
+
             <div className="interact-parent">
               {/* <div className="interact">Interact<span
                 className={`h-[2px] bg-[#598931] w-full}`}
@@ -254,6 +390,103 @@ const Header = () => {
               )}
           </div>
 
+          <div className="flex items-center gap-2 mr-2">
+            {isDashboard && (
+              <>
+                <Tooltip title="Support" placement="bottom">
+                  <a
+                    aria-label="Support"
+                    className="p-2 text-[#598931] hover:text-[#334155] transition-colors duration-200 cursor-pointer"
+                    onClick={() => setShowRaiseTicket(true)}
+                  >
+                    <MdOutlineSupportAgent className="w-5 h-5" />
+                  </a>
+                </Tooltip>
+                {/* New Features */}
+                <DisplayNewFeatures
+                  id="new-features-popover-user"
+                  handleCloseUpdateModal={handleCloseNewFeatures}
+                  openPopover={false}
+                  openUpdateModal={false}
+                  onVisibleChange={(visible) => {
+                    if (!visible) {
+                      // Reset badge count when popover is closed
+                      resetBadgeCount();
+                    }
+                  }}
+                >
+                  <Tooltip title="See New Features" placement="bottom">
+                    <Badge count={badgeCount} color="#334155" size="small">
+                      <button
+                        aria-label="New Features"
+                        className="p-2 text-[#598931] hover:text-[#334155] transition-colors duration-200"
+                        style={{
+                          background:
+                            badgeCount > 0 ? "#f1f5f9" : "transparent",
+                          borderRadius: "50%",
+                          transition: "all 0.3s ease",
+                        }}
+                      >
+                        <TbSpeakerphone className="w-5 h-5" />
+                      </button>
+                    </Badge>
+                  </Tooltip>
+                </DisplayNewFeatures>
+
+                {/* <Tooltip title="Add Updates" placement="bottom">
+                  <Button
+                    onClick={handleOpenAddFeature}
+                    size="small"
+                    className="flex items-center gap-2 px-3 py-1 h-8 text-xs font-medium"
+                    style={{
+                      background: "#598931",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "20px",
+                    }}
+                    icon={<FaPlus size={12} />}
+                  >
+                    Add Updates
+                  </Button>
+                </Tooltip> */}
+
+                {user?.role === "admin" && (
+                  <Tooltip title="Add Updates" placement="bottom">
+                    <Button
+                      onClick={handleOpenAddFeature}
+                      size="small"
+                      className="flex items-center gap-2 px-3 py-1 h-8 text-xs font-medium"
+                      style={{
+                        background: "#598931",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "20px",
+                      }}
+                      icon={<FaPlus size={12} />}
+                    >
+                      Add Updates
+                    </Button>
+                  </Tooltip>
+                )}
+
+              </>
+            )}
+
+            {/* Instruction Video - Show on Dashboard & Preview */}
+            {(isDashboard || isPreviewPage) && (
+              <Tooltip title="Instruction Video" placement="bottom">
+                <button
+                  onClick={() => setShowInstructionVideo(true)}
+                  aria-label="Instruction Video"
+                  className="p-2 text-[#598931] hover:text-[#334155] transition-colors duration-200"
+                >
+                  <IoVideocamOutline className="w-5 h-5" />
+                </button>
+              </Tooltip>
+            )}
+
+          </div>
+
           {token ? (
             <div className="right-panel pl-10">
               {isEditMode && (
@@ -294,7 +527,7 @@ const Header = () => {
             </div>
           ) : (
             <div className="flex items-center">
-              <button
+              {/* <button
                 className="flex py-[10px] px-[25px] justify-center items-center gap-[10px] rounded-[14px] bg-[#598931] ml-[69px]"
                 onClick={(e) => {
                   navigate("/signin");
@@ -303,7 +536,7 @@ const Header = () => {
                 <span className="text-[#F5F6F7] font-poppins text-[16px] font-medium leading-normal ">
                   {isViewMode ? "Create Account" : "Sign In"}
                 </span>
-              </button>
+              </button> */}
             </div>
           )}
         </div>
@@ -322,6 +555,54 @@ const Header = () => {
             email={user?.email}
             closeProfile={() => setIsProfileVisible(false)}
           />
+        </div>
+
+      )}
+
+      {/* Instruction Video Modal */}
+      {/* <InstrucationTutorial
+        open={showInstructionVideo}
+        handleClose={() => setShowInstructionVideo(false)}
+      /> */}
+
+      {/* Instruction Video Modal */}
+      <InstrucationTutorial
+        open={showInstructionVideo}
+        handleClose={() => setShowInstructionVideo(false)}
+        videoUrl={currentPreviewConfig?.videoUrl}
+        title={currentPreviewConfig ? `${currentPreviewConfig.name} Tutorial` : "Instruction Video"}
+      />
+
+      {/* Support Ticket Modal */}
+      <RaiseTicket
+        open={showRaiseTicket}
+        handleClose={() => setShowRaiseTicket(false)}
+      />
+
+
+      {/* Add Feature Modal */}
+      {showAddFeature && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Add New Feature
+              </h2>
+              <button
+                onClick={handleCloseAddFeature}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            <AddFeature
+              onClose={handleCloseAddFeature}
+              onSuccess={() => {
+                handleCloseAddFeature();
+                handleFeatureAdded(); // Use the new function
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

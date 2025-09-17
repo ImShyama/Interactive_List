@@ -19,9 +19,10 @@ import debounce from "lodash.debounce";
 import axios from "axios";
 import AddFeature from "./AddFeature";
 import EditFeature from "./EditFeature";
-import { url } from "../../redux/store";
+// import { url } from "../../redux/store";
 import { useSelector } from "react-redux";
 import "./DisplayNewFeatures.css";
+import { HOST } from "../../utils/constants";
 
 
 const DisplayNewFeatures = ({
@@ -32,7 +33,7 @@ const DisplayNewFeatures = ({
   children, 
   onVisibleChange, 
 }) => {
-  const { isAdmin } = useSelector((state) => state.admin);
+  // const { isAdmin } = useSelector((state) => state.admin);
   const [messageApi, contextHolder] = message.useMessage();
   const [searchQuery, setSearchQuery] = useState("");
   const [features, setFeatures] = useState([]);
@@ -51,12 +52,13 @@ const DisplayNewFeatures = ({
   const error = (msg) => {
     messageApi.error(msg);
   };
-
+  
+  
   // Fetch all features
   const fetchFeatures = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${url}/v4/getAllFeatures`);
+      const response = await axios.get(`${HOST}/api/v4/getAllFeatures`);
       if (response.data.success) {
         setFeatures(response.data.features || []);
         // Don't show error if no features found, it's a normal state
@@ -88,7 +90,7 @@ const DisplayNewFeatures = ({
   const handleDeleteFeature = async (featureId) => {
     try {
       const response = await axios.delete(
-        `${url}/v4/delete-feature/${featureId}`
+        `${HOST}/api/v4/delete-feature/${featureId}`
       );
       if (response.data.success) {
         success("Feature deleted successfully");
@@ -145,6 +147,32 @@ const DisplayNewFeatures = ({
     const date = new Date(dateString);
     const options = { year: "numeric", month: "long" };
     return date.toLocaleDateString("en-US", options);
+  };
+
+
+  // Convert YouTube URL to embed format
+  const convertToEmbedUrl = (url) => {
+    if (!url) return url;
+    
+    // If already embed URL, return as is
+    if (url.includes('embed')) {
+      return url;
+    }
+    
+    // Handle youtu.be short URLs
+    if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1].split('?')[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // Handle regular YouTube URLs
+    if (url.includes('youtube.com')) {
+      const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop();
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // Return original URL for non-YouTube videos
+    return url;
   };
 
   // Handle popover visibility change
@@ -259,7 +287,7 @@ const DisplayNewFeatures = ({
                     width="175"
                     height="100"
                     className="rounded-[30px] shadow-md"
-                    src={item.videoUrl}
+                     src={convertToEmbedUrl(item.videoUrl)}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen={true}
@@ -304,7 +332,7 @@ const DisplayNewFeatures = ({
                   </span>
 
                   {/* Actions - Always show edit and delete icons */}
-                  {isAdmin && (
+                  {/* {isAdmin && ( */}
                   <div className="flex items-center gap-1">
                     <Tooltip title="Edit" placement="top">
                       <Button
@@ -333,7 +361,7 @@ const DisplayNewFeatures = ({
                       </Popconfirm>
                     </Tooltip>
                     </div>
-                  )}
+                  {/* )} */}
                 </div>
 
                 <h3 className="text-sm font-semibold text-[#181818] leading-tight truncate">
@@ -348,7 +376,8 @@ const DisplayNewFeatures = ({
               description={
                 <div className="space-y-3">
                   <span className="text-gray-500 block">
-                    {isAdmin ? "No features added yet. Add your first feature!" : "No new features available at the moment."}
+                    {/* {isAdmin ? "No features added yet. Add your first feature!" : "No new features available at the moment."} */}
+                    {"No features added yet. Add your first feature! No new features available at the moment."}
                   </span>
                 </div>
               }

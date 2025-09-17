@@ -17,7 +17,8 @@ import {
   CloseOutlined
 } from "@ant-design/icons";
 import axios from "axios";
-import { url } from "../../redux/store";
+// import { url } from "../../redux/store";
+import { HOST } from "../../utils/constants";
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -67,7 +68,7 @@ const EditFeature = ({ feature, onClose, onSuccess }) => {
       };
 
       const response = await axios.put(
-        `${url}/v4/update-feature/${feature._id}`, 
+        `${HOST}/v4/update-feature/${feature._id}`, 
         formData
       );
       
