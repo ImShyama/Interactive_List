@@ -21,6 +21,10 @@ const secret = process.env.TOKEN_KEY;
 const redirect_uri = process.env.REDIRECT_URI;
 const NodeCache = require("node-cache");
 const sheetCache = new NodeCache({ stdTTL: 60 }); // 60 sec TTL
+const featuresRouter = require("./Routes/featuresRoutes");
+const axios = require("axios");
+
+
 
 // Add these imports at the top of the file
 const swaggerJsdoc = require('swagger-jsdoc');
@@ -47,6 +51,8 @@ app.use(express.json());
 
 // Serve static files from the frontend's "dist" directory
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+// app.use("/api/v4", featuresRouter);
 
 // Add this after your other middleware setup but before your routes
 const swaggerOptions = {
@@ -87,6 +93,8 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 app.use("/", authRoute);
+
+app.use("/api/v4", featuresRouter);
 
 // Function to conditionally apply authentication
 const dynamicAuth = async (req, res, next) => {
@@ -3585,6 +3593,21 @@ app.post("/apps/seed", authenticateToken, async (req, res) => {
   }
 });
 
+app.post(`/api/helpdesk/raiseTicket`, async (req, res) => {
+  try {
+    const { data } = await axios.post(
+      "https://helpdesk.ceoitbox.com/tickets/sheetToWeb/create",
+      req.body
+    );
+    res.send(data);
+  } catch (error) {
+    res.send({ error: error.message || "" });
+  }
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
 });
+
+
+

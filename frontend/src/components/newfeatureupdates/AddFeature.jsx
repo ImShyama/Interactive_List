@@ -1,23 +1,24 @@
 import React, { useState } from "react";
-import { 
-  Form, 
-  Input, 
-  Button, 
-  Upload, 
-  message, 
-  Select, 
+import {
+  Form,
+  Input,
+  Button,
+  Upload,
+  message,
+  Select,
   Space,
   Typography,
   Divider
 } from "antd";
-import { 
-  UploadOutlined, 
-  DeleteOutlined, 
+import {
+  UploadOutlined,
+  DeleteOutlined,
   PlusOutlined,
   SaveOutlined
 } from "@ant-design/icons";
 import axios from "axios";
-import { url } from "../../redux/store";
+import { HOST } from "../../utils/constants";
+// import { url } from "../../redux/store";
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -26,8 +27,10 @@ const { Title, Text } = Typography;
 const AddFeature = ({ onClose, onSuccess }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");  // ✅ store uploaded Cloudinary URL
   const [imageFile, setImageFile] = useState(null);
   const [videoUrl, setVideoUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const success = (msg) => {
     message.success(msg);
@@ -37,24 +40,105 @@ const AddFeature = ({ onClose, onSuccess }) => {
     message.error(msg);
   };
 
+  // ✅ Handle Image Upload to Cloudinary
+  const handleFileUpload = async (file) => {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "Logo_Images"); // your upload preset
+    formData.append("folder", "logos");
+
+    try {
+      setUploading(true);
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/dq6cfckdm/image/upload`,
+        formData
+      );
+      const uploadedUrl = res.data.secure_url;
+      setImageFile(file);
+      setImageUrl(uploadedUrl); // ✅ store Cloudinary URL
+      success(`${file.name} uploaded successfully!`);
+    } catch (err) {
+      console.error("Upload error:", err);
+      error("Image upload failed.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Handle Antd Upload change
+  const handleImageUpload = (info) => {
+    if (info.file.status === "done") {
+      handleFileUpload(info.file.originFileObj); // ✅ Cloudinary upload
+      setVideoUrl(""); // Clear video URL when image is uploaded
+    } else if (info.file.status === "error") {
+      error(`${info.file.name} upload failed.`);
+    }
+  };
+
+
+  // Handle image removal
+  const handleImageRemove = () => {
+    setImageFile(null);
+    setImageUrl(""); // ✅ reset url
+  };
+
+  // Handle video input
+  const handleVideoUrlChange = (e) => {
+    setVideoUrl(e.target.value);
+    if (e.target.value) setImageFile(null);
+  };
+
+
   // Handle form submission
+  // const handleSubmit = async (values) => {
+  //   try {
+  //     setLoading(true);
+
+  //     const formData = {
+  //       featureName: values.featureName,
+  //       month: values.month,
+  //       videoUrl: videoUrl || "",
+  //       imgUrl: imageFile ? await convertFileToUrl(imageFile) : ""
+  //     };
+
+  //     const response = await axios.post(`${HOST}/api/v4/addFeature`, formData);
+
+  //     if (response.data.success) {
+  //       success("Feature added successfully!");
+  //       form.resetFields();
+  //       setImageFile(null);
+  //       setVideoUrl("");
+  //       onSuccess();
+  //     } else {
+  //       error(response.data.message || "Failed to add feature");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error adding feature:", err);
+  //     error("Failed to add feature");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // ✅ Form submit
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      
       const formData = {
         featureName: values.featureName,
         month: values.month,
         videoUrl: videoUrl || "",
-        imgUrl: imageFile ? await convertFileToUrl(imageFile) : ""
+        imgUrl: imageUrl || "", // ✅ use Cloudinary URL
       };
 
-      const response = await axios.post(`${url}/v4/addFeature`, formData);
-      
+      const response = await axios.post(`${HOST}/api/v4/addFeature`, formData);
+
       if (response.data.success) {
         success("Feature added successfully!");
         form.resetFields();
         setImageFile(null);
+        setImageUrl("");
         setVideoUrl("");
         onSuccess();
       } else {
@@ -68,6 +152,7 @@ const AddFeature = ({ onClose, onSuccess }) => {
     }
   };
 
+
   // Convert file to URL (you can implement your own file upload logic)
   const convertFileToUrl = async (file) => {
     // This is a placeholder - implement your file upload logic here
@@ -80,27 +165,27 @@ const AddFeature = ({ onClose, onSuccess }) => {
   };
 
   // Handle image upload
-  const handleImageUpload = (info) => {
-    if (info.file.status === 'done') {
-      setImageFile(info.file.originFileObj);
-      success(`${info.file.name} file uploaded successfully`);
-    } else if (info.file.status === 'error') {
-      error(`${info.file.name} file upload failed.`);
-    }
-  };
+  // const handleImageUpload = (info) => {
+  //   if (info.file.status === 'done') {
+  //     setImageFile(info.file.originFileObj);
+  //     success(`${info.file.name} file uploaded successfully`);
+  //   } else if (info.file.status === 'error') {
+  //     error(`${info.file.name} file upload failed.`);
+  //   }
+  // };
 
   // Handle image removal
-  const handleImageRemove = () => {
-    setImageFile(null);
-  };
+  // const handleImageRemove = () => {
+  //   setImageFile(null);
+  // };
 
-  // Handle video URL change
-  const handleVideoUrlChange = (e) => {
-    setVideoUrl(e.target.value);
-    if (e.target.value) {
-      setImageFile(null);
-    }
-  };
+  // // Handle video URL change
+  // const handleVideoUrlChange = (e) => {
+  //   setVideoUrl(e.target.value);
+  //   if (e.target.value) {
+  //     setImageFile(null);
+  //   }
+  // };
 
   // Month options
   const monthOptions = [
@@ -125,7 +210,7 @@ const AddFeature = ({ onClose, onSuccess }) => {
             { min: 3, message: "Feature name must be at least 3 characters" }
           ]}
         >
-          <Input 
+          <Input
             placeholder="Enter feature name"
             size="large"
             className="rounded-lg"
@@ -166,7 +251,7 @@ const AddFeature = ({ onClose, onSuccess }) => {
         </Form.Item>
 
         {/* Image Upload */}
-        <Form.Item
+        {/* <Form.Item
           label="Image Upload (Optional)"
           help="Upload an image to showcase the feature"
         >
@@ -215,12 +300,108 @@ const AddFeature = ({ onClose, onSuccess }) => {
               </div>
             )}
           </div>
+        </Form.Item> */}
+        {/* 
+        <Form.Item label="Image Upload (Optional)" help="Upload an image to showcase the feature">
+          <div className="space-y-3">
+            {!imageFile ? (
+              <Upload
+                accept="image/*"
+                showUploadList={false}
+                customRequest={({ file, onSuccess }) => {
+                  setTimeout(() => {
+                    onSuccess("ok");
+                  }, 0);
+                }}
+                onChange={handleImageUpload}
+              >
+                <Button
+                  size="large"
+                  className="w-full h-32 border-dashed border-2 border-gray-300 hover:border-blue-500 rounded-lg"
+                  loading={uploading} // ✅ show uploading state
+                >
+                  <div className="space-y-2">
+                    <UploadOutlined className="text-2xl text-gray-400" />
+                    <div className="text-gray-600">Click to upload image</div>
+                    <div className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</div>
+                  </div>
+                </Button>
+              </Upload>
+            ) : (
+              <div className="relative">
+                <img
+                  src={imageUrl}  // ✅ preview Cloudinary URL
+                  alt="Preview"
+                  className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                />
+                <Button
+                  icon={<DeleteOutlined />}
+                  danger
+                  size="small"
+                  onClick={handleImageRemove}
+                  className="absolute top-2 right-2"
+                />
+              </div>
+            )}
+          </div>
+        </Form.Item> */}
+
+        <Form.Item
+          label="Image Upload (Optional)"
+          help="Upload an image to showcase the feature"
+        >
+          <div className="space-y-3">
+            {!imageFile ? (
+              <Upload
+                accept="image/*"
+                showUploadList={false}
+                customRequest={({ file, onSuccess }) => {
+                  setTimeout(() => {
+                    onSuccess("ok");
+                  }, 0);
+                }}
+                onChange={handleImageUpload}
+              >
+                <Button
+                  size="large"
+                  className="w-full h-32 border-dashed border-2 border-gray-300 hover:border-blue-500 rounded-lg flex items-center justify-center"
+                  loading={uploading}
+                >
+                  {uploading ? (
+                    <div className="text-gray-600 font-medium">Uploading...</div>
+                  ) : (
+                    <div className="space-y-2">
+                      <UploadOutlined className="text-2xl text-gray-400" />
+                      <div className="text-gray-600">Click to upload image</div>
+                      <div className="text-xs text-gray-400">PNG, JPG, GIF up to 10MB</div>
+                    </div>
+                  )}
+                </Button>
+              </Upload>
+            ) : (
+              <div className="relative">
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                />
+                <Button
+                  icon={<DeleteOutlined />}
+                  danger
+                  size="small"
+                  onClick={handleImageRemove}
+                  className="absolute top-2 right-2"
+                />
+              </div>
+            )}
+          </div>
         </Form.Item>
+
 
         {/* Submit Button */}
         <Form.Item className="!mb-0">
           <Space className="w-full justify-end">
-            <Button 
+            <Button
               onClick={onClose}
               size="large"
               className="px-8"
@@ -234,8 +415,8 @@ const AddFeature = ({ onClose, onSuccess }) => {
               icon={<SaveOutlined />}
               size="large"
               style={{
-                background: "#334155",
-                borderColor: "#334155"
+                background: "#598931",
+                borderColor: "#598931"
               }}
               className="hover:bg-[#475569] px-8"
             >
