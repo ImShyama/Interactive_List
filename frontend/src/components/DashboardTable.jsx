@@ -20,6 +20,7 @@ import { MdOutlineContentCopy } from "react-icons/md";
 import { UserContext } from "../context/UserContext";
 import { fetchApps } from "../APIs";
 const options = OPTIONS;
+import { Tooltip } from "antd";
 
 const DashboardTable = () => {
   const { token, user } = useContext(UserContext);
@@ -468,14 +469,68 @@ const DashboardTable = () => {
                     key={sheet._id}
                     className="border-b-[1.303px] border-[#EAECF0]"
                   >
-                    <td className="px-4 py-2">
+                    {/* <td className="px-4 py-2">
                       <a
                         onClick={() => handleEdit(sheet._id, sheet.access)}
                         className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline cursor-pointer"
                       >
                         {sheet.spreadsheetName || sheet.firstSheetName}
                       </a>
+                    </td> */}
+
+                    {/* <td className="px-4 py-2">
+                      <a
+                        onClick={() => handleEdit(sheet._id, sheet.access)}
+                        className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline cursor-pointer"
+                        title={`User ID: ${sheet.userId || 'N/A'}`} // Add this line to show userId on hover
+                        onMouseEnter={() => console.log('Sheet userId:', sheet.userId)} // This will log userId to console on hover
+                      >
+                        {sheet.spreadsheetName || sheet.firstSheetName}
+                      </a>
+                    </td> */}
+
+                    {/* <td className="px-4 py-2">
+                      <Tooltip
+                        placement="top"
+                        title={
+                          sheet.access === "owner"
+                            ? sheet.sharedWith?.length
+                              ? `This sheet is shared with ${sheet.sharedWith.join(", ")}`
+                              : "This sheet is not shared with anyone"
+                            : `This sheet is shared by ${sheet.ownerId || sheet.userId || "N/A"}`
+                        }
+                      >
+                        <a
+                          onClick={() => handleEdit(sheet._id, sheet.access)}
+                          className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline cursor-pointer"
+                        >
+                          {sheet.spreadsheetName || sheet.firstSheetName}
+                        </a>
+                      </Tooltip>
+                    </td> */}
+
+                    <td className="px-4 py-2">
+                      <Tooltip
+                        placement="top"
+                        title={
+                          sheet.access === "owner"
+                            ? sheet.sharedWith?.length
+                              ? `This sheet is shared with ${sheet.sharedWith
+                                .map(user => user.email || user.name || user._id)
+                                .join(", ")}`
+                              : "This sheet is not shared with anyone"
+                            : `This sheet is shared by ${sheet.owner?.email || sheet.owner?.name || sheet.owner?._id || "Unknown"}`
+                        }
+                      >
+                        <a
+                          onClick={() => handleEdit(sheet._id, sheet.access)}
+                          className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline cursor-pointer"
+                        >
+                          {sheet.spreadsheetName || sheet.firstSheetName}
+                        </a>
+                      </Tooltip>
                     </td>
+
                     <td className="px-4 py-2 text-[14px]">{sheet.appName}</td>
                     <td className="px-4 py-2 text-[14px]">
                       {(sheet.access && sheet.access.charAt(0).toUpperCase() + sheet.access.slice(1)) || "N/A"}

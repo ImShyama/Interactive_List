@@ -338,7 +338,7 @@ export const fetchFeatures = async () => {
   try {
     const response = await axios.get(`${HOST}/v4/getAllFeatures`);
     if (response.data.success) {
-      return response.data.feature || [];
+      return response.data.feature;
       // setFeatures(response.data.features || []);
       // // Don't show error if no features found, it's a normal state
       // if (response.data.features && response.data.features.length === 0) {
@@ -349,7 +349,7 @@ export const fetchFeatures = async () => {
       if (response.status !== 200) {
         error(response.data.message || "Failed to fetch features");
       } else {
-        return [];
+        return []
         setFeatures([]);
       }
     }

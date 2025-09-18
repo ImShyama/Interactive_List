@@ -4,7 +4,6 @@ const FeaturesController = require("../Controllers/FeaturesController");
 
 // Get All Features Data
 router.get("/getAllFeatures", FeaturesController.getAllFeatures);
-
 // Add New Feature Update
 router.post("/addFeature", FeaturesController.addFeature);
 

@@ -130,23 +130,46 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
         return !isNaN(parseFloat(value)) && isFinite(value);
     };
 
+    // const isDate = (value) => {
+    //     if (!value || typeof value !== 'string') return false;
+
+    //     // Match common date patterns (YYYY-MM-DD, DD/MM/YYYY, etc.)
+    //     const datePatterns = [
+    //         /^\d{4}-\d{2}-\d{2}$/,             // YYYY-MM-DD
+    //         /^\d{2}\/\d{2}\/\d{4}$/,           // DD/MM/YYYY or MM/DD/YYYY
+    //         /^\d{2}-\d{2}-\d{4}$/,             // DD-MM-YYYY
+    //         /^\d{4}\/\d{2}\/\d{2}$/            // YYYY/MM/DD
+    //     ];
+
+    //     // Check if any pattern matches
+    //     if (datePatterns.some((pattern) => pattern.test(value))) {
+    //         const parsedDate = new Date(value);
+    //         return !isNaN(parsedDate.getTime());
+    //     }
+
+    //     return false;
+    // };
+
+
     const isDate = (value) => {
         if (!value || typeof value !== 'string') return false;
-
+    
         // Match common date patterns (YYYY-MM-DD, DD/MM/YYYY, etc.)
         const datePatterns = [
             /^\d{4}-\d{2}-\d{2}$/,             // YYYY-MM-DD
             /^\d{2}\/\d{2}\/\d{4}$/,           // DD/MM/YYYY or MM/DD/YYYY
             /^\d{2}-\d{2}-\d{4}$/,             // DD-MM-YYYY
-            /^\d{4}\/\d{2}\/\d{2}$/            // YYYY/MM/DD
+            /^\d{4}\/\d{2}\/\d{2}$/,           // YYYY/MM/DD
+            /^\d{1,2}\/\d{1,2}\/\d{4}$/,       // M/D/YYYY or MM/DD/YYYY
+            /^\d{4}-\d{1,2}-\d{1,2}$/          // YYYY-M-D or YYYY-MM-DD
         ];
-
+    
         // Check if any pattern matches
-        if (datePatterns.some((pattern) => pattern.test(value))) {
+        if (datePatterns.some((pattern) => pattern.test(value.trim()))) {
             const parsedDate = new Date(value);
             return !isNaN(parsedDate.getTime());
         }
-
+    
         return false;
     };
 
@@ -190,7 +213,27 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
         return result;
     }
 
+    useEffect(() => {
+        const savedDates = localStorage.getItem("selectedDates");
+        if (savedDates) {
+            try {
+                const parsedDates = JSON.parse(savedDates);
+                setSelectedDates(parsedDates);
+            } catch (error) {
+                console.error("Error parsing saved dates:", error);
+                localStorage.removeItem("selectedDates");
+            }
+        }
+    }, []);
 
+    // 6. Clear filters function (add this to your component)
+    const clearAllFilters = () => {
+        setSelectedDates([]);
+        setSelectedNumbers([]);
+        setFilteredData(data);
+        localStorage.removeItem("selectedDates");
+        localStorage.removeItem("selectedNumbers");
+    };
 
     const handlePopoverVisibility = (key, isVisible) => {
         setVisiblePopover((prev) => ({
@@ -1075,56 +1118,149 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             max: max !== null ? max : 1000,
         };
     };
+    // const calculate_min_max = (data, key) => {
+    //     console.log({ data, key });
+    //     if (!data || data.length === 0) {
+    //         return { min: null, max: null };
+    //     }
+
+    //     let min = null;
+    //     let max = null;
+
+    //     data.forEach((item) => {
+    //         const value = new Date(item[key]).getTime(); // Convert value to timestamp
+    //         if (!isNaN(value)) {
+    //             // Check if it's a valid date
+    //             if (min === null || value < min) min = value;
+    //             if (max === null || value > max) max = value;
+    //         }
+    //     });
+
+    //     // Return min and max in ISO string format for better use
+    //     return {
+    //         min: min ? new Date(min).toISOString() : null,
+    //         max: max ? new Date(max).toISOString() : null,
+    //     };
+    // };
+
+    
     const calculate_min_max = (data, key) => {
-        console.log({ data, key });
+        console.log('Calculating min/max for:', { data: data.length, key });
+        
         if (!data || data.length === 0) {
             return { min: null, max: null };
         }
-
+    
         let min = null;
         let max = null;
-
+        let validDatesCount = 0;
+    
         data.forEach((item) => {
-            const value = new Date(item[key]).getTime(); // Convert value to timestamp
-            if (!isNaN(value)) {
-                // Check if it's a valid date
-                if (min === null || value < min) min = value;
-                if (max === null || value > max) max = value;
+            const value = item[key];
+            
+            // Only process valid dates
+            if (value && isDate(value)) {
+                const timestamp = new Date(value).getTime();
+                
+                if (!isNaN(timestamp)) {
+                    validDatesCount++;
+                    if (min === null || timestamp < min) min = timestamp;
+                    if (max === null || timestamp > max) max = timestamp;
+                }
             }
         });
-
-        // Return min and max in ISO string format for better use
+    
+        console.log(`Found ${validDatesCount} valid dates for column ${key}`);
+    
+        // Return min and max as timestamps for slider use
         return {
-            min: min ? new Date(min).toISOString() : null,
-            max: max ? new Date(max).toISOString() : null,
+            min: min || new Date("2000-01-01").getTime(),
+            max: max || new Date().getTime(),
         };
     };
+   
+
+    // const updateDateFilterData = (column, value) => {
+    //     // Convert timestamp values back to ISO date strings
+    //     const [startDateTimestamp, endDateTimestamp] = value;
+    //     const startDate = new Date(startDateTimestamp).toISOString();
+    //     const endDate = new Date(endDateTimestamp).toISOString();
+
+    //     // Create the updated range object
+    //     const range = {
+    //         min: startDate,
+    //         max: endDate,
+    //     };
+
+    //     // Now call the updatefilterdata function with the updated range (converted back to date strings)
+    //     updatefilterdata(column, range);
+    // };
 
     const updatefilterdata = (column, range) => {
+        console.log('Filtering number column:', column, 'Range:', range);
+        
+        // Use the original data instead of potentially already filtered data
         const filteredDatatemp = data.filter((item) => {
-            const itemValue = item[column];
-            if (itemValue !== null && itemValue !== undefined) {
-                return itemValue >= range[0] && itemValue <= range[1];
+            const itemValue = parseFloat(item[column]);
+            
+            // Skip items without valid numeric values
+            if (isNaN(itemValue)) {
+                return false; // Exclude items without valid numbers
             }
-            return true;
+            
+            const [min, max] = range;
+            return itemValue >= min && itemValue <= max;
         });
+        
+        console.log('Original data length:', data.length);
+        console.log('Filtered data length:', filteredDatatemp.length);
+        
         setFilteredData(filteredDatatemp);
     };
+    
+
+
+   
 
     const updateDateFilterData = (column, value) => {
-        // Convert timestamp values back to ISO date strings
-        const [startDateTimestamp, endDateTimestamp] = value;
-        const startDate = new Date(startDateTimestamp).toISOString();
-        const endDate = new Date(endDateTimestamp).toISOString();
-
-        // Create the updated range object
-        const range = {
-            min: startDate,
-            max: endDate,
-        };
-
-        // Now call the updatefilterdata function with the updated range (converted back to date strings)
-        updatefilterdata(column, range);
+        // value is already an array of [startTimestamp, endTimestamp] from the slider
+        const [startTimestamp, endTimestamp] = value;
+    
+        console.log('Filtering column:', column);
+        console.log('Date range:', {
+            start: new Date(startTimestamp).toLocaleDateString(),
+            end: new Date(endTimestamp).toLocaleDateString()
+        });
+    
+        // Use the original data instead of potentially already filtered data
+        const filteredDatatemp = data.filter((item) => {
+            const itemValue = item[column];
+    
+            // Skip items without valid date values
+            if (!itemValue || itemValue === null || itemValue === undefined || itemValue === '') {
+                return false; // Exclude items without dates instead of including them
+            }
+    
+            // Check if the item has a valid date value
+            if (isDate(itemValue)) {
+                const itemTimestamp = new Date(itemValue).getTime();
+                
+                // Add some debugging
+                if (itemTimestamp >= startTimestamp && itemTimestamp <= endTimestamp) {
+                    console.log('Including item:', itemValue, 'timestamp:', itemTimestamp);
+                }
+                
+                return itemTimestamp >= startTimestamp && itemTimestamp <= endTimestamp;
+            }
+    
+            // Exclude items with invalid dates
+            return false;
+        });
+    
+        console.log('Original data length:', data.length);
+        console.log('Filtered data length:', filteredDatatemp.length);
+        
+        setFilteredData(filteredDatatemp);
     };
 
     const handleBulkEdit = () => {
@@ -1284,7 +1420,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                         </div>
                     )}
 
-                    {selectedDates.length > 0 && (
+                    {/* {selectedDates.length > 0 && (
                         <div className="flex flex-wrap gap-4 justify-center">
                             {selectedDates.map((slider, index) => {
                                 const { min, max } = calculate_min_max(filteredData, slider.column);
@@ -1347,6 +1483,89 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                                         : max
                                                             ? new Date(max).toLocaleDateString("en-GB")
                                                             : ""}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )} */}
+
+
+                    {selectedDates.length > 0 && (
+                        <div className="flex flex-wrap gap-4 justify-center">
+                            {selectedDates.map((slider, index) => {
+                                const { min, max } = calculate_min_max(data, slider.column); // Use original data
+                                const minDate = min || new Date("2000-01-01").getTime();
+                                const maxDate = max || new Date().getTime();
+
+                                return (
+                                    <div key={index} className="flex flex-col items-center w-[240px]">
+                                        <span className="font-medium text-gray-700 mb-2 text-center text-[14px]">
+                                            {slider.column.split("_").join(" ").toUpperCase()}
+                                        </span>
+                                        <div className="flex flex-col items-center w-full relative">
+                                            <Slider
+                                                range
+                                                value={
+                                                    slider.range && slider.range.length === 2
+                                                        ? slider.range.map((date) => new Date(date).getTime())
+                                                        : [minDate, maxDate]
+                                                }
+                                                onChange={(value) => {
+                                                    // Update the selectedDates state with ISO strings
+                                                    setSelectedDates((prev) =>
+                                                        prev.map((s) =>
+                                                            s.column === slider.column
+                                                                ? {
+                                                                    ...s,
+                                                                    range: value.map((ts) =>
+                                                                        new Date(ts).toISOString()
+                                                                    ),
+                                                                }
+                                                                : s
+                                                        )
+                                                    );
+
+                                                    // Apply the filter immediately with timestamp values
+                                                    updateDateFilterData(slider.column, value);
+
+                                                    // Save to localStorage
+                                                    localStorage.setItem("selectedDates", JSON.stringify(
+                                                        selectedDates.map((s) =>
+                                                            s.column === slider.column
+                                                                ? {
+                                                                    ...s,
+                                                                    range: value.map((ts) =>
+                                                                        new Date(ts).toISOString()
+                                                                    ),
+                                                                }
+                                                                : s
+                                                        )
+                                                    ));
+                                                }}
+                                                min={minDate}
+                                                max={maxDate}
+                                                step={24 * 60 * 60 * 1000} // 1 day step
+                                                style={{ width: "100%" }}
+                                                trackStyle={{ height: "4px" }}
+                                                handleStyle={{
+                                                    height: "14px",
+                                                    width: "14px",
+                                                    border: "2px solid #598931",
+                                                }}
+                                            />
+                                            <div className="flex justify-between w-full text-sm text-gray-700 mt-1">
+                                                <span className="text-[14px]">
+                                                    {slider.range && slider.range.length === 2
+                                                        ? new Date(slider.range[0]).toLocaleDateString("en-GB")
+                                                        : new Date(minDate).toLocaleDateString("en-GB")}
+                                                </span>
+                                                <span className="text-[14px]">
+                                                    {slider.range && slider.range.length === 2
+                                                        ? new Date(slider.range[1]).toLocaleDateString("en-GB")
+                                                        : new Date(maxDate).toLocaleDateString("en-GB")}
                                                 </span>
                                             </div>
                                         </div>
@@ -1509,24 +1728,67 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                                                         type="checkbox"
                                                         className="form-checkbox h-4 w-4 text-green-600 flex-shrink-0"
                                                         checked={isChecked}
+                                                        // onChange={(e) => {
+                                                        //     if (e.target.checked) {
+                                                        //         // Add the item with dynamically calculated range
+                                                        //         const { min, max } = calculate_min_max(
+                                                        //             filteredData,
+                                                        //             item
+                                                        //         );
+                                                        //         setSelectedDates((prev) => [
+                                                        //             ...prev,
+                                                        //             { column: item, range: [min, max] },
+                                                        //         ]);
+                                                        //     } else {
+                                                        //         // Remove the item when unchecked
+                                                        //         setSelectedDates((prev) =>
+                                                        //             prev.filter(
+                                                        //                 (slider) => slider.column !== item
+                                                        //             )
+                                                        //         );
+                                                        //     }
+                                                        // }}
+
+                                                        
                                                         onChange={(e) => {
                                                             if (e.target.checked) {
-                                                                // Add the item with dynamically calculated range
-                                                                const { min, max } = calculate_min_max(
-                                                                    filteredData,
-                                                                    item
-                                                                );
-                                                                setSelectedDates((prev) => [
-                                                                    ...prev,
-                                                                    { column: item, range: [min, max] },
-                                                                ]);
+                                                                // Add the item with dynamically calculated range using original data
+                                                                const { min, max } = calculate_min_max(data, item);
+                                                                const minDate = min || new Date("2000-01-01").getTime();
+                                                                const maxDate = max || new Date().getTime();
+
+                                                                setSelectedDates((prev) => {
+                                                                    const newDates = [
+                                                                        ...prev,
+                                                                        {
+                                                                            column: item,
+                                                                            range: [
+                                                                                new Date(minDate).toISOString(),
+                                                                                new Date(maxDate).toISOString()
+                                                                            ]
+                                                                        },
+                                                                    ];
+                                                                    localStorage.setItem("selectedDates", JSON.stringify(newDates));
+                                                                    return newDates;
+                                                                });
                                                             } else {
-                                                                // Remove the item when unchecked
-                                                                setSelectedDates((prev) =>
-                                                                    prev.filter(
+                                                                // Remove the item when unchecked and reset filter
+                                                                setSelectedDates((prev) => {
+                                                                    const newDates = prev.filter(
                                                                         (slider) => slider.column !== item
-                                                                    )
-                                                                );
+                                                                    );
+
+                                                                    // If no date filters remaining, reset to original data
+                                                                    if (newDates.length === 0) {
+                                                                        setFilteredData(data);
+                                                                        localStorage.removeItem("selectedDates");
+                                                                    }
+                                                                    else {
+                                                                        localStorage.setItem("selectedDates", JSON.stringify(newDates));
+                                                                    }
+
+                                                                    return newDates;
+                                                                });
                                                             }
                                                         }}
                                                     />
@@ -1587,7 +1849,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                     </div>}
                 </div>
 
-                
+
             </div>
 
             {/* <DataGrid
