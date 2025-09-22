@@ -106,10 +106,20 @@ const VideoGallaryPreview = () => {
   //   },
   // ];
 
-  const paginatedVideos = videos.slice(
+  // const paginatedVideos = videos.slice(
+  //   (currentPage - 1) * pageSize,
+  //   currentPage * pageSize
+  // );
+
+  // Limit videos to only 2 pages worth of data
+  const maxPages = 2;
+  const limitedVideos = videos.slice(0, pageSize * maxPages);
+
+  const paginatedVideos = limitedVideos.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+
 
   const handlePageChange = (page, size) => {
     setCurrentPage(page);
@@ -119,6 +129,10 @@ const VideoGallaryPreview = () => {
   const handleVideoClick = (video) => {
     navigate(`/video/${video.id}`, { state: { video } });
   };
+
+
+
+
 
   const defaultSettings = {
     "showInCard": [
@@ -195,7 +209,7 @@ const VideoGallaryPreview = () => {
         }
       },
     ],
-    "_id":"1234567890987654"
+    "_id": "1234567890987654"
   }
 
   return (
@@ -225,13 +239,22 @@ const VideoGallaryPreview = () => {
       </div>
 
       <div className="flex justify-end mt-6">
-        <Pagination
+        {/* <Pagination
           current={currentPage}
           pageSize={pageSize}
           total={videos.length}
           showSizeChanger
           onChange={handlePageChange}
+        /> */}
+
+        <Pagination
+          current={currentPage}
+          pageSize={pageSize}
+          total={limitedVideos.length}  // ✅ only 2 pages of data
+          showSizeChanger     
+          onChange={handlePageChange}
         />
+
       </div>
     </div>
   );
