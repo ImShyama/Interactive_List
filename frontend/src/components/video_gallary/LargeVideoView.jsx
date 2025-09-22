@@ -199,7 +199,7 @@ const LargeVideoView = () => {
 
   const { settingsId, videoId } = useParams();
   const [searchParams] = useSearchParams();
-  
+
   // Create broadcast channel for receiving video data
   const channel = useMemo(() => new BroadcastChannel('video-data'), []);
 
@@ -207,7 +207,7 @@ const LargeVideoView = () => {
   useEffect(() => {
     const expectedUid = searchParams.get('uid');
     console.log('🎯 LargeVideoView mounted with UID:', expectedUid);
-    
+
     if (!expectedUid) {
       console.log('❌ No UID found in URL');
       setError('No video ID found');
@@ -221,7 +221,7 @@ const LargeVideoView = () => {
       setData(videoData.rowData);
       setSettings(videoData.settings);
       setLoading(false);
-      
+
       // Don't clean localStorage immediately - let it persist for reloads
       // Clean up after 1 hour instead
       setTimeout(() => {
@@ -233,7 +233,7 @@ const LargeVideoView = () => {
     // First, try to get data from localStorage (immediate)
     const localStorageKey = `video_data_${expectedUid}`;
     const storedData = localStorage.getItem(localStorageKey);
-    
+
     if (storedData) {
       try {
         const videoData = JSON.parse(storedData);
@@ -249,7 +249,7 @@ const LargeVideoView = () => {
 
     // If localStorage didn't work, try server fallback
     console.log('🌐 Trying to fetch data from server...');
-    
+
     const fetchFromServer = async () => {
       try {
         const response = await axios.post(`${HOST}/getSheetRowData`, {
@@ -260,7 +260,7 @@ const LargeVideoView = () => {
             Authorization: `Bearer ${token}`
           }
         });
-        
+
         console.log('✅ Fetched data from server:', response.data);
         setData(response.data.data);
         setSettings(response.data.settings);
@@ -278,17 +278,17 @@ const LargeVideoView = () => {
         console.log('✅ Server fetch successful, no need for BroadcastChannel');
         return; // Exit if server fetch worked
       }
-      
+
       // If server fetch failed, listen for BroadcastChannel
       console.log('📻 Server fetch failed, waiting for BroadcastChannel message...');
-      
+
       const handleMessage = (event) => {
-        console.log('🔥 Received broadcast message:', { 
-          eventData: event.data, 
+        console.log('🔥 Received broadcast message:', {
+          eventData: event.data,
           expectedUid,
           timestamp: new Date().toISOString()
         });
-        
+
         if (event.data && event.data.type === 'VIDEO_DATA' && event.data.id === expectedUid) {
           processVideoData(event.data);
         } else {
@@ -302,21 +302,21 @@ const LargeVideoView = () => {
       };
 
       channel.addEventListener('message', handleMessage);
-      
+
       // Timeout fallback - if no data received in 5 seconds, show error
       const fallbackTimeout = setTimeout(() => {
         console.log('⏰ Timeout: No video data received');
         setError('Video data not found. Please try clicking the video again.');
         setLoading(false);
       }, 5000);
-      
+
       // Store cleanup function for this scenario
       window.videoCleanup = () => {
         clearTimeout(fallbackTimeout);
         channel.removeEventListener('message', handleMessage);
       };
     });
-    
+
     // Cleanup function
     return () => {
       console.log('🧹 Cleaning up event listener and timeout');
@@ -339,7 +339,7 @@ const LargeVideoView = () => {
   //           Authorization: `Bearer ${token}`
   //         }
   //       });
-        
+
   //       setData(response.data.data);
   //       setSettings(response.data.settings);
   //     } catch (error) {
@@ -428,6 +428,31 @@ const LargeVideoView = () => {
     return `${videoUrl}?autoplay=1&controls=1&modestbranding=1&rel=0&showinfo=0`;
   };
 
+
+  const getYoutubeThumbnail = (url) => {
+    if (!url) return noPhoto;
+
+    try {
+      const urlObj = new URL(url);
+
+      if (url.includes("youtu.be")) {
+        const videoId = urlObj.pathname.slice(1);
+        return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      }
+
+      if (url.includes("youtube.com")) {
+        const videoId = urlObj.searchParams.get("v");
+        if (videoId) {
+          return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+        }
+      }
+    } catch (err) {
+      console.error("Invalid YouTube URL:", url);
+    }
+
+    return noPhoto; // fallback
+  };
+
   const handlePlayVideo = () => {
     setIsPlaying(true);
   };
@@ -506,7 +531,7 @@ const LargeVideoView = () => {
                 className="relative w-full h-full cursor-pointer"
                 onClick={handlePlayVideo}
               >
-                <img
+                {/* <img
                   src={
                     (() => {
                       const titleKey = settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
@@ -527,7 +552,37 @@ const LargeVideoView = () => {
                   alt={data[settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
                   className="w-full h-full object-cover rounded-[36.443px]"
                   onError={(e) => handleImageError(e, noPhoto)}
+                /> */}
+
+                <img
+                  src={
+                    (() => {
+                      const titleKey = settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
+                      const videoUrl = data?.[titleKey];
+
+                      if (!videoUrl) return noPhoto;
+
+                      // If Google Drive
+                      if (videoUrl.includes("drive.google.com")) {
+                        const driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
+                        return driveIdMatch
+                          ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}`
+                          : noPhoto;
+                      }
+
+                      // If YouTube → return default thumbnail
+                      if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+                        return getYoutubeThumbnail(videoUrl);
+                      }
+
+                      // Otherwise just return the image itself
+                      return videoUrl;
+                    })()
+                  }
+                  alt={data[settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
+                  className="w-full h-full object-cover rounded-[36.443px]"
                 />
+
                 {/* Custom Play Button Overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="bg-black bg-opacity-50 rounded-full p-[24px]">
@@ -607,7 +662,7 @@ const LargeVideoView = () => {
                 ? settings?.showInCard[4]?.setting?.fontStyle
                 : undefined,
               fontVariant:
-              settings?.showInCard[4]?.setting?.fontStyle === "small-caps"
+                settings?.showInCard[4]?.setting?.fontStyle === "small-caps"
                   ? "small-caps"
                   : undefined,
               textTransform: ["uppercase", "lowercase"].includes(
