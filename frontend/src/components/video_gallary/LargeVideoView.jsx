@@ -137,6 +137,8 @@ const LargeVideoView = () => {
 
   const titleKey = settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_");
   const videoUrl = data?.[titleKey];
+  const imageKey = settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
+  const imageUrl = data?.[imageKey];
 
   const getEmbeddedVideoURL = (url) => {
     if (url.includes("youtube.com") || url.includes("youtu.be")) {
@@ -555,32 +557,37 @@ const LargeVideoView = () => {
                 /> */}
 
                 <img
-                  src={
-                    (() => {
-                      const titleKey = settings?.showInCard[1]?.title?.toLowerCase().replace(/\s/g, "_");
-                      const videoUrl = data?.[titleKey];
-
-                      if (!videoUrl) return noPhoto;
-
-                      // If Google Drive
-                      if (videoUrl.includes("drive.google.com")) {
-                        const driveIdMatch = videoUrl.match(/(?:id=|\/d\/)([\w-]+)/);
+                  src={(() => {
+                    // Prefer provided image if present
+                    if (imageUrl) {
+                      if (imageUrl.includes("drive.google.com")) {
+                        const driveIdMatch = imageUrl.match(/(?:id=|\/d\/)([\w-]+)/);
                         return driveIdMatch
                           ? `https://drive.google.com/thumbnail?id=${driveIdMatch[1]}`
-                          : noPhoto;
+                          : imageUrl;
                       }
+                      return imageUrl;
+                    }
 
-                      // If YouTube → return default thumbnail
-                      if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
-                        return getYoutubeThumbnail(videoUrl);
-                      }
+                    // If image missing, fall back to YouTube thumbnail from main video URL
+                    if (videoUrl && (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be"))) {
+                      return getYoutubeThumbnail(videoUrl);
+                    }
 
-                      // Otherwise just return the image itself
-                      return videoUrl;
-                    })()
-                  }
+                    return noPhoto;
+                  })()}
                   alt={data[settings?.showInCard[2]?.title?.toLowerCase().replace(/\s/g, "_")]}
                   className="w-full h-full object-cover rounded-[36.443px]"
+                  onError={(e) => {
+                    // If provided image fails, swap to YouTube thumbnail if possible
+                    if (videoUrl && (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be"))) {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = getYoutubeThumbnail(videoUrl);
+                    } else {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = noPhoto;
+                    }
+                  }}
                 />
 
                 {/* Custom Play Button Overlay */}
