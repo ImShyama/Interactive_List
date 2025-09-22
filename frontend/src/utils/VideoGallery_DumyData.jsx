@@ -8,7 +8,8 @@ export const data = [
         "link": "https://www.youtube.com/embed/oGjSZK_Z_6I",
         // "link": "https://www.instagram.com/reel/C5lSU9qNl0n/",
         "drive_image_url": "https://drive.google.com/file/d/1qer5H_oyi1KEs3XzKk16UVM4LVDxASaY/view?usp=drive_link",
-        "image": "https://drive.google.com/file/d/1qer5H_oyi1KEs3XzKk16UVM4LVDxASaY/view?usp=drive_link"
+        // "image": "https://drive.google.com/file/d/1qer5H_oyi1KEs3XzKk16UVM4LVDxASaY/view?usp=drive_link"
+        "image": "https://i.ibb.co/5xxNLxH0/Tech-Friday-Thumbnail-Poster-copy.jpg"
     },
     {
         "key_id": "2",
@@ -18,7 +19,8 @@ export const data = [
         "month": "January 2024",
         "link": "https://www.youtube.com/embed/GL-U2p39nPk",
         "drive_image_url": "https://drive.google.com/file/d/1XGmBAwKhk250gfZeJIW6ePEuKpL1nmOS/view?usp=drive_link",
-        "image": "https://drive.google.com/file/d/1XGmBAwKhk250gfZeJIW6ePEuKpL1nmOS/view?usp=drive_link"
+        // "image": "https://drive.google.com/file/d/1XGmBAwKhk250gfZeJIW6ePEuKpL1nmOS/view?usp=drive_link"
+        "image": "https://i.ibb.co/5xxNLxH0/Tech-Friday-Thumbnail-Poster-copy.jpg"
     },
     {
         "key_id": "3",
@@ -28,7 +30,8 @@ export const data = [
         "month": "December 2024",
         "link": "https://www.youtube.com/embed/SSSlLLlUmZk",
         "drive_image_url": "https://drive.google.com/file/d/13mT2KUX8IAsOvUDkPn7yRyx4VhFb9Azj/view?usp=drive_link",
-        "image": "https://drive.google.com/uc?export=view&id=13mT2KUX8IAsOvUDkPn7yRyx4VhFb9Azj/view?usp=drive_link"
+        // "image": "https://drive.google.com/uc?export=view&id=13mT2KUX8IAsOvUDkPn7yRyx4VhFb9Azj/view?usp=drive_link"
+        "image": "https://i.ibb.co/13yrbLH/Tech-Friday-Thumbnail-2-copy.jpg"
     },
     {
         "key_id": "4",
@@ -38,7 +41,8 @@ export const data = [
         "month": "December 2024",
         "link": "https://www.youtube.com/embed/VP52-NpbEn4",
         "drive_image_url": "https://drive.google.com/file/d/14924dpyHoKznH6rK-mfeT6mOcbZzlkJx/view?usp=drive_link",
-        "image": "https://drive.google.com/file/d/14924dpyHoKznH6rK-mfeT6mOcbZzlkJx/view?usp=drive_link"
+        // "image": "https://drive.google.com/file/d/14924dpyHoKznH6rK-mfeT6mOcbZzlkJx/view?usp=drive_link"
+        "image": "https://i.ibb.co/7JHyPr0Z/Tech-Friday-Youtube-Thumbnail-copy.jpg"
     },
     {
         "key_id": "5",
@@ -48,7 +52,8 @@ export const data = [
         "month": "November 2024",
         "link": "https://www.youtube.com/embed/9Wg3Pi3BkUk",
         "drive_image_url": "https://drive.google.com/file/d/16wyCeSDSUl7qSwL9KD0sA2-_2akC2i2k/view?usp=share_link",
-        "image": "https://drive.google.com/uc?export=view&id=16wyCeSDSUl7qSwL9KD0sA2-_2akC2i2k/view?usp=share_link"
+        // "image": "https://drive.google.com/uc?export=view&id=16wyCeSDSUl7qSwL9KD0sA2-_2akC2i2k/view?usp=share_link"
+        "image": "https://i.ibb.co/NgwVCmtw/Tech-Friday-HR-Recruitment-Special.jpg"
     },
     {
         "key_id": "6",
@@ -58,7 +63,8 @@ export const data = [
         "month": "October 2024",
         "link": "https://www.youtube.com/embed/HgDebhTrjsY",
         "drive_image_url": "https://drive.google.com/file/d/1unSXlfr0aEpJDidvTKugFLVYgpkn4qlP/view?usp=sharing",
-        "image": "https://drive.google.com/uc?export=view&id=1unSXlfr0aEpJDidvTKugFLVYgpkn4qlP/view?usp=sharing"
+        // "image": "https://drive.google.com/uc?export=view&id=1unSXlfr0aEpJDidvTKugFLVYgpkn4qlP/view?usp=sharing"
+        "image": "https://i.ibb.co/s9dy67Br/Tech-Friday-Ultimate-Guide-for-Building-Dashboards.jpg"
     },
     {
         "key_id": "7",
@@ -68,7 +74,8 @@ export const data = [
         "month": "October 2024",
         "link": "https://www.youtube.com/embed/8DooJPQADTY",
         "drive_image_url": "https://drive.google.com/file/d/1dDENi-hClzoY_mdoN4Hqd85zJqc-DyAN/view?usp=sharing",
-        "image": "https://drive.google.com/uc?export=view&id=1dDENi-hClzoY_mdoN4Hqd85zJqc-DyAN/view?usp=drive_link"
+        // "image": "https://drive.google.com/uc?export=view&id=1dDENi-hClzoY_mdoN4Hqd85zJqc-DyAN/view?usp=drive_link"
+        "image": "https://i.ibb.co/gFdtt1K1/Whats-App-Image-2024-10-07-at-5-03-53-PM.jpg"
     },
     {
         "key_id": "8",
@@ -78,7 +85,8 @@ export const data = [
         "month": "September 2024",
         "link": "https://www.youtube.com/embed/HgDebhTrjsY",
         "drive_image_url": "https://drive.google.com/file/d/15aHjy9NFGRcIqXSVfE5Xavh44f05xk1M/view?usp=sharing",
-        "image": "https://drive.google.com/uc?export=view&id=15aHjy9NFGRcIqXSVfE5Xavh44f05xk1M/view?usp=sharing"
+        // "image": "https://drive.google.com/uc?export=view&id=15aHjy9NFGRcIqXSVfE5Xavh44f05xk1M/view?usp=sharing"
+        "image": "https://i.ibb.co/nMwM9VQG/Whats-App-Image-2024-09-21-at-10-20-29-AM.jpg"
     },
     {
         "key_id": "9",
@@ -88,7 +96,8 @@ export const data = [
         "month": "September 2024",
         "link": "https://www.youtube.com/embed/hWgLprI2gew",
         "drive_image_url": "https://drive.google.com/file/d/1Z_l7HsJDwl-Y6G9e0mK92fYE5RGCh_5v/view?usp=drive_link",
-        "image": "https://drive.google.com/uc?export=view&id=1Z_l7HsJDwl-Y6G9e0mK92fYE5RGCh_5v"
+        // "image": "https://drive.google.com/uc?export=view&id=1Z_l7HsJDwl-Y6G9e0mK92fYE5RGCh_5v"
+        "image": "https://i.ibb.co/TBLvbHkq/Whats-App-Image-2024-09-13-at-4-05-43-PM.jpg"
     },
     {
         "key_id": "10",
@@ -98,7 +107,8 @@ export const data = [
         "month": "August 2024",
         "link": "https://www.youtube.com/embed/CjMAWP2KLiQ",
         "drive_image_url": "https://drive.google.com/file/d/1pvRRSoGt9S00rB4J8dCvWh455WnJohgv/view?usp=drive_link",
-        "image": "https://drive.google.com/uc?export=view&id=1pvRRSoGt9S00rB4J8dCvWh455WnJohgv"
+        // "image": "https://drive.google.com/uc?export=view&id=1pvRRSoGt9S00rB4J8dCvWh455WnJohgv"
+        "image": "https://i.ibb.co/cK0NMMY2/Tech-Friday-Back-To-The-Future.jpg"
     },
     {
         "key_id": "11",
@@ -108,7 +118,8 @@ export const data = [
         "month": "August 2024",
         "link": "https://www.youtube.com/embed/Ix3AQGirUMA",
         "drive_image_url": "https://drive.google.com/file/d/1-zv9bOd1H-axFLJFqu-AUNIGLCJ6acUg/view?usp=sharing",
-        "image": "https://drive.google.com/uc?export=view&id=1-zv9bOd1H-axFLJFqu-AUNIGLCJ6acUg"
+        // "image": "https://drive.google.com/uc?export=view&id=1-zv9bOd1H-axFLJFqu-AUNIGLCJ6acUg"
+        "image": "https://i.ibb.co/MxrPgY9m/Tech-Friday-Top-Control-Techniques-for-CEOs.jpg"
     },
     {
         "key_id": "12",
@@ -118,7 +129,8 @@ export const data = [
         "month": "July 2024",
         "link": "https://www.youtube.com/embed/_j1Te13Xovo",
         "drive_image_url": "https://drive.google.com/file/d/15wpfIiN9Pi1pQGYWs8ZSAXxzvNXMwvkP/view?usp=sharing",
-        "image": "https://drive.google.com/uc?export=view&id=15wpfIiN9Pi1pQGYWs8ZSAXxzvNXMwvkP"
+        // "image": "https://drive.google.com/uc?export=view&id=15wpfIiN9Pi1pQGYWs8ZSAXxzvNXMwvkP"
+        "image": "https://i.ibb.co/13yrbLH/Tech-Friday-Thumbnail-2-copy.jpg"
     },
     {
         "key_id": "13",
@@ -128,7 +140,7 @@ export const data = [
         "month": "July 2024",
         "link": "https://www.youtube.com/embed/JCdq4f5U15A",
         "drive_image_url": "https://drive.google.com/file/d/1RftIP1Px8GcfmATlf2mwE94jNH1-rA1Y/view?usp=drive_link",
-        "image": "https://drive.google.com/uc?export=view&id=1RftIP1Px8GcfmATlf2mwE94jNH1-rA1Y"
+        "image": "https://i.ibb.co/FLtwj6fZ/Tech-Friday-10-Rockefeller-Habits-for-Successful-Businesses.jpg"
     },
     {
         "key_id": "14",
@@ -138,7 +150,7 @@ export const data = [
         "month": "June 2024",
         "link": "https://www.youtube.com/embed/667CeAODWD0",
         "drive_image_url": "https://drive.google.com/file/d/1FZeX5k5GAYtXFyu4rS183eQYcba5dNHp/view?usp=sharing",
-        "image": "https://drive.google.com/uc?export=view&id=1FZeX5k5GAYtXFyu4rS183eQYcba5dNHp"
+        "image": "https://i.ibb.co/7JHyPr0Z/Tech-Friday-Youtube-Thumbnail-copy.jpg"
     },
     {
         "key_id": "15",
@@ -148,7 +160,7 @@ export const data = [
         "month": "June 2024",
         "link": "https://www.youtube.com/embed/0C_gUQDckTA",
         "drive_image_url": "https://drive.google.com/file/d/1unSXlfr0aEpJDidvTKugFLVYgpkn4qlP/view?usp=drive_link ",
-        "image": "https://drive.google.com/file/d/1unSXlfr0aEpJDidvTKugFLVYgpkn4qlP/view?usp=drive_link "
+        "image": "https://i.ibb.co/s9dy67Br/Tech-Friday-Ultimate-Guide-for-Building-Dashboards.jpg"
     },
     {
         "key_id": "16",
@@ -158,7 +170,7 @@ export const data = [
         "month": "May 2024",
         "link": "https://www.youtube.com/embed/v6iwFoIMHVc",
         "drive_image_url": "https://drive.google.com/file/d/14VCd204NX6WYwAKeqIwkNOPl0YTD4icH/view?usp=drive_link",
-        "image": "https://drive.google.com/uc?export=view&id=14VCd204NX6WYwAKeqIwkNOPl0YTD4icH"
+        "image": "https://i.ibb.co/LzkYh3qS/Tech-Friday-From-0-To-Hero-for-100x-Productivity.jpg"
     },
     {
         "key_id": "17",
