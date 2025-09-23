@@ -30,7 +30,8 @@ const nodemailer = require("nodemailer");
 // Add these imports at the top of the file
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-const { default: TableShareEmailTemplate } = require("./utils/TableShareEmailTemplate.js");
+const {TableShareEmailTemplate} = require("./utils/TableShareEmailTemplate.js");
+
 
 mongoose
   .connect(MONGO_URL)
