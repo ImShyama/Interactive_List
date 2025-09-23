@@ -23,12 +23,14 @@ const NodeCache = require("node-cache");
 const sheetCache = new NodeCache({ stdTTL: 60 }); // 60 sec TTL
 const featuresRouter = require("./Routes/featuresRoutes");
 const axios = require("axios");
+const nodemailer = require("nodemailer");
 
 
 
 // Add these imports at the top of the file
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+const { default: TableShareEmailTemplate } = require("./utils/TableShareEmailTemplate.js");
 
 mongoose
   .connect(MONGO_URL)
@@ -963,25 +965,25 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
     // Try to get basic file metadata first
     let access = "owner"; // Default to shared access (matching original lowercase)
     let lastUpdatedDate = new Date(); // Fallback to current date
-    
+
     try {
       // Try to get basic file info first
-      const basicFileResponse = await drive.files.get({ 
-        fileId: sheet_id, 
-        fields: "modifiedTime" 
+      const basicFileResponse = await drive.files.get({
+        fileId: sheet_id,
+        fields: "modifiedTime"
       });
-      
+
       if (basicFileResponse.data.modifiedTime) {
         lastUpdatedDate = new Date(basicFileResponse.data.modifiedTime);
       }
 
       // Try to get more detailed info to determine ownership
       try {
-        const detailedFileResponse = await drive.files.get({ 
-          fileId: sheet_id, 
-          fields: "modifiedTime,ownedByMe" 
+        const detailedFileResponse = await drive.files.get({
+          fileId: sheet_id,
+          fields: "modifiedTime,ownedByMe"
         });
-        
+
         // If we can access ownedByMe field and it's true, user is owner
         if (detailedFileResponse.data.ownedByMe === true) {
           access = "owner";
@@ -989,19 +991,19 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       } catch (ownershipError) {
         console.log("Could not determine ownership, assuming shared access");
       }
-      
+
     } catch (fileError) {
       console.log("Could not get file metadata, using fallback values:", fileError.message);
       // If we can't get file info at all, use fallback values
     }
 
     // Create a new spreadsheet
-    const createResponse = await sheets.spreadsheets.create({ 
-      resource: { 
-        properties: { 
-          title: `Copy of ${sourceSpreadsheetTitle}` 
-        } 
-      } 
+    const createResponse = await sheets.spreadsheets.create({
+      resource: {
+        properties: {
+          title: `Copy of ${sourceSpreadsheetTitle}`
+        }
+      }
     });
     const newSpreadsheetId = createResponse.data.spreadsheetId;
 
@@ -1012,12 +1014,12 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
       const sourceSheetName = sheet.properties.title;
 
       // Prepare the request to copy the sheet
-      const request = { 
-        spreadsheetId: sheet_id, 
-        sheetId: sourceSheetId, 
-        resource: { 
-          destinationSpreadsheetId: newSpreadsheetId 
-        } 
+      const request = {
+        spreadsheetId: sheet_id,
+        sheetId: sourceSheetId,
+        resource: {
+          destinationSpreadsheetId: newSpreadsheetId
+        }
       };
 
       // Copy the sheet to the new spreadsheet
@@ -1025,32 +1027,32 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
 
       // Rename the copied sheet to match the source sheet name
       const copiedSheetId = copyResponse.data.sheetId;
-      await sheets.spreadsheets.batchUpdate({ 
-        spreadsheetId: newSpreadsheetId, 
-        resource: { 
-          requests: [{ 
-            updateSheetProperties: { 
-              properties: { 
-                sheetId: copiedSheetId, 
-                title: sourceSheetName 
-              }, 
-              fields: "title" 
-            } 
-          }] 
-        } 
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId: newSpreadsheetId,
+        resource: {
+          requests: [{
+            updateSheetProperties: {
+              properties: {
+                sheetId: copiedSheetId,
+                title: sourceSheetName
+              },
+              fields: "title"
+            }
+          }]
+        }
       });
     }
 
     // Delete the default "Sheet1" from the new spreadsheet
-    const deleteSheetResponse = await sheets.spreadsheets.batchUpdate({ 
-      spreadsheetId: newSpreadsheetId, 
-      resource: { 
-        requests: [{ 
-          deleteSheet: { 
-            sheetId: createResponse.data.sheets[0].properties.sheetId 
-          } 
-        }] 
-      } 
+    const deleteSheetResponse = await sheets.spreadsheets.batchUpdate({
+      spreadsheetId: newSpreadsheetId,
+      resource: {
+        requests: [{
+          deleteSheet: {
+            sheetId: createResponse.data.sheets[0].properties.sheetId
+          }
+        }]
+      }
     });
 
     // Retrieve details of the first sheet in the new spreadsheet
@@ -1381,14 +1383,14 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
 //     // Alternative approach: Try to determine access by attempting to get file metadata
 //     // If we can get detailed metadata, we likely have owner access
 //     let access = "Shared"; // Default to shared access
-    
+
 //     try {
 //       // Try to get file with detailed fields - this might work for owners
 //       const detailedFileResponse = await drive.files.get({ 
 //         fileId: sheet_id, 
 //         fields: "modifiedTime,owners,permissions" 
 //       });
-      
+
 //       // If we can access owners field, we can determine ownership
 //       if (detailedFileResponse.data.owners) {
 //         // Check if current user is in owners array (you might need to compare with current user's email)
@@ -1728,25 +1730,25 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
     // Try to get basic file metadata first
     let access = "Shared"; // Default to shared access
     let lastUpdatedDate = new Date(); // Fallback to current date
-    
+
     try {
       // Try to get basic file info first
-      const basicFileResponse = await drive.files.get({ 
-        fileId: sheet_id, 
-        fields: "modifiedTime" 
+      const basicFileResponse = await drive.files.get({
+        fileId: sheet_id,
+        fields: "modifiedTime"
       });
-      
+
       if (basicFileResponse.data.modifiedTime) {
         lastUpdatedDate = new Date(basicFileResponse.data.modifiedTime);
       }
 
       // Try to get more detailed info to determine ownership
       try {
-        const detailedFileResponse = await drive.files.get({ 
-          fileId: sheet_id, 
-          fields: "modifiedTime,ownedByMe" 
+        const detailedFileResponse = await drive.files.get({
+          fileId: sheet_id,
+          fields: "modifiedTime,ownedByMe"
         });
-        
+
         // If we can access ownedByMe field and it's true, user is owner
         if (detailedFileResponse.data.ownedByMe === true) {
           access = "Owner";
@@ -1754,7 +1756,7 @@ async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) 
       } catch (ownershipError) {
         console.log("Could not determine ownership, assuming shared access");
       }
-      
+
     } catch (fileError) {
       console.log("Could not get file metadata, using fallback values:", fileError.message);
       // If we can't get file info at all, use fallback values
@@ -2886,6 +2888,9 @@ app.post("/addEmails/:id", authenticateToken, async (req, res) => {
       return res.status(404).json({ message: "Sheet not found" });
     }
 
+    const userData = await User.findById(sheetData.userId);
+  
+
     const { spreadsheetId } = sheetData;
 
     // Create an OAuth2 client with stored credentials
@@ -2930,6 +2935,21 @@ app.post("/addEmails/:id", authenticateToken, async (req, res) => {
       { sharedWith: emails },
       { new: true }
     );
+    const config = {
+      userName: userData.name,
+      userEmail: userData.email,
+      sheetName: sheetData.spreadsheetName,
+      viewLink: `https://interact.ceoitbox.com/${sheetData._id}/view`,
+    }
+
+    emails.forEach(email => {
+      config.accessType = email.permission;
+      sendEmail({
+        to: email.email,
+        subject: "Test Email",
+        html: TableShareEmailTemplate(config),
+      });
+    });
 
     res.status(200).json(updatedSetting);
   } catch (error) {
@@ -3311,7 +3331,7 @@ app.post("/getSheetRowData", dynamicAuth, async (req, res) => {
 // ==================== APPS ROUTES ====================
 
 // GET all apps for admin
-app.get("/apps/admin",authenticateToken, async (req, res) => {
+app.get("/apps/admin", authenticateToken, async (req, res) => {
   try {
     const apps = await App.find({}).sort({ createdAt: 1 });
     res.status(200).json(apps);
@@ -3322,7 +3342,7 @@ app.get("/apps/admin",authenticateToken, async (req, res) => {
 });
 
 // GET all apps
-app.get("/apps",authenticateToken, async (req, res) => {
+app.get("/apps", authenticateToken, async (req, res) => {
   try {
     const user = req.user;
     console.log("userfsafsa: ", user);
@@ -3375,11 +3395,11 @@ app.put("/apps/:id", authenticateToken, async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
-    
+
     if (!updatedApp) {
       return res.status(404).json({ error: "App not found" });
     }
-    
+
     res.status(200).json(updatedApp);
   } catch (error) {
     console.error("Error updating app:", error);
@@ -3400,11 +3420,11 @@ app.put("/apps/:id/groups", authenticateToken, async (req, res) => {
       { allowedGroups },
       { new: true, runValidators: true }
     );
-    
+
     if (!updatedApp) {
       return res.status(404).json({ error: "App not found" });
     }
-    
+
     res.status(200).json(updatedApp);
   } catch (error) {
     console.error("Error updating app groups:", error);
@@ -3419,10 +3439,10 @@ app.put("/apps/:id/toggle", authenticateToken, async (req, res) => {
     if (!app) {
       return res.status(404).json({ error: "App not found" });
     }
-    
+
     app.show = !app.show;
     const updatedApp = await app.save();
-    
+
     res.status(200).json(updatedApp);
   } catch (error) {
     console.error("Error toggling app visibility:", error);
@@ -3582,10 +3602,10 @@ app.post("/apps/seed", authenticateToken, async (req, res) => {
     ];
 
     const createdApps = await App.insertMany(initialApps);
-    res.status(201).json({ 
-      message: "Apps seeded successfully", 
+    res.status(201).json({
+      message: "Apps seeded successfully",
       count: createdApps.length,
-      apps: createdApps 
+      apps: createdApps
     });
   } catch (error) {
     console.error("Error seeding apps:", error);
@@ -3608,6 +3628,43 @@ app.post(`/api/helpdesk/raiseTicket`, async (req, res) => {
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
 });
+
+
+async function sendEmail(emailConfig) {
+  try {
+    // Create transporter object using SMTP transport
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER, // Your email
+        pass: process.env.EMAIL_PASS  // Your email password or app password
+      }
+    });
+
+    // Verify connection configuration
+    await transporter.verify();
+    console.log('SMTP server connection verified');
+
+    // Send mail with defined transport object
+    const info = await transporter.sendMail({
+      from: emailConfig.from || process.env.EMAIL_USER,
+      to: emailConfig?.to,
+      cc: emailConfig?.cc,
+      bcc: emailConfig?.bcc,
+      subject: emailConfig?.subject,
+      text: emailConfig?.text,
+      html: emailConfig?.html,
+      attachments: emailConfig?.attachments
+    });
+
+    console.log('Email sent successfully:', info.messageId);
+    return info;
+
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw error;
+  }
+}
 
 
 
