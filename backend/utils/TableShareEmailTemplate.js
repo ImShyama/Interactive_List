@@ -1,4 +1,5 @@
-const TableShareEmailTemplate = (config) => {
+/* eslint-disable n/prefer-module */
+export const TableShareEmailTemplate = (config) => {
     return `
    <!DOCTYPE html>
 <html lang="en">
@@ -152,4 +153,7 @@ const TableShareEmailTemplate = (config) => {
     `;
 }
 
-export default TableShareEmailTemplate;
+// module.export = TableShareEmailTemplate;
+
+
+
