@@ -15,6 +15,8 @@ import { headers, data, filterHeader } from '../utils/InetractiveList_DumyData';
 import Table from './interactive_list/Table';
 import TitleBarPreview from './TitleBarPreview';
 import CopyBtn from './component/CopyBtn';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 const ResizableTitle = (props) => {
     const { onResize, width, ...restProps } = props;
@@ -59,6 +61,7 @@ const InteractiveListView = () => {
     const [pageSize, setPageSize] = useState(10); // Set your page size
     const [searchedColumns, setSearchedColumns] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
+    // Filter/Search controls are handled by PreviewBtn for reuse across previews
     const searchInput = useRef(null);
     const navigate = useNavigate();
 
@@ -105,6 +108,12 @@ const InteractiveListView = () => {
             </div>
         );
     };
+
+    // Global search is handled in PreviewBtn
+
+    // Filter helpers moved to PreviewBtn
+
+    // Button callbacks handled in PreviewBtn
 
     const handleSearch = (selectedKeys, confirm, dataIndex) => {
         confirm();
@@ -381,9 +390,9 @@ const InteractiveListView = () => {
                     appName={"Interactive List"}
                     spreadSheetID={"1Mp4Fnw22ukZyZaWtP-apjcHCUeuWswqCYGHX9xEhTbQ"}
                     spreadSheetName={"Data"}
+                    data={data}
+                    setFilteredData={setFilteredData}
                 />
-
-                
             </div>
 
             <Table
