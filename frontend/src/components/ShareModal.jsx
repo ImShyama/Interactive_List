@@ -45,6 +45,7 @@ const ShareModal = ({ isOpen, onClose, spreadsheetId, sharedWith, updateSharedWi
   }, [settings]);
 
   async function addEmails(emails, message) {
+    
     try {
       if (message == "Emails saved successfully!") {
         setLoading(true);

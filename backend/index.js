@@ -2876,6 +2876,7 @@ app.put('/spreadsheet/:id', authenticateToken, async (req, res) => {
 });
 
 const TableShareEmailTemplate = (config) => {
+  const currentYear = new Date().getFullYear(); // ✅ extract year
   return `
  <!DOCTYPE html>
 <html lang="en">
@@ -3014,11 +3015,31 @@ const TableShareEmailTemplate = (config) => {
                   </tr>
                   
                   <!-- Footer -->
-                  <tr>
-                      <td style="background-color: #f8f9fa; padding: 20px 25px; text-align: center; color: #666666; font-size: 13px; border-top: 1px solid #e9ecef;">
-                          <p style="margin: 8px 0; line-height: 1.5;">If you have any questions, please contact the table owner directly.</p>
-                      </td>
-                  </tr>
+                <tr>
+  <td style="background-color: #f8f9fa; padding: 20px 25px; text-align: center; color: #666666; font-size: 15px; border-top: 1px solid #e9ecef;">
+    <p style="margin: 8px 0; line-height: 1.5;">If you have any questions, please contact the table owner directly.</p>
+    
+    <!-- Copyright Section -->
+    <div style="border-top: 1px solid rgba(0, 0, 0, 0.1); padding-top: 15px; margin-top: 10px;">
+      <table cellpadding="0" cellspacing="0" border="0" width="100%">
+        <tr>
+          <td align="center">
+            <p style="margin: 0; font-size: 14px; color: #444444; opacity: 0.85; font-weight: 300; line-height: 1.4;">
+              Copyright &copy; ${currentYear} All rights reserved | by
+              <span class="copyright-mobile" style="display: inline;">
+                <img src="https://i.ibb.co/N6LXy3CD/logo-png-1-1.png" 
+                  alt="Ceoitbox Logo" 
+                  style="width: 16px; height: 16px; vertical-align: middle; margin: 0 2px;" />
+                <a href="https://mbai.ceoitbox.tech/" target="_blank" rel="noopener noreferrer" class="ceoitbox-link" style="color: #2E7D32; font-weight: 600; text-decoration: none; transition: color 0.3s ease;">CEOITBOX</a>
+              </span>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </td>
+</tr>
+
                   
               </table>
           </td>
@@ -3028,6 +3049,92 @@ const TableShareEmailTemplate = (config) => {
 </html>
   `;
 }
+
+
+// app.post("/addEmails/:id", authenticateToken, async (req, res) => {
+//   try {
+//     const { emails } = req.body;
+//     const SheetId = req.params.id;
+
+//     console.log({ emails });
+
+//     // Fetch spreadsheet details from MongoDB
+//     const sheetData = await Sheet.findById(SheetId);
+//     if (!sheetData) {
+//       return res.status(404).json({ message: "Sheet not found" });
+//     }
+
+//     const userData = await User.findById(sheetData.userId);
+
+
+//     const { spreadsheetId } = sheetData;
+
+//     // Create an OAuth2 client with stored credentials
+//     const authClient = new google.auth.OAuth2(
+//       process.env.CLIENT_ID,
+//       process.env.CLIENT_SECRET,
+//       process.env.REDIRECT_URI
+//     );
+
+//     // Set the user's refresh token
+//     authClient.setCredentials({
+//       refresh_token: req.user.googleRefreshToken,
+//     });
+
+//     // Initialize Google Drive API with authenticated OAuth client
+//     // const drive = google.drive({ version: "v3", auth: authClient });
+
+//     // Loop through emails and add permissions
+//     // for (const { email, permission } of emails) {
+//     //   let role = permission.toLowerCase() === "edit" ? "writer" : "reader";
+
+//     //   try {
+//     //     await drive.permissions.create({
+//     //       fileId: spreadsheetId,
+//     //       requestBody: {
+//     //         type: "user",
+//     //         role: role,
+//     //         emailAddress: email,
+//     //       },
+//     //       fields: "id",
+//     //     });
+
+//     //     console.log(`✅ Shared sheet with ${email} as ${role}`);
+//     //   } catch (error) {
+//     //     console.error(`❌ Failed to share with ${email}:`, error.message);
+//     //   }
+//     // }
+
+//     // Update MongoDB to store shared emails
+//     const updatedSetting = await Sheet.findByIdAndUpdate(
+//       SheetId,
+//       { sharedWith: emails },
+//       { new: true }
+//     );
+//     const config = {
+//       userName: userData.name,
+//       userEmail: userData.email,
+//       sheetName: sheetData.spreadsheetName,
+//       viewLink: `https://interact.ceoitbox.com/${sheetData._id}/view`,
+//     }
+
+//     emails.forEach(email => {
+//       config.accessType = email.permission;
+//       sendEmail({
+//         to: email.email,
+//         // subject: "Table Access Granted - <<Table Name>> by <<Owner>>",
+//         subject: `Table Access Granted - ${config.sheetName} by ${config.userName}`,
+//         html: TableShareEmailTemplate(config),
+//       });
+//     });
+
+//     res.status(200).json(updatedSetting);
+//   } catch (error) {
+//     console.error("❌ Error in /addEmails:", error.message);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
 
 app.post("/addEmails/:id", authenticateToken, async (req, res) => {
   try {
@@ -3043,7 +3150,17 @@ app.post("/addEmails/:id", authenticateToken, async (req, res) => {
     }
 
     const userData = await User.findById(sheetData.userId);
-  
+
+    // Get existing shared emails (if any)
+    const existingEmails = sheetData.sharedWith || [];
+    console.log("Existing emails:", existingEmails);
+
+    // Find newly added emails by comparing with existing ones
+    const newlyAddedEmails = emails.filter(newEmail =>
+      !existingEmails.some(existingEmail => existingEmail.email === newEmail.email)
+    );
+
+    console.log("Newly added emails:", newlyAddedEmails);
 
     const { spreadsheetId } = sheetData;
 
@@ -3083,29 +3200,43 @@ app.post("/addEmails/:id", authenticateToken, async (req, res) => {
     //   }
     // }
 
-    // Update MongoDB to store shared emails
+    // Update MongoDB to store all shared emails (existing + new)
     const updatedSetting = await Sheet.findByIdAndUpdate(
       SheetId,
       { sharedWith: emails },
       { new: true }
     );
+
+    // Prepare email configuration
     const config = {
       userName: userData.name,
       userEmail: userData.email,
       sheetName: sheetData.spreadsheetName,
       viewLink: `https://interact.ceoitbox.com/${sheetData._id}/view`,
+    };
+
+    // Send emails ONLY to newly added users
+    if (newlyAddedEmails.length > 0) {
+      console.log(`Sending emails to ${newlyAddedEmails.length} newly added users`);
+
+      newlyAddedEmails.forEach(email => {
+        config.accessType = email.permission;
+        sendEmail({
+          to: email.email,
+          subject: `Table Access Granted - ${config.sheetName} by ${config.userName}`,
+          html: TableShareEmailTemplate(config),
+        });
+        console.log(`✅ Email sent to newly added user: ${email.email}`);
+      });
+    } else {
+      console.log("No new emails to send - all users were already added previously");
     }
 
-    emails.forEach(email => {
-      config.accessType = email.permission;
-      sendEmail({
-        to: email.email,
-        subject: "Test Email",
-        html: TableShareEmailTemplate(config),
-      });
+    res.status(200).json({
+      ...updatedSetting.toObject(),
+      newlyAddedCount: newlyAddedEmails.length,
+      totalSharedCount: emails.length
     });
-
-    res.status(200).json(updatedSetting);
   } catch (error) {
     console.error("❌ Error in /addEmails:", error.message);
     res.status(500).json({ error: error.message });
@@ -3819,6 +3950,8 @@ async function sendEmail(emailConfig) {
     throw error;
   }
 }
+
+module.exports = { sendEmail };
 
 
 

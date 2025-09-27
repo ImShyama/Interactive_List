@@ -17,8 +17,9 @@ module.exports.Signup = async (req, res, next) => {
     res.cookie("token", token, {
       // withCredentials: true,
       // httpOnly: false,
-      maxAge: 1000*60*60*60*24*5,
+      maxAge: 1000 * 60 * 60 * 60 * 24 * 5,
     });
+
     res
       .status(201)
       .json({ message: "User signed in successfully", success: true, user });
@@ -46,7 +47,7 @@ module.exports.Login = async (req, res, next) => {
     res.cookie("token", token, {
       // withCredentials: true,
       // httpOnly: false,
-      maxAge: 1000*60*60*60*24*5,
+      maxAge: 1000 * 60 * 60 * 60 * 24 * 5,
     });
     res
       .status(201)
@@ -97,3 +98,7 @@ module.exports.GoogleSignin = async (req, res) => {
     // res.status(200).json({ message: "User authenticated and saved" });
   }
 };
+
+
+
+  

@@ -15,7 +15,7 @@ import CopyBtn from "./component/CopyBtn";
 import {APPS} from '../utils/constants'
 import { fetchApps } from "../APIs";
 
-const TitleBarPreview = ({ appName, spreadSheetID, spreadSheetName }) => {
+const TitleBarPreview = ({ appName, spreadSheetID, spreadSheetName, data, setFilteredData }) => {
   const navigate = useNavigate(); // Initialize the navigate function
   const [openPicker, authResponse] = useDrivePicker();
   const clientId = CLIENTID
@@ -178,7 +178,7 @@ const TitleBarPreview = ({ appName, spreadSheetID, spreadSheetName }) => {
       </div>
 
       <div className="flex items-center justify-end gap-[8px]">
-        <PreviewBtn />
+        <PreviewBtn data={data} setFilteredData={setFilteredData} />
       </div>
 
     </div>
