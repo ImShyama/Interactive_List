@@ -391,10 +391,17 @@ const DashboardTable = () => {
                   new Set((originalSheets || []).map((sheet) => sheet.access?.toLowerCase()))
                 )
                   .filter(Boolean) // remove null/undefined
-                  .map((access) => ({
-                    value: access,
-                    label: access.charAt(0).toUpperCase() + access.slice(1),
-                  }))}
+                  // .map((access) => ({
+                  //   value: access,
+                  //   label: access.charAt(0).toUpperCase() + access.slice(1),
+                  // }))}
+                  .map((access) => {
+                    const formatted = access.charAt(0).toUpperCase() + access.slice(1);
+                    return {
+                      value: formatted, // 👈 same as label
+                      label: formatted,
+                    };
+                  })}
                 size="large"
                 filterOption={(inputValue, option) =>
                   option.value.toLowerCase().includes(inputValue.toLowerCase())

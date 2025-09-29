@@ -369,7 +369,7 @@ exports.HandleGoogleLogin = async (req, res) => {
 
       await sendEmail({
         to: email,
-        subject: "Welcome to My App 🎉",
+        subject: "Welcome to Interact Tool 🎉",
         text: `Hi ${userName}, thanks for signing up!`,
         html: RegisterEmailTemplate({
           name: userName,
