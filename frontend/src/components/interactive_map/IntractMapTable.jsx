@@ -359,7 +359,7 @@ const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, for
     // Function to handle the delete action
     const handleDelete = (record) => {
         console.log(`Delete clicked for user with ID: ${record}`);
-        setRowToDelete(+record + 1);
+        setRowToDelete(record);
         setConfirmModalOpen(true);
     }
 
@@ -806,13 +806,27 @@ const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, for
             // Prepare payload for API
             const rowsToDelete = EditData.map((key_id) => ({ key_id: key_id.key_id }));
 
-            // Call the API
-            const response = await deleteMultiple(spreadSheetID, sheetName, rowsToDelete);
+            if (rowToDelete && EditData.length === 0) {
+                const rowsToDelete = [{ key_id: rowToDelete.toString() }];
+                console.log({ rowsToDelete });
+                const response = await deleteMultiple(spreadSheetID, sheetName, rowsToDelete);
+                console.log({ response });
 
-            // Update the filtered data in the frontend after successful API call
-            setFilteredData((prev) => {
-                return prev.filter((item) => !ischecked.includes(item.key_id));
-            });
+                // Update the filtered data in the frontend after successful API call
+                setFilteredData((prev) => {
+                    return prev.filter((item) => !(item.key_id == rowToDelete.toString()));
+                });
+            } else {
+
+
+                // Call the API
+                const response = await deleteMultiple(spreadSheetID, sheetName, rowsToDelete);
+
+                // Update the filtered data in the frontend after successful API call
+                setFilteredData((prev) => {
+                    return prev.filter((item) => !ischecked.includes(item.key_id));
+                });
+            }
 
             // Handle success
             notifySuccess("Rows deleted successfully");
@@ -1208,82 +1222,82 @@ const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, for
                 })}
             /> */}
 
-           {!isEditMode ?
-           <div>
-           <InteractiveMapView data={filteredData} headers={headers} settings={settings} />
-           <Table
-                data={data}
-                headers={headers}
-                filteredData={filteredData}
-                setFilteredData={setFilteredData}
-                paginatedData={paginatedData}
-                loading={loading}
-                isEditMode={isEditMode}
-                isedit={isedit}
-                setIsedit={setIsedit}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                settings={settings}
-                freezeCol={freezeCol}
-                setFreezeCol={setFreezeCol}
-                globalOption={globalOption}
-                setGlobalOption={setGlobalOption}
-                ischecked={ischecked}
-                setIschecked={setIschecked}
-                EditData={EditData}
-                setEditData={setEditData}
-                handleBulkDelete={handleBulkDelete}
-                headerBgColor={headerBgColor}
-                headerTextColor={headerTextColor}
-                headerFontSize={headerFontSize}
-                headerFontFamily={headerFontFamily}
-                bodyTextColor={bodyTextColor}
-                bodyFontSize={bodyFontSize}
-                bodyFontFamily={bodyFontFamily}
-                tempHeader={tempHeader}
-                formulaData={formulaData}
-                handleBulkSave={handleBulkSave}
-                globalCheckboxChecked={globalCheckboxChecked}
-                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-            />
-            </div>
-           : <Table
-                data={filteredData}
-                headers={headers}
-                filteredData={filteredData}
-                setFilteredData={setFilteredData}
-                paginatedData={paginatedData}
-                loading={loading}
-                isEditMode={isEditMode}
-                isedit={isedit}
-                setIsedit={setIsedit}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                settings={settings}
-                freezeCol={freezeCol}
-                setFreezeCol={setFreezeCol}
-                globalOption={globalOption}
-                setGlobalOption={setGlobalOption}
-                ischecked={ischecked}
-                setIschecked={setIschecked}
-                EditData={EditData}
-                setEditData={setEditData}
-                handleBulkDelete={handleBulkDelete}
-                headerBgColor={headerBgColor}
-                headerTextColor={headerTextColor}
-                headerFontSize={headerFontSize}
-                headerFontFamily={headerFontFamily}
-                bodyTextColor={bodyTextColor}
-                bodyFontSize={bodyFontSize}
-                bodyFontFamily={bodyFontFamily}
-                tempHeader={tempHeader}
-                formulaData={formulaData}
-                handleBulkSave={handleBulkSave}
-                globalCheckboxChecked={globalCheckboxChecked}
-                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-            />
+            {!isEditMode ?
+                <div>
+                    <InteractiveMapView data={filteredData} headers={headers} settings={settings} />
+                    <Table
+                        data={data}
+                        headers={headers}
+                        filteredData={filteredData}
+                        setFilteredData={setFilteredData}
+                        paginatedData={paginatedData}
+                        loading={loading}
+                        isEditMode={isEditMode}
+                        isedit={isedit}
+                        setIsedit={setIsedit}
+                        handleEdit={handleEdit}
+                        handleDelete={handleDelete}
+                        settings={settings}
+                        freezeCol={freezeCol}
+                        setFreezeCol={setFreezeCol}
+                        globalOption={globalOption}
+                        setGlobalOption={setGlobalOption}
+                        ischecked={ischecked}
+                        setIschecked={setIschecked}
+                        EditData={EditData}
+                        setEditData={setEditData}
+                        handleBulkDelete={handleBulkDelete}
+                        headerBgColor={headerBgColor}
+                        headerTextColor={headerTextColor}
+                        headerFontSize={headerFontSize}
+                        headerFontFamily={headerFontFamily}
+                        bodyTextColor={bodyTextColor}
+                        bodyFontSize={bodyFontSize}
+                        bodyFontFamily={bodyFontFamily}
+                        tempHeader={tempHeader}
+                        formulaData={formulaData}
+                        handleBulkSave={handleBulkSave}
+                        globalCheckboxChecked={globalCheckboxChecked}
+                        setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                    />
+                </div>
+                : <Table
+                    data={filteredData}
+                    headers={headers}
+                    filteredData={filteredData}
+                    setFilteredData={setFilteredData}
+                    paginatedData={paginatedData}
+                    loading={loading}
+                    isEditMode={isEditMode}
+                    isedit={isedit}
+                    setIsedit={setIsedit}
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                    settings={settings}
+                    freezeCol={freezeCol}
+                    setFreezeCol={setFreezeCol}
+                    globalOption={globalOption}
+                    setGlobalOption={setGlobalOption}
+                    ischecked={ischecked}
+                    setIschecked={setIschecked}
+                    EditData={EditData}
+                    setEditData={setEditData}
+                    handleBulkDelete={handleBulkDelete}
+                    headerBgColor={headerBgColor}
+                    headerTextColor={headerTextColor}
+                    headerFontSize={headerFontSize}
+                    headerFontFamily={headerFontFamily}
+                    bodyTextColor={bodyTextColor}
+                    bodyFontSize={bodyFontSize}
+                    bodyFontFamily={bodyFontFamily}
+                    tempHeader={tempHeader}
+                    formulaData={formulaData}
+                    handleBulkSave={handleBulkSave}
+                    globalCheckboxChecked={globalCheckboxChecked}
+                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                />
 
-}
+            }
             <EditRow
                 isOpen={confirmEditModalOpen}
                 onClose={handleEditCancel}
@@ -1294,12 +1308,12 @@ const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, for
                 formulaData={formulaData}
             />
 
-            <DeleteAlert
+            {/* <DeleteAlert
                 isOpen={confirmModalOpen}
                 onClose={handleDeleteCancel}
                 onConfirm={handleDeleteRow}
                 sheetName={"Are you sure you want to delete this row permanently. "}
-            />
+            /> */}
 
             {/* Confirmation modal */}
             <DeleteAlert

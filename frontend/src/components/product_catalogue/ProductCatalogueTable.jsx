@@ -361,7 +361,7 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
     // Function to handle the delete action
     const handleDelete = (record) => {
         console.log(`Delete clicked for user with ID: ${record}`);
-        setRowToDelete(+record + 1);
+        setRowToDelete(record);
         setConfirmModalOpen(true);
     }
 
@@ -808,13 +808,26 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
             // Prepare payload for API
             const rowsToDelete = EditData.map((key_id) => ({ key_id: key_id.key_id }));
 
-            // Call the API
-            const response = await deleteMultiple(spreadSheetID, sheetName, rowsToDelete);
+            if (rowToDelete && EditData.length === 0) {
+                const rowsToDelete = [{ key_id: rowToDelete.toString() }];
+                console.log({ rowsToDelete });
+                const response = await deleteMultiple(spreadSheetID, sheetName, rowsToDelete);
+                console.log({ response });
 
-            // Update the filtered data in the frontend after successful API call
-            setFilteredData((prev) => {
-                return prev.filter((item) => !ischecked.includes(item.key_id));
-            });
+                // Update the filtered data in the frontend after successful API call
+                setFilteredData((prev) => {
+                    return prev.filter((item) => !(item.key_id == rowToDelete.toString()));
+                });
+            } else {
+
+                // Call the API
+                const response = await deleteMultiple(spreadSheetID, sheetName, rowsToDelete);
+
+                // Update the filtered data in the frontend after successful API call
+                setFilteredData((prev) => {
+                    return prev.filter((item) => !ischecked.includes(item.key_id));
+                });
+            }
 
             // Handle success
             notifySuccess("Rows deleted successfully");
@@ -834,7 +847,7 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
         <div>
             <div className="flex text-center justify-between items-center px-[50px]">
                 <div className="flex align-center gap-[10px]">
-                    <button onClick={() => {setShowTable(false); setIsPCTSettings(false)}} title="Back">
+                    <button onClick={() => { setShowTable(false); setIsPCTSettings(false) }} title="Back">
                         <BackIcon />
                     </button>
                     {settings && <EditableSpreadsheetName settings={settings} />}
@@ -958,7 +971,7 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
                 </div>
                 <div className="flex justify-end items-center">
 
-                    <CatalogueFilter data={data} settings={settings} tempHeader={tempHeader} filteredData={filteredData} setFilteredData={setFilteredData}  />
+                    <CatalogueFilter data={data} settings={settings} tempHeader={tempHeader} filteredData={filteredData} setFilteredData={setFilteredData} />
 
                     {/* <FilterButton data={data} /> */}
                     {!isFilterOpen ? (
@@ -967,7 +980,7 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
                             className="bg-primary rounded-[4px] p-1 border-2 border-white text-white focus:outline-none ml-2"
                             title="Filter"
                         >
-                           <img src={numberFilter} alt="Hide" height="16" width="17" />
+                            <img src={numberFilter} alt="Hide" height="16" width="17" />
                         </button>
                     ) : (
                         <div className="w-[115px] h-[41px] flex-shrink-0 rounded-[5.145px] bg-[#598931] border border-gray-300 shadow-lg flex items-center space-x-1 px-2 relative">
@@ -1212,83 +1225,83 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
                 })}
             /> */}
 
-           {!isEditMode ?
-           <div>
-           <ProductCatalogueView data={filteredData} headers={headers} settings={settings} tempHeader={tempHeader} />
+            {!isEditMode ?
+                <div>
+                    <ProductCatalogueView data={filteredData} headers={headers} settings={settings} tempHeader={tempHeader} />
 
-           <Table
-                data={data}
-                headers={headers}
-                filteredData={filteredData}
-                setFilteredData={setFilteredData}
-                paginatedData={paginatedData}
-                loading={loading}
-                isEditMode={isEditMode}
-                isedit={isedit}
-                setIsedit={setIsedit}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                settings={settings}
-                freezeCol={freezeCol}
-                setFreezeCol={setFreezeCol}
-                globalOption={globalOption}
-                setGlobalOption={setGlobalOption}
-                ischecked={ischecked}
-                setIschecked={setIschecked}
-                EditData={EditData}
-                setEditData={setEditData}
-                handleBulkDelete={handleBulkDelete}
-                headerBgColor={headerBgColor}
-                headerTextColor={headerTextColor}
-                headerFontSize={headerFontSize}
-                headerFontFamily={headerFontFamily}
-                bodyTextColor={bodyTextColor}
-                bodyFontSize={bodyFontSize}
-                bodyFontFamily={bodyFontFamily}
-                tempHeader={tempHeader}
-                formulaData={formulaData}
-                handleBulkSave={handleBulkSave}
-                globalCheckboxChecked={globalCheckboxChecked}
-                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-            />
-            </div>
-           : <Table
-                data={data}
-                headers={headers}
-                filteredData={filteredData}
-                setFilteredData={setFilteredData}
-                paginatedData={paginatedData}
-                loading={loading}
-                isEditMode={isEditMode}
-                isedit={isedit}
-                setIsedit={setIsedit}
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                settings={settings}
-                freezeCol={freezeCol}
-                setFreezeCol={setFreezeCol}
-                globalOption={globalOption}
-                setGlobalOption={setGlobalOption}
-                ischecked={ischecked}
-                setIschecked={setIschecked}
-                EditData={EditData}
-                setEditData={setEditData}
-                handleBulkDelete={handleBulkDelete}
-                headerBgColor={headerBgColor}
-                headerTextColor={headerTextColor}
-                headerFontSize={headerFontSize}
-                headerFontFamily={headerFontFamily}
-                bodyTextColor={bodyTextColor}
-                bodyFontSize={bodyFontSize}
-                bodyFontFamily={bodyFontFamily}
-                tempHeader={tempHeader}
-                formulaData={formulaData}
-                handleBulkSave={handleBulkSave}
-                globalCheckboxChecked={globalCheckboxChecked}
-                setGlobalCheckboxChecked={setGlobalCheckboxChecked}
-            />
+                    <Table
+                        data={data}
+                        headers={headers}
+                        filteredData={filteredData}
+                        setFilteredData={setFilteredData}
+                        paginatedData={paginatedData}
+                        loading={loading}
+                        isEditMode={isEditMode}
+                        isedit={isedit}
+                        setIsedit={setIsedit}
+                        handleEdit={handleEdit}
+                        handleDelete={handleDelete}
+                        settings={settings}
+                        freezeCol={freezeCol}
+                        setFreezeCol={setFreezeCol}
+                        globalOption={globalOption}
+                        setGlobalOption={setGlobalOption}
+                        ischecked={ischecked}
+                        setIschecked={setIschecked}
+                        EditData={EditData}
+                        setEditData={setEditData}
+                        handleBulkDelete={handleBulkDelete}
+                        headerBgColor={headerBgColor}
+                        headerTextColor={headerTextColor}
+                        headerFontSize={headerFontSize}
+                        headerFontFamily={headerFontFamily}
+                        bodyTextColor={bodyTextColor}
+                        bodyFontSize={bodyFontSize}
+                        bodyFontFamily={bodyFontFamily}
+                        tempHeader={tempHeader}
+                        formulaData={formulaData}
+                        handleBulkSave={handleBulkSave}
+                        globalCheckboxChecked={globalCheckboxChecked}
+                        setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                    />
+                </div>
+                : <Table
+                    data={data}
+                    headers={headers}
+                    filteredData={filteredData}
+                    setFilteredData={setFilteredData}
+                    paginatedData={paginatedData}
+                    loading={loading}
+                    isEditMode={isEditMode}
+                    isedit={isedit}
+                    setIsedit={setIsedit}
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                    settings={settings}
+                    freezeCol={freezeCol}
+                    setFreezeCol={setFreezeCol}
+                    globalOption={globalOption}
+                    setGlobalOption={setGlobalOption}
+                    ischecked={ischecked}
+                    setIschecked={setIschecked}
+                    EditData={EditData}
+                    setEditData={setEditData}
+                    handleBulkDelete={handleBulkDelete}
+                    headerBgColor={headerBgColor}
+                    headerTextColor={headerTextColor}
+                    headerFontSize={headerFontSize}
+                    headerFontFamily={headerFontFamily}
+                    bodyTextColor={bodyTextColor}
+                    bodyFontSize={bodyFontSize}
+                    bodyFontFamily={bodyFontFamily}
+                    tempHeader={tempHeader}
+                    formulaData={formulaData}
+                    handleBulkSave={handleBulkSave}
+                    globalCheckboxChecked={globalCheckboxChecked}
+                    setGlobalCheckboxChecked={setGlobalCheckboxChecked}
+                />
 
-}
+            }
             <EditRow
                 isOpen={confirmEditModalOpen}
                 onClose={handleEditCancel}
@@ -1299,12 +1312,12 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
                 formulaData={formulaData}
             />
 
-            <DeleteAlert
+            {/* <DeleteAlert
                 isOpen={confirmModalOpen}
                 onClose={handleDeleteCancel}
                 onConfirm={handleDeleteRow}
                 sheetName={"Are you sure you want to delete this row permanently. "}
-            />
+            /> */}
 
             {/* Confirmation modal */}
             <DeleteAlert

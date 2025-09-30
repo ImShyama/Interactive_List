@@ -406,18 +406,25 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     // Function to handle the delete action
     const handleDelete = (record) => {
         console.log(`Delete clicked for user with ID: ${record}`);
-        setRowToDelete(+record + 1);
+        setRowToDelete(record);
         setConfirmModalOpen(true);
     }
 
     const handleDeleteCancel = () => {
         setConfirmModalOpen(false);
+        setRowToDelete(null);
     };
 
     const handleDeleteRow = () => {
-        const status = deleteRow(settings.spreadsheetId, settings.firstSheetName, rowToDelete)
+        const rowsToDelete = { key_id: rowToDelete };
+            console.log({ rowsToDelete });
+            console.log({ rowToDelete });
+            console.log({ settings });
+        // const status = deleteRow(settings.spreadsheetId, settings.firstSheetName, rowToDelete)
+        const status = deleteMultiple(settings.spreadsheetId, settings.firstSheetName, rowToDelete)
         setConfirmModalOpen(false);
         console.log({ status })
+        
         if (status) {
             notifySuccess("Deleted row successfuly!");
         }
@@ -453,405 +460,6 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
         }
     }
 
-    // const handleGlobalSearch = useCallback((e) => {
-    //     const value = e.target.value.toLowerCase();
-    //     setSearchGlobal(value);
-    //     // data = convertArrayToJSON(data);
-
-    //     // Filter the data globally across all columns
-    //     const filteredData = data.filter((record) => {
-    //         return Object.keys(record).some((key) =>
-    //             record[key]?.toString().toLowerCase().includes(value)
-    //         );
-    //     });
-
-    //     // You can then set this filtered data to a state if needed
-    //     setFilteredData(filteredData);
-    // },[]);
-
-
-
-    // const openSearch = useCallback(() => {setIsSearchOpen(true)},[]);
-    // const closeSearch = useCallback(() => {
-    //     setIsSearchOpen(false);
-    //     handleGlobalReset();
-    //     setFilteredData(data);
-    // },[]);
-
-    // const [sortColumn, setSortColumn] = useState(null);
-    // const [sortOrder, setSortOrder] = useState('asc');
-
-    // const handleSort = useCallback((columnKey) => {
-    //     const newSortOrder =
-    //         sortColumn === columnKey ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc';
-
-    //     setSortColumn(columnKey);
-    //     setSortOrder(newSortOrder);
-
-    //     // Perform sorting
-    //     const sorted = [...filteredData].sort((a, b) => {
-    //         if (typeof a[columnKey] === 'number' && typeof b[columnKey] === 'number') {
-    //             return newSortOrder === 'asc'
-    //                 ? a[columnKey] - b[columnKey]
-    //                 : b[columnKey] - a[columnKey];
-    //         } else {
-    //             return newSortOrder === 'asc'
-    //                 ? a[columnKey]?.toString().localeCompare(b[columnKey]?.toString())
-    //                 : b[columnKey]?.toString().localeCompare(a[columnKey]?.toString());
-    //         }
-    //     });
-
-    //     setFilteredData(sorted);
-    // }, [filteredData, sortColumn, sortOrder]);
-
-    const filterList = () => {
-
-    };
-
-
-
-    // const MultiSelectFilter = ({ columnKey, closePopover }) => {
-    //     const [selectedValues, setSelectedValues] = useState([]);
-
-    //     // Step 1: Create initialData with unique labels and counts
-    //     const initialData = Object.values(
-    //         filteredData.reduce((acc, data) => {
-    //             const label = data[columnKey];
-    //             const value = data[columnKey];
-
-    //             if (acc[label]) {
-    //                 acc[label].count += 1; // Increment the count if the label already exists
-    //             } else {
-    //                 acc[label] = { label, value, count: 1 }; // Add a new label with a count of 1
-    //             }
-
-    //             return acc;
-    //         }, {})
-    //     ).map((item) => ({
-    //         ...item,
-    //         label: `${item.label} (${item.count})`, // Add the count to the label
-    //     }));
-
-    //     const [options, setOptions] = useState(initialData);
-
-    //     const handleSelectAll = () => {
-    //         let updatedOptions = globalOption[columnKey] || [];
-    //         if (globalOption[columnKey].length === options.length || selectedValues.length === options.length) {
-    //             setSelectedValues([]);
-    //             setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
-    //             return;
-    //         } else {
-    //             setSelectedValues(options.map((option) => option.value));
-    //             setGlobalOption((prev) => ({ ...prev, [columnKey]: options.map((option) => option.value) }));
-    //         }
-    //     }
-
-    //     const handleSelect = (value) => {
-    //         let updatedOptions = globalOption[columnKey] || [];
-    //         if (globalOption[columnKey]?.includes(value) || selectedValues.includes(value)) {
-    //             setSelectedValues((prev) => {
-    //                 let updatedOption = prev.filter((item) => item !== value);
-    //                 updatedOptions = [...updatedOptions, ...updatedOption];
-    //                 return prev.filter((item) => item !== value);
-    //             });
-    //         } else {
-    //             setSelectedValues((prev) => {
-    //                 let updatedOption = [...prev, value];
-    //                 updatedOptions = [...updatedOptions, ...updatedOption];
-    //                 return [...prev, value]
-    //             });
-    //         }
-    //         setGlobalOption((prev) => ({ ...prev, [columnKey]: updatedOptions }));
-    //     };
-
-
-    //     const handleSearch = (searchText) => {
-    //         if (searchText) {
-    //             const filteredOptions = initialData.filter(option =>
-    //                 option.label?.toLowerCase().includes(searchText.toLowerCase())
-    //             );
-    //             setOptions(filteredOptions);
-    //         } else {
-    //             setOptions(initialData);
-    //         }
-    //     };
-
-    //     const handleMultiSearch = () => {
-    //         if (selectedValues.length == 0 && globalOption[columnKey].length == 0) {
-    //             setFilteredData(data);
-    //             return;
-    //         }
-
-    //         const filteredDataTemp = filteredData.filter((item) => {
-    //             return globalOption[columnKey].includes(item[columnKey]) || selectedValues.includes(item[columnKey])
-    //         });
-    //         setFilteredData(filteredDataTemp);
-    //         // closePopover();
-    //     };
-
-    //     const handleReset = () => {
-    //         setGlobalOption((prev) => ({ ...prev, [columnKey]: [] }));
-    //         const globalColumn = Object.keys(globalOption).map((key) => {
-    //             if (key == columnKey) {
-    //                 return null
-    //             } else {
-    //                 return key;
-    //             }
-    //         })
-
-    //         if (globalColumn.length == 0 || globalColumn.every((item) => item == null)) {
-    //             setFilteredData(data);
-    //             return;
-    //         }
-
-    //         let globalFilterData = [];
-    //         globalColumn.map((key) => {
-    //             let filteredDataTemp = data.filter((item) => {
-    //                 // console.log({ key, item });
-    //                 // console.log({ globalOption });
-    //                 if (key) {
-    //                     return globalOption[key].includes(item[key]);
-    //                 }
-
-    //             });
-    //             globalFilterData = [...globalFilterData, ...filteredDataTemp];
-    //         })
-    //         // const filteredDataTemp = data.filter((item) => {
-
-    //         // })
-    //         // setSelectedValues([]);
-    //         setFilteredData(globalFilterData);
-    //         // closePopover();
-    //     };
-
-    //     // const filteredOptions = searchText
-    //     // ? initialData.filter((option) =>
-    //     //       option.label.toLowerCase().includes(searchText.toLowerCase())
-    //     //   )
-    //     // : initialData;
-
-    //     return (
-    //         <div className="flex-row justify-between items-center" style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
-    //             <div className="flex justify-between">
-    //                 <Button
-    //                     type="primary"
-    //                     onClick={() => handleMultiSearch()}
-    //                     icon={<SearchOutlined />}
-    //                     size="small"
-    //                     style={{ width: 80 }}
-    //                 >
-    //                     Search
-    //                 </Button>
-    //                 <Button
-    //                     onClick={() => {
-    //                         handleReset();
-    //                     }}
-    //                     size="small"
-    //                     style={{ width: 80 }}
-    //                 >
-    //                     Reset
-    //                 </Button>
-    //                 <Button
-    //                     type="link"
-    //                     size="small"
-    //                     onClick={() => {
-    //                         closePopover();
-    //                     }}
-    //                 >
-    //                     Close
-    //                 </Button>
-    //             </div>
-    //             <div className="pt-2">
-    //                 <Checkbox className="mr-2 text-primary rounded-md"
-    //                     style={{
-    //                         transform: "scale(1.4)", // Scale up the size of the checkbox
-    //                     }}
-    //                     onChange={() => handleSelectAll()} checked={globalOption[columnKey]?.length == options.length || selectedValues.length == options.length && options.length > 0} value="all"></Checkbox>
-    //                 <AutoComplete
-    //                     style={{
-    //                         // paddingTop: 8,
-    //                         width: 200,
-    //                     }}
-    //                     // onSearch={handleSearch}
-    //                     placeholder="input here"
-    //                     filterOption={false}
-    //                     // onChange={handleSearch}
-    //                     // value={searchText}
-    //                     onSearch={handleSearch}
-    //                 >
-    //                     {options.map((option) => (
-    //                         <AutoComplete.Option key={option.value}><Checkbox onChange={(e) => {
-    //                             handleSelect(option.value);
-    //                         }} checked={globalOption[columnKey]?.includes(option.value) || selectedValues.includes(option.value)} value={option.value}>{option.label}</Checkbox></AutoComplete.Option>
-    //                     ))}
-    //                 </AutoComplete>
-
-    //                 {/* <AutoComplete
-    //                     style={{ width: 200 }}
-    //                     placeholder="Select options"
-    //                     filterOption={false}
-    //                     onSearch={handleSearch}
-    //                     open // Force the dropdown to remain open
-    //                     dropdownClassName="custom-dropdown" // Add custom class for dropdown if needed
-    //                 >
-    //                     {options.map((option) => (
-    //                         <AutoComplete.Option key={option.value}>
-    //                             <div
-    //                                 onMouseDown={(e) => e.preventDefault()} // Prevent dropdown from closing
-    //                                 style={{ display: "flex", alignItems: "center" }}
-    //                             >
-    //                                 <Checkbox
-    //                                     onChange={() => handleSelect(option.value)}
-    //                                     checked={selectedValues.includes(option.value)}
-    //                                     value={option.value}
-    //                                 >
-    //                                     {option.label}
-    //                                 </Checkbox>
-    //                             </div>
-    //                         </AutoComplete.Option>
-    //                     ))}
-    //                 </AutoComplete> */}
-    //             </div>
-    //         </div>
-    //     )
-    // };
-
-    // const renderResizableHeader = (title, columnKey, index) => {
-    //     const isPinned = headers.slice(0, headers.indexOf(freezeCol) + 1).includes(columnKey); // Check if the column is within the pinned range
-    //     const firstColWidth = isEditMode ? 125 : 0; // Adjust the first column width if in edit mode
-    //     const leftOffset =
-    //         (index === 0 ? firstColWidth : firstColWidth) +
-    //         headers
-    //             .slice(0, index)
-    //             .reduce((sum, key) => sum + columnWidths[key], 0);
-    //     return (
-    //         <Resizable
-    //             width={columnWidths[columnKey]}
-    //             height={0}
-    //             onResize={handleResize(columnKey)} // Immediate DOM updates
-    //             // onResizeStop={handleResizeStop(columnKey)} // Final state update
-    //             draggableOpts={{ enableUserSelectHack: false }}
-    //             handle={
-    //                 <div
-    //                     style={{
-    //                         position: "absolute",
-    //                         right: 0,
-    //                         bottom: 0,
-    //                         cursor: "col-resize", // Keeps the resizing cursor
-    //                         zIndex: 10, // Ensure it stays above other elements
-    //                         display: "flex", // Allows icon alignment
-    //                         alignItems: "center",
-    //                         justifyContent: "center",
-    //                         width: "15px", // Adjust based on the size of your icon
-    //                         height: "100%",
-    //                     }}
-    //                 >
-    //                     <RxDividerVertical style={{ color: "gray", fontSize: "32px" }} /> {/* Replace with your preferred icon */}
-    //                 </div>
-    //             }
-    //             style={{
-    //                 backgroundColor: headerBgColor,
-    //             }}
-    //         >
-    //             <th
-    //                 className="px-4 py-4 border-b border-gray-300"
-    //                 id={`header${index}`}
-    //                 style={{
-    //                     width: `${columnWidths[columnKey]}px`,
-    //                     minWidth: `${columnWidths[columnKey]}px`,
-    //                     zIndex: isPinned ? 1000 : 10, // Adjust z-index for proper stacking
-    //                     position: isPinned ? "sticky" : "relative", // Sticky only if pinned
-    //                     left: isPinned ? `${leftOffset}px` : "auto", // Offset only if pinned
-    //                     top: 0,
-    //                     backgroundColor: headerBgColor, // Solid background for pinned headers
-    //                     color: headerTextColor, // Text color
-    //                     whiteSpace: "nowrap",
-    //                     fontFamily: headerFontFamily, // Font family
-    //                     fontSize: `${headerFontSize}px`, // Font size
-    //                     // borderRight: isPinned && `4px solid #bed900`,
-    //                 }}
-    //             >
-    //                 <div
-    //                     className="flex justify-between items-center gap-3"
-    //                     style={{
-    //                         zIndex: isPinned ? 1000 : "inherit", // Ensure child elements respect z-index
-    //                         position: "relative", // Keep elements aligned
-    //                     }}
-    //                 >
-    //                     <div>
-    //                         <span>{title.replace(/_/g, " ").toUpperCase()}</span>
-    //                     </div>
-    //                     <div className="flex items-center gap-1">
-    //                         <button onClick={() => handleSort(columnKey)}>
-    //                             <FaSort />
-    //                         </button>
-
-    //                         <MultiSelectFilter
-    //                             data={data}
-    //                             filteredData={filteredData}
-    //                             setFilteredData={setFilteredData}
-    //                             globalOption={globalOption}
-    //                             setGlobalOption={setGlobalOption}
-    //                             columnKey={columnKey}
-    //                             closePopover={() => closePopover(index)}
-    //                             index={index}
-    //                         />
-    //                         {/* <Popover
-    //                             content={
-    //                                 <MultiSelectFilter
-    //                                     data={data}
-    //                                     filteredData={filteredData}
-    //                                     setFilteredData={setFilteredData}
-    //                                     globalOption={globalOption}
-    //                                     setGlobalOption={setGlobalOption}
-    //                                     columnKey={columnKey}
-    //                                     closePopover={() => closePopover(index)}
-    //                                 />
-    //                             }
-
-    //                             trigger="click"
-    //                             placement="bottom"
-    //                             visible={visiblePopover[index] || false}
-    //                             onVisibleChange={(isVisible) => handlePopoverVisibility(index, isVisible)}
-    //                         >
-    //                             <button>
-    //                                 <IoSearchOutline />
-    //                             </button>
-    //                         </Popover> */}
-    //                         <Popover content={getAggregatePopoverContent(columnKey)} trigger="click" placement="bottom">
-    //                             <button title="Labels">
-    //                                 <MdOutlineLabel />
-    //                             </button>
-    //                         </Popover>
-
-    //                         {isEditMode &&
-    //                             (freezeCol.includes(columnKey) ? (
-    //                                 <button title="Freezed Column" onClick={(e) => handleFreezeColumn(columnKey, "removeFreezeCol", e)}>
-    //                                     <BsPinAngleFill />
-    //                                 </button>
-    //                             ) : (
-    //                                 <button title="Freeze Column" onClick={(e) => handleFreezeColumn(columnKey, "showInProfile", e)}>
-    //                                     <BsPin />
-    //                                 </button>
-    //                             ))
-    //                         }
-
-    //                     </div>
-    //                 </div>
-    //             </th>
-    //         </Resizable>
-    //     );
-    // };
-
-
-    const isValidUrl = (url) => {
-        try {
-            new URL(url);
-            return true;
-        } catch (error) {
-            return false;
-        }
-    };
 
     const handleAdd = () => {
         const obj = headers.reduce((acc, curr) => {
@@ -1049,20 +657,6 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
 
 
 
-
-    {/* Dynamically Render Sliders for Selected Checkboxes */ }
-    // const [isSearchOpen, setIsSearchOpen] = useState(false);
-    // const [isFilterOpen, setIsFilterOpen] = useState(false);
-    // const toggleFilterBox = () => {
-    //     setIsFilterOpen(!isFilterOpen);
-    //     setIsNumberDropdownOpen(false);
-    //     setIsDateDropdownOpen(false);
-    //     setSelectedNumbers([]); // Clear selected number filters
-    //     setSelectedDates([]); // Clear selected date filters
-    //     localStorage.removeItem("selectedNumbers");
-    //     localStorage.removeItem("selectedDates");
-    // };
-
     //added latest
     const [selectedNumbers, setSelectedNumbers] = useState(
         JSON.parse(localStorage.getItem("selectedNumbers")) || []
@@ -1118,30 +712,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             max: max !== null ? max : 1000,
         };
     };
-    // const calculate_min_max = (data, key) => {
-    //     console.log({ data, key });
-    //     if (!data || data.length === 0) {
-    //         return { min: null, max: null };
-    //     }
-
-    //     let min = null;
-    //     let max = null;
-
-    //     data.forEach((item) => {
-    //         const value = new Date(item[key]).getTime(); // Convert value to timestamp
-    //         if (!isNaN(value)) {
-    //             // Check if it's a valid date
-    //             if (min === null || value < min) min = value;
-    //             if (max === null || value > max) max = value;
-    //         }
-    //     });
-
-    //     // Return min and max in ISO string format for better use
-    //     return {
-    //         min: min ? new Date(min).toISOString() : null,
-    //         max: max ? new Date(max).toISOString() : null,
-    //     };
-    // };
+    
 
     
     const calculate_min_max = (data, key) => {
@@ -1180,22 +751,6 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     };
    
 
-    // const updateDateFilterData = (column, value) => {
-    //     // Convert timestamp values back to ISO date strings
-    //     const [startDateTimestamp, endDateTimestamp] = value;
-    //     const startDate = new Date(startDateTimestamp).toISOString();
-    //     const endDate = new Date(endDateTimestamp).toISOString();
-
-    //     // Create the updated range object
-    //     const range = {
-    //         min: startDate,
-    //         max: endDate,
-    //     };
-
-    //     // Now call the updatefilterdata function with the updated range (converted back to date strings)
-    //     updatefilterdata(column, range);
-    // };
-
     const updatefilterdata = (column, range) => {
         console.log('Filtering number column:', column, 'Range:', range);
         
@@ -1217,11 +772,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
         
         setFilteredData(filteredDatatemp);
     };
-    
-
-
-   
-
+       
     const updateDateFilterData = (column, value) => {
         // value is already an array of [startTimestamp, endTimestamp] from the slider
         const [startTimestamp, endTimestamp] = value;
@@ -1343,15 +894,28 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             const sheetName = settings.firstSheetName;
             // Prepare payload for API
             const rowsToDelete = EditData.map((key_id) => ({ key_id: key_id.key_id }));
+            console.log({ rowsToDelete, rowToDelete });
 
+            if(rowToDelete && EditData.length === 0){
+                const rowsToDelete = [{ key_id: rowToDelete.toString() }];
+                console.log({ rowsToDelete });
+                const response = await deleteMultiple(spreadSheetID, sheetName, rowsToDelete);
+                console.log({ response });
+
+                // Update the filtered data in the frontend after successful API call
+            setFilteredData((prev) => {
+                return prev.filter((item) => !(item.key_id == rowToDelete.toString()));
+            });
+            }else{
             // Call the API
             const response = await deleteMultiple(spreadSheetID, sheetName, rowsToDelete);
+            console.log({ response });
 
             // Update the filtered data in the frontend after successful API call
             setFilteredData((prev) => {
                 return prev.filter((item) => !ischecked.includes(item.key_id));
             });
-
+            }
             // Handle success
             notifySuccess("Rows deleted successfully");
             setIschecked([]);
@@ -1921,12 +1485,12 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                 formulaData={formulaData}
             />
 
-            <DeleteAlert
+            {/*<DeleteAlert
                 isOpen={confirmModalOpen}
                 onClose={handleDeleteCancel}
                 onConfirm={handleDeleteRow}
                 sheetName={"Are you sure you want to delete this row permanently. "}
-            />
+            />*/}
 
             {/* Confirmation modal */}
             <DeleteAlert
