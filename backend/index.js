@@ -3021,22 +3021,36 @@ const TableShareEmailTemplate = (config) => {
     
     <!-- Copyright Section -->
     <div style="border-top: 1px solid rgba(0, 0, 0, 0.1); padding-top: 15px; margin-top: 10px;">
-      <table cellpadding="0" cellspacing="0" border="0" width="100%">
-        <tr>
-          <td align="center">
-            <p style="margin: 0; font-size: 14px; color: #444444; opacity: 0.85; font-weight: 300; line-height: 1.4;">
+  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tr>
+      <td align="center">
+        <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+          <tr>
+            <td style="font-size: 14px; color: #444444; opacity: 0.85; font-weight: 300; line-height: 1.4;">
               Copyright &copy; ${currentYear} All rights reserved | by
-              <span class="copyright-mobile" style="display: inline;">
-                <img src="https://i.ibb.co/N6LXy3CD/logo-png-1-1.png" 
-                  alt="Ceoitbox Logo" 
-                  style="width: 16px; height: 16px; vertical-align: middle; margin: 0 2px;" />
-                <a href="https://mbai.ceoitbox.tech/" target="_blank" rel="noopener noreferrer" class="ceoitbox-link" style="color: #2E7D32; font-weight: 600; text-decoration: none; transition: color 0.3s ease;">CEOITBOX</a>
-              </span>
-            </p>
-          </td>
-        </tr>
-      </table>
-    </div>
+            </td>
+            <td style="padding: 0 4px;" valign="middle">
+              <table cellpadding="0" cellspacing="0" border="0" style="display: inline-block; vertical-align: middle;">
+                <tr>
+                  <td style="line-height: 0;">
+                    <img src="https://res.cloudinary.com/df0pdiqp8/image/upload/v1759554757/logo-png-1-1_qhdr2p.png" 
+                         alt="" 
+                         width="16" 
+                         height="16"
+                         style="width: 16px; height: 16px; display: block; border: 0; margin: 0;" />
+                  </td>
+                </tr>
+              </table>
+            </td>
+            <td valign="middle">
+              <a href="https://mbai.ceoitbox.tech/" target="_blank" rel="noopener noreferrer" class="ceoitbox-link" style="color: #2E7D32; font-weight: 600; text-decoration: none; font-size: 14px;">CEOITBOX</a>
+            </td>
+          </tr>
+        </table> diya
+      </td>
+    </tr>
+  </table>
+</div>
   </td>
 </tr>
 
