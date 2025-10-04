@@ -21,6 +21,9 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
     globalCheckboxChecked, setGlobalCheckboxChecked, loading, setLoading,
 }) => {
 
+    console.log({ headerBgColor, headerTextColor, headerFontSize, headerFontFamily,
+        bodyTextColor, bodyFontSize, bodyFontFamily });
+
     const primaryColumn = (settings?.appName == "Photo Gallery" || settings?.appName == "Interactive Map")
         ? settings?.showInCard[0]?.title?.toLowerCase().replace(/\s/g, "_")
         : settings?.appName == "Video Gallery"
@@ -432,6 +435,9 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
     const RenderText = ({ text, bodyFontFamily, bodyFontSize }) => {
         if (!text) return null;
 
+        console.log("RenderText");
+        console.log({ text, bodyFontFamily, bodyFontSize });
+
         // Regular expression to detect URLs (http, https, www)
         const urlRegex = /(https?:\/\/[^\s,]+|www\.[^\s,]+)/g;
 
@@ -454,7 +460,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                             </a>
                         );
                     }
-                    return <span key={index}>{part}</span>;
+                    return <span key={index} style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{part}</span>;
                 })}
             </span>
         );
