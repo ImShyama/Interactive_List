@@ -3,30 +3,6 @@ import { HOST } from "../utils/constants";
 import { notifyError } from "../utils/notify";
 import { updateSetting, updateFilterSettings } from "../utils/settingSlice";
 
-// export const handleSaveChanges = async (settingData, token, dispatch, updatedSettings) => {
-//     try {
-//         const response = await axios.put(
-//             `${HOST}/spreadsheet/${settingData._id}`,
-//             { ...settingData, ...updatedSettings }, 
-//             {
-//                 headers: {
-//                     authorization: "Bearer " + token,
-//                 },
-//             }
-//         );
-
-//         console.log("Settings updated successfully:", response.data);
-
-//         // Dispatch updated settings to Redux store
-//         dispatch(updateSetting(response.data));
-
-//         return response.data;
-//     } catch (error) {
-//         console.error("Error updating settings in DB:", error);
-//         notifyError("Error updating settings in DB:", error);
-//         // setIsSaveChanges(false);
-//     }
-// };
 
 export const handleSaveChanges = async (settingData, token, dispatch, updatedSettings) => {
   if (!token) {
@@ -151,38 +127,6 @@ export const handleUpdateSettings = async (updatedSetting, token, dispatch) => {
     return (error);
   }
 };
-
-// export const fetchGroupNames = async () => {
-//   try {
-//     const response = await fetch("https://auth.ceoitbox.com/getGroupNames", {
-//       "headers": {
-//         "accept": "/",
-//         "accept-language": "en-US,en;q=0.9,zh-TW;q=0.8,zh;q=0.7,hi;q=0.6",
-//         "if-none-match": "W/\"843-knNASCBVn2hshLI+FNzAUvhDWhc\"",
-//         "priority": "u=1, i",
-//         "sec-ch-ua": "\"Not;A=Brand\";v=\"99\", \"Google Chrome\";v=\"139\", \"Chromium\";v=\"139\"",
-//         "sec-ch-ua-mobile": "?0",
-//         "sec-ch-ua-platform": "\"Windows\"",
-//         "sec-fetch-dest": "empty",
-//         "sec-fetch-mode": "cors",
-//         "sec-fetch-site": "same-site",
-//         "Referer": "https://ai.ceoitbox.com/"
-//       },
-//       "body": null,
-//       "method": "GET"
-//     });
-
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! status: ${response.status}`);
-//     }
-
-//     const data = await response.json();
-//     return data;
-//   } catch (error) {
-//     console.error("Error fetching group names:", error);
-//     throw error;
-//   }
-// };
 
 export const fetchGroupNames = async () => {
   try {
