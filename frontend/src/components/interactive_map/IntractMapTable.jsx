@@ -1194,12 +1194,12 @@ const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, for
                             <button onClick={handleBulkEdit} className="bg-primary rounded-[4px] p-1 mx-2" title="Edit">
                                 <MdEdit color="white" />
                             </button>} */}
-                        <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-[5px]" title="Delete">
+                        {/* <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-[5px]" title="Delete">
                             <MdDelete color="white" />
-                        </button>
+                        </button> */}
 
                         <Popover content={<HeaderSwitch />} title="Hide Columns" trigger="click" placement="bottomRight">
-                            <button className="mx-2" title="Hide Columns">
+                            <button className="" title="Hide Columns">
                                 <div className="bg-primary rounded-[4px] p-1">
                                     <BiSolidHide color="white" size={18} />
                                 </div>

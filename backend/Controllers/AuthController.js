@@ -83,7 +83,6 @@ module.exports.GoogleSignin = async (req, res) => {
   } else {
     // Save user to MongoDB
     const newUser = await User.create({ accessToken, name, email, profileUrl });
-    console.log(newUser);
     const token = jwt.sign({ userId: newUser._id }, secret);
     // delete newUser.password;
     // delete newUser.googleRefreshToken;

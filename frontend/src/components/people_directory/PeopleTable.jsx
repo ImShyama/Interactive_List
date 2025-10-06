@@ -1180,11 +1180,11 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                             <BulkAdds />
                         </button>
 
-                        <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-[5px]" title="Delete">
+                        {/* <button onClick={handleBulkDelete} className="bg-primary rounded-[4px] p-[5px]" title="Delete">
                             <MdDelete color="white" />
-                        </button>
+                        </button> */}
 
-                        <button onClick={() => openModal()} className="bg-primary rounded-[4px] p-[5px] ml-2 text-[#fff]" title="Preview">
+                        <button onClick={() => openModal()} className="bg-primary rounded-[4px] p-[5px]  text-[#fff]" title="Preview">
                             <FiEye />
                         </button>
 

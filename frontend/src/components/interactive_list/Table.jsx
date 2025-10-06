@@ -13,6 +13,7 @@ import noPhoto from "../../assets/images/noPhoto.jpg";
 import avatar from "../../assets/images/avatar.png";
 import { notifyError } from "../../utils/notify";
 import Loader from "../Loader";
+import { MdDelete } from "react-icons/md";
 
 
 const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit, setIsedit, setFreezeCol, freezeCol,
@@ -699,6 +700,20 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                             disabled={ischecked?.length === 0}
                                         >
                                             <IoSaveSharp color="#ffffff" size={18} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                if (isPreview) {
+                                                    handleAlert("Not available in preview!");
+                                                    return;
+                                                }
+                                                handleBulkDelete();
+                                            }}
+                                            className={`rounded-[4px] ${ischecked?.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#DC2626] hover:bg-[#B91C1C]'}`}
+                                            title="Delete Selected"
+                                            disabled={ischecked?.length === 0}
+                                        >
+                                            <MdDelete color="#ffffff" size={18} />
                                         </button>
                                     </th>
                                 }
