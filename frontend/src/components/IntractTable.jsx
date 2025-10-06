@@ -831,10 +831,52 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
     }
 
 
-    const handleBulkSave = useCallback(async () => {
+    // const handleBulkSave = useCallback(async () => {
+
+    //     try {
+    //         setLoading(true);
+
+    //         // if(globalCheckboxChecked){
+    //         //     notifyError("Select all works only for delete option");
+    //         //     return;
+    //         // }
+    //         // Call the backend API to update rows in Google Sheets
+    //         const spreadSheetID = settings.spreadsheetId;
+    //         const sheetName = settings.firstSheetName;
+    //         const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, EditData, formulaData);
+
+    //         console.log("Updated sheet data:", updatedSheetData);
+
+    //         // Update the filtered data in the frontend after successful API call
+    //         setFilteredData((prev) => {
+    //             return prev.map((item) => {
+    //                 if (ischecked.includes(item.key_id)) {
+    //                     return EditData.find((editItem) => editItem.key_id === item.key_id);
+    //                 }
+    //                 return item;
+    //             });
+    //         });
+
+    //         notifySuccess("Rows updated successfully!");
+
+    //     } catch (err) {
+    //         console.error("Error updating rows:", err.message);
+    //         setLoading(false);
+    //         notifyError(err.message);
+    //     } finally {
+    //         // Reset edit and selection state
+    //         setLoading(false);
+    //         setIsedit(!isedit);
+    //         setIschecked([]);
+    //         setEditData([]);
+    //         setGlobalCheckboxChecked(false);
+    //     }
+    // }, [setLoading]);
+
+
+    const handleBulkSave = async () => {
 
         try {
-            setLoading(true);
 
             // if(globalCheckboxChecked){
             //     notifyError("Select all works only for delete option");
@@ -861,17 +903,16 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
 
         } catch (err) {
             console.error("Error updating rows:", err.message);
-            setLoading(false);
             notifyError(err.message);
         } finally {
             // Reset edit and selection state
-            setLoading(false);
             setIsedit(!isedit);
             setIschecked([]);
             setEditData([]);
             setGlobalCheckboxChecked(false);
         }
-    }, [setLoading]);
+    };
+
 
     const openModal = () => {
         // setPreviewModalOpen(true);

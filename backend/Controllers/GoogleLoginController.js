@@ -58,17 +58,18 @@ const RegisterEmailTemplate = ({ name, email }) => {
     @media screen {
       .info-card:hover {
         background-color: #f8f9fa !important;
-        border-color: #1B5E20 !important;
+        border-color: #578737 !important;
       }
       
       .feature-chip:hover {
-        background-color: #1B5E20 !important;
+        background-color: #578737 !important;
         color: #ffffff !important;
       }
       
-      .btn-primary:hover {
-        background-color: #0D4A14 !important;
-        background: #0D4A14 !important;
+      
+       .btn-primary:hover {
+        background-color: #456b2c !important;
+        background: #456b2c !important;
       }
     }
     
@@ -102,7 +103,7 @@ const RegisterEmailTemplate = ({ name, email }) => {
           
           <!-- Header -->
           <tr>
-            <td align="center" style="background-color:#1B5E20; background-image: linear-gradient(135deg, #1B5E20 0%, #2E7D32 50%, #4CAF50 100%); padding:30px 20px; color:#ffffff;" class="mobile-padding">
+            <td align="center" style="background-color:#578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); padding:30px 20px; color:#ffffff;" class="mobile-padding">
               <table cellpadding="0" cellspacing="0" border="0">
                 <tr>
                   <td align="center">
@@ -123,7 +124,7 @@ const RegisterEmailTemplate = ({ name, email }) => {
               <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#ffffff; background-image: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); border:1px solid #e9ecef; border-radius:12px; padding:20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); margin-bottom:20px;">
                 <tr>
                   <td align="center">
-                    <p style="margin:5px 0 15px; font-size:18px; font-weight:bold; color:#1B5E20;">${name}</p>
+                    <p style="margin:5px 0 15px; font-size:18px; font-weight:600; color:#578737; font-family: 'Poppins', Arial, sans-serif;">${name}</p>
 
                     <!-- Google Sign-In -->
                     <table cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff; border:1px solid #dadce0; border-radius:50px; margin:0 auto;">
@@ -155,7 +156,11 @@ const RegisterEmailTemplate = ({ name, email }) => {
                         <td style="padding:10px; position:relative;" align="center">
                           <div style="font-size:20px; margin-bottom: 10px;">📧</div>
                           <div style="font-size:11px; text-transform:uppercase; color:#666; font-weight:bold; letter-spacing: 1px; margin-bottom: 8px;">Email Address</div>
-                          <div style="font-size:13px; font-weight:bold; color:#1B5E20; word-break:break-word;">${email}</div>
+                          <div style="font-size:13px; font-weight:600; color:#578737; word-break:break-word; font-family: 'Poppins', Arial, sans-serif;"><a href="mailto:${email}" 
+   style="color:#578737 !important; text-decoration:none !important; font-weight:600;">
+  ${email}
+</a>
+</div>
                         </td>
                       </tr>
                     </table>
@@ -166,7 +171,7 @@ const RegisterEmailTemplate = ({ name, email }) => {
                         <td style="padding:10px;" align="center">
                           <div style="font-size:20px; margin-bottom: 10px;">📅</div>
                           <div style="font-size:11px; text-transform:uppercase; color:#666; font-weight:bold; letter-spacing: 1px; margin-bottom: 8px;">Joined Today</div>
-                          <div style="font-size:13px; font-weight:bold; color:#1B5E20;">${currentDate}</div>
+                          <div style="font-size:13px; font-weight:600; color:#578737; font-family: 'Poppins', Arial, sans-serif;">${currentDate}</div>
                         </td>
                       </tr>
                     </table>
@@ -178,11 +183,11 @@ const RegisterEmailTemplate = ({ name, email }) => {
               <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#e8f5e8; background-image: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%); border:1px solid #c8e6c9; border-radius:12px; padding:20px; margin-bottom:20px;">
                 <tr>
                   <td align="center">
-                    <div style="width: 40px; height: 40px; background-color:#1B5E20; background-image: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); border-radius: 50%; text-align:center; line-height:40px; color: white; font-size: 20px; margin:0 auto 15px; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.3);">⚡</div>
+                    <div style="width: 40px; height: 40px; background-color:#578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 100%); border-radius: 50%; text-align:center; line-height:40px; color: white; font-size: 20px; margin:0 auto 15px; box-shadow: 0 4px 12px rgba(27, 94, 32, 0.3);">⚡</div>
                     
-                    <div style="font-size:16px; font-weight:bold; color:#1B5E20; margin: 0 0 10px;">Where Spreadsheets Meet Innovation</div>
+                    <div style="font-size:16px; font-weight:600; color:#578737; margin: 0 0 10px; font-family: 'Poppins', Arial, sans-serif;">Where Spreadsheets Meet Innovation</div>
                     
-                  <p style="font-size:13px; color:#333; margin:0 0 15px; line-height:1.5;">
+                  <p style="font-size:13px; color:#333; margin:0 0 15px; line-height:1.5; font-family: 'Poppins', Arial, sans-serif;">
   Transform your Google Sheets into sleek, interactive, user-friendly apps in minutes—no coding required.
 </p>
 
@@ -193,17 +198,17 @@ const RegisterEmailTemplate = ({ name, email }) => {
                           <table cellpadding="0" cellspacing="0" border="0">
                             <tr>
                               <td style="padding:2px;">
-                                <span class="feature-chip" style="font-size:11px; font-weight:bold; color:#1B5E20; border:2px solid #c8e6c9; background-color: white; border-radius:16px; display:inline-block; padding:5px 10px;">Google Sheet Integration</span>
+                                <span class="feature-chip" style="font-size:11px; font-weight:600; color:#578737; border:2px solid #c8e6c9; background-color: white; border-radius:16px; display:inline-block; padding:5px 10px; font-family: 'Poppins', Arial, sans-serif;">Google Sheet Integration</span>
                               </td>
                               <td style="padding:2px;">
-                                <span class="feature-chip" style="font-size:11px; font-weight:bold; color:#1B5E20; border:2px solid #c8e6c9; background-color: white; border-radius:16px; display:inline-block; padding:5px 10px;">Dynamic Tables</span>
+                                <span class="feature-chip" style="font-size:11px; font-weight:600; color:#578737; border:2px solid #c8e6c9; background-color: white; border-radius:16px; display:inline-block; padding:5px 10px; font-family: 'Poppins', Arial, sans-serif;">Dynamic Tables</span>
                               </td>
                             </tr>
                             <tr>
                               <td colspan="2" align="center" style="padding:4px;">
-                                <span class="feature-chip" style="font-size:11px; font-weight:bold; color:#1B5E20; border:2px solid #c8e6c9; background-color: white; border-radius:16px; display:inline-block; padding:5px 10px;">Custom Layouts</span>
+                                <span class="feature-chip" style="font-size:11px; font-weight:600; color:#578737; border:2px solid #c8e6c9; background-color: white; border-radius:16px; display:inline-block; padding:5px 10px; font-family: 'Poppins', Arial, sans-serif;">Custom Layouts</span>
                               
-                                <span class="feature-chip" style="font-size:11px; font-weight:bold; color:#1B5E20; border:2px solid #c8e6c9; background-color: white; border-radius:16px; display:inline-block; padding:5px 10px;">Live Data Sync</span>
+                                <span class="feature-chip" style="font-size:11px; font-weight:600; color:#578737; border:2px solid #c8e6c9; background-color: white; border-radius:16px; display:inline-block; padding:5px 10px; font-family: 'Poppins', Arial, sans-serif;">Live Data Sync</span>
                               </td>
                             </tr>
                           </table>
@@ -218,11 +223,11 @@ const RegisterEmailTemplate = ({ name, email }) => {
               <table cellpadding="0" cellspacing="0" border="0" width="100%" style="text-align: center; padding: 30px 25px; background-color:#f8f9fa; background-image: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 16px; border: 1px solid #dee2e6;">
                 <tr>
                   <td align="center">
-                    <h3 style="font-size:15px; font-weight:bold; margin:0 0 15px; color:#333;">Ready to Get Started?</h3>
+                    <h3 style="font-size:15px; font-weight:bold; margin:0 0 15px; color:#333;font-family: 'Poppins', Arial, sans-serif;">Ready to Get Started?</h3>
                     <table cellpadding="0" cellspacing="0" border="0">
                       <tr>
-                        <td align="center" style="border-radius:50px; background-color:#1B5E20; background-image: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); box-shadow: 0 8px 25px rgba(27, 94, 32, 0.3);">
-                          <a href="https://interact.ceoitbox.com/dashboard" class="btn-primary" style="background-color:#1B5E20; color:#ffffff; padding:12px 32px; border-radius:50px; text-decoration:none; font-size:14px; font-weight:bold; display:inline-block; border:none;">Launch Dashboard</a>
+                        <td align="center" style="border-radius:50px; background-color:#578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 100%); box-shadow: 0 8px 25px rgba(87, 135, 55, 0.3);">
+                          <a href="https://interact.ceoitbox.com/dashboard" class="btn-primary" style="background-color:#578737; color:#ffffff; padding:12px 32px; border-radius:50px; text-decoration:none; font-size:14px; font-weight:600; display:inline-block; border:none; font-family: 'Poppins', Arial, sans-serif;">Launch Dashboard</a>
                         </td>
                       </tr>
                     </table>
@@ -236,43 +241,43 @@ const RegisterEmailTemplate = ({ name, email }) => {
           <!-- Footer -->
          <!-- Footer -->
           <tr>
-            <td align="center" style="background-color:#1B5E20; background-image: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); padding:20px; color:#ffffff;" class="mobile-padding">
-              <p style="margin:0; font-weight:bold; color:#ffffff;">Interact Tools</p>
-              <p style="margin:5px 0 10px; font-size:13px; color:#ffffff; opacity: 0.9;">Thank you for choosing us to transform your data experience!</p>
+            <td align="center" style="background-color:#578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 100%); padding:20px; color:#ffffff;" class="mobile-padding">
+              <p style="margin:0; font-weight:bold; color:#ffffff;font-family: 'Poppins', Arial, sans-serif;">Interact Tools</p>
+              <p style="margin:5px 0 10px; font-size:13px; color:#ffffff; opacity: 0.9;font-family: 'Poppins', Arial, sans-serif;">Thank you for choosing us to transform your data experience!</p>
               
               <!-- Copyright Section -->
-               <!-- Copyright Section -->
-              <div style="border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 15px; margin-top: 10px;">
-                <table cellpadding="0" cellspacing="0" border="0" width="100%">
-                  <tr>
-                    <td align="center">
-                      <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
-                        <tr>
-                          <td style="font-size: 12px; color: #ffffff; opacity: 0.85; font-weight: 300; line-height: 1.4;">
-                            Copyright &copy; ${currentYear} All rights reserved | by
-                          </td>
-                          <td style="padding: 0 4px;" valign="middle">
-                            <table cellpadding="0" cellspacing="0" border="0" style="display: inline-block; vertical-align: middle;">
-                              <tr>
-                                <td style="line-height: 0;">
-                                  <img src="https://res.cloudinary.com/df0pdiqp8/image/upload/v1759554757/logo-png-1-1_qhdr2p.png" 
-                                       alt="" 
-                                       width="16" 
-                                       height="16"
-                                       style="width: 16px; height: 16px; background-color:#ffffff; border-radius:3px; padding:2px; display: block; border: 0;" />
-                                </td>
-                              </tr>
-                            </table>
-                          </td>
-                          <td valign="middle">
-                            <a href="https://mbai.ceoitbox.tech/" target="_blank" rel="noopener noreferrer" style="color: #B7EFC5; font-weight: 600; text-decoration: none; font-size: 12px;">CEOITBOX</a>
-                          </td>
-                        </tr>
-                      </table>
-                    </td>
-                  </tr>
-                </table>
-              </div>
+              <!-- Copyright Section -->
+<div style="border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 15px; margin-top: 10px;">
+  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+    <tr>
+      <td align="center" style="text-align:center;">
+        <table cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto; white-space:nowrap;">
+          <tr>
+            <td style="font-size:12px; color:#ffffff; opacity:0.85; font-weight:300; line-height:1.4; white-space:nowrap;">
+              © ${currentYear} All rights reserved&nbsp;|&nbsp;by&nbsp;
+            </td>
+            <td valign="middle" style="line-height:0; padding:0 4px;">
+              <img src="https://res.cloudinary.com/df0pdiqp8/image/upload/v1759554757/logo-png-1-1_qhdr2p.png" 
+                   alt="CEOITBOX Logo"
+                   width="16"
+                   height="16"
+                   style="width:16px; height:16px; background-color:#ffffff; border-radius:3px; padding:2px; display:inline-block; vertical-align:middle; border:0;" />
+            </td>
+            <td valign="middle" style="padding-left:4px;">
+              <a href="https://mbai.ceoitbox.tech/" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 style="color:#B7EFC5; font-weight:600; text-decoration:none; font-size:12px; display:inline-block; vertical-align:middle;">
+                 CEOITBOX
+              </a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>
+
             </td>
           </tr>
           
