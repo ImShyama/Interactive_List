@@ -608,343 +608,6 @@ const convertArrayToJSON = (data, hiddenCol) => {
   return jsonData;
 };
 
-// async function copySpreadsheet(authClient, sheet_id, userId, appName) {
-//   const sheets = google.sheets({ version: "v4", auth: authClient });
-//   const drive = google.drive({ version: "v3", auth: authClient });
-
-//   try {
-//     // Get the source spreadsheet details to obtain its title
-//     const getSpreadsheetResponse = await sheets.spreadsheets.get({ spreadsheetId: sheet_id });
-//     const sourceSpreadsheetTitle = getSpreadsheetResponse.data.properties.title;
-//     // Get permissions to determine access (Owner/Shared)
-//     const permissionsResponse = await drive.permissions.list({ fileId: sheet_id, fields: "permissions(id, role, type)" });
-//     // Determine if the user is the owner
-//     const ownerPermission = permissionsResponse.data.permissions.find(
-//       (perm) => perm.role.toLocaleLowerCase() === "owner"
-//     );
-//     const access = ownerPermission ? "owner" : "shared";
-
-//     // Get the last updated date of the spreadsheet
-//     const lastUpdatedResponse = await drive.files.get({ fileId: sheet_id, fields: "modifiedTime" });
-//     const lastUpdatedDate = new Date();
-
-//     // Create a new spreadsheet
-//     const createResponse = await sheets.spreadsheets.create({ resource: { properties: { title: `Copy of ${sourceSpreadsheetTitle}` } } });
-//     const newSpreadsheetId = createResponse.data.spreadsheetId;
-
-//     const sourceSheets = getSpreadsheetResponse.data.sheets;
-
-//     for (const sheet of sourceSheets) {
-//       const sourceSheetId = sheet.properties.sheetId;
-//       const sourceSheetName = sheet.properties.title;
-
-//       // Prepare the request to copy the sheet
-//       const request = { spreadsheetId: sheet_id, sheetId: sourceSheetId, resource: { destinationSpreadsheetId: newSpreadsheetId } };
-
-//       // Copy the sheet to the new spreadsheet
-//       const copyResponse = await sheets.spreadsheets.sheets.copyTo(request);
-
-//       // Rename the copied sheet to match the source sheet name
-//       const copiedSheetId = copyResponse.data.sheetId;
-//       await sheets.spreadsheets.batchUpdate({ spreadsheetId: newSpreadsheetId, resource: { requests: [{ updateSheetProperties: { properties: { sheetId: copiedSheetId, title: sourceSheetName }, fields: "title" } }] } });
-//     }
-
-//     // Delete the default "Sheet1" from the new spreadsheet
-//     const deleteSheetResponse = await sheets.spreadsheets.batchUpdate({ spreadsheetId: newSpreadsheetId, resource: { requests: [{ deleteSheet: { sheetId: createResponse.data.sheets[0].properties.sheetId } }] } });
-
-
-//     // Retrieve details of the first sheet in the new spreadsheet
-//     const newSpreadsheetResponse = await sheets.spreadsheets.get({ spreadsheetId: newSpreadsheetId });
-
-//     const firstSheet = newSpreadsheetResponse.data.sheets[0];
-//     const firstSheetId = firstSheet.properties.sheetId;
-//     const firstSheetName = firstSheet.properties.title;
-//     const firstSheetUrl = `https://docs.google.com/spreadsheets/d/${newSpreadsheetId}/edit#gid=${firstSheetId}`;
-
-//     const tabs = newSpreadsheetResponse.data.sheets;
-//     const sheetDetails = tabs.map(sheet => {
-//       const sheetId = sheet.properties.sheetId;
-//       const sheetName = sheet.properties.title;
-//       const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheet_id}/edit#gid=${sheetId}`;
-
-//       return {
-//         name: sheetName,
-//         url: sheetUrl,
-//         sheetId: sheetId,
-//       };
-//     });
-
-//     // Get the data range of the first sheet
-//     const firstSheetDataResponse = await sheets.spreadsheets.values.get({
-//       spreadsheetId: newSpreadsheetId,
-//       range: `${firstSheetName}!A1:1`,
-//     });
-//     const firstTabHeader = firstSheetDataResponse.data.values[0];
-
-//     const firstTabDataRange = `${firstSheetName}!A1:${String.fromCharCode(
-//       64 + firstTabHeader.length
-//     )}`;
-
-//     let cardSettings = [
-//       { id: 0, title: "" },
-//       { id: 1, title: "" },
-//       { id: 2, title: "" },
-//       { id: 3, title: "" },
-//       { id: 4, title: "" },
-//       { id: 5, title: "" },
-//     ]
-
-//     if (appName == "Video Gallery") {
-//       cardSettings = [
-//         {
-//           id: 0,
-//           title: "Video Link",
-
-//         },
-//         {
-//           id: 1,
-//           title: "Thumbnail"
-//         },
-//         {
-//           id: 2, title: "Video Title",
-//           setting: {
-//             "fontStyle": "bold",
-//             "fontColor": "#333131",
-//             "fontSize": "20",
-//             "fontType": "Poppins"
-//           }
-//         },
-//         {
-//           id: 3,
-//           title: "Category",
-//           setting: {
-//             "fontStyle": "regular",
-//             "fontColor": "#B0B0B0",
-//             "fontSize": "16",
-//             "fontType": "Poppins"
-//           }
-//         },
-//         {
-//           id: 4,
-//           title: "Descriptions",
-//           setting: {
-//             "fontStyle": "normal",
-//             "fontColor": "#333131",
-//             "fontSize": "16",
-//             "fontType": "Poppins"
-//           }
-//         },
-//         {
-//           id: 5,
-//           title: "Sub Title",
-//           setting: {
-//             "fontStyle": "normal",
-//             "fontColor": "#B0B0B0",
-//             "fontSize": "16",
-//             "fontType": "Poppins"
-//           }
-//         },
-//       ]
-//     }
-//     else if (appName == "People Directory") {
-//       cardSettings = [
-//         { id: 0, title: "Profile Picture" },
-//         { id: 1, title: "First Name" },
-//         { id: 2, title: "Job Title" },
-//         { id: 3, title: "Department" },
-//         { id: 4, title: "Email" },
-//         { id: 5, title: "Mobile" },
-//       ]
-//     }
-//     else if (appName == "Photo Gallery") {
-//       cardSettings = [
-//         { id: 0, title: "Image" },
-//         { id: 1, title: "Title" },
-//         { id: 2, title: "Topic" },
-//       ]
-//     }
-//     else if (appName == "Interactive Map") {
-//       cardSettings = [
-//         { id: 0, title: "Image" },
-//         { id: 1, title: "Longitude" },
-//         { id: 2, title: "Latitude" },
-//       ]
-//     }
-//     else if (appName == "Product Catalogue") {
-//       cardSettings = []
-//     }
-
-//     const res = {
-//       spreadsheetId: newSpreadsheetId,
-//       spreadsheetUrl: `https://docs.google.com/spreadsheets/d/${newSpreadsheetId}/edit`,
-//       firstSheetId: firstSheetId,
-//       firstSheetUrl: firstSheetUrl,
-//       firstSheetName: firstSheetName,
-//       firstTabDataRange: firstTabDataRange,
-//       firstTabHeader: firstTabHeader,
-//       spreadsheetName: `Copy of ${sourceSpreadsheetTitle}`,
-//       sheetDetails: sheetDetails,
-//       access: access, // Add access type
-//       lastUpdatedDate: lastUpdatedDate, // Add last updated date
-//     };
-
-//     // Save the sheet details to the database
-//     const newSheet = await Sheet.create({
-//       userId: userId,
-//       spreadsheetName: res.spreadsheetName,
-//       spreadsheetId: res.spreadsheetId,
-//       spreadsheetUrl: res.spreadsheetUrl,
-//       firstSheetName: res.firstSheetName,
-//       firstSheetId: res.firstSheetId,
-//       firstSheetUrl: res.firstSheetUrl,
-//       firstTabDataRange: res.firstTabDataRange,
-//       firstTabHeader: res.firstTabHeader,
-//       appName: appName,
-//       sheetDetails: res.sheetDetails,
-//       access: res.access, // Save access type
-//       lastUpdatedDate: res.lastUpdatedDate, // Save last updated date
-//       showInCard: cardSettings,
-//       productCatalogue: {
-//         headerSettings: {
-//           headerText: "CBXTREE Header",
-//           headerFont: "Poppins",
-//           headerFontColor: "#000000",
-//           headerFontSize: "16px",
-//           bg: "#ffffff",
-//           logoURL: "",
-//           tabTitle: "",
-//           reset: false,
-//           search: true,
-//         },
-//         cardSettings: {
-//           titles: {
-//             Title_1: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#060606",
-//               cardFontSize: "30px",
-//               fontWeight: "600",
-//             },
-//             Title_2: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#363636",
-//               cardFontSize: "13.249px",
-//               fontWeight: "400",
-//             },
-//             Title_3: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#363636",
-//               cardFontSize: "16px",
-//               fontWeight: "400",
-//             },
-//             Title_4: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#363636",
-//               cardFontSize: "14px",
-//               fontWeight: "400",
-//             },
-//             Title_5: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#EE0505",
-//               cardFontSize: "14px",
-//               fontWeight: "500",
-//             }
-//           },
-//           numberOfColumns: "3",
-//           numberOfRows: "3",
-//         },
-//         footerSettings: {
-//           footers: {
-//             Footer_1: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif", // Add default font
-//               footerFontSize: "16px", // Add default size
-//               footerFontColor: "#000000", // Add default color
-//               bg: "#ffffff", // Add default background
-//             },
-//             Footer_2: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif",
-//               footerFontSize: "16px",
-//               footerFontColor: "#000000",
-//               bg: "#ffffff",
-//             },
-//             Footer_3: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif",
-//               footerFontSize: "16px",
-//               footerFontColor: "#000000",
-//               bg: "#ffffff",
-//             },
-//             Footer_4: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif",
-//               footerFontSize: "16px",
-//               footerFontColor: "#000000",
-//               bg: "#ffffff",
-//             },
-//             Footer_5: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif",
-//               footerFontSize: "16px",
-//               footerFontColor: "#000000",
-//               bg: "#ffffff",
-//             },
-//           },
-//           socialMediaSettings: {
-//             facebook: "",
-//             youtube: "",
-//             twitter: "",
-//             linkedin: "",
-//             instagram: "",
-//             socialMedia1: "",
-//           },
-//           mainFooter: "",
-//           footerColor: "#ffffff",
-//           footerBackground: "#000000",
-//           contactSettings: [
-//             { id: 1, name: "Address", text: "", isContactEditing: false },
-//             { id: 2, name: "Phone", text: "", isContactEditing: false },
-//             { id: 3, name: "Email", text: "", isContactEditing: false },
-//           ]
-//         }
-//       },
-//     });
-
-//     return newSheet;
-//   } catch (err) {
-//     console.error("The API returned an error: " + err);
-//   }
-// }
 
 async function copySpreadsheet(authClient, sheet_id, userId, appName) {
   const sheets = google.sheets({ version: "v4", auth: authClient });
@@ -1358,356 +1021,6 @@ async function copySpreadsheet(authClient, sheet_id, userId, appName) {
     throw err;
   }
 }
-
-// async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) {
-//   const sheets = google.sheets({ version: "v4", auth: authClient });
-//   const drive = google.drive({ version: "v3", auth: authClient });
-//   console.log({ authClient, sheet_id, userId, sheetName, appName });
-
-
-//   try {
-//     // Get the source spreadsheet details to obtain its title
-//     const getSpreadsheetResponse = await sheets.spreadsheets.get({ spreadsheetId: sheet_id });
-//     const sourceSpreadsheetTitle = getSpreadsheetResponse.data.properties.title;
-//     // // Get permissions to determine access (Owner/Shared)
-//     // console.log({ getSpreadsheetResponse });
-//     // const permissionsResponse = await drive.permissions.list({ fileId: sheet_id, fields: "permissions(id, role, type)" });
-//     // console.log({ permissionsResponse });
-//     // // Determine if the user is the owner
-//     // const ownerPermission = permissionsResponse.data.permissions.find( (perm) => perm.role === "owner" );
-//     // const access = ownerPermission ? "Owner" : "Shared";
-
-
-//     console.log({ getSpreadsheetResponse });
-
-//     // Alternative approach: Try to determine access by attempting to get file metadata
-//     // If we can get detailed metadata, we likely have owner access
-//     let access = "Shared"; // Default to shared access
-
-//     try {
-//       // Try to get file with detailed fields - this might work for owners
-//       const detailedFileResponse = await drive.files.get({ 
-//         fileId: sheet_id, 
-//         fields: "modifiedTime,owners,permissions" 
-//       });
-
-//       // If we can access owners field, we can determine ownership
-//       if (detailedFileResponse.data.owners) {
-//         // Check if current user is in owners array (you might need to compare with current user's email)
-//         access = "Owner";
-//       }
-//     } catch (detailsError) {
-//       console.log("Could not get detailed file info, assuming shared access");
-//       // If we can't get detailed info, assume shared access
-//     }
-
-//     // Get the last updated date of the spreadsheet
-//     const lastUpdatedResponse = await drive.files.get({ fileId: sheet_id, fields: "modifiedTime" });
-//     const lastUpdatedDate = new Date(lastUpdatedResponse.data.modifiedTime || new Date());
-
-//     // // Get the last updated date of the spreadsheet
-//     // const lastUpdatedResponse = await drive.files.get({ fileId: sheet_id, fields: "modifiedTime" });
-//     // const lastUpdatedDate = new Date();
-
-//     // Extract all sheet names by looping over newSpreadsheetResponse.data.sheets
-//     const allSheetNames = getSpreadsheetResponse.data.sheets.map(sheet => sheet.properties.title);
-
-//     const firstSheet = getSpreadsheetResponse.data.sheets[0];
-//     const firstSheetId = firstSheet.properties.sheetId;
-//     const firstSheetName = firstSheet.properties.title;
-//     const firstSheetUrl = `https://docs.google.com/spreadsheets/d/${sheet_id}/edit#gid=${firstSheetId}`;
-
-//     const tabs = getSpreadsheetResponse.data.sheets;
-//     const sheetDetails = tabs.map(sheet => {
-//       const sheetId = sheet.properties.sheetId;
-//       const sheetName = sheet.properties.title;
-//       const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheet_id}/edit#gid=${sheetId}`;
-//       return { name: sheetName, url: sheetUrl, sheetId: sheetId };
-//     });
-
-//     // Get the data range of the first sheet
-//     const firstSheetDataResponse = await sheets.spreadsheets.values.get({
-//       spreadsheetId: sheet_id,
-//       range: `${firstSheetName}!A1:1`,
-//     });
-//     const firstTabHeader = firstSheetDataResponse.data.values[0];
-
-//     const columnToLetter = (columnNumber) => {
-//       let columnLetter = "";
-//       while (columnNumber > 0) {
-//         let remainder = (columnNumber - 1) % 26;
-//         columnLetter = String.fromCharCode(65 + remainder) + columnLetter;
-//         columnNumber = Math.floor((columnNumber - 1) / 26);
-//       }
-//       return columnLetter;
-//     };
-
-//     const lastColumnLetter = columnToLetter(firstTabHeader.length);
-//     const firstTabDataRange = `${firstSheetName}!A1:${lastColumnLetter}`;
-
-//     let cardSettings = [
-//       { id: 0, title: "" },
-//       { id: 1, title: "" },
-//       { id: 2, title: "" },
-//       { id: 3, title: "" },
-//       { id: 4, title: "" },
-//       { id: 5, title: "" },
-//     ]
-
-//     if (appName == "Video Gallery") {
-//       cardSettings = [
-//         {
-//           id: 0,
-//           title: "",
-
-//         },
-//         {
-//           id: 1,
-//           title: ""
-//         },
-//         {
-//           id: 2, title: "",
-//           setting: {
-//             "fontStyle": "bold",
-//             "fontColor": "#333131",
-//             "fontSize": "20",
-//             "fontType": "Poppins"
-//           }
-//         },
-//         {
-//           id: 3,
-//           title: "",
-//           setting: {
-//             "fontStyle": "regular",
-//             "fontColor": "#B0B0B0",
-//             "fontSize": "16",
-//             "fontType": "Poppins"
-//           }
-//         },
-//         {
-//           id: 4,
-//           title: "",
-//           setting: {
-//             "fontStyle": "normal",
-//             "fontColor": "#333131",
-//             "fontSize": "16",
-//             "fontType": "Poppins"
-//           }
-//         },
-//         {
-//           id: 5,
-//           title: "",
-//           setting: {
-//             "fontStyle": "normal",
-//             "fontColor": "#B0B0B0",
-//             "fontSize": "16",
-//             "fontType": "Poppins"
-//           }
-//         },
-//       ]
-//     }
-//     else if (appName == "People Directory") {
-//       cardSettings = [
-//         { id: 0, title: "" },
-//         { id: 1, title: "" },
-//         { id: 2, title: "" },
-//         { id: 3, title: "" },
-//         { id: 4, title: "" },
-//         { id: 5, title: "" },
-//       ]
-//     }
-//     else if (appName == "Photo Gallery") {
-//       cardSettings = [
-//         { id: 0, title: "" },
-//         { id: 1, title: "" },
-//         { id: 2, title: "" },
-//       ]
-//     }
-//     else if (appName == "Interactive Map") {
-//       cardSettings = [
-//         { id: 0, title: "Image" },
-//         { id: 1, title: "Longitude" },
-//         { id: 2, title: "Latitude" },
-//       ]
-//     }
-//     else if (appName == "Product Catalogue") {
-//       cardSettings = []
-//     }
-
-//     const res = {
-//       spreadsheetId: sheet_id,
-//       spreadsheetUrl: `https://docs.google.com/spreadsheets/d/${sheet_id}/edit`,
-//       firstSheetId: firstSheetId,
-//       firstSheetUrl: firstSheetUrl,
-//       firstSheetName: firstSheetName,
-//       firstTabDataRange: firstTabDataRange,
-//       firstTabHeader: firstTabHeader,
-//       spreadsheetName: sheetName,
-//       appName: appName,
-//       sheetDetails: sheetDetails,
-//       access: access, // Add access type
-//       lastUpdatedDate: lastUpdatedDate, // Add last updated date
-//     };
-
-//     // Save the sheet details to the database
-//     const newSheet = await Sheet.create({
-//       userId: userId,
-//       spreadsheetName: res.spreadsheetName,
-//       spreadsheetId: res.spreadsheetId,
-//       spreadsheetUrl: res.spreadsheetUrl,
-//       firstSheetName: res.firstSheetName,
-//       firstSheetId: res.firstSheetId,
-//       firstSheetUrl: res.firstSheetUrl,
-//       firstTabDataRange: res.firstTabDataRange,
-//       firstTabHeader: res.firstTabHeader,
-//       appName: appName,
-//       sheetDetails: sheetDetails,
-//       access: res.access,
-//       lastUpdatedDate: res.lastUpdatedDate,
-//       showInCard: cardSettings,
-//       productCatalogue: {
-//         headerSettings: {
-//           headerText: "CBXTREE Header",
-//           headerFont: "Poppins",
-//           headerFontColor: "#000000",
-//           headerFontSize: "16px",
-//           bg: "#ffffff",
-//           logoURL: "",
-//           tabTitle: "",
-//           reset: false,
-//           search: true,
-//         },
-//         cardSettings: {
-//           titles: {
-//             Title_1: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#060606",
-//               cardFontSize: "30.533px",
-//               fontWeight: "600",
-//             },
-//             Title_2: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#363636",
-//               cardFontSize: "13.249px",
-//               fontWeight: "400",
-//             },
-//             Title_3: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#363636",
-//               cardFontSize: "15px",
-//               fontWeight: "400",
-//             },
-//             Title_4: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#363636",
-//               cardFontSize: "13.249px",
-//               fontWeight: "400",
-//             },
-//             Title_5: {
-//               cardFont: "Poppins",
-//               cardFontColor: "#EE0505",
-//               cardFontSize: "14.249px",
-//               fontWeight: "500",
-//             }
-//           },
-//           numberOfColumns: "4",
-//           numberOfRows: "3",
-//         },
-//         footerSettings: {
-//           footers: {
-//             Footer_1: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif", // Add default font
-//               footerFontSize: "16px", // Add default size
-//               footerFontColor: "#000000", // Add default color
-//               bg: "#ffffff", // Add default background
-//             },
-//             Footer_2: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif",
-//               footerFontSize: "16px",
-//               footerFontColor: "#000000",
-//               bg: "#ffffff",
-//             },
-//             Footer_3: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif",
-//               footerFontSize: "16px",
-//               footerFontColor: "#000000",
-//               bg: "#ffffff",
-//             },
-//             Footer_4: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif",
-//               footerFontSize: "16px",
-//               footerFontColor: "#000000",
-//               bg: "#ffffff",
-//             },
-//             Footer_5: {
-//               Heading: {
-//                 SubHeading1: "",
-//                 SubHeading2: "",
-//                 SubHeading3: "",
-//                 SubHeading4: "",
-//                 SubHeading5: "",
-//               },
-//               footerFont: "Arial, sans-serif",
-//               footerFontSize: "16px",
-//               footerFontColor: "#000000",
-//               bg: "#ffffff",
-//             },
-//           },
-//           socialMediaSettings: {
-//             facebook: "",
-//             youtube: "",
-//             twitter: "",
-//             linkedin: "",
-//             instagram: "",
-//             socialMedia1: "",
-//           },
-//           mainFooter: "",
-//           footerColor: "#000000",
-//           footerBackground: "#ffffff",
-//           contactSettings: [
-//             { id: 1, name: "Address", text: "", isContactEditing: false },
-//             { id: 2, name: "Phone", text: "", isContactEditing: false },
-//             { id: 3, name: "Email", text: "", isContactEditing: false },
-//           ]
-//         }
-//       },
-//     });
-
-//     return newSheet;
-//   } catch (err) {
-//     console.error("The API returned an error: " + err);
-//   }
-// }
-
-// Define a function to rename the spreadsheet
 
 async function addSpreadsheet(authClient, sheet_id, userId, sheetName, appName) {
   const sheets = google.sheets({ version: "v4", auth: authClient });
@@ -2292,9 +1605,20 @@ app.post("/renameSpreadsheet/:id", authenticateToken, async (req, res) => {
     process.env.REDIRECT_URI
   );
 
+  // Fetch sheet details from database
+  const sheetDetails = await Sheet.findOne({ spreadsheetId: spreadSheetID });
+  console.log({ sheetDetails });
+  if (!sheetDetails) {
+    return res.status(404).json({ error: "Sheet not found." });
+  }
+  const sheetOwner = await User.findById(sheetDetails.userId).lean();
+  console.log({ sheetOwner });
+  const refreshToken = sheetOwner.googleRefreshToken;
+  console.log({ refreshToken });
+
   // Set the refresh token for the OAuth2 client
   authClient.setCredentials({
-    refresh_token: req.user.googleRefreshToken,
+    refresh_token: refreshToken,
   });
 
   try {
@@ -2337,9 +1661,18 @@ app.post("/deleteRow", authenticateToken, async (req, res) => {
     process.env.REDIRECT_URI
   );
 
+  // Fetch sheet details from database
+  const sheetDetails = await Sheet.findOne({ spreadsheetId: spreadSheetID });
+  if (!sheetDetails) {
+    return res.status(404).json({ error: "Sheet not found." });
+  }
+  const sheetOwner = await User.findById(sheetDetails.userId).lean();
+  const refreshToken = sheetOwner.googleRefreshToken;
+  console.log({ refreshToken });
+
   // Set the refresh token for the OAuth2 client
   authClient.setCredentials({
-    refresh_token: req.user.googleRefreshToken,
+    refresh_token: refreshToken,
   });
 
   try {
@@ -2367,9 +1700,17 @@ app.post("/editRow", authenticateToken, async (req, res) => {
     process.env.REDIRECT_URI
   );
 
+  // Fetch sheet details from database
+  const sheetDetails = await Sheet.findById(spreadSheetID).lean();
+  if (!sheetDetails) {
+    return res.status(404).json({ error: "Sheet not found." });
+  }
+  const sheetOwner = await User.findById(sheetDetails.userId).lean();
+  const refreshToken = sheetOwner.googleRefreshToken;
+
   // Set the refresh token for the OAuth2 client
   authClient.setCredentials({
-    refresh_token: req.user.googleRefreshToken,
+    refresh_token: refreshToken,
   });
 
   // try {
@@ -2398,8 +1739,21 @@ app.post("/editMultipleRows", authenticateToken, async (req, res) => {
     process.env.REDIRECT_URI
   );
 
+  console.log({ spreadSheetID });
+  // Fetch sheet details from database
+  const sheetDetails = await Sheet.findOne({ spreadsheetId: spreadSheetID });
+  console.log({ sheetDetails });
+  if (!sheetDetails) {
+    return res.status(404).json({ error: "Sheet not found." });
+  }
+  const sheetOwner = await User.findById(sheetDetails.userId).lean();
+  console.log({ sheetOwner });
+  const refreshToken = sheetOwner.googleRefreshToken;
+  console.log({ refreshToken });
+
+  // Set the refresh token for the OAuth2 client
   authClient.setCredentials({
-    refresh_token: req.user.googleRefreshToken,
+    refresh_token: refreshToken,
   });
 
   try {
@@ -2474,6 +1828,17 @@ app.post('/deleteMultipleRows', authenticateToken, async (req, res) => {
     return res.status(400).json({ error: "Invalid request payload" });
   }
 
+  // Fetch sheet details from database
+  const sheetDetails = await Sheet.findOne({ spreadsheetId: spreadSheetID });
+  console.log({ sheetDetails });
+  if (!sheetDetails) {
+    return res.status(404).json({ error: "Sheet not found." });
+  }
+  const sheetOwner = await User.findById(sheetDetails.userId).lean();
+  console.log({ sheetOwner });
+  const refreshToken = sheetOwner.googleRefreshToken;
+  console.log({ refreshToken });
+
   // Create an OAuth2 client with the given credentials
   const authClient = new google.auth.OAuth2(
     process.env.CLIENT_ID,
@@ -2483,7 +1848,7 @@ app.post('/deleteMultipleRows', authenticateToken, async (req, res) => {
 
   // Set the refresh token for the OAuth2 client
   authClient.setCredentials({
-    refresh_token: req.user.googleRefreshToken,
+    refresh_token: refreshToken,
   });
 
   try {
@@ -2611,9 +1976,20 @@ app.post("/addRow", authenticateToken, async (req, res) => {
     process.env.REDIRECT_URI
   );
 
+  // Fetch sheet details from database
+  const sheetDetails = await Sheet.findOne({ spreadsheetId: spreadSheetID });
+  console.log({ sheetDetails });
+  if (!sheetDetails) {
+    return res.status(404).json({ error: "Sheet not found." });
+  }
+  const sheetOwner = await User.findById(sheetDetails.userId).lean();
+  console.log({ sheetOwner });
+  const refreshToken = sheetOwner.googleRefreshToken;
+  console.log({ refreshToken });
+
   // Set the refresh token for the OAuth2 client
   authClient.setCredentials({
-    refresh_token: req.user.googleRefreshToken,
+    refresh_token: refreshToken,
   });
 
   try {
@@ -2631,8 +2007,21 @@ app.post("/addRow", authenticateToken, async (req, res) => {
 
 app.post("/getSheetData", authenticateToken, async (req, res) => {
   const { spreadSheetID, range } = req.body;
-  const user = req.user; // Assuming you have middleware to set req.user
-  const refreshToken = req.user.googleRefreshToken;
+
+  // Fetch sheet details from database
+  const sheetDetails = await Sheet.findOne({ spreadsheetId: spreadSheetID });
+  console.log({ sheetDetails });
+  if (!sheetDetails) {
+    return res.status(404).json({ error: "Sheet not found." });
+  }
+  const sheetOwner = await User.findById(sheetDetails.userId).lean();
+  console.log({ sheetOwner });
+  const refreshToken = sheetOwner.googleRefreshToken;
+  console.log({ refreshToken });
+
+
+  // const user = req.user; // Assuming you have middleware to set req.user
+  // const refreshToken = req.user.googleRefreshToken;
 
   // Create an OAuth2 client with the given credentials
   const authClient = new google.auth.OAuth2(
@@ -2692,30 +2081,6 @@ app.post("/getSpreadSheets", authenticateToken, async (req, res) => {
   }
 });
 
-// Route to get all spreadsheets for a user
-// app.get("/getuser", authenticateToken, async (req, res) => {
-//   try {
-//     // let userDetails = req.user;
-//     // userDetails.suggestedUsers = await getFlattenedSharedWithForUser(req.user._id);
-//     console.log(req.user._id);
-//     const suggestedUsers = await getFlattenedSharedWithForUser(req.user._id);
-//     // Only use the pure document (removing Mongoose metadata)
-//     const userDoc = req.user._doc ? req.user._doc : req.user; // fallback for plain objects
-
-//     const userDetails = {
-//       ...userDoc,
-//       suggestedUsers
-//     };
-
-
-
-//     // console.log({ userDetails, suggestedUsers: await getFlattenedSharedWithForUser(userDetails._id) });
-//     res.status(200).json(userDetails);
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Failed to fetch user details" });
-//   }
-// });
 
 app.get("/getuser", authenticateToken, async (req, res) => {
   try {
@@ -3070,91 +2435,6 @@ const TableShareEmailTemplate = (config) => {
 }
 
 
-// app.post("/addEmails/:id", authenticateToken, async (req, res) => {
-//   try {
-//     const { emails } = req.body;
-//     const SheetId = req.params.id;
-
-//     console.log({ emails });
-
-//     // Fetch spreadsheet details from MongoDB
-//     const sheetData = await Sheet.findById(SheetId);
-//     if (!sheetData) {
-//       return res.status(404).json({ message: "Sheet not found" });
-//     }
-
-//     const userData = await User.findById(sheetData.userId);
-
-
-//     const { spreadsheetId } = sheetData;
-
-//     // Create an OAuth2 client with stored credentials
-//     const authClient = new google.auth.OAuth2(
-//       process.env.CLIENT_ID,
-//       process.env.CLIENT_SECRET,
-//       process.env.REDIRECT_URI
-//     );
-
-//     // Set the user's refresh token
-//     authClient.setCredentials({
-//       refresh_token: req.user.googleRefreshToken,
-//     });
-
-//     // Initialize Google Drive API with authenticated OAuth client
-//     // const drive = google.drive({ version: "v3", auth: authClient });
-
-//     // Loop through emails and add permissions
-//     // for (const { email, permission } of emails) {
-//     //   let role = permission.toLowerCase() === "edit" ? "writer" : "reader";
-
-//     //   try {
-//     //     await drive.permissions.create({
-//     //       fileId: spreadsheetId,
-//     //       requestBody: {
-//     //         type: "user",
-//     //         role: role,
-//     //         emailAddress: email,
-//     //       },
-//     //       fields: "id",
-//     //     });
-
-//     //     console.log(`✅ Shared sheet with ${email} as ${role}`);
-//     //   } catch (error) {
-//     //     console.error(`❌ Failed to share with ${email}:`, error.message);
-//     //   }
-//     // }
-
-//     // Update MongoDB to store shared emails
-//     const updatedSetting = await Sheet.findByIdAndUpdate(
-//       SheetId,
-//       { sharedWith: emails },
-//       { new: true }
-//     );
-//     const config = {
-//       userName: userData.name,
-//       userEmail: userData.email,
-//       sheetName: sheetData.spreadsheetName,
-//       viewLink: `https://interact.ceoitbox.com/${sheetData._id}/view`,
-//     }
-
-//     emails.forEach(email => {
-//       config.accessType = email.permission;
-//       sendEmail({
-//         to: email.email,
-//         // subject: "Table Access Granted - <<Table Name>> by <<Owner>>",
-//         subject: `Table Access Granted - ${config.sheetName} by ${config.userName}`,
-//         html: TableShareEmailTemplate(config),
-//       });
-//     });
-
-//     res.status(200).json(updatedSetting);
-//   } catch (error) {
-//     console.error("❌ Error in /addEmails:", error.message);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-
-
 app.post("/addEmails/:id", authenticateToken, async (req, res) => {
   try {
     const { emails } = req.body;
@@ -3448,9 +2728,20 @@ app.post("/bulkCopyFromAnotherSheet", authenticateToken, async (req, res) => {
     process.env.REDIRECT_URI
   );
 
+  // Fetch sheet details from database
+  const sheetDetails = await Sheet.findOne({ spreadsheetId: originalSheetID });
+  console.log({ sheetDetails });
+  if (!sheetDetails) {
+    return res.status(404).json({ error: "Sheet not found." });
+  }
+  const sheetOwner = await User.findById(sheetDetails.userId).lean();
+  console.log({ sheetOwner });
+  const refreshToken = sheetOwner.googleRefreshToken;
+  console.log({ refreshToken });
+
   // Set the refresh token for the OAuth2 client
   authClient.setCredentials({
-    refresh_token: req.user.googleRefreshToken,
+    refresh_token: refreshToken,
   });
 
   try {
@@ -3541,11 +2832,12 @@ app.post("/getSheetRowData", dynamicAuth, async (req, res) => {
     if (!sheetDetails) {
       return res.status(404).json({ error: "Sheet not found." });
     }
+    const sheetOwner = await User.findById(sheetDetails.userId).lean();
 
     const spreadSheetID = sheetDetails.spreadsheetId;
     const fullRange = sheetDetails.firstTabDataRange;
     const sheetName = fullRange.split("!")[0];
-    const sheetOwner = await User.findById(sheetDetails.userId).lean();
+
 
     if (!sheetOwner) {
       return res.status(404).json({ error: "Sheet owner not found." });
