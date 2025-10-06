@@ -10,7 +10,6 @@ exports.authenticateToken = async (req, res, next) => {
     try {
         const authHeader = req?.headers?.authorization;
         const token = req.cookies.token || (authHeader && authHeader.split(' ')[1]);
-        console.log("Token123: ", token);
 
         if (!token) {
             return res.status(401).json({ error: "No token provided. Access denied." });
@@ -42,7 +41,6 @@ exports.authenticateToken = async (req, res, next) => {
 
                 // Extract actual user data from _doc and merge with slmData
                 const newUser = {...user._doc, slmData: isLicenseValid}
-                console.log({newUser})  
             req.user = newUser;
             next();
         });
@@ -55,7 +53,6 @@ exports.authenticateTokenPrivate = async (req, res, next) => {
     try {
         const authHeader = req?.headers?.authorization;
         const token = req.cookies.token || (authHeader && authHeader.split(' ')[1]);
-        console.log("Token123: ", token);
 
         if (!token) {
             return res.status(401).json({ error: "No token provided. Access denied." });

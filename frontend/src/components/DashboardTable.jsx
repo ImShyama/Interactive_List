@@ -515,9 +515,10 @@ const DashboardTable = () => {
                         </a>
                       </Tooltip>
                     </td> */}
-
+                    
                     <td className="px-4 py-2">
                       <Tooltip
+                      
                         placement="top"
                         title={
                           sheet.access === "owner"
@@ -526,7 +527,7 @@ const DashboardTable = () => {
                                 .map(user => user.email || user.name || user._id)
                                 .join(", ")}`
                               : "This sheet is not shared with anyone"
-                            : `This sheet is shared by ${sheet.owner?.email || sheet.owner?.name || sheet.owner?._id || "Unknown"}`
+                            : `This sheet is shared by ${sheet.ownerDetails?.email || sheet.ownerDetails?.name || sheet.ownerDetails?._id || "Unknown"}`
                         }
                       >
                         <a

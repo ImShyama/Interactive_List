@@ -2376,7 +2376,7 @@ const TableShareEmailTemplate = (config) => {
                           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 30px 0;">
                               <tr>
                                   <td style="text-align: center;">
-                                      <a href="${config.viewLink}" style="display: inline-block; background-color: #578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 15px; text-transform: uppercase; letter-spacing: 1px;">🚀 Access Table Now</a>
+                                      <a href="${config.accessType?.toLowerCase() === 'edit' ? config.editLink : config.viewLink}"  style="display: inline-block; background-color: #578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 15px; text-transform: uppercase; letter-spacing: 1px;">🚀 Access Table Now</a>
                                   </td>
                               </tr>
                           </table>
@@ -2512,6 +2512,7 @@ app.post("/addEmails/:id", authenticateToken, async (req, res) => {
       userEmail: userData.email,
       sheetName: sheetData.spreadsheetName,
       viewLink: `https://interact.ceoitbox.com/${sheetData._id}/view`,
+      editLink: `https://interact.ceoitbox.com/${sheetData._id}/edit`,
     };
 
     // Send emails ONLY to newly added users
