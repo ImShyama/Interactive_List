@@ -755,45 +755,110 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
         }
     }
 
+    // const handleBulkSave = async () => {
+
+    //     try {
+
+    //         // if(globalCheckboxChecked){
+    //         //     notifyError("Select all works only for delete option");
+    //         //     return;
+    //         // }
+    //         // Call the backend API to update rows in Google Sheets
+    //         const spreadSheetID = settings.spreadsheetId;
+    //         const sheetName = settings.firstSheetName;
+    //         const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, EditData, formulaData);
+
+           
+
+    //         // Update the filtered data in the frontend after successful API call
+    //         setFilteredData((prev) => {
+    //             return prev.map((item) => {
+    //                 if (ischecked.includes(item.key_id)) {
+    //                     return EditData.find((editItem) => editItem.key_id === item.key_id);
+    //                 }
+    //                 return item;
+    //             });
+    //         });
+
+    //         notifySuccess("Rows updated successfully!");
+
+    //         console.log("Updated sheet data:", updatedSheetData);
+
+    //     } catch (err) {
+    //         console.error("Error updating rows:", err.message);
+    //         notifyError(err.message);
+    //     } finally {
+    //         // Reset edit and selection state
+    //         setIsedit(!isedit);
+    //         setIschecked([]);
+    //         setEditData([]);
+    //         setGlobalCheckboxChecked(false);
+    //     }
+    // };
+
+
     const handleBulkSave = async () => {
+    console.log("=== handleBulkSave START ===");
+    console.log("ischecked:", ischecked);
+    console.log("EditData:", EditData);
+    console.log("globalCheckboxChecked:", globalCheckboxChecked);
 
-        try {
-
-            // if(globalCheckboxChecked){
-            //     notifyError("Select all works only for delete option");
-            //     return;
-            // }
-            // Call the backend API to update rows in Google Sheets
-            const spreadSheetID = settings.spreadsheetId;
-            const sheetName = settings.firstSheetName;
-            const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, EditData, formulaData);
-
-            console.log("Updated sheet data:", updatedSheetData);
-
-            // Update the filtered data in the frontend after successful API call
-            setFilteredData((prev) => {
-                return prev.map((item) => {
-                    if (ischecked.includes(item.key_id)) {
-                        return EditData.find((editItem) => editItem.key_id === item.key_id);
-                    }
-                    return item;
-                });
-            });
-
-            notifySuccess("Rows updated successfully!");
-
-        } catch (err) {
-            console.error("Error updating rows:", err.message);
-            notifyError(err.message);
-        } finally {
-            // Reset edit and selection state
-            setIsedit(!isedit);
-            setIschecked([]);
-            setEditData([]);
-            setGlobalCheckboxChecked(false);
+    try {
+        // Validation
+        if (ischecked.length === 0) {
+            console.log("No rows selected");
+            notifyError("Please select at least one row to edit");
+            return;
         }
-    };
 
+        if (EditData.length === 0) {
+            console.log("No edit data available");
+            notifyError("No changes to save");
+            return;
+        }
+
+        console.log("Starting API call...");
+        
+        // Call the backend API to update rows in Google Sheets
+        const spreadSheetID = settings.spreadsheetId;
+        const sheetName = settings.firstSheetName;
+        
+        console.log("API Parameters:", { spreadSheetID, sheetName, EditData, formulaData });
+        
+        const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, EditData, formulaData);
+
+        console.log("API call successful");
+        console.log("Updated sheet data:", updatedSheetData);
+
+        // Update the filtered data in the frontend after successful API call
+        setFilteredData((prev) => {
+            const updated = prev.map((item) => {
+                if (ischecked.includes(item.key_id)) {
+                    return EditData.find((editItem) => editItem.key_id === item.key_id) || item;
+                }
+                return item;
+            });
+            console.log("Updated filtered data:", updated);
+            return updated;
+        });
+
+        notifySuccess("Rows updated successfully!");
+
+    } catch (err) {
+        console.error("=== ERROR in handleBulkSave ===");
+        console.error("Error message:", err.message);
+        console.error("Full error:", err);
+        notifyError(err.message);
+    } finally {
+        console.log("=== Cleanup phase ===");
+        // Reset edit and selection state
+        setIsedit(false);
+        setIschecked([]);
+        setEditData([]);
+        setGlobalCheckboxChecked(false);
+        console.log("=== handleBulkSave END ===");
+    }
+};
     const handleBulkDelete = () => {
         if (ischecked.length > 0) {
             setConfirmModalOpen(true); // Show confirmation modal

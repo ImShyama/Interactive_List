@@ -2903,12 +2903,12 @@ const TableShareEmailTemplate = (config) => {
                   
                   <!-- Top colored bar -->
                   <tr>
-                      <td style="height: 4px; background-color: #1B5E20; font-size: 1px; line-height: 1px;">&nbsp;</td>
+                      <td style="height: 4px; background-color: #578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); font-size: 1px; line-height: 1px;">&nbsp;</td>
                   </tr>
                   
                   <!-- Header -->
                   <tr>
-                      <td style="padding: 30px 25px; background-color: #1B5E20; color: #ffffff; text-align: center;">
+                      <td style="padding: 30px 25px; background-color:#578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); color: #ffffff; text-align: center;">
                           <h1 style="margin: 0 0 6px 0; font-size: 24px; font-weight: bold;">🎉 Table Access Granted</h1>
                           <p style="margin: 0; opacity: 0.9; font-size: 14px;">You've been invited to collaborate!</p>
                       </td>
@@ -2924,14 +2924,14 @@ const TableShareEmailTemplate = (config) => {
                                   <td style="text-align: center; margin-bottom: 25px;">
                                       <p style="font-size: 18px; color: #333333; margin: 0 0 25px 0; font-weight: 500;">
                                           <strong>${config.userName}</strong> added you as a 
-                                          <span style="display: inline-block; background-color: #1B5E20; color: #ffffff; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Collaborator</span>
+                                          <span style="display: inline-block; background-color: #578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); color: #ffffff; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Collaborator</span>
                                       </p>
                                   </td>
                               </tr>
                           </table>
                           
                           <!-- Details section -->
-                          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8f9fa; border-radius: 10px; border-left: 4px solid #1B5E20; margin: 25px 0;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8f9fa; border-radius: 10px; border-left: 4px solid #578737; margin: 25px 0;">
                               <tr>
                                   <td style="padding: 20px;">
                                       <p style="color: #666666; font-size: 14px; margin: 0 0 20px 0; font-weight: 500;">Following are the table details:</p>
@@ -2943,7 +2943,7 @@ const TableShareEmailTemplate = (config) => {
                                                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                                       <tr>
                                                           <td style="width: 35px; vertical-align: middle;">
-                                                              <div style="width: 35px; height: 35px; background-color: #1B5E20; border-radius: 8px; display: inline-block; text-align: center; line-height: 35px; font-size: 16px;">📊</div>
+                                                              <div style="width: 35px; height: 35px; background-color: #578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); border-radius: 8px; display: inline-block; text-align: center; line-height: 35px; font-size: 16px;">📊</div>
                                                           </td>
                                                           <td style="padding-left: 12px; vertical-align: middle;">
                                                               <span style="font-weight: 600; color: #333333; font-size: 14px; display: inline-block; min-width: 100px;">Table Name:</span>
@@ -2964,7 +2964,7 @@ const TableShareEmailTemplate = (config) => {
                                                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                                       <tr>
                                                           <td style="width: 35px; vertical-align: middle;">
-                                                              <div style="width: 35px; height: 35px; background-color: #1B5E20; border-radius: 8px; display: inline-block; text-align: center; line-height: 35px; font-size: 16px;">🔐</div>
+                                                              <div style="width: 35px; height: 35px; background-color: #578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); border-radius: 8px; display: inline-block; text-align: center; line-height: 35px; font-size: 16px;">🔐</div>
                                                           </td>
                                                           <td style="padding-left: 12px; vertical-align: middle;">
                                                               <span style="font-weight: 600; color: #333333; font-size: 14px; display: inline-block; min-width: 100px;">Access Type:</span>
@@ -2985,14 +2985,19 @@ const TableShareEmailTemplate = (config) => {
                                                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                                       <tr>
                                                           <td style="width: 35px; vertical-align: middle;">
-                                                              <div style="width: 35px; height: 35px; background-color: #1B5E20; border-radius: 8px; display: inline-block; text-align: center; line-height: 35px; font-size: 16px;">👤</div>
+                                                              <div style="width: 35px; height: 35px; background-color: #578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); border-radius: 8px; display: inline-block; text-align: center; line-height: 35px; font-size: 16px;">👤</div>
                                                           </td>
                                                           <td style="padding-left: 12px; vertical-align: middle;">
                                                               <span style="font-weight: 600; color: #333333; font-size: 14px; display: inline-block; min-width: 100px;">Owner:</span>
                                                           </td>
                                                           <td style="padding-left: 15px; vertical-align: middle; width: 100%; text-align: left;">
-                                                              <span style="background-color: #E8F5E8; padding: 8px 14px; border-radius: 8px; border: 2px solid #A5D6A7; color: #1B5E20; font-size: 14px; font-weight: 600; display: inline-block; min-width: 200px;">${config.userEmail}</span>
+                                                              <span style="background-color:#e8f5e8; background-image: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%); border:1px solid #c8e6c9; padding: 8px 14px; border-radius: 8px; border: 2px solid #A5D6A7; color: #1B5E20; font-size: 14px; font-weight: 600; display: inline-block; min-width: 200px;">  <a href="mailto:${config.userEmail}" 
+   style="color:#578737 !important; text-decoration:none !important; font-weight:600;">
+  ${config.userEmail}
+</a></span>
                                                           </td>
+
+                                                        
                                                       </tr>
                                                   </table>
                                               </td>
@@ -3006,7 +3011,7 @@ const TableShareEmailTemplate = (config) => {
                           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 30px 0;">
                               <tr>
                                   <td style="text-align: center;">
-                                      <a href="${config.viewLink}" style="display: inline-block; background-color: #1B5E20; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 15px; text-transform: uppercase; letter-spacing: 1px;">🚀 Access Table Now</a>
+                                      <a href="${config.viewLink}" style="display: inline-block; background-color: #578737; background-image: linear-gradient(135deg, #578737 0%, #56a322 50%, #56a322 100%); color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 10px; font-weight: bold; font-size: 15px; text-transform: uppercase; letter-spacing: 1px;">🚀 Access Table Now</a>
                                   </td>
                               </tr>
                           </table>
@@ -3043,10 +3048,10 @@ const TableShareEmailTemplate = (config) => {
               </table>
             </td>
             <td valign="middle">
-              <a href="https://mbai.ceoitbox.tech/" target="_blank" rel="noopener noreferrer" class="ceoitbox-link" style="color: #2E7D32; font-weight: 600; text-decoration: none; font-size: 14px;">CEOITBOX</a>
+              <a href="https://mbai.ceoitbox.tech/" target="_blank" rel="noopener noreferrer" class="ceoitbox-link" style="color: #578737; font-weight: 600; text-decoration: none; font-size: 14px;">CEOITBOX</a>
             </td>
           </tr>
-        </table> diya
+        </table>
       </td>
     </tr>
   </table>
