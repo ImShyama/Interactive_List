@@ -533,7 +533,7 @@ const SpreadsheetSettings = ({ activateSave }) => {
       <div className="sheet_data">
         <div className="sheet_data_tab">
           <div className="sheet_data_tabLabel">
-            <span className="sheet_data_text">Select a Data Sheet</span>
+            <span className="sheet_data_text">Select a Data Tab</span>
             <Info info="After selecting the spreadsheet, all tabs will appear in the dropdown. Choose the data tab you wish to work with." />
           </div>
           <div className="sheet_data_select">
