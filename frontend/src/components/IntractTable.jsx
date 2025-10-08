@@ -366,9 +366,20 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                     },
                 });
             // Handle successful response (e.g., show success notification)
-            const updatedSheetData = convertArrayToJSON(response.data?.updatedSheetData?.values);
-
-            setFilteredData(updatedSheetData);
+            if (response.data?.updatedSheetData?.values) {
+                const updatedSheetData = convertArrayToJSON(response.data.updatedSheetData.values);
+                setFilteredData(updatedSheetData);
+            } else {
+                // Fallback to local state update if API response doesn't contain updated data
+                setFilteredData((prev) => {
+                    return prev.map((item) => {
+                        if (item.key_id == updatedRow.key_id) {
+                            return { ...item, ...updatedRow };
+                        }
+                        return item;
+                    });
+                });
+            }
             notifySuccess("Edited row successfuly!");
         } catch (error) {
             console.error('Error editing row:', error);
@@ -384,15 +395,23 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             const sheetName = settings.firstSheetName;
             const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, [updatedRow], formulaData);
 
-            setFilteredData((prev) => {
-                return prev.map((item) => {
-                    if (item.key_id == updatedRow.key_id) {
-                        return [updatedRow].find((editItem) => editItem.key_id === item.key_id);
-                    }
-                    return item;
+            // Use the updated data from the API response to ensure consistency
+            if (updatedSheetData && updatedSheetData.values) {
+                const convertedData = convertArrayToJSON(updatedSheetData.values);
+                setFilteredData(convertedData);
+            } else {
+                // Fallback to local state update if API response doesn't contain updated data
+                setFilteredData((prev) => {
+                    return prev.map((item) => {
+                        if (item.key_id == updatedRow.key_id) {
+                            return { ...item, ...updatedRow };
+                        }
+                        return item;
+                    });
                 });
-            })
-            notifySuccess("Rows updated successfully!");
+            }
+            
+            notifySuccess("Row updated successfully!");
 
         } catch (err) {
             console.error("Error updating rows:", err.message);
@@ -500,12 +519,16 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
                 });
 
             // Handle successful response (e.g., show success notification)
-            const updatedSheetData = convertArrayToJSON(response.data?.updatedSheetData?.values);
-
-            setFilteredData(updatedSheetData);
+            if (response.data?.updatedSheetData?.values) {
+                const updatedSheetData = convertArrayToJSON(response.data.updatedSheetData.values);
+                setFilteredData(updatedSheetData);
+            } else {
+                // Fallback: add the new row to the existing data
+                setFilteredData((prev) => [...prev, updatedRow]);
+            }
             notifySuccess("Added row successfuly!");
         } catch (error) {
-            console.error('Error editing row:', error);
+            console.error('Error adding row:', error);
             // Handle error response (e.g., show error notification)
         }
     };
@@ -882,22 +905,41 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             //     notifyError("Select all works only for delete option");
             //     return;
             // }
+            
+            // Remove duplicates from EditData before sending to API
+            const uniqueEditData = EditData.reduce((acc, current) => {
+                if (!acc.some(item => item.key_id === current.key_id)) {
+                    acc.push(current);
+                }
+                return acc;
+            }, []);
+            
+            console.log("Original EditData length:", EditData.length);
+            console.log("Unique EditData length:", uniqueEditData.length);
+            
             // Call the backend API to update rows in Google Sheets
             const spreadSheetID = settings.spreadsheetId;
             const sheetName = settings.firstSheetName;
-            const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, EditData, formulaData);
+            const updatedSheetData = await editMultipleRows(spreadSheetID, sheetName, uniqueEditData, formulaData);
 
             console.log("Updated sheet data:", updatedSheetData);
 
-            // Update the filtered data in the frontend after successful API call
-            setFilteredData((prev) => {
-                return prev.map((item) => {
-                    if (ischecked.includes(item.key_id)) {
-                        return EditData.find((editItem) => editItem.key_id === item.key_id);
-                    }
-                    return item;
+            // Use the updated data from the API response to ensure consistency
+            if (updatedSheetData && updatedSheetData.values) {
+                const convertedData = convertArrayToJSON(updatedSheetData.values);
+                setFilteredData(convertedData);
+            } else {
+                // Fallback to local state update if API response doesn't contain updated data
+                setFilteredData((prev) => {
+                    return prev.map((item) => {
+                        const editItem = uniqueEditData.find((editItem) => editItem.key_id === item.key_id);
+                        if (editItem) {
+                            return { ...item, ...editItem };
+                        }
+                        return item;
+                    });
                 });
-            });
+            }
 
             notifySuccess("Rows updated successfully!");
 

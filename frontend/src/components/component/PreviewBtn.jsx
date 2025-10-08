@@ -825,7 +825,7 @@ const PreviewBtn = ({ data = [], setFilteredData }) => {
 
     const applyAllFilters = (base, searchQuery = '') => {
         let out = base;
-        
+
         // Apply number filters
         selectedNumbers.forEach((nf) => {
             const [mn, mx] = nf.range || [Number.NEGATIVE_INFINITY, Number.POSITIVE_INFINITY];
@@ -834,7 +834,7 @@ const PreviewBtn = ({ data = [], setFilteredData }) => {
                 return !isNaN(v) && v >= mn && v <= mx;
             });
         });
-        
+
         // Apply date filters
         selectedDates.forEach((df) => {
             const [startISO, endISO] = df.range || [];
@@ -847,7 +847,7 @@ const PreviewBtn = ({ data = [], setFilteredData }) => {
                 return ts >= start && ts <= end;
             });
         });
-        
+
         // Apply search filter
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
@@ -855,7 +855,7 @@ const PreviewBtn = ({ data = [], setFilteredData }) => {
                 Object.keys(record).some((k) => (record[k] ?? '').toString().toLowerCase().includes(query))
             );
         }
-        
+
         return out;
     };
 
@@ -901,6 +901,16 @@ const PreviewBtn = ({ data = [], setFilteredData }) => {
         } else {
             setIsSearchOpen(true);
         }
+    };
+
+
+    // Converts snake_case or space separated text into Title Case (e.g., "created_date" → "Created Date")
+    const formatHeaderName = (header) => {
+        return header
+            .toLowerCase()
+            .split("_")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
     };
 
     return (
@@ -1015,7 +1025,8 @@ const PreviewBtn = ({ data = [], setFilteredData }) => {
                                     className="w-4 h-4 flex-shrink-0"
                                 />
                                 <div className="flex-1">
-                                    <div className="text-gray-800" title={col}>{col}</div>
+                                    {/* <div className="text-gray-800" title={col}>{col}</div> */}
+                                    <div className="text-gray-800" title={col}>{formatHeaderName(col)}</div>
                                 </div>
                             </label>
                         );
@@ -1024,7 +1035,7 @@ const PreviewBtn = ({ data = [], setFilteredData }) => {
             )}
 
             {isDateDropdownOpen && (
-                <div className="absolute top-full left-[80px] mt-1 max-w-[260px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
+                <div className="absolute top-full left-[-50px] mt-1 max-w-[260px] bg-white border border-gray-300 shadow-lg rounded-md p-2 z-50 overflow-auto">
                     <div className="flex items-center justify-between gap-2 mb-2">
                         <div className="text-sm font-medium">Date Options</div>
                         <button
@@ -1054,7 +1065,8 @@ const PreviewBtn = ({ data = [], setFilteredData }) => {
                                     className="w-4 h-4 flex-shrink-0"
                                 />
                                 <div className="flex-1">
-                                    <div className="text-gray-800" title={col}>{col}</div>
+                                    {/* <div className="text-gray-800" title={col}>{col}</div> */}
+                                    <div className="text-gray-800" title={col}>{formatHeaderName(col)}</div>
                                 </div>
                             </label>
                         );

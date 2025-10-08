@@ -220,7 +220,8 @@ const CardView = ({ tableHeader, settings }) => {
 
   return (
     <div className="p-4">
-      <div className="flex items-center gap-2 text-black font-[Poppins] text-[35px] font-medium leading-normal mb-4">
+      {/* 35px-5px=30px, 18px-2px=16px */}
+      <div className="flex items-center gap-2 text-black font-[Poppins] text-[30px] font-medium leading-normal mb-4">
         <span className="">Card View : </span>
         <div>
           <Info info={"First column must be selected as Image column."} />
@@ -280,7 +281,7 @@ const CardView = ({ tableHeader, settings }) => {
                           />
                         )} */}
                         <RiDeleteBinLine
-                          className="text-xl text-[#598931] cursor-pointer"
+                          className="text-lg text-[#598931] cursor-pointer"
                           onClick={() => handleDelete(item)}
                         />
                       </div>
@@ -301,7 +302,7 @@ const CardView = ({ tableHeader, settings }) => {
                     onClick={() => toggleDropdown(column.id)}
                     className="flex items-center gap-2 hover:text-[#598931]"
                   >
-                    <span className="text-[18px] font-medium font-[Poppins]">
+                    <span className="text-[16px] font-medium font-[Poppins]">
                       Select From List
                     </span>
                     <FaChevronDown className="text-[#598931]" />
@@ -387,10 +388,10 @@ const CardView = ({ tableHeader, settings }) => {
                 onClick={addColumn}
                 className="inline-flex px-4 py-2 justify-center items-center gap-[18px] border-[3px] border-[#598931] rounded-[8px] text-[#598931] hover:bg-[#E6F4D7] transition"
               >
-                <span className="text-[18px] font-medium font-[Poppins]">
+                <span className="text-[16px] font-medium font-[Poppins]">
                   +
                 </span>
-                <span className="text-[18px] font-medium font-[Poppins]">
+                <span className="text-[16px] font-medium font-[Poppins]">
                   Add Column
                 </span>
               </button>

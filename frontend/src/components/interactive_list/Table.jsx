@@ -104,7 +104,14 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
     const handleStatusChanges = (checked, header) => {
         if (checked) {
             setIschecked([...ischecked, header.key_id]);
-            setEditData((prev) => [...prev, header]);
+            setEditData((prev) => {
+                // Check if the item already exists to prevent duplicates
+                const exists = prev.some(item => item.key_id === header.key_id);
+                if (!exists) {
+                    return [...prev, header];
+                }
+                return prev;
+            });
         } else {
             setIschecked(ischecked.filter((item) => item !== header.key_id));
             setEditData((prev) => prev.filter((item) => item.key_id !== header.key_id));
@@ -113,7 +120,14 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
 
     const handleDoubleClick = (key_id, header) => {
         setIschecked([...ischecked, key_id]);
-        setEditData((prev) => [...prev, header]);
+        setEditData((prev) => {
+            // Check if the item already exists to prevent duplicates
+            const exists = prev.some(item => item.key_id === header.key_id);
+            if (!exists) {
+                return [...prev, header];
+            }
+            return prev;
+        });
         setIsedit(true);
     }
 
@@ -176,13 +190,18 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
 
             setIschecked(allKeys);
             setEditData((prev) => {
-                const uniqueData = [...prev, ...allData].reduce((acc, current) => {
-                    if (!acc.some(item => item.key_id === current.key_id)) {
-                        acc.push(current);
+                // Create a map to track existing items by key_id
+                const existingItems = new Map(prev.map(item => [item.key_id, item]));
+                
+                // Add new items that don't already exist
+                allData.forEach(item => {
+                    if (!existingItems.has(item.key_id)) {
+                        existingItems.set(item.key_id, item);
                     }
-                    return acc;
-                }, []);
-                return uniqueData;
+                });
+                
+                // Convert map back to array
+                return Array.from(existingItems.values());
             });
         } else {
             // Deselect all rows
