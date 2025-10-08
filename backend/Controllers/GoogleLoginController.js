@@ -399,7 +399,6 @@ exports.HandleGoogleLogin = async (req, res) => {
 
       if (!newUser.isApproved) return res.send({ error: "User is not Approved. Please connect with CEOITBOX team at access@ceoitbox.in." });
 
-      console.log({ newUser });
       const token = createSecretToken(newUser._id);
       delete newUser.password;
       delete newUser.googleRefreshToken;

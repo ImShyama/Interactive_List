@@ -18,7 +18,7 @@ const RaiseTicket = ({ open, handleClose }) => {
     issueStatement: "",
     priorityLevel: "",
     phone: "",
-    sheets: "Meet",
+    sheets: "Intract",
   });
   const [file, setFile] = useState(null);
   const [ticketApiResponse, setTicketApiResponse] = useState(null);
@@ -79,7 +79,10 @@ const RaiseTicket = ({ open, handleClose }) => {
       email: formValues.customerEmail,
       "Priority Level": formValues.priorityLevel,
       phone: formValues.phone,
-      sheets: formValues?.sheets || "",
+      // sheets: formValues?.sheets || "",
+      "Product type": formValues?.sheets || "",
+      ticketStatus: "Trouble Ticket"
+
     };
 
     if (fileUrl) {

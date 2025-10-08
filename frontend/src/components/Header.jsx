@@ -28,7 +28,7 @@ import { FaPlus } from "react-icons/fa";
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isProfileVisible, setIsProfileVisible] = useState(false);
-  const { token, setToken, setProfile, setRole, user, setUser } = useContext(UserContext);
+  const { token, setToken, profile, setProfile, setRole, user, setUser } = useContext(UserContext);
   const { hideHeader } = useHeaderVisibility();
   const navigate = useNavigate();
   const location = useLocation(); // Access the current route
@@ -44,6 +44,8 @@ const Header = () => {
   const [showRaiseTicket, setShowRaiseTicket] = useState(false);
 
   const settings = useSelector((state) => state.setting.settings);
+
+  console.log({token, profile, user})
 
   // Define preview pages and their corresponding video URLs
   const previewPagesConfig = {
@@ -152,20 +154,18 @@ const Header = () => {
       .catch((err) => {
         console.error("Error fetching user data:", err?.response?.data?.error);
 
-        // navigate("/signin");
+       
         if (err?.response?.data?.error === "Token expired. Please log in again.") {
           Cookies.remove("token");
           setToken(null);
           navigate("/signin"); // Redirect to login page
         }
-
-
       });
   }, [token]);
 
-  // {userDetails, }
 
-  // Scroll to top whenever the location (route) changes
+
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);

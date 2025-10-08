@@ -177,7 +177,8 @@ const BoxView = ({ settings, tableHeader }) => {
 
   return (
     <div className="p-4 border-t">
-      <div className="text-black font-[Poppins] text-[35px] font-medium leading-normal mb-4">
+      {/* 35px-5px=30px, 18px-2px=16px, xl-2px=lg */}
+      <div className="text-black font-[Poppins] text-[30px] font-medium leading-normal mb-4">
         Box View :
       </div>
 
@@ -220,7 +221,7 @@ const BoxView = ({ settings, tableHeader }) => {
                           className="px-4 py-2 flex items-center gap-2 bg-transparent transition-all duration-200 hover:bg-[#E6F4D7] hover:text-[#598931] rounded-[8px]"
                           onClick={() => {setSelectedItem(field); setShowModal(true);}}
                         >
-                          <span className="transition-colors duration-200 text-[#9B9B9B] group-hover:text-[#598931] text-xl">
+                          <span className="transition-colors duration-200 text-[#9B9B9B] group-hover:text-[#598931] text-lg">
                             <PiStarFour />
                           </span>
                           {field.text}
@@ -231,19 +232,19 @@ const BoxView = ({ settings, tableHeader }) => {
                       <div className="absolute right-[-50px] flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         {editingItem === field.id ? (
                           <FiSave
-                            className="text-xl text-[#598931] cursor-pointer"
+                            className="text-lg text-[#598931] cursor-pointer"
                             onClick={() =>
                               handleEditSave({ type: "save-click" })
                             }
                           />
                         ) : (
                           <CiEdit
-                            className="text-xl text-[#598931] cursor-pointer"
+                            className="text-lg text-[#598931] cursor-pointer"
                             onClick={() => handleEdit(field)}
                           />
                         )}
                         <RiDeleteBinLine
-                          className="text-xl text-[#598931] cursor-pointer"
+                          className="text-lg text-[#598931] cursor-pointer"
                           onClick={() => handleDelete(field)}
                         />
                       </div>
@@ -286,10 +287,10 @@ const BoxView = ({ settings, tableHeader }) => {
                 onClick={addField}
                 className="inline-flex px-4 py-2 justify-center items-center gap-[18px] border-[3px] border-[#598931] rounded-[8px] text-[#598931] hover:bg-[#E6F4D7] transition"
               >
-                <span className="text-[18px] font-medium font-[Poppins]">
+                <span className="text-[16px] font-medium font-[Poppins]">
                   +
                 </span>
-                <span className="text-[18px] font-medium font-[Poppins]">
+                <span className="text-[16px] font-medium font-[Poppins]">
                   Add Header
                 </span>
               </button>

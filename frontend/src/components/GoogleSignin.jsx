@@ -39,31 +39,40 @@ const Sigin = () => {
 };
 
 function GoogleSignin() {
-  const { token, setToken, setProfile, profile } = useContext(UserContext);
+  const { token, setToken, setProfile, profile, user, setUser } = useContext(UserContext);
   const nav = useNavigate();
+
+  console.log({token, profile, user})
 
   useEffect(() => {
     // Check for token in cookies
     const tokenCookie = Cookies.get("token");
     const profileCookie = Cookies.get("profile");
+    const userCookie = Cookies.get("user");
 
-    console.log("Cookies:", { token: tokenCookie, profile: profileCookie });
+    console.log("Cookies:", { token: tokenCookie, profile: profileCookie, user: user });
 
     if (tokenCookie && profileCookie) {
       setToken(tokenCookie);
       setProfile(JSON.parse(profileCookie));
+      setUser(JSON.parse(userCookie));
       nav("/dashboard");
       return;
     }
 
     if (tokenCookie && profileCookie) {
+
+      console.log("tokenCookie and profileCookie", {tokenCookie, profileCookie, user: user});
+
       setToken(tokenCookie);
       try {
         setProfile(JSON.parse(profileCookie));
+        setUser(JSON.parse(userCookie));
       } catch (error) {
         console.error("Error parsing profileCookie:", error);
         // Handle the error or reset the profile cookie
         Cookies.remove("profile");
+        Cookies.remove("user");
         setProfile(null);
       }
       nav("/dashboard");
@@ -84,14 +93,18 @@ function GoogleSignin() {
             alert(res.error);
             return;
           }
-          console.log("res", res);
+          console.log("response from google signin", res);
           if (!token && !profile) {
             setToken(res.token);
             setProfile(res.body);
+            setUser(res.body);
           }
+        
+          setUser(res.body);
           // Save token and profile to cookies
           Cookies.set("token", res.token, { expires: 6 });
-          // Cookies.set("profile", JSON.stringify(res.body));
+          Cookies.set("profile", JSON.stringify(res.body));
+          Cookies.set("user", JSON.stringify(res.body));
           nav("/dashboard");
         });
     } catch (err) {
