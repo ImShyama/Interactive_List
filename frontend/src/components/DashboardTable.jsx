@@ -523,11 +523,11 @@ const DashboardTable = () => {
                         title={
                           sheet.access === "owner"
                             ? sheet.sharedWith?.length
-                              ? `This sheet is shared with ${sheet.sharedWith
+                              ? `This sheet is shared with by following emails : ${sheet.sharedWith
                                 .map(user => user.email || user.name || user._id)
                                 .join(", ")}`
                               : "This sheet is not shared with anyone"
-                            : `This sheet is shared by ${sheet.ownerDetails?.email || sheet.ownerDetails?.name || sheet.ownerDetails?._id || "Unknown"}`
+                            : `This sheet is shared by following email : ${sheet.ownerDetails?.email || sheet.ownerDetails?.name || sheet.ownerDetails?._id || "Unknown"}`
                         }
                       >
                         <a

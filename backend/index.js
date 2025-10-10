@@ -2111,22 +2111,171 @@ app.get("/getuser", authenticateToken, async (req, res) => {
 });
 
 
-const getUserSheets = async (userId, emailID) => {
+// const getUserSheets = async (userId, emailID) => {
 
+//   const sheets = await Sheet.find({
+//     $or: [{ userId: userId }, { "sharedWith.email": emailID }]
+//   }).lean();
+
+//   return sheets.map(sheet => {
+//     const access = sheet.userId.toString() === userId.toString()
+//       ? "owner"
+//       : (sheet.sharedWith.find(entry => entry.email === emailID)?.permission.toLowerCase() || "viewer");
+
+//     return { ...sheet, access };
+//   });
+
+// };
+
+
+const getUserSheets = async (userId, emailID) => {
+  // Find all sheets where user is owner or has shared access
   const sheets = await Sheet.find({
     $or: [{ userId: userId }, { "sharedWith.email": emailID }]
   }).lean();
 
-  return sheets.map(sheet => {
-    const access = sheet.userId.toString() === userId.toString()
-      ? "owner"
-      : (sheet.sharedWith.find(entry => entry.email === emailID)?.permission.toLowerCase() || "viewer");
-
-    return { ...sheet, access };
+  // Get all unique user IDs from sheets (owners + shared users)
+  const userIds = new Set();
+  sheets.forEach(sheet => {
+    userIds.add(sheet.userId.toString());
+    sheet.sharedWith?.forEach(shared => {
+      if (shared.id) userIds.add(shared.id.toString());
+    });
   });
 
+  // Fetch all relevant users in one query
+  const users = await User.find({ _id: { $in: Array.from(userIds) } }).lean();
+  const userMap = users.reduce((map, user) => {
+    map[user._id.toString()] = user;
+    return map;
+  }, {});
+
+  // Map sheets with access info and user details
+  return sheets.map(sheet => {
+    const isOwner = sheet.userId.toString() === userId.toString();
+    const access = isOwner
+      ? "owner"
+      : (sheet.sharedWith.find(entry => entry.email === emailID)?.permission.toLowerCase() || "viewer");
+    
+    // Add owner details
+    const ownerDetails = userMap[sheet.userId.toString()];
+    
+    // Add details to sharedWith users
+    const enrichedSharedWith = sheet.sharedWith?.map(shared => ({
+      ...shared,
+      userDetails: shared.id ? userMap[shared.id.toString()] : null
+    }));
+
+    return {
+      ...sheet,
+      access,
+      ownerDetails: {
+        name: ownerDetails?.name || 'Unknown',
+        email: ownerDetails?.email || '',
+        profileUrl: ownerDetails?.profileUrl || '',
+        role: ownerDetails?.role || 'user'
+      },
+      sharedWith: enrichedSharedWith
+    };
+  });
 };
 
+// Alternative: If you only need owner details
+const getUserSheetsWithOwner = async (userId, emailID) => {
+  const sheets = await Sheet.find({
+    $or: [{ userId: userId }, { "sharedWith.email": emailID }]
+  })
+  .populate('userId', 'name email profileUrl role') // Populate owner details
+  .lean();
+
+  return sheets.map(sheet => {
+    const isOwner = sheet.userId._id.toString() === userId.toString();
+    const access = isOwner
+      ? "owner"
+      : (sheet.sharedWith.find(entry => entry.email === emailID)?.permission.toLowerCase() || "viewer");
+    
+    return {
+      ...sheet,
+      access,
+      ownerDetails: {
+        name: sheet.userId.name || 'Unknown',
+        email: sheet.userId.email || '',
+        profileUrl: sheet.userId.profileUrl || '',
+        role: sheet.userId.role || 'user'
+      }
+    };
+  });
+};
+
+// const getUserSheets = async (userId, emailID) => {
+//   const sheets = await Sheet.aggregate([
+//     {
+//       $match: {
+//         $or: [
+//           { userId: new mongoose.Types.ObjectId(userId) },
+//           { "sharedWith.email": emailID }
+//         ]
+//       }
+//     },
+//     {
+//       $lookup: {
+//         from: "users", // Make sure this matches your User collection name
+//         localField: "userId",
+//         foreignField: "_id",
+//         as: "userDetails"
+//       }
+//     },
+//     {
+//       $unwind: {
+//         path: "$userDetails",
+//         preserveNullAndEmptyArrays: true
+//       }
+//     },
+//     {
+//       $addFields: {
+//         access: {
+//           $cond: {
+//             if: { $eq: ["$userId", new mongoose.Types.ObjectId(userId)] },
+//             then: "owner",
+//             else: {
+//               $ifNull: [
+//                 {
+//                   $toLower: {
+//                     $arrayElemAt: [
+//                       {
+//                         $map: {
+//                           input: {
+//                             $filter: {
+//                               input: "$sharedWith",
+//                               as: "shared",
+//                               cond: { $eq: ["$$shared.email", emailID] }
+//                             }
+//                           },
+//                           as: "filtered",
+//                           in: "$$filtered.permission"
+//                         }
+//                       },
+//                       0
+//                     ]
+//                   }
+//                 },
+//                 "viewer"
+//               ]
+//             }
+//           }
+//         },
+//         userDetails: {
+//           _id: "$userDetails._id",
+//           name: "$userDetails.name",
+//           email: "$userDetails.email",
+//           profilePicture: "$userDetails.profilePicture"
+//         }
+//       }
+//     }
+//   ]);
+
+//   return sheets;
+// };
 
 const getFlattenedSharedWithForUser = async (userId) => {
   if (!userId) {
