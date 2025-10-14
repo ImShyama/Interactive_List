@@ -77,7 +77,7 @@ const ProductTitle = ({ searchQuery = "", onSearchChange, data, settings, filter
               <button onClick={handleCloseSearch}>
                 <img
                   src={Cancel}
-                  alt="Cancel"
+                  alt="Cancel" 
                   className="w-4 h-4 invert brightness-50"
                 />
               </button>

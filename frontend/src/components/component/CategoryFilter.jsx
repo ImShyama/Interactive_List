@@ -18,6 +18,11 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
     const isAllSelected = selectedItems?.[selectedFilter]?.length === filteredItems?.length && filteredItems?.length > 0;
     const isIndeterminate = selectedItems?.[selectedFilter]?.length > 0 && selectedItems?.[selectedFilter]?.length < filteredItems?.length;
 
+    const isFilterApplied = Object.values(selectedItems).some(
+        (arr) => arr && arr.length > 0
+    );
+
+
     console.log({ data, tempHeader, selectedFilter, selectedItems, filterOptions, settings });
 
     const updateDropdown = () => {
@@ -47,23 +52,23 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
     useEffect(() => {
         // Check if this is a different sheet
         const isNewSheet = settings?._id !== currentSheetId;
-        
+
         if (isNewSheet) {
             setCurrentSheetId(settings?._id);
         }
-        
+
         // Get filter options from current settings, defaulting to empty array if not present
         const newFilterOptions = settings?.filterSettings?.filters?.map((header) => header?.title.replace(/_/g, ' ')) || [];
-        
+
         // Always update filterOptions, especially when switching sheets
         setFilterOptions(newFilterOptions);
-        
+
         // Reset all filter states when switching sheets or when settings change
         setSelectedFilter(null);
         setSelectedItems({});
         setShowDropdown(false);
         setSearchQuery("");
-        
+
         // Reset filtered data to original data
         if (data && setFilteredData) {
             setFilteredData(data);
@@ -73,7 +78,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
     const toggleFilterDropdown = (option) => {
         setSelectedFilter((prev) => (prev === option ? null : option));
         setSearchQuery("");
-        setSelectAll(false); 
+        setSelectAll(false);
     };
 
     const updateFilteredData = (selectedItemsInput) => {
@@ -81,23 +86,23 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
             setFilteredData(data);
             return;
         }
-    
+
         let updatedData = data;
-    
+
         // Loop through each filter key and apply filtering
         Object.entries(selectedItemsInput).forEach(([filterKey, filterValues]) => {
             if (filterValues.length === 0) return;
-    
+
             const key = filterKey.toLowerCase().replace(/\s+/g, '_');
-    
+
             updatedData = updatedData.filter(item =>
                 filterValues.includes(item[key])
             );
         });
-    
+
         setFilteredData(updatedData);
     };
-    
+
 
     const handleCheckboxChange = (item) => {
         setSelectedItems(prevSelectedItems => {
@@ -140,13 +145,21 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
     return (
         <>
             {/* Filter Button */}
-            <div className="relative">
+            <div className="relative flex items-center">
                 <button
+                    // className={
+                    //     buttonVariant === "searchLike"
+                    //         ? "p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6] disabled:opacity-50 disabled:cursor-not-allowed"
+                    //         : "ml-2 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    // }
+
                     className={
                         buttonVariant === "searchLike"
-                            ? "p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6] disabled:opacity-50 disabled:cursor-not-allowed"
+                            ? `p-2 rounded-lg ${isFilterApplied ? "bg-[#598931] text-white" : "bg-[#F6FCF1] hover:bg-[#EAF7D6]"
+                            } disabled:opacity-50 disabled:cursor-not-allowed`
                             : "ml-2 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     }
+
                     onClick={() => {
                         setShowDropdown(!showDropdown)
                         setShowDropdown(!showDropdown);
@@ -155,15 +168,35 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                     disabled={!filterOptions || filterOptions.length === 0}
                     title="CategoryFilter"
                 >
-                    <LuFilter 
+                    <LuFilter
                         className={
                             buttonVariant === "searchLike"
-                                ? "text-[#598931]"
-                                : `${!filterOptions || filterOptions.length === 0 ? "rounded-[4px] p-1 bg-gray-400 text-gray-200" : "rounded-[4px] p-1 bg-primary text-white"}`
+                                ? isFilterApplied ? "text-white" : "text-[#598931]"
+                                : `${!filterOptions || filterOptions.length === 0 
+            ? "rounded-[4px] p-1 bg-gray-400 text-gray-200" 
+            : `rounded-[4px] p-1 ${isFilterApplied ? "bg-[#4A7028]" : "bg-primary"} text-white`
+          }`
                         }
                         size={buttonVariant === "searchLike" ? 21 : 26}
                     />
+
+
+
                 </button>
+
+                {isFilterApplied && (
+                    <button
+                        onClick={() => {
+                            setSelectedItems({});
+                            updateFilteredData({});
+                            setSelectedFilter(null);
+                            setShowDropdown(false);
+                        }}
+                        className="ml-2 px-4 py-1 rounded-full bg-[#f4f4f4] text-[#598931] font-semibold border border-[#598931] hover:bg-[#eef9e0] transition"
+                    >
+                        Clear
+                    </button>
+                )}
 
                 {/* Dropdown container position */}
                 <div className={useCataloguePosition ? "absolute flex top-full right-[250px] gap-[250px] z-50" : "absolute top-full left-0 flex gap-4 z-50"}>
@@ -200,15 +233,33 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                     <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto">
                                         {filterOptions?.map((option, index) => (
                                             <li key={index} className="relative">
-                                                <div
+                                                {/* <div
                                                     className="flex justify-between items-center p-3 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200"
                                                     onClick={() => toggleFilterDropdown(option)}
+                                                > */}
+
+                                                <div
+                                                    className={`flex justify-between items-center p-3 rounded-lg cursor-pointer transition ${selectedItems[option]?.length > 0
+                                                        ? "bg-[#598931] text-white"  // ✅ ACTIVE STYLE
+                                                        : "bg-gray-100 hover:bg-gray-200" // ✅ DEFAULT STYLE
+                                                        }`}
+                                                    onClick={() => toggleFilterDropdown(option)}
                                                 >
+
                                                     <span>{option}</span>
-                                                    <ChevronDown
+                                                    {/* <ChevronDown
                                                         className={`text-[#598931] transition-transform ${selectedFilter === option ? "rotate-180" : ""}`}
                                                         size={18}
+                                                    /> */}
+
+                                                        <ChevronDown
+                                                        className={` transition-transform ${selectedFilter === option ? "rotate-180" : ""}${selectedItems[option]?.length > 0
+                                                                ? `text-white transition-transform ${selectedFilter === option ? "rotate-180" : ""}`      // ✅ active chevron
+                                                                : `text-[#598931] transition-transform ${selectedFilter === option ? "rotate-180" : ""}` // ✅ default chevron
+                                                            }`}
+                                                        size={18}
                                                     />
+
                                                 </div>
                                             </li>
                                         ))}
@@ -238,7 +289,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                             className="w-full text-sm outline-none bg-transparent"
                                         />
                                     </div>
-                                    <button
+                                    {/* <button
                                         onClick={() => setSelectedFilter(null)}
                                         className="text-gray-500 hover:text-black"
                                     >
@@ -247,7 +298,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                             alt="Cancel"
                                             className="w-5 h-5 invert brightness-50"
                                         />
-                                    </button>
+                                    </button> */}
                                 </div>
 
                                 <ul className="p-2 space-y-2">
@@ -309,7 +360,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                     <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto">
                                         {filterOptions?.map((option, index) => (
                                             <li key={index} className="relative">
-                                                <div
+                                                {/* <div
                                                     className="flex justify-between items-center p-3 rounded-lg bg-gray-100 cursor-pointer hover:bg-gray-200"
                                                     onClick={() => toggleFilterDropdown(option)}
                                                 >
@@ -318,7 +369,25 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                                         className={`text-[#598931] transition-transform ${selectedFilter === option ? "rotate-180" : ""}`}
                                                         size={18}
                                                     />
+                                                </div> */}
+
+                                                <div
+                                                    className={` flex justify-between items-center p-3 rounded-lg cursor-pointer transition ${selectedItems[option]?.length > 0
+                                                            ? "bg-[#598931] text-white"
+                                                            : "bg-gray-100 hover:bg-gray-200"
+                                                        } `}
+                                                    onClick={() => toggleFilterDropdown(option)}
+                                                >
+                                                    <span>{option}</span>
+                                                    <ChevronDown
+                                                        className={` transition-transform ${selectedFilter === option ? "rotate-180" : ""}${selectedItems[option]?.length > 0
+                                                                ? `text-white transition-transform ${selectedFilter === option ? "rotate-180" : ""}`      // ✅ active chevron
+                                                                : `text-[#598931] transition-transform ${selectedFilter === option ? "rotate-180" : ""}` // ✅ default chevron
+                                                            }`}
+                                                        size={18}
+                                                    />
                                                 </div>
+
                                             </li>
                                         ))}
                                     </ul>
