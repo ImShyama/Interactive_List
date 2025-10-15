@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Search, Filter, RefreshCcw, ChevronDown } from "lucide-react";
 import Cancel from "../../assets/Cancel.svg";
 import { TbFilterSearch } from "react-icons/tb";
@@ -12,6 +12,9 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
     const [dropdownItems, setDropdownItems] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [currentSheetId, setCurrentSheetId] = useState(settings?._id);
+    const triggerRef = useRef(null);
+    const listDropdownRef = useRef(null);
+    const valuesDropdownRef = useRef(null);
     const filteredItems = dropdownItems.filter((item) =>
         item.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -47,6 +50,28 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
     useEffect(() => {
         updateDropdown();
     }, [selectedFilter]);
+
+    // Handle click outside to close dropdowns
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            const clickedInsideTrigger = triggerRef.current && triggerRef.current.contains(event.target);
+            const clickedInsideList = listDropdownRef.current && listDropdownRef.current.contains(event.target);
+            const clickedInsideValues = valuesDropdownRef.current && valuesDropdownRef.current.contains(event.target);
+
+            if (!clickedInsideTrigger && !clickedInsideList && !clickedInsideValues) {
+                setShowDropdown(false);
+                setSelectedFilter(null);
+            }
+        };
+
+        if (showDropdown || selectedFilter) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showDropdown, selectedFilter]);
 
     // Update filterOptions when settings change or sheet changes
     useEffect(() => {
@@ -147,6 +172,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
             {/* Filter Button */}
             <div className="relative flex items-center">
                 <button
+                    ref={triggerRef}
                     // className={
                     //     buttonVariant === "searchLike"
                     //         ? "p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6] disabled:opacity-50 disabled:cursor-not-allowed"
@@ -161,8 +187,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                     }
 
                     onClick={() => {
-                        setShowDropdown(!showDropdown)
-                        setShowDropdown(!showDropdown);
+                        setShowDropdown(prev => !prev);
                         setSelectedFilter(null);
                     }}
                     disabled={!filterOptions || filterOptions.length === 0}
@@ -204,7 +229,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                     {(!useCataloguePosition) && (
                         <div>
                             {showDropdown && (
-                                <div className="mt-2 min-w-[300px] max-w-[400px] bg-white shadow-lg rounded-xl border border-gray-200 p-4">
+                                <div ref={listDropdownRef} className="mt-2 min-w-[300px] max-w-[400px] bg-white shadow-lg rounded-xl border border-gray-200 p-4">
                                     <div className="flex justify-between items-center mb-4">
                                         <button
                                             className="text-[#598931] font-medium"
@@ -271,7 +296,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
 
                     <div>
                         {selectedFilter && (
-                            <div className={useCataloguePosition ? "absolute mt-12 min-w-[250px] max-w-[250px] bg-white border border-gray-300 rounded-lg shadow-md p-2 max-h-[250px] overflow-auto" : "mt-2 min-w-[250px] max-w-[250px] bg-white border border-gray-300 rounded-lg shadow-md p-2 max-h-[250px] overflow-auto"}>
+                            <div ref={valuesDropdownRef} className={useCataloguePosition ? "absolute mt-12 min-w-[250px] max-w-[250px] bg-white border border-gray-300 rounded-lg shadow-md p-2 max-h-[250px] overflow-auto" : "mt-2 min-w-[250px] max-w-[250px] bg-white border border-gray-300 rounded-lg shadow-md p-2 max-h-[250px] overflow-auto"}>
                                 <div className="flex justify-between items-center p-2 border-b border-gray-200">
                                     <div className="flex items-center">
                                         <input
@@ -331,7 +356,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                     {useCataloguePosition && (
                         <div>
                             {showDropdown && (
-                                <div className="absolute mt-2 min-w-[300px] max-w-[400px] bg-white shadow-lg rounded-xl border border-gray-200 z-50 p-4">
+                                <div ref={listDropdownRef} className="absolute mt-2 min-w-[300px] max-w-[400px] bg-white shadow-lg rounded-xl border border-gray-200 z-50 p-4">
                                     <div className="flex justify-between items-center mb-4">
                                         <button
                                             className="text-[#598931] font-medium"
