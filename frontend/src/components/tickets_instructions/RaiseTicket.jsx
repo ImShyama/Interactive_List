@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Button, Modal, Input, Select, Upload, Row, Col, Tooltip, message } from "antd";
 import { UploadOutlined, MessageOutlined, UserOutlined, MailOutlined, PhoneOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import axios from "axios";
@@ -7,14 +7,17 @@ import { useSelector } from "react-redux";
 import "./RaiseTicket.css";
 const { TextArea } = Input;
 import { HOST } from "../../utils/constants";
+import { UserContext } from "../../context/UserContext";
 
 const RaiseTicket = ({ open, handleClose }) => {
   // const { user: loginUser } = useSelector((state) => state.auth);
   const loginUser = useSelector((state) => state?.auth?.user) || {};
+  const { user: ctxUser } = useContext(UserContext) || {};
+  const currentUser = ctxUser || loginUser || {};
 
   const [formValues, setFormValues] = useState({
-    customerName: loginUser?.name || "",
-    customerEmail: loginUser?.email || "",
+    customerName: currentUser?.name || "",
+    customerEmail: currentUser?.email || "",
     issueStatement: "",
     priorityLevel: "",
     phone: "",
@@ -99,8 +102,8 @@ const RaiseTicket = ({ open, handleClose }) => {
     } finally {
       setLoading(false);
       setFormValues({
-        customerName: loginUser?.name || "",
-        customerEmail: loginUser?.email || "",
+        customerName: (ctxUser?.name || loginUser?.name || ""),
+        customerEmail: (ctxUser?.email || loginUser?.email || ""),
         issueStatement: "",
         priorityLevel: "",
         phone: "",
@@ -109,6 +112,24 @@ const RaiseTicket = ({ open, handleClose }) => {
       setFile(null);
     }
   };
+
+  // Prefill name and email when modal opens or when user info becomes available
+  const hasInitializedRef = useRef(false);
+  useEffect(() => {
+    if (open && !hasInitializedRef.current) {
+      setFormValues((prev) => ({
+        ...prev,
+        customerName: (ctxUser?.name || loginUser?.name || ""),
+        customerEmail: (ctxUser?.email || loginUser?.email || ""),
+      }));
+      hasInitializedRef.current = true;
+    }
+    if (!open) {
+      hasInitializedRef.current = false;
+    }
+    // intentionally not depending on ctxUser/loginUser to avoid overwriting user edits mid-session
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
     <div>
@@ -120,15 +141,33 @@ const RaiseTicket = ({ open, handleClose }) => {
         width={550}
         className="raise-ticket-modal"
         title={
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#598931] rounded-full flex items-center justify-center">
-              <MessageOutlined className="text-white text-base" />
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-[#598931] rounded-full flex items-center justify-center">
+                <MessageOutlined className="text-white text-base" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-[#598931] m-0">Raise Support Ticket</h2>
+                <p className="text-gray-500 text-xs m-0">We're here to help you resolve any issues</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-semibold text-[#598931] m-0">Raise Support Ticket</h2>
-              <p className="text-gray-500 text-xs m-0">We're here to help you resolve any issues</p>
+            <div className="flex flex-col items-end">
+              {/* AntD Cancel Icon stays at top-right automatically */}
+              <button
+               style={{
+                borderRadius: "50px",
+                marginRight: "30px",
+                background: "linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.20) 100%), linear-gradient(0deg, rgba(0, 0, 0, 0.20) 0%, rgba(0, 0, 0, 0.20) 100%), #598931"
+              }}
+                onClick={() => window.open("https://helpdesk.ceoitbox.com", "_blank")}
+                className="flex-1 py-1.5 px-3.5 bg-gray-800 text-white rounded-md font-poppins  text-xs hover:bg-gray-700 transition-colors duration-200"
+                
+              >
+                My Tickets
+              </button>
             </div>
           </div>
+
         }
         styles={{
           header: {

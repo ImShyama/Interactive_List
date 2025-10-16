@@ -33,7 +33,7 @@ import { Modal } from "antd";
 const InstrucationTutorial = ({
   open,
   handleClose,
-  videoUrl = "https://drive.google.com/file/d/1QKnzt5cKbZRL_kiQn0p1UGYdVLVTP8ed/preview",
+  videoUrl = "https://drive.google.com/file/d/18DQXdpztTTV1CKpougVWg8CTzfH4EbEd/preview",
   title = "Instruction Video"
 }) => {
   return (
