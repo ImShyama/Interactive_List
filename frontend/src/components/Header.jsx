@@ -51,7 +51,7 @@ const Header = () => {
   const previewPagesConfig = {
     "/interactiveListView": {
       name: "Interactive List",
-      videoUrl: "https://drive.google.com/file/d/1QKnzt5cKbZRL_kiQn0p1UGYdVLVTP8ed/preview"
+      videoUrl: "https://drive.google.com/file/d/13awgRTBiDsg2sRt4HQH8aMebh2Jsts-l/preview"
     },
     "/peopleDirectoryPreview": {
       name: "People Directory",
