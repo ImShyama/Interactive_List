@@ -871,6 +871,80 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
           {addHeaderSettings && (
             <div className="flex flex-col gap-4 pl-5 w-full">
               <div className="flex items-center gap-2">
+                <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
+                  Logo:
+                </label>
+
+                {/* Conditionally render Input + Upload icon */}
+                {!logoSaved ? (
+                  <>
+                    <input
+                      type="text"
+                      name="logoURL"
+                      value={headerSettings?.logoURL}
+                      onChange={handleHeaderChange}
+                      onKeyPress={handleLogoURLKeyPress}
+                      placeholder="Enter URL"
+                      className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md w-full flex-1 min-w-0 max-h-[30px] placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
+                    />
+
+                    {/* <span className="text-[#1E1B1B] font-medium whitespace-nowrap">
+                      Or
+                    </span> */}
+
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+
+                    <Tooltip
+                      title={selectedFile || "Upload File"}
+                      color="#598931"
+                    >
+                      <div className="flex justify-center items-center w-8">
+                        <LuUpload
+                          className="w-5 h-5 text-[#A7A7A7] cursor-pointer hover:text-[#598931]"
+                          onClick={() => fileInputRef.current.click()}
+                        />
+                      </div>
+                    </Tooltip>
+                  </>
+                ) : (
+                  // Logo Preview + Remove button
+                  <div className="flex items-center gap-2">
+                    <div
+                      className="flex justify-center items-center border-2 border-[#598931] rounded-md w-8 h-8"
+                      style={{
+                        backgroundColor: headerSettings.bg,
+                      }}
+                    >
+                      <img
+                        // src={headerSettings.logoURL}
+                        src={getDriveThumbnail(headerSettings.logoURL)}
+                        alt="Logo Preview"
+                        onError={handleImageError}
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    </div>
+                    <button
+                      onClick={handleRemoveLogo}
+                      className="text-red-500 hover:text-red-700 font-bold"
+                    >
+                      <IoMdRemoveCircleOutline size={30} />
+                    </button>
+                  </div>
+                )}
+                {/* <Tooltip title="Position" color="#598931">
+                  <div className="flex justify-center items-center w-8">
+                    <LuMove className="w-5 h-5 text-[#A7A7A7] cursor-pointer hover:text-[#598931]" />
+                  </div>
+                </Tooltip> */}
+              </div>
+
+              <div className="flex items-center gap-2">
                 {/* <label className="w-[40%]">Header Text:</label> */}
                 <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
                   Header Text:
@@ -935,7 +1009,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     name="headerFont"
                     value={headerSettings.headerFont}
                     onChange={handleHeaderChange}
-                    className="border border-[#F1F1F1] bg-[#F9F9F9] py-1 px-4 rounded-md w-full h-auto appearance-none placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
+                    className="border border-[#F1F1F1] bg-[#F9F9F9] py-1 px-4 pr-8 rounded-md w-full h-auto appearance-none placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none text-ellipsis overflow-hidden whitespace-nowrap"
                   >
                     {fontOptions.map((font) => (
                       <option key={font} value={font}>
@@ -1029,7 +1103,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <label className="w-[40%] text-[#1E1B1B] font-poppins text-[17px] font-medium">
                   Header Bg Color:
                 </label>
@@ -1039,7 +1113,6 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   name="bg"
                   value={headerSettings.bg}
                   onChange={handleHeaderChange}
-                  // className="border border-[#F1F1F1] bg-transparent p-0 m-0 rounded-md w-8 h-8 cursor-pointer focus:ring-1 focus:ring-[#598931] outline-none "
                   className="custom-color-input"
                 />
               </div>
@@ -1049,7 +1122,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                   Logo:
                 </label>
 
-                {/* Conditionally render Input + Upload icon */}
+               
                 {!logoSaved ? (
                   <>
                     <input
@@ -1062,9 +1135,6 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                       className="border border-[#F1F1F1] bg-[#F9F9F9] py-2 px-4 rounded-md w-full flex-1 min-w-0 max-h-[30px] placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
                     />
 
-                    {/* <span className="text-[#1E1B1B] font-medium whitespace-nowrap">
-                      Or
-                    </span> */}
 
                     <input
                       type="file"
@@ -1087,7 +1157,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     </Tooltip>
                   </>
                 ) : (
-                  // Logo Preview + Remove button
+                  
                   <div className="flex items-center gap-2">
                     <div
                       className="flex justify-center items-center border-2 border-[#598931] rounded-md w-8 h-8"
@@ -1096,7 +1166,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                       }}
                     >
                       <img
-                        // src={headerSettings.logoURL}
+                        
                         src={getDriveThumbnail(headerSettings.logoURL)}
                         alt="Logo Preview"
                         onError={handleImageError}
@@ -1111,12 +1181,8 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     </button>
                   </div>
                 )}
-                {/* <Tooltip title="Position" color="#598931">
-                  <div className="flex justify-center items-center w-8">
-                    <LuMove className="w-5 h-5 text-[#A7A7A7] cursor-pointer hover:text-[#598931]" />
-                  </div>
-                </Tooltip> */}
-              </div>
+               
+              </div> */}
 
               {/* Tab Title Name */}
               {/* <div className="flex items-center gap-2">
@@ -1246,7 +1312,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     setAddCardSettings(!addCardSettings);
                   }}
                 >
-                  <span className="setting_filter_top1_text">
+                  <span className="setting_filter_top1_text ml-[-20px]">
                     Card Settings
                   </span>
                   <img className="setting_filter_top1_img" src={downIcon} />
@@ -1254,7 +1320,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
                 {/* LuEye Icon to Open Full-Screen Card Popup */}
                 <LuEye
-                  className="w-5 h-5 text-[#598931] cursor-pointer"
+                  className="w-5 h-5 text-[#598931] cursor-pointer ml-[-20px]"
                   onClick={() => setShowCardPopup(true)}
                 />
               </div>
@@ -1353,7 +1419,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                         : ""
                     }
                     onChange={handleCardChange}
-                    className="border border-[#F1F1F1] bg-[#F9F9F9] py-1 px-4 rounded-md w-full h-auto appearance-none placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none"
+                    className="border border-[#F1F1F1] bg-[#F9F9F9] py-1 px-4 pr-8 rounded-md w-full h-auto appearance-none placeholder-gray-400 focus:ring-1 focus:ring-[#598931] outline-none text-ellipsis overflow-hidden whitespace-nowrap"
                   >
                     <option value="" disabled hidden>
                       Choose Font
@@ -1532,7 +1598,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     setAddFooterSettings(!addFooterSettings);
                   }}
                 >
-                  <span className="setting_filter_top1_text">
+                  <span className="setting_filter_top1_text ml-[-8px]">
                     Footer Settings
                   </span>
                   <img className="setting_filter_top1_img" src={downIcon} />
@@ -1540,7 +1606,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
                 {/* LuEye Icon to Open Full-Screen Footer Popup */}
                 <LuEye
-                  className="w-5 h-5 text-[#598931] cursor-pointer"
+                  className="w-5 h-5 text-[#598931] cursor-pointer ml-[-10px]"
                   onClick={() => setShowFooterPopup(true)}
                 />
               </div>

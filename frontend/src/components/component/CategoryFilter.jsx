@@ -239,7 +239,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                                 setSelectAll(false);
                                             }}
                                         >
-                                            <RefreshCcw />
+                                            <RefreshCcw size={20}/>
                                         </button>
                                         <button
                                             onClick={() => {
@@ -255,7 +255,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                             />
                                         </button>
                                     </div>
-                                    <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto">
+                                    <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto text-sm">
                                         {filterOptions?.map((option, index) => (
                                             <li key={index} className="relative">
                                                 {/* <div
@@ -271,7 +271,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                                     onClick={() => toggleFilterDropdown(option)}
                                                 >
 
-                                                    <span>{option}</span>
+                                                    <span className="text-sm">{option}</span>
                                                     {/* <ChevronDown
                                                         className={`text-[#598931] transition-transform ${selectedFilter === option ? "rotate-180" : ""}`}
                                                         size={18}
@@ -311,7 +311,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                             placeholder="Search"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
-                                            className="w-full text-sm outline-none bg-transparent"
+                                            className="w-full text-xs outline-none bg-transparent"
                                         />
                                     </div>
                                     {/* <button
@@ -339,11 +339,11 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                                     onChange={() => handleCheckboxChange(item)}
                                                     className="w-4 h-4 accent-[#598931] cursor-pointer"
                                                 />
-                                                <span className="truncate w-full text-sm leading-tight flex justify-start">{item}</span>
+                                                <span className="truncate w-full text-xs leading-tight flex justify-start">{item}</span>
                                             </li>
                                         ))
                                     ) : (
-                                        <li className="text-gray-500 text-center py-2">
+                                        <li className="text-gray-500 text-center py-2 text-xs">
                                             No results found
                                         </li>
                                     )}
@@ -382,7 +382,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                             />
                                         </button>
                                     </div>
-                                    <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto">
+                                    <ul className="space-y-3 text-[#598931] font-medium max-h-[250px] overflow-y-auto text-sm">
                                         {filterOptions?.map((option, index) => (
                                             <li key={index} className="relative">
                                                 {/* <div
@@ -403,7 +403,7 @@ const CatalogueFilter = ({ data, settings, tempHeader, setFilteredData, filtered
                                                         } `}
                                                     onClick={() => toggleFilterDropdown(option)}
                                                 >
-                                                    <span>{option}</span>
+                                                    <span className="text-sm">{option}</span>
                                                     <ChevronDown
                                                         className={` transition-transform ${selectedFilter === option ? "rotate-180" : ""}${selectedItems[option]?.length > 0
                                                                 ? `text-white transition-transform ${selectedFilter === option ? "rotate-180" : ""}`      // ✅ active chevron
