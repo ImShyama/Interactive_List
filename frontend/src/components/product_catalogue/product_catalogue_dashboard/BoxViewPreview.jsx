@@ -326,7 +326,7 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-8" onClick={onClose}>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-30 p-8 z-[9999]" onClick={onClose}>
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl w-full relative h-[500px] flex flex-col" onClick={(e) => e.stopPropagation()}>
         {/* Close Button */}
         <button
@@ -560,9 +560,9 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader }) => {
               <PiBracketsCurlyBold />
             </button>
             
-            {/* Link Dropdown */}
+            {/* Tag Dropdown */}
             {isTagLinkDropdownOpen && (
-              <div className="link-dropdown absolute top-8 left-0 bg-white shadow-lg rounded-lg w-64 p-3 border overflow-hidden z-50">
+              <div className="tag-link-dropdown absolute top-8 left-0 bg-white shadow-lg rounded-lg w-64 p-3 border overflow-hidden z-50">
                 <div className="flex items-center justify-between p-2 mt-[-10px] border-b">
                   <span className="text-sm font-medium text-gray-700">Select Heading</span>
                   <button
