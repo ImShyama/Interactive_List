@@ -15,6 +15,10 @@ const ProductTitle = ({ searchQuery = "", onSearchChange, data, settings, filter
   })
   let { appName, appID, spreadSheetName } = appDetails[0]
 
+  // Get header settings to check if search is enabled
+  const headerSettings = settings?.productCatalogue?.headerSettings || {};
+  const isSearchEnabled = headerSettings.search !== false; // Default to true if not specified
+
 
   const navigate = useNavigate();
   const searchBoxRef = useRef(null); // REF for detecting outside click
@@ -53,35 +57,39 @@ const ProductTitle = ({ searchQuery = "", onSearchChange, data, settings, filter
             <IoArrowBack className="text-white text-3xl" />
           </button> */}
 
-          {/* Conditionally render Search Icon or Search Box */}
-          {!showSearchBox ? (
-            <button
-              className="p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6]"
-              onClick={() => setShowSearchBox(true)}
-            >
-              <Search className="text-[#598931]" size={20} />
-            </button>
-          ) : (
-            <div
-              ref={searchBoxRef}
-              className="flex items-center bg-[#F6FCF1] rounded-lg px-3 py-2 gap-2"
-            >
-              <Search className="text-[#598931]" size={18} />
-              <input
-                type="text"
-                placeholder="Search"
-                className="bg-transparent outline-none text-sm"
-                value={searchQuery}
-                onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
-              />
-              <button onClick={handleCloseSearch}>
-                <img
-                  src={Cancel}
-                  alt="Cancel" 
-                  className="w-4 h-4 invert brightness-50"
-                />
-              </button>
-            </div>
+          {/* Conditionally render Search Icon or Search Box - only if search is enabled */}
+          {isSearchEnabled && (
+            <>
+              {!showSearchBox ? (
+                <button
+                  className="p-2 rounded-lg bg-[#F6FCF1] hover:bg-[#EAF7D6]"
+                  onClick={() => setShowSearchBox(true)}
+                >
+                  <Search className="text-[#598931]" size={20} />
+                </button>
+              ) : (
+                <div
+                  ref={searchBoxRef}
+                  className="flex items-center bg-[#F6FCF1] rounded-lg px-3 py-2 gap-2"
+                >
+                  <Search className="text-[#598931]" size={18} />
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    className="bg-transparent outline-none text-sm"
+                    value={searchQuery}
+                    onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+                  />
+                  <button onClick={handleCloseSearch}>
+                    <img
+                      src={Cancel}
+                      alt="Cancel" 
+                      className="w-4 h-4 invert brightness-50"
+                    />
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
           {/* Category Filter (replaces Filter icon) */}

@@ -155,6 +155,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
         setSelectedFilePreview(imageUrl);
         setSelectedFile(file.name);
         setLogoSaved(true);
+        setIsSaveChanges(true);
       } catch (err) {
         console.error(err);
       } finally {
@@ -172,6 +173,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
     setSelectedFile("");
     setSelectedFilePreview("");
     setLogoSaved(false);
+    setIsSaveChanges(true);
   };
 
   // const handleFileUpload = (event) => {
@@ -979,20 +981,27 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     >
                       ✕
                     </button>
-                    <div className="flex min-w-[158px] w-full h-[33px]  justify-center items-center  rounded-[8px] border-2 border-[#598931]">
+                    <div className="flex w-[158px] h-[33px] justify-center items-center rounded-[8px] border-2 border-[#598931] gap-2 px-2">
+                      {headerSettings.logoURL && (
+                        <img 
+                          src={getDriveThumbnail(headerSettings.logoURL)} 
+                          alt="Logo" 
+                          className="w-4 h-4 object-contain flex-shrink-0"
+                          onError={handleImageError}
+                        />
+                      )}
                       <div
+                        className="truncate flex-1 min-w-0"
                         style={{
                           fontFamily: headerSettings.headerFont,
                           fontSize: headerSettings.headerFontSize,
                           color: headerSettings.headerFontColor,
                           backgroundColor: headerSettings.bg,
                         }}
+                        title={headerSettings.headerText}
                       >
                         {headerSettings.headerText}
                       </div>
-                      {headerSettings.logoURL && (
-                        <img src={headerSettings.logoURL} alt="Logo" />
-                      )}
                     </div>
                   </div>
                 )}
@@ -1202,7 +1211,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
 
               {/* Reset Toggle */}
 
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <label className="w-[40%] flex items-center text-[#1E1B1B] font-poppins text-[17px] font-medium">
                   Reset:
                   <span className="ml-1">
@@ -1211,7 +1220,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                 </label>
 
                 <label htmlFor="toggle" className="cursor-pointer relative">
-                  {/* Hidden Checkbox */}
+                 
                   <input
                     type="checkbox"
                     name="reset"
@@ -1221,7 +1230,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     className="sr-only"
                   />
 
-                  {/* Toggle Background */}
+                 
                   <motion.div
                     className="w-12 h-6 rounded-full transition relative"
                     animate={{
@@ -1231,7 +1240,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     }}
                     transition={{ duration: 0.3 }}
                   >
-                    {/* Moving Circle */}
+                    
                     <motion.div
                       className="w-5 h-5 bg-white rounded-full absolute top-0.5"
                       animate={{ x: headerSettings.reset ? 24 : 2 }}
@@ -1239,7 +1248,7 @@ const Setting = ({ closeDrawer, handleToggleDrawer }) => {
                     />
                   </motion.div>
                 </label>
-              </div>
+              </div> */}
 
               {/* Search Toggle */}
               <div className="flex items-center gap-2">

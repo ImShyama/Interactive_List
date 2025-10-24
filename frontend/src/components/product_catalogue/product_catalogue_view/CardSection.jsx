@@ -11,6 +11,7 @@ const CardSection = ({ settings, data }) => {
   const cardSettings = settings?.productCatalogue?.cardSettings || {};
   const footerSettings = settings?.productCatalogue?.footerSettings || {};
   const showInCard = settings?.showInCard || [];
+  const isSearchEnabled = headerSettings.search !== false; // Default to true if not specified
   console.log({ dataRows, settings, headerSettings, cardSettings, footerSettings, showInCard });
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(cardSettings?.numberOfColumns * cardSettings?.numberOfRows || 6);
@@ -31,8 +32,8 @@ const CardSection = ({ settings, data }) => {
     .filter(Boolean)
     .map((k) => k.replaceAll(" ", "_").toLowerCase());
 
-  // Filter by searchQuery across configured fields
-  const filteredData = (searchQuery || "").trim().length === 0
+  // Filter by searchQuery across configured fields - only if search is enabled
+  const filteredData = !isSearchEnabled || (searchQuery || "").trim().length === 0
     ? categoryFilteredData
     : sourceData.filter((row) => {
       return keysForSearch.some((key) => {
@@ -60,11 +61,11 @@ const CardSection = ({ settings, data }) => {
   return (
     <div className="p-6">
       <ProductTitle
-        searchQuery={searchQuery}
-        onSearchChange={(q) => {
+        searchQuery={isSearchEnabled ? searchQuery : ""}
+        onSearchChange={isSearchEnabled ? (q) => {
           setCurrentPage(1);
           setSearchQuery(q);
-        }}
+        } : undefined}
         // Inject CategoryFilter props
         data={sourceData}
         settings={settings}
