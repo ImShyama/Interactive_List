@@ -10,7 +10,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { handleSaveChanges } from "../../../APIs/index.jsx";
 import { UserContext } from "../../../context/UserContext.jsx";
 
-const BoxView = ({ settings, tableHeader }) => {
+const BoxView = ({ settings, tableHeader, data }) => {
   const [fields, setFields] = useState(settings?.showInBox || []); // Stores saved fields
   const [inputValue, setInputValue] = useState(""); // Temporary input value
   const [isInputVisible, setIsInputVisible] = useState(false); // Controls input visibility
@@ -314,6 +314,7 @@ const BoxView = ({ settings, tableHeader }) => {
             setShowModal(false);
           }}
           tableHeader={tableHeader}
+          data={data}
         />
       )}
     </div>
