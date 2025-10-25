@@ -448,28 +448,56 @@ const DashboardTable = () => {
             </thead>
             <tbody>
               {tableData?.length === 0 ? (
+
                 // Show animate-pulse skeleton rows when there's no data
-                [...Array(5)].map((_, index) => (
-                  <tr key={index} className="animate-pulse border-b border-[#EAECF0]">
-                    <td className="px-4 py-3">
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex space-x-4">
-                        <div className="h-4 w-4 bg-gray-200 rounded"></div>
-                        <div className="h-4 w-4 bg-gray-200 rounded"></div>
-                        <div className="h-4 w-4 bg-gray-200 rounded"></div>
-                        <div className="h-4 w-4 bg-gray-200 rounded"></div>
-                      </div>
-                    </td>
-                  </tr>
-                ))
+                // [...Array(5)].map((_, index) => (
+                //   <tr key={index} className="animate-pulse border-b border-[#EAECF0]">
+                //     <td className="px-4 py-3">
+                //       <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                //     </td>
+                //     <td className="px-4 py-3">
+                //       <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                //     </td>
+                //     <td className="px-4 py-3">
+                //       <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+                //     </td>
+                //     <td className="px-4 py-3">
+                //       <div className="flex space-x-4">
+                //         <div className="h-4 w-4 bg-gray-200 rounded"></div>
+                //         <div className="h-4 w-4 bg-gray-200 rounded"></div>
+                //         <div className="h-4 w-4 bg-gray-200 rounded"></div>
+                //         <div className="h-4 w-4 bg-gray-200 rounded"></div>
+                //       </div>
+                //     </td>
+                //   </tr>
+                // ))
+                // Show "No data found" message when search results are empty
+                <tr>
+                  <td colSpan="4" className="px-4 py-8 text-center">
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <svg
+                        className="w-12 h-12 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                      <p className="text-gray-500 font-poppins text-[16px] font-medium">
+                        No data found
+                      </p>
+                      <p className="text-gray-400 font-poppins text-[14px]">
+                        Try adjusting your search criteria
+                      </p>
+                    </div>
+                  </td>
+                </tr>
               ) : (
                 tableData?.map((sheet, index) => (
                   <tr
@@ -517,26 +545,83 @@ const DashboardTable = () => {
                     </td> */}
                     
                     <td className="px-4 py-2">
-                      <Tooltip
-                      
-                        placement="top"
-                        title={
-                          sheet.access === "owner"
-                            ? sheet.sharedWith?.length
-                              ? `This sheet is shared with by following emails : ${sheet.sharedWith
-                                .map(user => user.email || user.name || user._id)
-                                .join(", ")}`
-                              : "This sheet is not shared with anyone"
-                            : `This sheet is shared by following email : ${sheet.ownerDetails?.email || sheet.ownerDetails?.name || sheet.ownerDetails?._id || "Unknown"}`
-                        }
-                      >
-                        <a
-                          onClick={() => handleEdit(sheet._id, sheet.access)}
-                          className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline cursor-pointer"
-                        >
-                          {sheet.spreadsheetName || sheet.firstSheetName}
-                        </a>
-                      </Tooltip>
+                      <div className="flex items-center gap-2 ml-[-10px]">
+                        {/* Share icon for sheets that are shared */}
+                        {sheet.access === "owner" && sheet.sharedWith?.length > 0 && (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 20 20"
+                            fill="none"
+                            className="text-[#598931] flex-shrink-0"
+                          >
+                            <path
+                              d="M15 6.66602C16.3807 6.66602 17.5 5.54673 17.5 4.16602C17.5 2.7853 16.3807 1.66602 15 1.66602C13.6193 1.66602 12.5 2.7853 12.5 4.16602C12.5 5.54673 13.6193 6.66602 15 6.66602Z"
+                              stroke="currentColor"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M5 12.5C6.38071 12.5 7.5 11.3807 7.5 10C7.5 8.61929 6.38071 7.5 5 7.5C3.61929 7.5 2.5 8.61929 2.5 10C2.5 11.3807 3.61929 12.5 5 12.5Z"
+                              stroke="currentColor"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M15 18.333C16.3807 18.333 17.5 17.2137 17.5 15.833C17.5 14.4523 16.3807 13.333 15 13.333C13.6193 13.333 12.5 14.4523 12.5 15.833C12.5 17.2137 13.6193 18.333 15 18.333Z"
+                              stroke="currentColor"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M7.15625 11.2578L12.8479 14.5745"
+                              stroke="currentColor"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M12.8396 5.4248L7.15625 8.74147"
+                              stroke="currentColor"
+                              strokeWidth="1.66667"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                        
+                        {/* Conditional tooltip - only show for shared sheets */}
+                        {((sheet.access === "owner" && sheet.sharedWith?.length > 0) || sheet.access !== "owner") ? (
+                          <Tooltip
+                            placement="top"
+                            title={
+                              sheet.access === "owner"
+                                ? `This sheet is shared with by following emails : ${sheet.sharedWith
+                                  .map(user => user.email || user.name || user._id)
+                                  .join(", ")}`
+                                : `This sheet is shared by following email : ${sheet.ownerDetails?.email || sheet.ownerDetails?.name || sheet.ownerDetails?._id || "Unknown"}`
+                            }
+                          >
+                            <a
+                              onClick={() => handleEdit(sheet._id, sheet.access)}
+                              className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline cursor-pointer"
+                            >
+                              {sheet.spreadsheetName || sheet.firstSheetName}
+                            </a>
+                          </Tooltip>
+                        ) : (
+                          <a
+                            onClick={() => handleEdit(sheet._id, sheet.access)}
+                            className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline ml-6"
+                          >
+                            {sheet.spreadsheetName || sheet.firstSheetName}
+                          </a>
+                        )}
+                      </div>
                     </td>
 
                     <td className="px-4 py-2 text-[14px]">{sheet.appName}</td>

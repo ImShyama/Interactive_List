@@ -21,6 +21,8 @@ const ProductCatalogueBiggerPreview = () => {
   const [sheetlink, setSheetlink] = useState("");
   const [videolink, setVideolink] = useState("");
   const [features, setFeatures] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
 
   const channel = useMemo(() => new BroadcastChannel('product-data'), []);
 
@@ -251,10 +253,19 @@ const ProductCatalogueBiggerPreview = () => {
               <CustomCarouselDots />
 
               <button
-                onClick={() =>
-                  window.open(multipleimages[currentIndex], "_blank")
-                }
-                className="absolute bottom-4 right-4 bg-[#D3EEBC] p-2 rounded-full shadow-md"
+              //  onClick={() =>
+              //   window.open(multipleimages[currentIndex], "_blank")
+              // }
+              // className="absolute bottom-4 right-4 bg-[#D3EEBC] p-2 rounded-full shadow-md"
+                onClick={() => {
+                  const currentMedia = multipleimages[currentIndex];
+                  if (currentMedia) {
+                    setModalImage(currentMedia);
+                    setIsModalOpen(true);
+                  }
+                }}
+                className="absolute bottom-4 right-4 bg-[#D3EEBC] p-2 rounded-full shadow-md hover:bg-[#c8e6b3] transition-colors"
+                title="Expand image"
               >
                 <CgArrowsExpandRight className="text-[#598931] text-2xl" />
               </button>
@@ -408,6 +419,59 @@ const ProductCatalogueBiggerPreview = () => {
         </div>
       </div>
       {/* Custom carousel dots are now handled by the CustomCarouselDots component */}
+      
+      {/* Modal for expanded image/video */}
+      {isModalOpen && modalImage && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-[999] p-4">
+          <div className="relative max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            {/* Close button */}
+            <button
+              onClick={() => {
+                setIsModalOpen(false);
+                setModalImage(null);
+              }}
+              className="absolute top-4 right-4 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 shadow-lg z-10 transition-all duration-200"
+              title="Close modal"
+            >
+              <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            
+            {/* Media content */}
+            <div className="w-full h-full flex items-center justify-center">
+              {isVideoUrl(modalImage) ? (
+                <video
+                  controls
+                  autoPlay
+                  className="max-w-full max-h-full object-contain"
+                  src={modalImage}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              ) : isYouTubeUrl(modalImage) ? (
+                <iframe
+                  className="w-full h-full max-w-6xl max-h-[80vh]"
+                  src={getYouTubeEmbedSrc(modalImage)}
+                  title="YouTube video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              ) : (
+                <img
+                  src={modalImage}
+                  alt="Expanded view"
+                  className="max-w-full max-h-full object-contain"
+                  onError={() => {
+                    console.warn('Failed to load image in modal:', modalImage);
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

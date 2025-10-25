@@ -111,7 +111,7 @@ const ProductCatalogueDashboard = ({ data,tableHeader, headers, settings, tempHe
             <DetailedView tableHeader={tableHeader} settings={settings} />
           </div>
           <div className="pb-4">
-            <BoxView settings={settings} tableHeader={tableHeader}/>
+            <BoxView settings={settings} tableHeader={tableHeader} data={data}/>
           </div>
           <button
             className="fixed bottom-20 right-60 px-4 py-2 text-white rounded-[8px] font-semibold text-lg"
