@@ -21,6 +21,7 @@ import { PiBracketsCurlyBold } from "react-icons/pi";
 import { CgFormatJustify } from "react-icons/cg";
 import { Modal, Input } from "antd";
 import { notifyError } from "../../../utils/notify";
+import CirclePicker from "../../video_gallary/CirclePicker";
 
 const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader, data }) => {
   const contentRef = useRef(null);
@@ -33,8 +34,8 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader, data }) => 
   const [isFontDropdownOpen, setIsFontDropdownOpen] = useState(false);
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const [isBgColorPickerOpen, setIsBgColorPickerOpen] = useState(false);
-  const colorInputRef = useRef(null);
   const bgColorInputRef = useRef(null);
+  const colorRef = useRef(null);
 
    // ✅ Auto focus on editor when component mounts
   //  useEffect(() => {
@@ -407,8 +408,57 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader, data }) => 
           </div> */}
         </div>
 
-        {/* Editing Toolbar Box */}
-        <div className="mt-3 border rounded-md p-2 flex flex-wrap gap-5 items-center justify-center">
+        {/* Tag Button and Editing Toolbar Box in same row */}
+        <div className="mt-3 flex items-center gap-3">
+          {/* Tag Button */}
+          <div className="relative">
+            <button 
+              className="p-1 text-gray-600 hover:text-[#598931]" 
+              onClick={insertTagLink}
+              title="Tag"
+            >
+              <PiBracketsCurlyBold />
+            </button>
+            
+            {/* Tag Dropdown */}
+            {isTagLinkDropdownOpen && (
+              <div className="tag-link-dropdown absolute top-8 left-0 bg-white shadow-lg rounded-lg w-64 p-3 border overflow-hidden z-50">
+                <div className="flex items-center justify-between p-2 mt-[-10px] border-b">
+                  <span className="text-sm font-medium text-gray-700">Select Heading</span>
+                  <button
+                    onClick={() => setIsTagLinkDropdownOpen(false)}
+                    className="text-gray-500 hover:text-[#598931]"
+                  >
+                    ✖
+                  </button>
+                </div>
+                
+                <ul className="max-h-60 overflow-y-auto mt-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                  {/* Custom Link Option */}
+                  {/* <li
+                    className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg cursor-pointer border-b border-gray-200"
+                    onClick={handleCustomLink}
+                  >
+                    <span className="text-[#598931] font-medium">🔗 Custom Link</span>
+                  </li> */}
+                  
+                  {/* Headings */}
+                  {headings.map((heading, index) => (
+                    <li
+                      key={index}
+                      className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg"
+                      onClick={() => handleTagHeadingSelect(heading.value)}
+                    >
+                      <span>{heading.value}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+
+          {/* Editing Toolbar Box */}
+          <div className="border rounded-md p-2 flex flex-wrap gap-5 items-center justify-center flex-grow">
           <button
             className={`p-1 ${activeStyles["bold"] ? "text-[#598931]" : "text-gray-600"
               }`}
@@ -517,11 +567,115 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader, data }) => 
             {isColorPickerOpen && (
               <div className="color-dropdown absolute top-8 left-0 bg-white shadow-lg rounded-lg p-2 border z-50">
                 <input
-                  ref={colorInputRef}
+                  id="colorpickerinput"
                   type="color"
-                  className="w-8 h-8 cursor-pointer"
+                  ref={colorRef}
+                  style={{
+                    visibility: "hidden",
+                    position: "absolute",
+                  }}
                   onChange={(e) => handleTextColorPick(e.target.value)}
                 />
+                <div
+                  style={{
+                    position: "relative",
+                    zIndex: "10",
+                    background: "#fff",
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                    borderRadius: "8px",
+                    padding: "10px",
+                    minWidth: "250px",
+                    maxHeight: "fit-content",
+                    overflow: "auto",
+                  }}
+                >
+                  <CirclePicker
+                    colorRef={colorRef}
+                    applyColor={(color) => handleTextColorPick(color)}
+                    colors={[
+                    "#000000",
+                    "#434343",
+                    "#666666",
+                    "#999999",
+                    "#b7b7b7",
+                    "#cccccc",
+                    "#d9d9d9",
+                    "#efefef",
+                    "#f3f3f3",
+                    "#ffffff",
+                    "#980000",
+                    "#ff0000",
+                    "#ff9900",
+                    "#ffff00",
+                    "#00ff00",
+                    "#00ffff",
+                    "#4a86e8",
+                    "#0000ff",
+                    "#9900ff",
+                    "#ff00ff",
+                    "#e6b8af",
+                    "#f4cccc",
+                    "#fce5cd",
+                    "#fff2cc",
+                    "#d9ead3",
+                    "#d0e0e3",
+                    "#c9daf8",
+                    "#cfe2f3",
+                    "#d9d2e9",
+                    "#ead1dc",
+                    "#dd7e6b",
+                    "#ea9999",
+                    "#f9cb9c",
+                    "#ffe599",
+                    "#b6d7a8",
+                    "#a2c4c9",
+                    "#a4c2f4",
+                    "#9fc5e8",
+                    "#b4a7d6",
+                    "#d5a6bd",
+                    "#cc4125",
+                    "#e06666",
+                    "#f6b26b",
+                    "#ffd966",
+                    "#93c47d",
+                    "#76a5af",
+                    "#6d9eeb",
+                    "#6fa8dc",
+                    "#8e7cc3",
+                    "#c27ba0",
+                    "#a61c00",
+                    "#cc0000",
+                    "#e69138",
+                    "#f1c232",
+                    "#6aa84f",
+                    "#45818e",
+                    "#3c78d8",
+                    "#3d85c6",
+                    "#674ea7",
+                    "#a64d79",
+                    "#85200c",
+                    "#990000",
+                    "#b45f06",
+                    "#bf9000",
+                    "#38761d",
+                    "#134f5c",
+                    "#1155cc",
+                    "#0b5394",
+                    "#351c75",
+                    "#741b47",
+                    "#5b0f00",
+                    "#660000",
+                    "#783f04",
+                    "#7f6000",
+                    "#274e13",
+                    "#0c343d",
+                    "#1c4587",
+                    "#073763",
+                    "#20124d",
+                    "#4c1130",
+                  ]}
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -536,11 +690,115 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader, data }) => 
             {isBgColorPickerOpen && (
               <div className="bg-color-dropdown absolute top-8 left-0 bg-white shadow-lg rounded-lg p-2 border z-50">
                 <input
-                  ref={bgColorInputRef}
+                  id="bgcolorpickerinput"
                   type="color"
-                  className="w-8 h-8 cursor-pointer"
+                  ref={bgColorInputRef}
+                  style={{
+                    visibility: "hidden",
+                    position: "absolute",
+                  }}
                   onChange={(e) => handleBackgroundColorPick(e.target.value)}
                 />
+                <div
+                  style={{
+                    position: "relative",
+                    zIndex: "10",
+                    background: "#fff",
+                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                    borderRadius: "8px",
+                    padding: "10px",
+                    maxWidth: "300px",
+                    // maxHeight: "250px",
+                    overflow: "auto",
+                  }}
+                >
+                  <CirclePicker
+                    colorRef={bgColorInputRef}
+                    applyColor={(color) => handleBackgroundColorPick(color)}
+                    colors={[
+                    "#000000",
+                    "#434343",
+                    "#666666",
+                    "#999999",
+                    "#b7b7b7",
+                    "#cccccc",
+                    "#d9d9d9",
+                    "#efefef",
+                    "#f3f3f3",
+                    "#ffffff",
+                    "#980000",
+                    "#ff0000",
+                    "#ff9900",
+                    "#ffff00",
+                    "#00ff00",
+                    "#00ffff",
+                    "#4a86e8",
+                    "#0000ff",
+                    "#9900ff",
+                    "#ff00ff",
+                    "#e6b8af",
+                    "#f4cccc",
+                    "#fce5cd",
+                    "#fff2cc",
+                    "#d9ead3",
+                    "#d0e0e3",
+                    "#c9daf8",
+                    "#cfe2f3",
+                    "#d9d2e9",
+                    "#ead1dc",
+                    "#dd7e6b",
+                    "#ea9999",
+                    "#f9cb9c",
+                    "#ffe599",
+                    "#b6d7a8",
+                    "#a2c4c9",
+                    "#a4c2f4",
+                    "#9fc5e8",
+                    "#b4a7d6",
+                    "#d5a6bd",
+                    "#cc4125",
+                    "#e06666",
+                    "#f6b26b",
+                    "#ffd966",
+                    "#93c47d",
+                    "#76a5af",
+                    "#6d9eeb",
+                    "#6fa8dc",
+                    "#8e7cc3",
+                    "#c27ba0",
+                    "#a61c00",
+                    "#cc0000",
+                    "#e69138",
+                    "#f1c232",
+                    "#6aa84f",
+                    "#45818e",
+                    "#3c78d8",
+                    "#3d85c6",
+                    "#674ea7",
+                    "#a64d79",
+                    "#85200c",
+                    "#990000",
+                    "#b45f06",
+                    "#bf9000",
+                    "#38761d",
+                    "#134f5c",
+                    "#1155cc",
+                    "#0b5394",
+                    "#351c75",
+                    "#741b47",
+                    "#5b0f00",
+                    "#660000",
+                    "#783f04",
+                    "#7f6000",
+                    "#274e13",
+                    "#0c343d",
+                    "#1c4587",
+                    "#073763",
+                    "#20124d",
+                    "#4c1130",
+                  ]}
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -566,6 +824,7 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader, data }) => 
                   >
                     ✖
                   </button>
+                  
                 </div>
                 
                 <ul className="max-h-60 overflow-y-auto mt-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
@@ -591,52 +850,6 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader, data }) => 
               </div>
             )}
           </div>
-
-          {/* Tag Button with Dropdown */}
-          <div className="relative">
-            <button 
-              className="p-1 text-gray-600 hover:text-[#598931]" 
-              onClick={insertTagLink}
-              title="Tag"
-            >
-              <PiBracketsCurlyBold />
-            </button>
-            
-            {/* Tag Dropdown */}
-            {isTagLinkDropdownOpen && (
-              <div className="tag-link-dropdown absolute top-8 left-0 bg-white shadow-lg rounded-lg w-64 p-3 border overflow-hidden z-50">
-                <div className="flex items-center justify-between p-2 mt-[-10px] border-b">
-                  <span className="text-sm font-medium text-gray-700">Select Heading</span>
-                  <button
-                    onClick={() => setIsTagLinkDropdownOpen(false)}
-                    className="text-gray-500 hover:text-[#598931]"
-                  >
-                    ✖
-                  </button>
-                </div>
-                
-                <ul className="max-h-60 overflow-y-auto mt-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                  {/* Custom Link Option */}
-                  {/* <li
-                    className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg cursor-pointer border-b border-gray-200"
-                    onClick={handleCustomLink}
-                  >
-                    <span className="text-[#598931] font-medium">🔗 Custom Link</span>
-                  </li> */}
-                  
-                  {/* Headings */}
-                  {headings.map((heading, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg"
-                      onClick={() => handleTagHeadingSelect(heading.value)}
-                    >
-                      <span>{heading.value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         </div>
 
