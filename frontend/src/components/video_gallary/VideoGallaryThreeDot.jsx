@@ -292,7 +292,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
                 boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                 borderRadius: "8px",
                 padding: "10px",
-                maxWidth: "300px",
+                maxWidth: "250px",
                 maxHeight: "250px",
                 overflow: "auto",
               }}
@@ -587,7 +587,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
   );
 
   const popoverContent = (
-    <div className="z-10">
+    <div>
       <table>
         <tbody>
           {/* Show in Card */}
@@ -671,7 +671,7 @@ const VideoGallaryThreeDot = ({ columnKey, settings, firstRowData, isEditBoxOpen
         open={isPopoverOpen}
         onOpenChange={handlePopoverClose}
         placement="bottomRight"
-        overlayStyle={{ zIndex: 999 }}
+        overlayStyle={{ zIndex: 9999 }}
       >
         <button onClick={handleDotClick}>
           <BsThreeDotsVertical />

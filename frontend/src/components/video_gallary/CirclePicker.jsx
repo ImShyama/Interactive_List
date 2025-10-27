@@ -86,7 +86,7 @@ function CirclePicker({ colors, colorRef, applyColor }) {
         style={{
           display: "flex",
           flexWrap: "wrap",
-          maxWidth: "250px",
+          minWidth: "250px",
           gap: "5px",
           mt: "5px",
         }}
