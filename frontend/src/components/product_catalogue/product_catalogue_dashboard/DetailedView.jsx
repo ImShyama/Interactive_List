@@ -254,7 +254,7 @@ const DetailedView = ({ tableHeader, settings }) => {
               }}
               {...provided.droppableProps}
             >
-              {savedSelections.map((item, index) => (
+              {/* {savedSelections.map((item, index) => (
                 <Draggable key={item.key} draggableId={item.key.toString()} index={index}>
                   {(provided, snapshot) => (
                     <div
@@ -273,7 +273,7 @@ const DetailedView = ({ tableHeader, settings }) => {
                           type="text"
                           value={editText.value}
                           onChange={(e) => setEditText(e.target.value)}
-                          // onBlur={handleEditSave}
+                         
                           onKeyDown={handleEditSave}
                           className="px-2 py-1 rounded border border-gray-300 focus:outline-none"
                           autoFocus
@@ -283,21 +283,66 @@ const DetailedView = ({ tableHeader, settings }) => {
                       )}
 
                       <div className="absolute right-[-25px] flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        {/* {editingItem === item ? (
-                          <FiSave
-                            className="text-xl text-[#598931] cursor-pointer"
-                            onClick={() => handleEditSave({ type: "click" })}
-                          />
-                        ) : (
-                          <CiEdit
-                            className="text-xl text-[#598931] cursor-pointer"
-                            onClick={() => handleEdit(item)}
-                          />
-                        )} */}
+                       
                         <RiDeleteBinLine
                           className="text-lg text-[#598931] cursor-pointer"
                           onClick={() => handleDelete(item)}
                         />
+                      </div>
+                    </div>
+                  )}
+                </Draggable>
+              ))} */}
+
+{savedSelections?.map((item, index) => (
+                <Draggable key={item?.key} draggableId={item?.key?.toString()} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      className="relative group mr-[10px] ml-4"
+                    >
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        className={`relative flex items-center bg-[#F2F2F2] border border-gray-300 rounded-[8px] text-black font-medium transition-shadow duration-200 group-hover:shadow-lg ${snapshot.isDragging ? "shadow-xl" : ""
+                          }`}
+                      >
+                        {/* Drag Icon - Left */}
+                        <div className="absolute left-[-25px] opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-move">
+                          <SixDots className="text-[#598931]" />
+                        </div>
+
+                        {editingItem === item ? (
+                          <input
+                            type="text"
+                            value={editText.value}
+                            onChange={(e) => setEditText(e.target.value)}
+                            // onBlur={handleEditSave}
+                            onKeyDown={handleEditSave}
+                            className="px-2 py-1 rounded border border-gray-300 focus:outline-none"
+                            autoFocus
+                          />
+                        ) : (
+                          <span className="px-4 py-2">{item.value}</span>
+                        )}
+
+                        <div className="absolute right-[-25px] flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          {/* {editingItem === item ? (
+                            <FiSave
+                              className="text-xl text-[#598931] cursor-pointer"
+                              onClick={() => handleEditSave({ type: "click" })}
+                            />
+                          ) : (
+                            <CiEdit
+                              className="text-xl text-[#598931] cursor-pointer"
+                              onClick={() => handleEdit(item)}
+                            />
+                          )} */}
+                          <RiDeleteBinLine
+                            className="text-lg text-[#598931] cursor-pointer"
+                            onClick={() => handleDelete(item)}
+                          />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -411,7 +456,7 @@ const DetailedView = ({ tableHeader, settings }) => {
               {/* Add Field Button */}
               <button
                 onClick={addField}
-                className="inline-flex px-4 py-2 justify-center items-center gap-[18px] border-[3px] border-[#598931] rounded-[8px] text-[#598931] hover:bg-[#E6F4D7] transition"
+                className="inline-flex px-4 py-2 justify-center items-center gap-[18px] border-[3px] border-[#598931] rounded-[8px] text-[#598931] hover:bg-[#E6F4D7] transition ml-2"
               >
                 <span className="text-[16px] font-medium font-[Poppins]">
                   +
