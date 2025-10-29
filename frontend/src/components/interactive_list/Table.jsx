@@ -1,5 +1,5 @@
 import { memo, useState, useEffect, useMemo } from "react";
-import { Table as AntTable, Pagination, Checkbox, Avatar } from "antd";
+import { Table as AntTable, Pagination, Checkbox, Avatar, Tooltip } from "antd";
 import { Delete, Edit } from "../../assets/svgIcons";
 import { RxDividerVertical } from "react-icons/rx";
 import { Resizable } from "react-resizable";
@@ -615,24 +615,35 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                     />
                                 </div>
                             ) : (
-                                <div
-                                    className="tableTD w-full h-full flex items-center "
-                                    style={{
-                                        zIndex: isPinned ? 10 : "inherit",
-                                        position: "relative",
-                                    }}
-                                    onDoubleClick={(e) => isEditMode && handleDoubleClick(item.key_id, item)}
+                                <Tooltip
+                                    placement="topLeft"
+                                    mouseEnterDelay={0.3}
+                                    overlayStyle={{ maxWidth: 600 }}
+                                    title={
+                                        header.toLowerCase().replace(" ", "_") === primaryColumn
+                                            ? null
+                                            : (item[header] ? String(item[header]) : "")
+                                    }
                                 >
-                                    {header.toLowerCase().replace(" ", "_") === primaryColumn ?
+                                    <div
+                                        className="tableTD w-full h-full flex items-center "
+                                        style={{
+                                            zIndex: isPinned ? 10 : "inherit",
+                                            position: "relative",
+                                        }}
+                                        onDoubleClick={(e) => isEditMode && handleDoubleClick(item.key_id, item)}
+                                    >
+                                        {header.toLowerCase().replace(" ", "_") === primaryColumn ?
 
-                                        <RenderImage url={item[header]} />
+                                            <RenderImage url={item[header]} />
 
-                                        : (
-                                            <RenderText text={item[header]} bodyFontFamily={bodyFontFamily} bodyFontSize={bodyFontSize} />
+                                            : (
+                                                <RenderText text={item[header]} bodyFontFamily={bodyFontFamily} bodyFontSize={bodyFontSize} />
 
-                                            // <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header]}</span>
-                                        )}
-                                </div>
+                                                // <span className="truncate" style={{ fontFamily: bodyFontFamily, fontSize: `${bodyFontSize}px` }}>{item[header]}</span>
+                                            )}
+                                    </div>
+                                </Tooltip>
                             )}
                         </td>
                     );
