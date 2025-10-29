@@ -279,7 +279,7 @@ const CardView = ({ tableHeader, settings }) => {
                   )}
                 </Draggable>
               ))} */}
-{savedSelections?.map((item, index) => (
+              {savedSelections?.map((item, index) => (
                 <Draggable key={item?.key} draggableId={item?.key?.toString()} index={index}>
                   {(provided, snapshot) => (
                     <div

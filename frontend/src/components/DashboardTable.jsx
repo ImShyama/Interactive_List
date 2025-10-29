@@ -21,6 +21,7 @@ import { UserContext } from "../context/UserContext";
 import { fetchApps } from "../APIs";
 const options = OPTIONS;
 import { Tooltip } from "antd";
+import { FaRegShareSquare } from "react-icons/fa";
 
 const DashboardTable = () => {
   const { token, user } = useContext(UserContext);
@@ -548,50 +549,7 @@ const DashboardTable = () => {
                       <div className="flex items-center gap-2 ml-[-10px]">
                         {/* Share icon for sheets that are shared */}
                         {sheet.access === "owner" && sheet.sharedWith?.length > 0 && (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 20 20"
-                            fill="none"
-                            className="text-[#598931] flex-shrink-0"
-                          >
-                            <path
-                              d="M15 6.66602C16.3807 6.66602 17.5 5.54673 17.5 4.16602C17.5 2.7853 16.3807 1.66602 15 1.66602C13.6193 1.66602 12.5 2.7853 12.5 4.16602C12.5 5.54673 13.6193 6.66602 15 6.66602Z"
-                              stroke="currentColor"
-                              strokeWidth="1.66667"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M5 12.5C6.38071 12.5 7.5 11.3807 7.5 10C7.5 8.61929 6.38071 7.5 5 7.5C3.61929 7.5 2.5 8.61929 2.5 10C2.5 11.3807 3.61929 12.5 5 12.5Z"
-                              stroke="currentColor"
-                              strokeWidth="1.66667"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M15 18.333C16.3807 18.333 17.5 17.2137 17.5 15.833C17.5 14.4523 16.3807 13.333 15 13.333C13.6193 13.333 12.5 14.4523 12.5 15.833C12.5 17.2137 13.6193 18.333 15 18.333Z"
-                              stroke="currentColor"
-                              strokeWidth="1.66667"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M7.15625 11.2578L12.8479 14.5745"
-                              stroke="currentColor"
-                              strokeWidth="1.66667"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M12.8396 5.4248L7.15625 8.74147"
-                              stroke="currentColor"
-                              strokeWidth="1.66667"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
+                          <FaRegShareSquare className="text-[#598931]"/>
                         )}
                         
                         {/* Conditional tooltip - only show for shared sheets */}
