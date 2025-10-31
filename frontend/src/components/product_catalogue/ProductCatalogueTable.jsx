@@ -801,6 +801,7 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
     const handleConfirmDelete = async () => {
         try {
             // Close the confirmation modal
+            setLoading(true);
             setConfirmModalOpen(false);
 
             const spreadSheetID = settings.spreadsheetId;
@@ -838,6 +839,9 @@ const ProductCatalogueTable = ({ data, headers, settings, tempHeader, freezeInde
             // Handle error
             console.error("Error during bulk delete:", error);
             notifyError(error.message || "An error occurred while deleting rows");
+        }
+        finally {
+            setLoading(false);
         }
     };
 

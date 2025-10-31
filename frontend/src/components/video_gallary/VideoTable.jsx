@@ -869,6 +869,7 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
 
     const handleConfirmDelete = async () => {
         try {
+            setLoading(true);
             // Close the confirmation modal
             setConfirmModalOpen(false);
 
@@ -907,6 +908,9 @@ const VideoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
             // Handle error
             console.error("Error during bulk delete:", error);
             notifyError(error.message || "An error occurred while deleting rows");
+        }
+        finally {
+            setLoading(false);
         }
     };
 

@@ -574,7 +574,7 @@ const DashboardTable = () => {
                         ) : (
                           <a
                             onClick={() => handleEdit(sheet._id, sheet.access)}
-                            className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline ml-6"
+                            className="text-[#437FFF] font-poppins text-[14px] font-normal leading-[26px] underline cursor-pointer ml-6"
                           >
                             {sheet.spreadsheetName || sheet.firstSheetName}
                           </a>

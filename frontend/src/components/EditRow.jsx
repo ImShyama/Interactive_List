@@ -81,19 +81,19 @@ const EditRow = ({ isOpen, onClose, onConfirm, modelName, row, loading, formulaD
                       </label>
                     </div>
                     <div>
-                      {editedRow[field].length > 60 ? (
+                      {(formulaData?.[field] === 'textarea' || (typeof editedRow[field] === 'string' && editedRow[field].length > 60)) ? (
                         <textarea
                         className='thinScroll w-[100%] flex p-[10px] px-[16px] flex-col justify-center items-start gap-[27px] rounded-[8px] bg-[#F6F6F6] border border-transparent focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary'
                           rows={3}
                           type="text"
-                          value={editedRow[field] || ''}  // Populate the input with the corresponding row value
+                          value={editedRow[field] ?? ''}  // Populate the input with the corresponding row value
                           onChange={(e) => handleInputChange(field, e.target.value)}  // Update state on change
                         />
                       ) :
                         <input
                           className="w-[100%] flex p-[10px] px-[16px] flex-col justify-center items-start gap-[27px] rounded-[8px] bg-[#F6F6F6] border border-transparent focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary"
                           type="text"
-                          value={editedRow[field] || ''}  // Populate the input with the corresponding row value
+                          value={editedRow[field] ?? ''}  // Populate the input with the corresponding row value
                           onChange={(e) => handleInputChange(field, e.target.value)}  // Update state on change
                         />}
                     </div>
