@@ -811,6 +811,7 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
     const handleConfirmDelete = async () => {
         try {
             // Close the confirmation modal
+            setLoading(true);
             setConfirmModalOpen(false);
 
             const spreadSheetID = settings.spreadsheetId;
@@ -848,6 +849,9 @@ const PhotoTable = ({ data, headers, settings, tempHeader, freezeIndex, formulaD
             // Handle error
             console.error("Error during bulk delete:", error);
             notifyError(error.message || "An error occurred while deleting rows");
+        }
+        finally {
+            setLoading(false);
         }
     };
 

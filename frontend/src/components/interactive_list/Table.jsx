@@ -534,7 +534,18 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                         return;
                                     }
                                     if (ischecked.length > 0 && isEditMode) {
-                                        handleBulkDelete();
+                                        (async () => {
+                                            try {
+                                                setLoader(true);
+                                                setLoading?.(true);
+                                                await handleBulkDelete();
+                                            } catch (err) {
+                                                console.error("Error during bulk delete:", err);
+                                            } finally {
+                                                setLoader(false);
+                                                setLoading?.(false);
+                                            }
+                                        })();
                                     } else {
                                         handleDelete(item.key_id);
                                     }
@@ -599,6 +610,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                         position: "relative",
                                     }}
                                 >
+                                    {/* for textarea only to replace textarea */}
                                     <input
                                         className="w-full h-full border-b-2 border-gray-300 border-primary"
                                         value={EditData.find((data) => data.key_id === item.key_id)?.[header] || ""}
@@ -737,7 +749,18 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                                                     handleAlert("Not available in preview!");
                                                     return;
                                                 }
-                                                handleBulkDelete();
+                                                (async () => {
+                                                    try {
+                                                        setLoader(true);
+                                                        setLoading?.(true);
+                                                        await handleBulkDelete();
+                                                    } catch (err) {
+                                                        console.error("Error during bulk delete:", err);
+                                                    } finally {
+                                                        setLoader(false);
+                                                        setLoading?.(false);
+                                                    }
+                                                })();
                                             }}
                                             className={`rounded-[4px] ${ischecked?.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#DC2626] hover:bg-[#B91C1C]'}`}
                                             title="Delete Selected"
@@ -779,7 +802,7 @@ const Table = ({ data, filteredData, setFilteredData, headers, settings, isedit,
                 />
             </div>
 
-            {loader && (
+            {(loader || loading) && (
                 <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75"
                     style={{ zIndex: 100, overflow: 'hidden' }}
                 >

@@ -799,6 +799,7 @@ const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, for
     const handleConfirmDelete = async () => {
         try {
             // Close the confirmation modal
+            setLoading(true);
             setConfirmModalOpen(false);
 
             const spreadSheetID = settings.spreadsheetId;
@@ -837,6 +838,9 @@ const IntractMapTable = ({ data, headers, settings, tempHeader, freezeIndex, for
             // Handle error
             console.error("Error during bulk delete:", error);
             notifyError(error.message || "An error occurred while deleting rows");
+        }
+        finally {
+            setLoading(false);
         }
     };
 

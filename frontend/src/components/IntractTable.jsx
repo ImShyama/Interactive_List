@@ -970,6 +970,7 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
 
     const handleConfirmDelete = async () => {
         try {
+            setLoading(true);
             // Close the confirmation modal
             setConfirmModalOpen(false);
 
@@ -1008,6 +1009,8 @@ const IntractTable = ({ data, headers, settings, tempHeader, freezeIndex, formul
             // Handle error
             console.error("Error during bulk delete:", error);
             notifyError(error.message || "An error occurred while deleting rows");
+        } finally {
+            setLoading(false);
         }
     };
 
