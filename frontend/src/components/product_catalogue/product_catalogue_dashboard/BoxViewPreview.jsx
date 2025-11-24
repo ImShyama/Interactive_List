@@ -179,82 +179,82 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader, data }) => 
     }
   };
 
-  // const handleTagHeadingSelect = (heading) => {
-  //   if (savedSelection) {
-  //     const sel = window.getSelection();
-  //     sel.removeAllRanges();
-  //     sel.addRange(savedSelection);
-
-  //     // Create link with heading name as href
-  //     const headingHref = `{${heading}}`;
-  //     document.execCommand("createLink", false, headingHref);
-
-  //     setIsLinkDropdownOpen(false);
-  //   }
-  // };
-
   const handleTagHeadingSelect = (heading) => {
     if (savedSelection) {
       const sel = window.getSelection();
       sel.removeAllRanges();
       sel.addRange(savedSelection);
 
-      // Get the actual column content from data
-      let columnContent = '';
+      // Create link with heading name as href
+      const headingHref = `{${heading}}`;
+      document.execCommand("createLink", false, headingHref);
 
-      if (data && Array.isArray(data) && data.length > 0) {
-        // Try multiple column key formats to find the right match
-        const possibleKeys = [
-          heading.replace(/\s+/g, '_').toLowerCase(),
-          heading.replace(/\s+/g, '_'),
-          heading.toLowerCase(),
-          heading
-        ];
-
-        // Find the first row that has content for this column
-        const rowWithContent = data.find(row => {
-          return possibleKeys.some(key =>
-            row[key] && row[key].toString().trim() !== ''
-          );
-        });
-
-        if (rowWithContent) {
-          // Find the actual key that has content
-          const actualKey = possibleKeys.find(key =>
-            rowWithContent[key] && rowWithContent[key].toString().trim() !== ''
-          );
-          if (actualKey) {
-            columnContent = rowWithContent[actualKey];
-          }
-        }
-      }
-
-      // If no content found, fallback to heading name
-      if (!columnContent) {
-        columnContent = heading;
-      }
-
-      // Create a div element with the actual column content
-      const divElement = document.createElement('div');
-      divElement.innerHTML = columnContent;
-
-      // Insert the div at the current selection
-      const range = sel.getRangeAt(0);
-      range.deleteContents();
-      range.insertNode(divElement);
-
-      // Move cursor to end of inserted content
-      const newRange = document.createRange();
-      newRange.setStartAfter(divElement);
-      newRange.collapse(true);
-      sel.removeAllRanges();
-      sel.addRange(newRange);
-
-      // Clear selection and close dropdown
-      sel.removeAllRanges();
-      setIsTagLinkDropdownOpen(false);
+      setIsLinkDropdownOpen(false);
     }
   };
+
+  // const handleTagHeadingSelect = (heading) => {
+  //   if (savedSelection) {
+  //     const sel = window.getSelection();
+  //     sel.removeAllRanges();
+  //     sel.addRange(savedSelection);
+
+  //     // Get the actual column content from data
+  //     let columnContent = '';
+
+  //     if (data && Array.isArray(data) && data.length > 0) {
+  //       // Try multiple column key formats to find the right match
+  //       const possibleKeys = [
+  //         heading.replace(/\s+/g, '_').toLowerCase(),
+  //         heading.replace(/\s+/g, '_'),
+  //         heading.toLowerCase(),
+  //         heading
+  //       ];
+
+  //       // Find the first row that has content for this column
+  //       const rowWithContent = data.find(row => {
+  //         return possibleKeys.some(key =>
+  //           row[key] && row[key].toString().trim() !== ''
+  //         );
+  //       });
+
+  //       if (rowWithContent) {
+  //         // Find the actual key that has content
+  //         const actualKey = possibleKeys.find(key =>
+  //           rowWithContent[key] && rowWithContent[key].toString().trim() !== ''
+  //         );
+  //         if (actualKey) {
+  //           columnContent = rowWithContent[actualKey];
+  //         }
+  //       }
+  //     }
+
+  //     // If no content found, fallback to heading name
+  //     if (!columnContent) {
+  //       columnContent = heading;
+  //     }
+
+  //     // Create a div element with the actual column content
+  //     const divElement = document.createElement('div');
+  //     divElement.innerHTML = columnContent;
+
+  //     // Insert the div at the current selection
+  //     const range = sel.getRangeAt(0);
+  //     range.deleteContents();
+  //     range.insertNode(divElement);
+
+  //     // Move cursor to end of inserted content
+  //     const newRange = document.createRange();
+  //     newRange.setStartAfter(divElement);
+  //     newRange.collapse(true);
+  //     sel.removeAllRanges();
+  //     sel.addRange(newRange);
+
+  //     // Clear selection and close dropdown
+  //     sel.removeAllRanges();
+  //     setIsTagLinkDropdownOpen(false);
+  //   }
+  // };
 
   const handleCustomLink = () => {
     setIsLinkDropdownOpen(false);
@@ -458,7 +458,7 @@ const BoxViewPreview = ({ text, value, onClose, onSave, tableHeader, data }) => 
                   {headings.map((heading, index) => (
                     <li
                       key={index}
-                      className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg"
+                      className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg cursor-pointer"
                       onClick={() => handleTagHeadingSelect(heading.value)}
                     >
                       <span>{heading.value}</span>
