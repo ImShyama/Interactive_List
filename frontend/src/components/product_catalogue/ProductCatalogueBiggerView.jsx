@@ -1348,7 +1348,7 @@ const ProductCatalogueBiggerView = () => {
                   </div>
                 </div>
               )}
-
+{/* 
               {sectionType === "link" && (
                 <div className="w-[80%] mx-auto">
                   <h3 className="text-3xl font-bold text-gray-900 mb-6">
@@ -1371,7 +1371,7 @@ const ProductCatalogueBiggerView = () => {
                     </a>
                   )}
                 </div>
-              )}
+              )} */}
 
               {sectionType === "video" && (
                 <div className="w-[80%] mx-auto">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TitleBarPreview from "../TitleBarPreview";
 import { Pagination } from "antd";
@@ -17,6 +17,7 @@ const VideoGallaryPreview = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [hoveredVideo, setHoveredVideo] = useState(null);
+  const [filteredVideos, setFilteredVideos] = useState(data);
   const navigate = useNavigate();
 
   const videos = data;
@@ -113,12 +114,24 @@ const VideoGallaryPreview = () => {
 
   // Limit videos to only 2 pages worth of data
   const maxPages = 2;
-  const limitedVideos = videos.slice(0, pageSize * maxPages);
+  const limitedVideos = filteredVideos.slice(0, pageSize * maxPages);
 
   const paginatedVideos = limitedVideos.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+
+  useEffect(() => {
+    setFilteredVideos(videos);
+  }, [videos]);
+
+  useEffect(() => {
+    const cappedLength = limitedVideos.length || 1;
+    const totalPages = Math.max(1, Math.ceil(cappedLength / pageSize));
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [limitedVideos.length, pageSize, currentPage]);
 
 
   const handlePageChange = (page, size) => {
@@ -219,6 +232,8 @@ const VideoGallaryPreview = () => {
           appName={"Video Gallary"}
           spreadSheetID={"1AXbyb8PFWZ0lCqiRAxLl5ymdLERTnHhvP9SMNVjuI0A"}
           spreadSheetName={"Data"}
+          data={videos}
+          setFilteredData={setFilteredVideos}
         />
       </div>
 
@@ -250,7 +265,7 @@ const VideoGallaryPreview = () => {
         <Pagination
           current={currentPage}
           pageSize={pageSize}
-          total={limitedVideos.length}  // ✅ only 2 pages of data
+          total={limitedVideos.length}  // ✅ only 2 pages of data (after filters/search)
           showSizeChanger     
           onChange={handlePageChange}
         />
