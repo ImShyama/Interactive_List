@@ -59,7 +59,7 @@ const Header = () => {
     },
     "/VideoGalleryPreview": {
       name: "Video Gallery",
-      videoUrl: "https://drive.google.com/file/d/1QKnzt5cKbZRL_kiQn0p1UGYdVLVTP8ed/preview"
+      videoUrl: "https://drive.google.com/file/d/1wP2IILAH5t3IQfp9xgUgl9h8bg_KG5dM/preview"
     },
     "/PhotoGalleryPreview": {
       name: "Photo Gallery",

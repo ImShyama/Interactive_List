@@ -18,6 +18,7 @@ const RaiseTicket = ({ open, handleClose }) => {
   const [formValues, setFormValues] = useState({
     customerName: currentUser?.name || "",
     customerEmail: currentUser?.email || "",
+    companyName: "",
     issueStatement: "",
     priorityLevel: "",
     phone: "",
@@ -72,14 +73,23 @@ const RaiseTicket = ({ open, handleClose }) => {
   };
 
   const handleSubmit = async () => {
-    if (!formValues.customerName || !formValues.customerEmail || !formValues.issueStatement) {
-      return message.error("Customer Name, email, and issue statement fields are required!");
+    if (
+      !formValues.customerName ||
+      !formValues.customerEmail ||
+      !formValues.companyName ||
+      !formValues.phone ||
+      !formValues.issueStatement
+    ) {
+      return message.error(
+        "Customer name, email, company name, phone number, and issue statement fields are required!"
+      );
     }
 
     const finalData = {
       "Issue Statement": formValues.issueStatement,
       customerName: formValues.customerName,
       email: formValues.customerEmail,
+      companyName: formValues.companyName,
       "Priority Level": formValues.priorityLevel,
       phone: formValues.phone,
       // sheets: formValues?.sheets || "",
@@ -104,6 +114,7 @@ const RaiseTicket = ({ open, handleClose }) => {
       setFormValues({
         customerName: (ctxUser?.name || loginUser?.name || ""),
         customerEmail: (ctxUser?.email || loginUser?.email || ""),
+        companyName: "",
         issueStatement: "",
         priorityLevel: "",
         phone: "",
@@ -212,6 +223,19 @@ const RaiseTicket = ({ open, handleClose }) => {
                 </div>
               </Col>
             </Row>
+
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-[#334155] flex items-center gap-1">
+                Company Name
+              </label>
+              <Input
+                placeholder="Enter your company name"
+                value={formValues.companyName}
+                onChange={(e) => handleChange("companyName", e.target.value)}
+                className="rounded-lg border-gray-300 hover:border-[#334155] focus:border-[#334155] focus:ring-[#334155]"
+                size="middle"
+              />
+            </div>
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-[#334155] flex items-center gap-1">
